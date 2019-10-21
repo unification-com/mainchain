@@ -1,8 +1,8 @@
 package nameservice
 
 import (
-	"github.com/unification-com/cosmos/x/nameservice/internal/keeper"
-	"github.com/unification-com/cosmos/x/nameservice/internal/types"
+	"github.com/unification-com/mainchain-cosmos/x/nameservice/internal/keeper"
+	"github.com/unification-com/mainchain-cosmos/x/nameservice/internal/types"
 )
 
 const (

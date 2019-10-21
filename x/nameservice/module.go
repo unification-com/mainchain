@@ -9,8 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/unification-com/cosmos/x/nameservice/client/cli"
-	"github.com/unification-com/cosmos/x/nameservice/client/rest"
+	"github.com/unification-com/mainchain-cosmos/x/nameservice/client/cli"
+	"github.com/unification-com/mainchain-cosmos/x/nameservice/client/rest"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"

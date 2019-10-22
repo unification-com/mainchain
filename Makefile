@@ -3,7 +3,7 @@ PACKAGES=$(shell go list ./... | grep -v '/simulation')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=NameService \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain \
 	-X github.com/cosmos/cosmos-sdk/version.ServerName=und \
 	-X github.com/cosmos/cosmos-sdk/version.ClientName=undcli \
 	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
@@ -18,6 +18,10 @@ all: lint install
 install: go.sum
 		go install $(BUILD_FLAGS) ./cmd/und
 		go install $(BUILD_FLAGS) ./cmd/undcli
+
+build: go.sum
+		go build -mod=readonly $(BUILD_FLAGS) -o build/und ./cmd/und
+		go build -mod=readonly $(BUILD_FLAGS) -o build/undcli ./cmd/undcli
 
 go.sum: go.mod
 		@echo "--> Ensure dependencies have not been modified"

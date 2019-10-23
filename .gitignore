@@ -1,3 +1,9 @@
-go.sum
-.idea
+# OS
 .DS_Store
+
+# IDEs
+.vscode
+.idea
+# Build
+build
+go.sum

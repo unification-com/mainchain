@@ -15,10 +15,11 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	app "github.com/unification-com/mainchain-cosmos"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/unification-com/mainchain-cosmos/app"
 )
 
 func main() {
@@ -63,7 +64,7 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewNameServiceApp(logger, db)
+	return app.NewMainchainApp(logger, db)
 }
 
 func exportAppStateAndTMValidators(
@@ -71,7 +72,7 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		nsApp := app.NewNameServiceApp(logger, db)
+		nsApp := app.NewMainchainApp(logger, db)
 		err := nsApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -79,7 +80,7 @@ func exportAppStateAndTMValidators(
 		return nsApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	nsApp := app.NewNameServiceApp(logger, db)
+	nsApp := app.NewMainchainApp(logger, db)
 
 	return nsApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

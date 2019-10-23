@@ -1,6 +1,7 @@
 package main
 
 import (
+	
 	"os"
 	"path"
 
@@ -12,11 +13,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
-	app "github.com/unification-com/mainchain-cosmos"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
+
+	"github.com/unification-com/mainchain-cosmos/app"
+
 )
 
 func main() {

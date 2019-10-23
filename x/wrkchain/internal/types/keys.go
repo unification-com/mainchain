@@ -2,10 +2,10 @@ package types
 
 const (
 	// module name
-	ModuleName = "wrkchain"
+	ModuleName          = "wrkchain"
 	BlockStoreKeySuffix = "block"
 
 	// StoreKey to be used when creating the KVStore
-	StoreKey = ModuleName
+	StoreKey      = ModuleName
 	StoreKeyBlock = StoreKey + BlockStoreKeySuffix
 )

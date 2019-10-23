@@ -8,8 +8,9 @@ const (
 	RouterKey = ModuleName // defined in keys.go file
 
 	RegisterAction = "register"
-	RecordAction = "record"
+	RecordAction   = "record"
 )
+
 // --- Register a WRKChain Msg ---
 
 // MsgRegisterWrkChain defines a RegisterWrkChain message
@@ -23,10 +24,10 @@ type MsgRegisterWrkChain struct {
 // NewMsgRegisterWrkChain is a constructor function for MsgRegisterWrkChain
 func NewMsgRegisterWrkChain(wrkchainId string, genesisHash string, wrkchainName string, owner sdk.AccAddress) MsgRegisterWrkChain {
 	return MsgRegisterWrkChain{
-		WrkChainID:  wrkchainId,
+		WrkChainID:   wrkchainId,
 		WrkChainName: wrkchainName,
-		GenesisHash: genesisHash,
-		Owner: owner,
+		GenesisHash:  genesisHash,
+		Owner:        owner,
 	}
 }
 
@@ -61,14 +62,14 @@ func (msg MsgRegisterWrkChain) GetSigners() []sdk.AccAddress {
 
 // MsgRecordWrkChainBlock defines a RecordWrkChainBlock message
 type MsgRecordWrkChainBlock struct {
-	WrkChainID   string         `json:"id"`
-	Height       uint64         `json:"height"`
-	BlockHash    string         `json:"blockhash"`
-	ParentHash   string         `json:"parenthash"`
-	Hash1        string         `json:"hash1"`
-	Hash2        string         `json:"hash2"`
-	Hash3        string         `json:"hash3"`
-	Owner        sdk.AccAddress `json:"owner"`
+	WrkChainID string         `json:"id"`
+	Height     uint64         `json:"height"`
+	BlockHash  string         `json:"blockhash"`
+	ParentHash string         `json:"parenthash"`
+	Hash1      string         `json:"hash1"`
+	Hash2      string         `json:"hash2"`
+	Hash3      string         `json:"hash3"`
+	Owner      sdk.AccAddress `json:"owner"`
 }
 
 // NewMsgRecordWrkChainBlock is a constructor function for MsgRecordWrkChainBlock
@@ -83,14 +84,14 @@ func NewMsgRecordWrkChainBlock(
 	owner sdk.AccAddress) MsgRecordWrkChainBlock {
 
 	return MsgRecordWrkChainBlock{
-	    WrkChainID:  wrkchainId,
-		Height: height,
-		BlockHash: blockHash,
+		WrkChainID: wrkchainId,
+		Height:     height,
+		BlockHash:  blockHash,
 		ParentHash: parentHash,
-		Hash1: hash1,
-		Hash2: hash2,
-		Hash3: hash3,
-	    Owner: owner,
+		Hash1:      hash1,
+		Hash2:      hash2,
+		Hash3:      hash3,
+		Owner:      owner,
 	}
 }
 

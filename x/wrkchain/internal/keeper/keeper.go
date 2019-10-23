@@ -12,15 +12,15 @@ import (
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
-	storeKey  sdk.StoreKey // Unexposed key to access store from sdk.Context
-	cdc *codec.Codec // The wire codec for binary encoding/decoding.
+	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
+	cdc      *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
 // NewKeeper creates new instances of the nameservice Keeper
 func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
-		storeKey:      storeKey,
-		cdc:           cdc,
+		storeKey: storeKey,
+		cdc:      cdc,
 	}
 }
 
@@ -90,7 +90,6 @@ func (k Keeper) RegisterWrkChain(ctx sdk.Context, wrkchainId string, wrkchainNam
 	k.SetWrkChain(ctx, wrkchainId, wrkchain)
 }
 
-
 // Record hashes funcs
 
 // Sets the WrkChain Block struct for a sha256(wrkchainId + height)
@@ -105,7 +104,7 @@ func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlockKey []byte, wrkch
 }
 
 // Check if the WrkChainBlock is present in the store or not
-func (k Keeper) IsWrkChainBlockRecorded(ctx sdk.Context,  wrkchainId string, height uint64) bool {
+func (k Keeper) IsWrkChainBlockRecorded(ctx sdk.Context, wrkchainId string, height uint64) bool {
 	store := ctx.KVStore(k.storeKey)
 	blockKey := generateWrkChainBlockKey(wrkchainId, height)
 	return store.Has(blockKey)
@@ -133,7 +132,6 @@ func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId string, height uint
 	return wrkchainBlock
 }
 
-
 func (k Keeper) RecordWrkchainHashes(
 	ctx sdk.Context,
 	wrkchainId string,
@@ -143,7 +141,7 @@ func (k Keeper) RecordWrkchainHashes(
 	hash1 string,
 	hash2 string,
 	hash3 string,
-    owner sdk.AccAddress) {
+	owner sdk.AccAddress) {
 
 	if !k.IsWrkChainRegistered(ctx, wrkchainId) {
 		// can't record hashes if WRKChain isn't registered

@@ -46,7 +46,7 @@ $ %s tx %s register 54372 d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16
 				version.ClientName, types.ModuleName,
 			),
 		),
-		Args:  cobra.ExactArgs(3),
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
@@ -77,7 +77,7 @@ $ %s tx %s record WrkChain1234 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb
 			),
 		),
 		// todo - make parent hash, and hashes 1 - 3 optional
-		Args:  cobra.ExactArgs(7),
+		Args: cobra.ExactArgs(7),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 

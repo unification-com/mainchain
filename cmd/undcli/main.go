@@ -1,7 +1,6 @@
 package main
 
 import (
-	
 	"os"
 	"path"
 
@@ -19,7 +18,6 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/unification-com/mainchain-cosmos/app"
-
 )
 
 func main() {

@@ -113,10 +113,7 @@ func (k Keeper) IsWrkChainBlockRecorded(ctx sdk.Context,  wrkchainId string, hei
 
 // IsAuthorisedToRecord ensures only the WRKChain owner is recording hashes
 func (k Keeper) IsAuthorisedToRecord(ctx sdk.Context, wrkchainId string, recorder sdk.AccAddress) bool {
-	if !recorder.Equals(k.GetWrkChainOwner(ctx, wrkchainId))  {
-		return false
-	}
-	return true
+	return recorder.Equals(k.GetWrkChainOwner(ctx, wrkchainId))
 }
 
 // Gets the entire WRKChain metadata struct for a wrkchainId
@@ -174,7 +171,8 @@ func (k Keeper) RecordWrkchainHashes(
 
 func generateWrkChainBlockKey(wrkchainId string, height uint64) []byte {
 	h := sha256.New()
-	h.Write([]byte(wrkchainId + strconv.FormatUint(height, 10)))
+	// todo - get and handle err
+	_, _ = h.Write([]byte(wrkchainId + strconv.FormatUint(height, 10)))
 	hashBytes := h.Sum(nil)
 	return hashBytes
 }

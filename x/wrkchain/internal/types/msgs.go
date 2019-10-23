@@ -108,7 +108,7 @@ func (msg MsgRecordWrkChainBlock) ValidateBasic() sdk.Error {
 	if len(msg.WrkChainID) == 0 || len(msg.BlockHash) == 0 {
 		return sdk.ErrUnknownRequest("WrkChainID and BlockHash cannot be empty")
 	}
-	if msg.Height <= 0 {
+	if msg.Height == 0 {
 		return sdk.ErrUnknownRequest("Height cannot be zero")
 	}
 	return nil

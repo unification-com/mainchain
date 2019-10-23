@@ -1,7 +1,7 @@
 package types
 
 var (
-	EventTypeRegisterWrkChain = "register-wrkchain"
+	EventTypeRegisterWrkChain    = "register-wrkchain"
 	EventTypeRecordWrkChainBlock = "record-wrkchain-block"
 
 	AttributeValueCategory = ModuleName
@@ -16,6 +16,4 @@ var (
 	AttributeKeyHash1               = "wrkchain-hash1"
 	AttributeKeyHash2               = "wrkchain-hash2"
 	AttributeKeyHash3               = "wrkchain-hash3"
-
-
 )

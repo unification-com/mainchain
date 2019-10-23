@@ -51,7 +51,7 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 		return sdk.ErrUnauthorized("you are not the owner of this WRKChain").Result()
 	}
 
-    if keeper.IsWrkChainBlockRecorded(ctx, msg.WrkChainID, msg.Height) {
+	if keeper.IsWrkChainBlockRecorded(ctx, msg.WrkChainID, msg.Height) {
 		return sdk.ErrUnauthorized("WRKChain block hashes have already been recorded for this height").Result()
 	}
 

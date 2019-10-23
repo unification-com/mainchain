@@ -12,23 +12,23 @@ import (
 )
 
 type registerWrkChainReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-	WrkChainID   string  `json:"id"`
-	WrkChainName string  `json:"name"`
-	GenesisHash  string  `json:"genesis"`
-	Owner        string  `json:"owner"`
+	BaseReq      rest.BaseReq `json:"base_req"`
+	WrkChainID   string       `json:"id"`
+	WrkChainName string       `json:"name"`
+	GenesisHash  string       `json:"genesis"`
+	Owner        string       `json:"owner"`
 }
 
 type recordWrkChainBlockReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-	WrkChainID   string  `json:"id"`
-	Height       uint64  `json:"height"`
-	BlockHash    string  `json:"blockhash"`
-	ParentHash   string  `json:"parenthash"`
-	Hash1        string  `json:"hash1"`
-	Hash2        string  `json:"hash2"`
-	Hash3        string  `json:"hash3"`
-	Owner        string  `json:"owner"`
+	BaseReq    rest.BaseReq `json:"base_req"`
+	WrkChainID string       `json:"id"`
+	Height     uint64       `json:"height"`
+	BlockHash  string       `json:"blockhash"`
+	ParentHash string       `json:"parenthash"`
+	Hash1      string       `json:"hash1"`
+	Hash2      string       `json:"hash2"`
+	Hash3      string       `json:"hash3"`
+	Owner      string       `json:"owner"`
 }
 
 func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
@@ -82,7 +82,7 @@ func recordWrkChainBlockHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		// create the message
-		msg := types.NewMsgRecordWrkChainBlock(req.WrkChainID, req.Height, req.BlockHash, req.ParentHash,req.Hash1, req.Hash2, req.Hash3, addr)
+		msg := types.NewMsgRecordWrkChainBlock(req.WrkChainID, req.Height, req.BlockHash, req.ParentHash, req.Hash1, req.Hash2, req.Hash3, addr)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -92,4 +92,3 @@ func recordWrkChainBlockHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
 	}
 }
-

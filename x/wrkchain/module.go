@@ -1,19 +1,19 @@
 package wrkchain
 
 import (
-    "encoding/json"
+	"encoding/json"
 
-    "github.com/gorilla/mux"
-    "github.com/spf13/cobra"
+	"github.com/gorilla/mux"
+	"github.com/spf13/cobra"
 
-    "github.com/cosmos/cosmos-sdk/codec"
-    "github.com/cosmos/cosmos-sdk/types/module"
-    "github.com/unification-com/mainchain-cosmos/x/wrkchain/client/cli"
-    "github.com/unification-com/mainchain-cosmos/x/wrkchain/client/rest"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/client/cli"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/client/rest"
 
-    "github.com/cosmos/cosmos-sdk/client/context"
-    sdk "github.com/cosmos/cosmos-sdk/types"
-    abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/cosmos/cosmos-sdk/client/context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // type check to ensure the interface is properly implemented
@@ -65,7 +65,7 @@ func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	keeper     Keeper
+	keeper Keeper
 }
 
 // NewAppModule creates a new AppModule Object

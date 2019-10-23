@@ -29,7 +29,7 @@ go.sum: go.mod
 
 lint:
 	golangci-lint run
-	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
+	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -w -s
 	go mod verify
 
 test:

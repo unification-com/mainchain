@@ -6,22 +6,46 @@ import (
 )
 
 const (
-	ModuleName = types.ModuleName
-	RouterKey  = types.RouterKey
-	StoreKey   = types.StoreKey
+	ModuleName    = types.ModuleName
+	RouterKey     = types.RouterKey
+	StoreKey      = types.StoreKey
+
+	QueryWrkChain      = keeper.QueryWrkChain
+	QueryWrkChainBlock = keeper.QueryWrkChainBlock
 )
 
 var (
 	NewKeeper              = keeper.NewKeeper
 	NewQuerier             = keeper.NewQuerier
 	NewMsgRegisterWrkChain = types.NewMsgRegisterWrkChain
-	NewWhois               = types.NewWrkChain
+	NewWrkChain            = types.NewWrkChain
 	RegisterCodec          = types.RegisterCodec
 	ModuleCdc              = types.ModuleCdc
+
+	// Event tags
+	EventTypeRegisterWrkChain    = types.EventTypeRegisterWrkChain
+	EventTypeRecordWrkChainBlock = types.EventTypeRecordWrkChainBlock
+
+	AttributeKeyWrkChainId          = types.AttributeKeyWrkChainId
+	AttributeKeyWrkChainName        = types.AttributeKeyWrkChainName
+	AttributeKeyWrkChainGenesisHash = types.AttributeKeyWrkChainGenesisHash
+	AttributeKeyOwner               = types.AttributeKeyOwner
+	AttributeKeyBlockHash           = types.AttributeKeyBlockHash
+	AttributeKeyBlockHeight         = types.AttributeKeyBlockHeight
+	AttributeKeyParentHash          = types.AttributeKeyParentHash
+	AttributeKeyHash1               = types.AttributeKeyHash1
+	AttributeKeyHash2               = types.AttributeKeyHash2
+	AttributeKeyHash3               = types.AttributeKeyHash3
 )
 
 type (
-	Keeper              = keeper.Keeper
-	MsgRegisterWrkChain = types.MsgRegisterWrkChain
-	WrkChain            = types.WrkChain
+	Keeper                 = keeper.Keeper
+
+	// Msgs
+	MsgRegisterWrkChain    = types.MsgRegisterWrkChain
+	MsgRecordWrkChainBlock = types.MsgRecordWrkChainBlock
+
+	// Structs
+	WrkChain               = types.WrkChain
+
 )

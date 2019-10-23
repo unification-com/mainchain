@@ -34,3 +34,6 @@ lint:
 
 test:
 	@go test -mod=readonly $(PACKAGES)
+
+clean:
+	rm -rf build/

@@ -18,12 +18,20 @@
   },
   "app_hash": "",
   "app_state": {
-    "params": null,
-    "supply": {
-      "supply": []
-    },
-    "nameservice": {
-      "whois_records": []
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 96,
+        "max_entries": 7,
+        "bond_denom": "und"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
     },
     "slashing": {
       "params": {
@@ -37,22 +45,9 @@
       "signing_infos": {},
       "missed_blocks": {}
     },
-    "distribution": {
-      "fee_pool": {
-        "community_pool": []
-      },
-      "community_tax": "0.020000000000000000",
-      "base_proposer_reward": "0.010000000000000000",
-      "bonus_proposer_reward": "0.040000000000000000",
-      "withdraw_addr_enabled": true,
-      "delegator_withdraw_infos": [],
-      "previous_proposer": "",
-      "outstanding_rewards": [],
-      "validator_accumulated_commissions": [],
-      "validator_historical_rewards": [],
-      "validator_current_rewards": [],
-      "delegator_starting_infos": [],
-      "validator_slash_events": []
+    "params": null,
+    "supply": {
+      "supply": []
     },
     "accounts": [
       {
@@ -116,9 +111,6 @@
         ]
       }
     ],
-    "bank": {
-      "send_enabled": true
-    },
     "auth": {
       "params": {
         "max_memo_characters": "256",
@@ -127,6 +119,9 @@
         "sig_verify_cost_ed25519": "590",
         "sig_verify_cost_secp256k1": "1000"
       }
+    },
+    "bank": {
+      "send_enabled": true
     },
     "genutil": {
       "gentxs": [
@@ -222,20 +217,25 @@
         }
       ]
     },
-    "staking": {
-      "params": {
-        "unbonding_time": "1814400000000000",
-        "max_validators": 96,
-        "max_entries": 7,
-        "bond_denom": "und"
+    "wrkchain": {
+      "registered_wrkchains": []
+    },
+    "distribution": {
+      "fee_pool": {
+        "community_pool": []
       },
-      "last_total_power": "0",
-      "last_validator_powers": null,
-      "validators": null,
-      "delegations": null,
-      "unbonding_delegations": null,
-      "redelegations": null,
-      "exported": false
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true,
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
     }
   }
 }

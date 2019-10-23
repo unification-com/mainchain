@@ -217,8 +217,8 @@
         }
       ]
     },
-    "nameservice": {
-      "whois_records": []
+    "wrkchain": {
+      "registered_wrkchains": []
     },
     "distribution": {
       "fee_pool": {

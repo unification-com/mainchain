@@ -1,15 +1,9 @@
 # OS
 .DS_Store
-*.swp
-*.swo
-*.swl
-*.swm
-*.swn
 
 # IDEs
 .vscode
 .idea
-
 # Build
 build
 go.sum

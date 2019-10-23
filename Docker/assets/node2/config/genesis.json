@@ -18,16 +18,99 @@
   },
   "app_hash": "",
   "app_state": {
-    "params": null,
-    "bank": {
-      "send_enabled": true
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 96,
+        "max_entries": 7,
+        "bond_denom": "und"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
     },
+    "slashing": {
+      "params": {
+        "max_evidence_age": "120000000000",
+        "signed_blocks_window": "100",
+        "min_signed_per_window": "0.500000000000000000",
+        "downtime_jail_duration": "600000000000",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.010000000000000000"
+      },
+      "signing_infos": {},
+      "missed_blocks": {}
+    },
+    "params": null,
     "supply": {
       "supply": []
     },
-    "nameservice": {
-      "whois_records": []
-    },
+    "accounts": [
+      {
+        "address": "cosmos1cxxsr89u77hu7ksz5nw2cu27pfg88g3v92u7dd",
+        "coins": [
+          {
+            "denom": "und",
+            "amount": "100000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "cosmos1cvrv3atsm26t4qhssfzj4cs8u7rvsuv9gzwkn6",
+        "coins": [
+          {
+            "denom": "und",
+            "amount": "100000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "cosmos1ss63vffqmpz68ext374cuxa0v3upavghwzw53p",
+        "coins": [
+          {
+            "denom": "und",
+            "amount": "100000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      }
+    ],
     "auth": {
       "params": {
         "max_memo_characters": "256",
@@ -36,6 +119,9 @@
         "sig_verify_cost_ed25519": "590",
         "sig_verify_cost_secp256k1": "1000"
       }
+    },
+    "bank": {
+      "send_enabled": true
     },
     "genutil": {
       "gentxs": [
@@ -131,95 +217,9 @@
         }
       ]
     },
-    "slashing": {
-      "params": {
-        "max_evidence_age": "120000000000",
-        "signed_blocks_window": "100",
-        "min_signed_per_window": "0.500000000000000000",
-        "downtime_jail_duration": "600000000000",
-        "slash_fraction_double_sign": "0.050000000000000000",
-        "slash_fraction_downtime": "0.010000000000000000"
-      },
-      "signing_infos": {},
-      "missed_blocks": {}
+    "wrkchain": {
+      "registered_wrkchains": []
     },
-    "staking": {
-      "params": {
-        "unbonding_time": "1814400000000000",
-        "max_validators": 96,
-        "max_entries": 7,
-        "bond_denom": "und"
-      },
-      "last_total_power": "0",
-      "last_validator_powers": null,
-      "validators": null,
-      "delegations": null,
-      "unbonding_delegations": null,
-      "redelegations": null,
-      "exported": false
-    },
-    "accounts": [
-      {
-        "address": "cosmos1cxxsr89u77hu7ksz5nw2cu27pfg88g3v92u7dd",
-        "coins": [
-          {
-            "denom": "und",
-            "amount": "100000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      },
-      {
-        "address": "cosmos1cvrv3atsm26t4qhssfzj4cs8u7rvsuv9gzwkn6",
-        "coins": [
-          {
-            "denom": "und",
-            "amount": "100000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      },
-      {
-        "address": "cosmos1ss63vffqmpz68ext374cuxa0v3upavghwzw53p",
-        "coins": [
-          {
-            "denom": "und",
-            "amount": "100000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      }
-    ],
     "distribution": {
       "fee_pool": {
         "community_pool": []

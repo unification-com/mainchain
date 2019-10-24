@@ -1,4 +1,13 @@
 
+# Compositions
+
+Pure upstream:
+docker-compose -f Docker/docker-compose.upstream.yml up --build
+
+Composition with local changes:
+docker-compose -f Docker/docker-compose.local.yml up --build
+
+# Keys
 Wallet passphrase: 12345678
 
 - name: node0

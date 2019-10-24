@@ -37,3 +37,17 @@ test:
 
 clean:
 	rm -rf build/
+
+devnet:
+	docker-compose -f Docker/docker-compose.local.yml down --remove-orphans
+	docker-compose -f Docker/docker-compose.local.yml up --build
+
+devnet-down:
+	docker-compose -f Docker/docker-compose.local.yml down --remove-orphans
+
+devnet-pristine:
+	docker-compose -f Docker/docker-compose.upstream.yml down --remove-orphans
+	docker-compose -f Docker/docker-compose.upstream.yml up --build
+
+devnet-pristine-down:
+	docker-compose -f Docker/docker-compose.upstream.yml down

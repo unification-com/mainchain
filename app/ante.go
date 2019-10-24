@@ -7,14 +7,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/multisig"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
 )
 
 var (
 	// simulation signature values used to estimate gas consumption
-	simSecp256k1Pubkey secp256k1.PubKeySecp256k1
-	simSecp256k1Sig    [64]byte
+	simSecp256k1Sig [64]byte
 )
 
 func NewCustomAnteHandler(ak auth.AccountKeeper, supplyKeeper types.SupplyKeeper, sigGasConsumer auth.SignatureVerificationGasConsumer) sdk.AnteHandler {
@@ -25,7 +23,6 @@ func NewCustomAnteHandler(ak auth.AccountKeeper, supplyKeeper types.SupplyKeeper
 		if addr := supplyKeeper.GetModuleAddress(types.FeeCollectorName); addr == nil {
 			panic(fmt.Sprintf("%s module account has not been set", types.FeeCollectorName))
 		}
-
 
 		// all transactions must be of type auth.StdTx
 		stdTx, ok := tx.(auth.StdTx)
@@ -169,7 +166,7 @@ func checkWrkchainFees(ctx sdk.Context, tx auth.StdTx) sdk.Result {
 	if checkFees {
 		totalFees := sdk.Coins{expectedFees}
 		if tx.Fee.Amount.IsAllLT(totalFees) {
-			errMsg := fmt.Sprintf("insufficient fee to pay for WRKChain Tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.Fee.Amount	)
+			errMsg := fmt.Sprintf("insufficient fee to pay for WRKChain Tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.Fee.Amount)
 			return sdk.ErrInsufficientFee(errMsg).Result()
 		}
 	}

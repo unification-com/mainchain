@@ -145,18 +145,32 @@ func NewCustomAnteHandler(ak auth.AccountKeeper, supplyKeeper types.SupplyKeeper
 
 func checkWrkchainFees(ctx sdk.Context, tx auth.StdTx) sdk.Result {
 	msgs := tx.GetMsgs()
+	checkFees := false
+	numMsgs := 0
+	expectedFees := sdk.NewInt64Coin("und", 0)
+
+	// go through Msgs wrapped in the Tx, and check for WRKChain messages
 	for _, msg := range msgs {
 		switch m := msg.(type) {
 		case wrkchain.MsgRegisterWrkChain:
+			checkFees = true
+			expectedFees = expectedFees.Add(wrkchain.FeesWrkChainRegistrationCoin)
+			numMsgs = numMsgs + 1
 			ctx.Logger().Info("checkWrkchainFees", "type", m, "fee", tx.Fee)
-			if !tx.Fee.Amount.IsEqual(wrkchain.WrkChainRegistrationFee) {
-				return sdk.ErrInsufficientFee("insufficient fee to pay for WRKChain registration").Result()
-			}
 		case wrkchain.MsgRecordWrkChainBlock:
+			checkFees = true
+			expectedFees = expectedFees.Add(wrkchain.FeesWrkChainRecordHashCoin)
+			numMsgs = numMsgs + 1
 			ctx.Logger().Info("checkWrkchainFees", "type", m, "fee", tx.Fee)
-			if !tx.Fee.Amount.IsEqual(wrkchain.WrkChainRecordHashFee) {
-				return sdk.ErrInsufficientFee("insufficient fee to pay for recording WRKChain block hashes").Result()
-			}
+		}
+	}
+
+	// Only check if WRKChain messages are included in the Tx
+	if checkFees {
+		totalFees := sdk.Coins{expectedFees}
+		if tx.Fee.Amount.IsAllLT(totalFees) {
+			errMsg := fmt.Sprintf("insufficient fee to pay for WRKChain Tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.Fee.Amount	)
+			return sdk.ErrInsufficientFee(errMsg).Result()
 		}
 	}
 

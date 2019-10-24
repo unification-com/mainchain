@@ -37,9 +37,13 @@ var (
 	AttributeKeyHash2               = types.AttributeKeyHash2
 	AttributeKeyHash3               = types.AttributeKeyHash3
 
-	// WRKChain fees in Coin(denom=und)
-	WrkChainRegistrationFee = types.WrkChainRegistrationFee
-	WrkChainRecordHashFee   = types.WrkChainRecordHashFee
+	// WRKChain fees in sdk.Coin(denom=und)
+	FeesWrkChainRegistrationCoin = types.FeesWrkChainRegistrationCoin
+	FeesWrkChainRecordHashCoin   = types.FeesWrkChainRecordHashCoin
+
+	// WRKChain fees in sdk.Coins[]
+	FeesWrkChainRegistration = types.FeesWrkChainRegistration
+	FeesWrkChainRecordHash   = types.FeesChainRecordHash
 )
 
 type (

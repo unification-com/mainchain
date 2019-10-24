@@ -13,9 +13,13 @@ const (
 )
 
 var (
-	// WRKChain fees in Coin (denom=und) format. Exported in alias.go
-	WrkChainRegistrationFee = sdk.Coins{sdk.NewInt64Coin("und", RegFee)}
-	WrkChainRecordHashFee   = sdk.Coins{sdk.NewInt64Coin("und", RecordFee)}
+	// WRKChain fees in sdk.Coin (denom=und) format. Exported in alias.go
+	FeesWrkChainRegistrationCoin = sdk.NewInt64Coin("und", RegFee)
+	FeesWrkChainRecordHashCoin   = sdk.NewInt64Coin("und", RecordFee)
+
+	// WRKChain Fees in sdk.Coins[]. Exported in alias.go
+	FeesWrkChainRegistration = sdk.Coins{FeesWrkChainRegistrationCoin}
+	FeesChainRecordHash      = sdk.Coins{FeesWrkChainRecordHashCoin}
 )
 
 // Wrkchain is a struct that contains all the metadata of a registered WRKChain

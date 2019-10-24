@@ -36,6 +36,10 @@ var (
 	AttributeKeyHash1               = types.AttributeKeyHash1
 	AttributeKeyHash2               = types.AttributeKeyHash2
 	AttributeKeyHash3               = types.AttributeKeyHash3
+
+	// WRKChain fees in Coin(denom=und)
+	WrkChainRegistrationFee = types.WrkChainRegistrationFee
+	WrkChainRecordHashFee   = types.WrkChainRecordHashFee
 )
 
 type (

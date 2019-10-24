@@ -6,6 +6,18 @@ import (
 	"strings"
 )
 
+const (
+	// WRKChain fees, UND
+	RegFee    = 1000
+	RecordFee = 1
+)
+
+var (
+	// WRKChain fees in Coin (denom=und) format. Exported in alias.go
+	WrkChainRegistrationFee = sdk.Coins{sdk.NewInt64Coin("und", RegFee)}
+	WrkChainRecordHashFee   = sdk.Coins{sdk.NewInt64Coin("und", RecordFee)}
+)
+
 // Wrkchain is a struct that contains all the metadata of a registered WRKChain
 type WrkChain struct {
 	WrkChainID   string         `json:"id"`

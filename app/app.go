@@ -233,7 +233,7 @@ func NewMainchainApp(
 
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
-		auth.NewAnteHandler(
+		NewCustomAnteHandler(
 			app.accountKeeper,
 			app.supplyKeeper,
 			auth.DefaultSigVerificationGasConsumer,

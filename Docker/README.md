@@ -1,5 +1,4 @@
-
-Wallet passphrase: 12345678
+# Details of Keys
 
 - name: node0
   type: local

@@ -4,7 +4,7 @@ services:
     hostname: node0
     build:
       context: ..
-      dockerfile: ./Docker/validator/Dockerfile
+      dockerfile: ./Docker/validator.local/Dockerfile
       args:
         GO_VERSION: 1.13
     container_name: node0
@@ -19,7 +19,7 @@ services:
     hostname: node1
     build:
       context: ..
-      dockerfile: ./Docker/validator/Dockerfile
+      dockerfile: ./Docker/validator.local/Dockerfile
       args:
         GO_VERSION: 1.13
     container_name: node1
@@ -34,7 +34,7 @@ services:
     hostname: node2
     build:
       context: ..
-      dockerfile: ./Docker/validator/Dockerfile
+      dockerfile: ./Docker/validator.local/Dockerfile
       args:
         GO_VERSION: 1.13
     container_name: node2

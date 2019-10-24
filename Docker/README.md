@@ -8,8 +8,15 @@ Composition with local changes:
 docker-compose -f Docker/docker-compose.local.yml up --build
 
 # Keys
-Wallet passphrase: 12345678
 
+
+## Importing docker composition keys
+undcli keys import node0 Docker/assets/keys/node0.key
+undcli keys import node1 Docker/assets/keys/node1.key
+undcli keys import node2 Docker/assets/keys/node2.key
+
+
+## Details
 - name: node0
   type: local
   address: cosmos1cxxsr89u77hu7ksz5nw2cu27pfg88g3v92u7dd

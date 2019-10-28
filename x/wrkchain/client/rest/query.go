@@ -38,3 +38,18 @@ func wrkChainBlockHandler(cliCtx context.CLIContext, storeName string) http.Hand
 		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
+
+func wrkChainBlockHashesHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		paramWrkchainId := vars[restWrkchainId]
+
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/blocks/%s", storeName, paramWrkchainId), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}

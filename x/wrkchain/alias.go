@@ -10,8 +10,9 @@ const (
 	RouterKey  = types.RouterKey
 	StoreKey   = types.StoreKey
 
-	QueryWrkChain      = keeper.QueryWrkChain
-	QueryWrkChainBlock = keeper.QueryWrkChainBlock
+	QueryWrkChain            = keeper.QueryWrkChain
+	QueryWrkChainBlock       = keeper.QueryWrkChainBlock
+	QueryWrkChainBlockHashes = keeper.QueryWrkChainBlockHashes
 )
 
 var (
@@ -44,6 +45,14 @@ var (
 	// WRKChain fees in sdk.Coins[]
 	FeesWrkChainRegistration = types.FeesWrkChainRegistration
 	FeesWrkChainRecordHash   = types.FeesChainRecordHash
+
+	RegisteredWrkChainPrefix        = types.RegisteredWrkChainPrefix
+	RecordedWrkChainBlockHashPrefix = types.RecordedWrkChainBlockHashPrefix
+
+	GetWrkChainStoreKey                = types.GetWrkChainStoreKey
+	GetWrkChainBlockHashStoreKey       = types.GetWrkChainBlockHashStoreKey
+	GetWrkChainBlockHashStoreKeyPrefix = types.GetWrkChainBlockHashStoreKeyPrefix
+
 )
 
 type (
@@ -55,4 +64,8 @@ type (
 
 	// Structs
 	WrkChain = types.WrkChain
+
+	// Queries
+	QueryResWrkChainBlockHashes = types.QueryResWrkChainBlockHashes
 )
+

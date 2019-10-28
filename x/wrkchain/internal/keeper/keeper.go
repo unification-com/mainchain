@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"crypto/sha256"
-	"strconv"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -32,7 +30,7 @@ func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchainId string, wrkchain types.W
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set([]byte(wrkchainId), k.cdc.MustMarshalBinaryBare(wrkchain))
+	store.Set(types.GetWrkChainStoreKey(wrkchainId), k.cdc.MustMarshalBinaryBare(wrkchain))
 }
 
 // SetLastBlock - sets the last block number submitted
@@ -56,7 +54,7 @@ func (k Keeper) GetWrkChain(ctx sdk.Context, wrkchainId string) types.WrkChain {
 		// return a new empty WrkChain struct
 		return types.NewWrkChain()
 	}
-	bz := store.Get([]byte(wrkchainId))
+	bz := store.Get(types.GetWrkChainStoreKey(wrkchainId))
 	var wrkchain types.WrkChain
 	k.cdc.MustUnmarshalBinaryBare(bz, &wrkchain)
 	return wrkchain
@@ -70,13 +68,13 @@ func (k Keeper) GetWrkChainOwner(ctx sdk.Context, wrkchainId string) sdk.AccAddr
 // Check if the WrkChain is present in the store or not
 func (k Keeper) IsWrkChainRegistered(ctx sdk.Context, wrkchainId string) bool {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has([]byte(wrkchainId))
+	return store.Has(types.GetWrkChainStoreKey(wrkchainId))
 }
 
 // Get an iterator over all WrkChains in which the keys are the WrkChain Ids and the values are the WrkChains
 func (k Keeper) GetWrkChainsIterator(ctx sdk.Context) sdk.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, []byte{})
+	return sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
 }
 
 func (k Keeper) RegisterWrkChain(ctx sdk.Context, wrkchainId string, wrkchainName string, genesisHash string, owner sdk.AccAddress) {
@@ -106,7 +104,7 @@ func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlockKey []byte, wrkch
 // Check if the WrkChainBlock is present in the store or not
 func (k Keeper) IsWrkChainBlockRecorded(ctx sdk.Context, wrkchainId string, height uint64) bool {
 	store := ctx.KVStore(k.storeKey)
-	blockKey := generateWrkChainBlockKey(wrkchainId, height)
+	blockKey := types.GetWrkChainBlockHashStoreKey(wrkchainId, height)
 	return store.Has(blockKey)
 }
 
@@ -124,12 +122,29 @@ func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId string, height uint
 		return types.NewWrkChainBlock()
 	}
 
-	blockKey := generateWrkChainBlockKey(wrkchainId, height)
+	blockKey := types.GetWrkChainBlockHashStoreKey(wrkchainId, height)
 
 	bz := store.Get(blockKey)
 	var wrkchainBlock types.WrkChainBlock
 	k.cdc.MustUnmarshalBinaryBare(bz, &wrkchainBlock)
 	return wrkchainBlock
+}
+
+// Get an iterator over all WrkChains in which the keys are the WrkChain Ids and the values are the WrkChains
+func (k Keeper) GetWrkChainBlockHashes(ctx sdk.Context, wrkchainId string) []types.WrkChainBlock {
+	store := ctx.KVStore(k.storeKey)
+	var wrkchainBlocks []types.WrkChainBlock
+
+	iterator := sdk.KVStorePrefixIterator(store, types.GetWrkChainBlockHashStoreKeyPrefix(wrkchainId))
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var block types.WrkChainBlock
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &block)
+		wrkchainBlocks = append(wrkchainBlocks, block)
+	}
+
+	return wrkchainBlocks
 }
 
 func (k Keeper) RecordWrkchainHashes(
@@ -148,7 +163,7 @@ func (k Keeper) RecordWrkchainHashes(
 		return
 	}
 
-	blockKey := generateWrkChainBlockKey(wrkchainId, height)
+	blockKey := types.GetWrkChainBlockHashStoreKey(wrkchainId, height)
 	wrkchain := k.GetWrkChain(ctx, wrkchainId)
 	wrkchainBlock := k.GetWrkChainBlock(ctx, wrkchain.WrkChainID, height)
 
@@ -165,12 +180,4 @@ func (k Keeper) RecordWrkchainHashes(
 	k.SetWrkChainBlock(ctx, blockKey, wrkchainBlock)
 	k.SetLastBlock(ctx, wrkchain.WrkChainID, height)
 
-}
-
-func generateWrkChainBlockKey(wrkchainId string, height uint64) []byte {
-	h := sha256.New()
-	// todo - get and handle err
-	_, _ = h.Write([]byte(wrkchainId + strconv.FormatUint(height, 10)))
-	hashBytes := h.Sum(nil)
-	return hashBytes
 }

@@ -19,7 +19,7 @@ var (
 
 	// WRKChain Fees in sdk.Coins[]. Exported in alias.go
 	FeesWrkChainRegistration = sdk.Coins{FeesWrkChainRegistrationCoin}
-	FeesChainRecordHash      = sdk.Coins{FeesWrkChainRecordHashCoin}
+	FeesWrkChainRecordHash   = sdk.Coins{FeesWrkChainRecordHashCoin}
 )
 
 // Wrkchain is a struct that contains all the metadata of a registered WRKChain

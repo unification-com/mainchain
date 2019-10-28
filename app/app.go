@@ -57,6 +57,7 @@ var (
 		distr.ModuleName:          nil,
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
+		wrkchain.ModuleName:       nil,
 	}
 )
 
@@ -191,6 +192,8 @@ func NewMainchainApp(
 	app.wrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
 		app.cdc,
+		app.bankKeeper,
+		app.supplyKeeper,
 	)
 
 	app.mm = module.NewManager(
@@ -233,7 +236,7 @@ func NewMainchainApp(
 
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
-		NewCustomAnteHandler(
+		auth.NewAnteHandler(
 			app.accountKeeper,
 			app.supplyKeeper,
 			auth.DefaultSigVerificationGasConsumer,

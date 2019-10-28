@@ -21,6 +21,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	nameserviceQueryCmd.AddCommand(client.GetCommands(
 		GetCmdWrkChain(storeKey, cdc),
 		GetCmdWrkChainBlock(storeKey, cdc),
+		GetCmdWrkChainBlockHashes(storeKey, cdc),
 	)...)
 	return nameserviceQueryCmd
 }
@@ -66,6 +67,29 @@ func GetCmdWrkChainBlock(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			}
 
 			var out types.WrkChainBlock
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdWrkChainBlockHashes queries a list of all recorded block hashes for a WRKChain
+func GetCmdWrkChainBlockHashes(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "blocks [wrkchain id]",
+		Short: "Query a WRKChain for all hashes recorded to date",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			wrkchainId := args[0]
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/blocks/%s", queryRoute, wrkchainId), nil)
+			if err != nil {
+				fmt.Printf("could not get query block hashes\n")
+				return nil
+			}
+
+			var out types.QueryResWrkChainBlockHashes
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

@@ -10,8 +10,9 @@ import (
 
 // query endpoints supported by the wrkchain Querier
 const (
-	QueryWrkChain      = "get"
-	QueryWrkChainBlock = "get-block"
+	QueryWrkChain            = "get"
+	QueryWrkChainBlock       = "get-block"
+	QueryWrkChainBlockHashes = "blocks"
 )
 
 // NewQuerier is the module level router for state queries
@@ -22,6 +23,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryWrkChain(ctx, path[1:], req, keeper)
 		case QueryWrkChainBlock:
 			return queryWrkChainBlock(ctx, path[1:], req, keeper)
+		case QueryWrkChainBlockHashes:
+			return queryWrkChainBlockHashes(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown wrkchain query endpoint")
 		}
@@ -51,6 +54,18 @@ func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, k
 	wrkchainBlock := keeper.GetWrkChainBlock(ctx, path[0], uint64(height))
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, wrkchainBlock)
+	if err != nil {
+		panic("could not marshal result to JSON")
+	}
+
+	return res, nil
+}
+
+func queryWrkChainBlockHashes(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+
+	blockHashList := keeper.GetWrkChainBlockHashes(ctx, path[0])
+
+	res, err := codec.MarshalJSONIndent(keeper.cdc, blockHashList)
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}

@@ -52,7 +52,6 @@ var (
 	GetWrkChainStoreKey                = types.GetWrkChainStoreKey
 	GetWrkChainBlockHashStoreKey       = types.GetWrkChainBlockHashStoreKey
 	GetWrkChainBlockHashStoreKeyPrefix = types.GetWrkChainBlockHashStoreKeyPrefix
-
 )
 
 type (
@@ -68,4 +67,3 @@ type (
 	// Queries
 	QueryResWrkChainBlockHashes = types.QueryResWrkChainBlockHashes
 )
-

@@ -6,7 +6,7 @@ import "strings"
 type QueryResWrkChainBlockHashes []WrkChainBlock
 
 // implement fmt.Stringer
-func (h QueryResWrkChainBlockHashes) String()  (out string) {
+func (h QueryResWrkChainBlockHashes) String() (out string) {
 	for _, val := range h {
 		out += val.String() + "\n"
 	}

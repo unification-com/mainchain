@@ -7,10 +7,10 @@ import (
 
 const (
 	// module name
-	ModuleName          = "wrkchain"
+	ModuleName = "wrkchain"
 
 	// StoreKey to be used when creating the KVStore
-	StoreKey      = ModuleName
+	StoreKey = ModuleName
 
 	// WRKChain Recorded bloxk hash delimeter
 	Delimeter = "_"

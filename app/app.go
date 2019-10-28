@@ -34,10 +34,10 @@ var (
 	// default home directories for the application CLI
 	DefaultCLIHome = os.ExpandEnv("$HOME/.und_cli")
 
-	// DefaultNodeHome sets the folder where the applcation data and configuration will be stored
+	// DefaultNodeHome sets the folder where the application data and configuration will be stored
 	DefaultNodeHome = os.ExpandEnv("$HOME/.und_mainchain")
 
-	// NewBasicManager is in charge of setting up basic module elemnets
+	// NewBasicManager is in charge of setting up basic module elements
 	ModuleBasics = module.NewBasicManager(
 		genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
@@ -119,7 +119,7 @@ func NewMainchainApp(
 
 	// The ParamsKeeper handles parameter storage for the application
 	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
-	// Set specific supspaces
+	// Set specific subspaces
 	authSubspace := app.paramsKeeper.Subspace(auth.DefaultParamspace)
 	bankSupspace := app.paramsKeeper.Subspace(bank.DefaultParamspace)
 	stakingSubspace := app.paramsKeeper.Subspace(staking.DefaultParamspace)
@@ -209,7 +209,7 @@ func NewMainchainApp(
 	app.mm.SetOrderEndBlockers(staking.ModuleName)
 
 	// Sets the order of Genesis - Order matters, genutil is to always come last
-	// NOTE: The genutils moodule must occur after staking so that pools are
+	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		genaccounts.ModuleName,

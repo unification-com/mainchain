@@ -1,20 +1,5 @@
 # Details of Keys
 
-- name: node0
-  type: local
-  address: cosmos1cxxsr89u77hu7ksz5nw2cu27pfg88g3v92u7dd
-  pubkey: cosmospub1addwnpepqwa6tup5u5luxq24wud8kfw04t8g73v2y06r0ex7tlxqg4g740ezxs43av6
-  mnemonic: ""
-  threshold: 0
-  pubkeys: []
-
-
-**Important** write this mnemonic phrase in a safe place.
-It is the only way to recover your account if you ever forget your password.
-
-seven employ young talk stumble alien human faith drop tackle note between clutch basic turtle minimum furnace mail upon attack ahead deer permit shrug
-
-
 
 - name: node1
   type: local
@@ -45,3 +30,17 @@ It is the only way to recover your account if you ever forget your password.
 
 snap bitter fix funny maximum drift outdoor artwork ill candy garden rule front bottom surge carpet marine equip kid item helmet sunny deny wise
 
+
+- name: node3
+  type: local
+  address: cosmos19ckcwz6v6xaxgjz6ee2dzp79c59h2p6xdlvr6l
+  pubkey: cosmospub1addwnpepqd09vnqyd8r740wyx8jqp0jjvtyeck9yeqq4524x9sskdrthdtvkqapahc7
+  mnemonic: ""
+  threshold: 0
+  pubkeys: []
+
+
+**Important** write this mnemonic phrase in a safe place.
+It is the only way to recover your account if you ever forget your password.
+
+input hurdle increase palm busy report echo hurry solar hockey around noodle equal motor goose tunnel above twist raccoon behind snack useful pet color

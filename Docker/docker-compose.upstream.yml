@@ -1,20 +1,5 @@
 version: "3"
 services:
-  node0:
-    hostname: node0
-    build:
-      context: ..
-      dockerfile: ./Docker/validator.upstream/Dockerfile
-      args:
-        GO_VERSION: 1.13
-    container_name: node0
-    command: /root/.go/bin/und start --home /root/.und_mainchain/node0 --rpc.laddr=tcp://0.0.0.0:26660
-    networks:
-      mainchain_devnet:
-        ipv4_address: 172.25.0.2
-    ports:
-      - "26660:26660"
-
   node1:
     hostname: node1
     build:
@@ -44,6 +29,21 @@ services:
         ipv4_address: 172.25.0.4
     ports:
       - "26662:26662"
+
+  node3:
+    hostname: node3
+    build:
+      context: ..
+      dockerfile: ./Docker/validator.upstream/Dockerfile
+      args:
+        GO_VERSION: 1.13
+    container_name: node3
+    command: /root/.go/bin/und start --home /root/.und_mainchain/node3 --rpc.laddr=tcp://0.0.0.0:26663
+    networks:
+      mainchain_devnet:
+        ipv4_address: 172.25.0.5
+    ports:
+      - "26663:26663"
 
 
 networks:

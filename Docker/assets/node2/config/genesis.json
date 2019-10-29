@@ -167,6 +167,20 @@
       ]
     },
     "params": null,
+    "mint":{
+      "minter":{
+        "annual_provisions":"17447172179812.068655345578792708",
+        "inflation":"0.073445930240866926"
+      },
+      "params":{
+        "blocks_per_year":"4855015",
+        "goal_bonded":"0.670000000000000000",
+        "inflation_max":"0.200000000000000000",
+        "inflation_min":"0.070000000000000000",
+        "inflation_rate_change":"0.130000000000000000",
+        "mint_denom":"und"
+      }
+    },
     "slashing": {
       "missed_blocks": {},
       "params": {

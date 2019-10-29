@@ -1,6 +1,9 @@
 version: "3"
 services:
   node1:
+    build:
+      args:
+        WITH_DELVE: "yes"
     security_opt:
       - seccomp:unconfined # required for running through delve
     command: /root/.go/bin/dlv --listen=:40000 --headless=true --api-version=2 exec /root/.go/bin/und start -- --home /root/.und_mainchain/node1 --rpc.laddr=tcp://0.0.0.0:26661

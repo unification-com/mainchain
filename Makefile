@@ -10,7 +10,11 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags)"
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)' -gcflags 'all=-N -l'
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+
+ifeq ($(WITH_DELVE),yes)
+  BUILD_FLAGS += -gcflags 'all=-N -l'
+endif
 
 include Makefile.ledger
 all: lint install

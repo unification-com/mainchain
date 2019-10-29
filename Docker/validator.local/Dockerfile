@@ -4,7 +4,7 @@ ARG GO_VERSION
 
 RUN apk update && \
     apk upgrade && \
-    apk add git make jq
+    apk add git make jq gcc libc-dev
 
 ENV GOPATH="/root/.go"
 ENV GOROOT="/usr/local/go"
@@ -15,12 +15,17 @@ ENV LEDGER_ENABLED="false"
 RUN mkdir -p $GOPATH/src/github.com/unification-com
 WORKDIR $GOPATH/src/github.com/unification-com
 
+RUN go get -u github.com/go-delve/delve/cmd/dlv
+
 RUN git clone https://github.com/unification-com/mainchain-cosmos.git
 
 COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos
 
 WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
-RUN make install
+
+ARG WITH_DELVE="no"
+ENV WITH_DELVE=$WITH_DELVE
+RUN export WITH_DELVE=$WITH_DELVE && make install
 
 COPY Docker/assets /root/.und_mainchain
 RUN /root/.go/bin/und validate-genesis /root/.und_mainchain/node1/config/genesis.json

@@ -81,7 +81,7 @@
             "coins": [
               {
                 "denom": "und",
-                "amount": "100000000"
+                "amount": "1000000000"
               }
             ],
             "public_key": null,
@@ -96,7 +96,7 @@
             "coins": [
               {
                 "denom": "und",
-                "amount": "100000000"
+                "amount": "1000000000"
               }
             ],
             "public_key": null,
@@ -111,7 +111,7 @@
             "coins": [
               {
                 "denom": "und",
-                "amount": "100000000"
+                "amount": "1000000000"
               }
             ],
             "public_key": null,

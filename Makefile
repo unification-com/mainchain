@@ -22,23 +22,16 @@ include Makefile.ledger
 all: lint install
 
 install: go.sum
-		go install -mod=readonly $(BUILD_FLAGS) ./cmd/und
-		go install -mod=readonly $(BUILD_FLAGS) ./cmd/undcli
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/und
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/undcli
 
 build: go.sum
-		go build -mod=readonly $(BUILD_FLAGS) -o build/und ./cmd/und
-		go build -mod=readonly $(BUILD_FLAGS) -o build/undcli ./cmd/undcli
-
-go-mod-cache: go.sum
-	@echo "--> Download go modules to local cache"
-	go mod download
+	go build -mod=readonly $(BUILD_FLAGS) -o build/und ./cmd/und
+	go build -mod=readonly $(BUILD_FLAGS) -o build/undcli ./cmd/undcli
 
 go.sum: go.mod
-		@echo "--> Ensure dependencies have not been modified"
-		go mod verify
-
-deps:
-	go get -u ./...
+	@echo "--> Ensure dependencies have not been modified"
+	go mod verify
 
 lint:
 	golangci-lint run
@@ -64,3 +57,15 @@ devnet-pristine:
 
 devnet-pristine-down:
 	docker-compose -f Docker/docker-compose.upstream.yml down
+
+# Used during active development
+
+deps:
+	go get -u ./...
+
+update-sdk:
+	go get github.com/cosmos/cosmos-sdk@master
+
+build-update-gomod:
+	go build $(BUILD_FLAGS) -o build/und ./cmd/und
+	go build $(BUILD_FLAGS) -o build/undcli ./cmd/undcli

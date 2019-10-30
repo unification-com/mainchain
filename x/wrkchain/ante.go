@@ -29,14 +29,14 @@ type FeeTx interface {
 // 3. Checks if the fee payer has sufficient funds in their account to pay for it
 //
 // If any of the checks fail, a suitable error is returned.
-type CorrectWrkChainFeeDecorator struct{
-	ak           auth.AccountKeeper
-	wck          Keeper
+type CorrectWrkChainFeeDecorator struct {
+	ak  auth.AccountKeeper
+	wck Keeper
 }
 
 func NewWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper Keeper) CorrectWrkChainFeeDecorator {
 	return CorrectWrkChainFeeDecorator{
-		ak: ak,
+		ak:  ak,
 		wck: wrkchainKeeper,
 	}
 }
@@ -67,7 +67,7 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	}
 
 	// check fee payer is WRKChain Owner
-	err  = checkWrkChainOwnerFeePayer(feeTx)
+	err = checkWrkChainOwnerFeePayer(feeTx)
 	if err != nil {
 		return ctx, err
 	}

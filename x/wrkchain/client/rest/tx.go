@@ -17,7 +17,6 @@ type registerWrkChainReq struct {
 	WrkChainName string       `json:"name"`
 	GenesisHash  string       `json:"genesis"`
 	Owner        string       `json:"owner"`
-	Fee          string       `json:"fee"`
 }
 
 type recordWrkChainBlockReq struct {
@@ -30,7 +29,6 @@ type recordWrkChainBlockReq struct {
 	Hash2      string       `json:"hash2"`
 	Hash3      string       `json:"hash3"`
 	Owner      string       `json:"owner"`
-	Fee          string       `json:"fee"`
 }
 
 func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {

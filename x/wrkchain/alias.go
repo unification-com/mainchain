@@ -39,12 +39,15 @@ var (
 	AttributeKeyHash3               = types.AttributeKeyHash3
 
 	// WRKChain fees in sdk.Coin(denom=und)
+	FeesBaseDenomination         = types.FeesBaseDenomination
 	FeesWrkChainRegistrationCoin = types.FeesWrkChainRegistrationCoin
 	FeesWrkChainRecordHashCoin   = types.FeesWrkChainRecordHashCoin
+	FeesPenaltyFeeCoin           = types.FeesPenaltyFeeCoin
 
 	// WRKChain fees in sdk.Coins[]
 	FeesWrkChainRegistration = types.FeesWrkChainRegistration
 	FeesWrkChainRecordHash   = types.FeesWrkChainRecordHash
+	FeesPenaltyFee           = types.FeesPenaltyFee
 
 	RegisteredWrkChainPrefix        = types.RegisteredWrkChainPrefix
 	RecordedWrkChainBlockHashPrefix = types.RecordedWrkChainBlockHashPrefix
@@ -52,6 +55,13 @@ var (
 	GetWrkChainStoreKey                = types.GetWrkChainStoreKey
 	GetWrkChainBlockHashStoreKey       = types.GetWrkChainBlockHashStoreKey
 	GetWrkChainBlockHashStoreKeyPrefix = types.GetWrkChainBlockHashStoreKeyPrefix
+
+	// Error messages
+	ErrWrkChainDoesNotExist      = types.ErrWrkChainDoesNotExist
+	ErrWrkChainAlreadyRegistered = types.ErrWrkChainAlreadyRegistered
+	ErrInsufficientWrkChainFee   = types.ErrInsufficientWrkChainFee
+	ErrTooMuchWrkChainFee        = types.ErrTooMuchWrkChainFee
+	ErrFeePayerNotOwner          = types.ErrFeePayerNotOwner
 )
 
 type (

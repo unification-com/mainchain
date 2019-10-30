@@ -19,17 +19,15 @@ type MsgRegisterWrkChain struct {
 	WrkChainName string         `json:"name"`
 	GenesisHash  string         `json:"genesis"`
 	Owner        sdk.AccAddress `json:"owner"`
-	Fee          sdk.Coins      `json:"fee"`
 }
 
 // NewMsgRegisterWrkChain is a constructor function for MsgRegisterWrkChain
-func NewMsgRegisterWrkChain(wrkchainId string, genesisHash string, wrkchainName string, owner sdk.AccAddress, fee sdk.Coins) MsgRegisterWrkChain {
+func NewMsgRegisterWrkChain(wrkchainId string, genesisHash string, wrkchainName string, owner sdk.AccAddress) MsgRegisterWrkChain {
 	return MsgRegisterWrkChain{
 		WrkChainID:   wrkchainId,
 		WrkChainName: wrkchainName,
 		GenesisHash:  genesisHash,
 		Owner:        owner,
-		Fee:          fee,
 	}
 }
 
@@ -46,9 +44,6 @@ func (msg MsgRegisterWrkChain) ValidateBasic() sdk.Error {
 	}
 	if len(msg.WrkChainID) == 0 || len(msg.GenesisHash) == 0 || len(msg.WrkChainName) == 0 {
 		return sdk.ErrUnknownRequest("WrkChainID, Genesis Hash and WRKChain Name cannot be empty")
-	}
-	if msg.Fee.IsAllLT(FeesWrkChainRegistration) {
-		return sdk.ErrInsufficientFee("Insufficient fee to pay for WRKChain registration")
 	}
 	return nil
 }
@@ -75,7 +70,6 @@ type MsgRecordWrkChainBlock struct {
 	Hash2      string         `json:"hash2"`
 	Hash3      string         `json:"hash3"`
 	Owner      sdk.AccAddress `json:"owner"`
-	Fee        sdk.Coins      `json:"fee"`
 }
 
 // NewMsgRecordWrkChainBlock is a constructor function for MsgRecordWrkChainBlock
@@ -87,8 +81,7 @@ func NewMsgRecordWrkChainBlock(
 	hash1 string,
 	hash2 string,
 	hash3 string,
-	owner sdk.AccAddress,
-	fee sdk.Coins) MsgRecordWrkChainBlock {
+	owner sdk.AccAddress) MsgRecordWrkChainBlock {
 
 	return MsgRecordWrkChainBlock{
 		WrkChainID: wrkchainId,
@@ -99,7 +92,6 @@ func NewMsgRecordWrkChainBlock(
 		Hash2:      hash2,
 		Hash3:      hash3,
 		Owner:      owner,
-		Fee:        fee,
 	}
 }
 
@@ -121,9 +113,6 @@ func (msg MsgRecordWrkChainBlock) ValidateBasic() sdk.Error {
 		return sdk.ErrUnknownRequest("Height cannot be zero")
 	}
 
-	if msg.Fee.IsAllLT(FeesWrkChainRecordHash) {
-		return sdk.ErrInsufficientFee("Insufficient fee to pay for WRKChain registration")
-	}
 	return nil
 }
 

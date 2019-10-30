@@ -3,7 +3,6 @@ package wrkchain
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"strconv"
 )
 
@@ -26,26 +25,6 @@ func NewHandler(keeper Keeper) sdk.Handler {
 func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWrkChain) sdk.Result {
 	if keeper.IsWrkChainRegistered(ctx, msg.WrkChainID) { // Checks if the WrkChain is already registered
 		return sdk.ErrUnauthorized("WRKChain already registered").Result() // If so, throw an error
-	}
-
-	coins := keeper.BankKeeper.GetCoins(ctx, msg.Owner)
-	fees := msg.Fee
-
-	if fees.IsAllLT(FeesWrkChainRegistration) {
-		return sdk.ErrUnauthorized("not enough fees sent to pay for registration").Result()
-	}
-
-	// verify the account has enough funds to pay for fees
-	_, hasNeg := coins.SafeSub(fees)
-	if hasNeg {
-		return sdk.ErrInsufficientFunds(
-			fmt.Sprintf("insufficient funds to pay for fees; require %s, have %s", coins, fees),
-		).Result()
-	}
-
-	err := keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, msg.Owner, types.FeeCollectorName, fees)
-	if err != nil {
-		return err.Result()
 	}
 
 	keeper.RegisterWrkChain(ctx, msg.WrkChainID, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
@@ -73,26 +52,6 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 
 	if keeper.IsWrkChainBlockRecorded(ctx, msg.WrkChainID, msg.Height) {
 		return sdk.ErrUnauthorized("WRKChain block hashes have already been recorded for this height").Result()
-	}
-
-	coins := keeper.BankKeeper.GetCoins(ctx, msg.Owner)
-	fees := msg.Fee
-
-	if fees.IsAllLT(FeesWrkChainRecordHash) {
-		return sdk.ErrUnauthorized("not enough fees sent to pay for hash submission").Result()
-	}
-
-	// verify the account has enough funds to pay for fees
-	_, hasNeg := coins.SafeSub(fees)
-	if hasNeg {
-		return sdk.ErrInsufficientFunds(
-			fmt.Sprintf("insufficient funds to pay for fees; require %s, have %s", coins, fees),
-		).Result()
-	}
-
-	err := keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, msg.Owner, types.FeeCollectorName, fees)
-	if err != nil {
-		return err.Result()
 	}
 
 	keeper.RecordWrkchainHashes(ctx, msg.WrkChainID, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3, msg.Owner)

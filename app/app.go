@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/x/mint"
+	"github.com/unification-com/mainchain-cosmos/app/ante"
 	"io"
 	"os"
 
@@ -60,7 +61,6 @@ var (
 		mint.ModuleName:           {supply.Minter},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
-		wrkchain.ModuleName:       nil,
 	}
 )
 
@@ -201,8 +201,6 @@ func NewMainchainApp(
 	app.wrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
 		app.cdc,
-		app.bankKeeper,
-		app.supplyKeeper,
 	)
 
 	app.mm = module.NewManager(
@@ -245,9 +243,10 @@ func NewMainchainApp(
 
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
-		auth.NewAnteHandler(
+		ante.NewAnteHandler(
 			app.accountKeeper,
 			app.supplyKeeper,
+			app.wrkChainKeeper,
 			auth.DefaultSigVerificationGasConsumer,
 		),
 	)

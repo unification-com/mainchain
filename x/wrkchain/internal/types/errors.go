@@ -1,15 +1,27 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
-	DefaultCodespace sdk.CodespaceType = ModuleName
+	DefaultCodespace string = ModuleName
 
-	CodeWrkChainDoesNotExist sdk.CodeType = 101
+	CodeWrkChainDoesNotExist      = 101
+	CodeWrkChainAlreadyRegistered = 102
+
+	CodeWrkChainInsufficientFee = 201
+	CodeWrkChainTooMuchFee      = 202
+
+	CodeWrkChainFeePayerNotOwner = 301
 )
 
-func ErrWrkChainDoesNotExist(codespace sdk.CodespaceType) sdk.Error {
-	return sdk.NewError(codespace, CodeWrkChainDoesNotExist, "WrkChain does not exist")
-}
+var (
+	ErrWrkChainDoesNotExist      = sdkerrors.Register(DefaultCodespace, CodeWrkChainDoesNotExist, "WrkChain does not exist")
+	ErrWrkChainAlreadyRegistered = sdkerrors.Register(DefaultCodespace, CodeWrkChainAlreadyRegistered, "WrkChain already registered")
+
+	ErrInsufficientWrkChainFee = sdkerrors.Register(DefaultCodespace, CodeWrkChainInsufficientFee, "insufficient fee to pay for WrkChain tx")
+	ErrTooMuchWrkChainFee      = sdkerrors.Register(DefaultCodespace, CodeWrkChainTooMuchFee, "too much fee sent to pay for WrkChain tx")
+
+	ErrFeePayerNotOwner = sdkerrors.Register(DefaultCodespace, CodeWrkChainFeePayerNotOwner, "fee payer is not WRKChain owner")
+)

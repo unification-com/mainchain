@@ -36,29 +36,24 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRegisterWrkChain is the CLI command for sending a RegisterWrkChain transaction
 func GetCmdRegisterWrkChain(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "register [wrkchain id] [genesis hash] [name] [fee]",
+		Use:   "register [wrkchain id] [genesis hash] [name] --fees 1000und",
 		Short: "register a new WRKChain",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Register a new WRKChain, to enable WRKChain hash submissions
 Example:
-$ %s tx %s register 54372 d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa "My WRKChain" 1000und --from mykey
+$ %s tx %s register 54372 d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa "My WRKChain" --from mykey --fees 1000und
 `,
 				version.ClientName, types.ModuleName,
 			),
 		),
-		Args: cobra.ExactArgs(4),
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			fee, err := sdk.ParseCoins(args[3])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRegisterWrkChain(args[0], args[1], args[2], cliCtx.GetFromAddress(), fee)
-			err = msg.ValidateBasic()
+			msg := types.NewMsgRegisterWrkChain(args[0], args[1], args[2], cliCtx.GetFromAddress())
+			err := msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
@@ -71,18 +66,18 @@ $ %s tx %s register 54372 d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16
 // GetCmdRecordWrkChainBlock is the CLI command for sending a RecordWrkChainBlock transaction
 func GetCmdRecordWrkChainBlock(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "record [wrkchain id] [height] [block hash] [parent hash] [hash 1] [hash 2] [hash 3] [fee]",
+		Use:   "record [wrkchain id] [height] [block hash] [parent hash] [hash 1] [hash 2] [hash 3] --fees 1und",
 		Short: "record a WRKChain's block hashes",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Record a new WRKChain block's hashes'
 Example:
-$ %s tx %s record WrkChain1234 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa 1und --from mykey
+$ %s tx %s record WrkChain1234 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from mykey --fees 1und
 `,
 				version.ClientName, types.ModuleName,
 			),
 		),
 		// todo - make parent hash, and hashes 1 - 3 optional
-		Args: cobra.ExactArgs(8),
+		Args: cobra.ExactArgs(7),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
@@ -94,12 +89,7 @@ $ %s tx %s record WrkChain1234 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb
 				height = 0
 			}
 
-			fee, err := sdk.ParseCoins(args[7])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRecordWrkChainBlock(args[0], uint64(height), args[2], args[3], args[4], args[5], args[6], cliCtx.GetFromAddress(), fee)
+			msg := types.NewMsgRecordWrkChainBlock(args[0], uint64(height), args[2], args[3], args[4], args[5], args[6], cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

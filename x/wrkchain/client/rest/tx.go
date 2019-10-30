@@ -17,7 +17,6 @@ type registerWrkChainReq struct {
 	WrkChainName string       `json:"name"`
 	GenesisHash  string       `json:"genesis"`
 	Owner        string       `json:"owner"`
-	Fee          string       `json:"fee"`
 }
 
 type recordWrkChainBlockReq struct {
@@ -30,7 +29,6 @@ type recordWrkChainBlockReq struct {
 	Hash2      string       `json:"hash2"`
 	Hash3      string       `json:"hash3"`
 	Owner      string       `json:"owner"`
-	Fee          string       `json:"fee"`
 }
 
 func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
@@ -52,14 +50,8 @@ func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		fee, err := sdk.ParseCoins(req.Fee)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
 		// create the message
-		msg := types.NewMsgRegisterWrkChain(req.WrkChainID, req.WrkChainName, req.GenesisHash, addr, fee)
+		msg := types.NewMsgRegisterWrkChain(req.WrkChainID, req.WrkChainName, req.GenesisHash, addr)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -89,14 +81,8 @@ func recordWrkChainBlockHandler(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		fee, err := sdk.ParseCoins(req.Fee)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
 		// create the message
-		msg := types.NewMsgRecordWrkChainBlock(req.WrkChainID, req.Height, req.BlockHash, req.ParentHash, req.Hash1, req.Hash2, req.Hash3, addr, fee)
+		msg := types.NewMsgRecordWrkChainBlock(req.WrkChainID, req.Height, req.BlockHash, req.ParentHash, req.Hash1, req.Hash2, req.Hash3, addr)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

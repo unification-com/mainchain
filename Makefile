@@ -66,6 +66,6 @@ deps:
 update-sdk:
 	go get github.com/cosmos/cosmos-sdk@master
 
-build-update-gomod:
+build-update-sdk: update-sdk
 	go build $(BUILD_FLAGS) -o build/und ./cmd/und
 	go build $(BUILD_FLAGS) -o build/undcli ./cmd/undcli

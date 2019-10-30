@@ -44,3 +44,18 @@ snap bitter fix funny maximum drift outdoor artwork ill candy garden rule front 
 It is the only way to recover your account if you ever forget your password.
 
 input hurdle increase palm busy report echo hurry solar hockey around noodle equal motor goose tunnel above twist raccoon behind snack useful pet color
+
+
+- name: wrktest
+  type: local
+  address: cosmos1chknpc8nf2tmj5582vhlvphnjyekc9yphypamz
+  pubkey: cosmospub1addwnpepqwn8p7fsjd2g5ft8hla0gs5epj6mwwywlhrxdf59hdnp3gsmn7uqku8ujme
+  mnemonic: ""
+  threshold: 0
+  pubkeys: []
+
+
+**Important** write this mnemonic phrase in a safe place.
+It is the only way to recover your account if you ever forget your password.
+
+chalk critic click web shove almost day oven awkward husband evoke switch margin judge bread notice envelope remove multiply employ december fatal wisdom rain

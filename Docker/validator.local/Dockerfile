@@ -17,11 +17,11 @@ WORKDIR $GOPATH/src/github.com/unification-com
 
 RUN go get -u github.com/go-delve/delve/cmd/dlv
 
-RUN git clone https://github.com/unification-com/mainchain-cosmos.git
-
 COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos
 
 WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
+
+RUN more $GOPATH/src/github.com/unification-com/mainchain-cosmos/go.mod
 
 ARG WITH_DELVE="no"
 ENV WITH_DELVE=$WITH_DELVE

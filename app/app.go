@@ -2,7 +2,9 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/x/mint"
+	"io"
 	"os"
 
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -19,7 +21,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -40,7 +41,6 @@ var (
 
 	// NewBasicManager is in charge of setting up basic module elements
 	ModuleBasics = module.NewBasicManager(
-		genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
@@ -98,7 +98,7 @@ type mainchainApp struct {
 
 // NewMainchainApp is a constructor function for mainchainApp
 func NewMainchainApp(
-	logger log.Logger, db dbm.DB, baseAppOptions ...func(*bam.BaseApp),
+	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, baseAppOptions ...func(*bam.BaseApp),
 ) *mainchainApp {
 
 	// First define the top level codec that will be shared by the different modules
@@ -106,7 +106,7 @@ func NewMainchainApp(
 
 	// BaseApp handles interactions with Tendermint through the ABCI protocol
 	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
-
+	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
@@ -159,12 +159,7 @@ func NewMainchainApp(
 
 	// The staking keeper
 	stakingKeeper := staking.NewKeeper(
-		app.cdc,
-		keys[staking.StoreKey],
-		tkeys[staking.TStoreKey],
-		app.supplyKeeper,
-		stakingSubspace,
-		staking.DefaultCodespace,
+		app.cdc, keys[staking.StoreKey], app.supplyKeeper, stakingSubspace, staking.DefaultCodespace,
 	)
 
 	app.mintKeeper = mint.NewKeeper(
@@ -211,16 +206,15 @@ func NewMainchainApp(
 	)
 
 	app.mm = module.NewManager(
-		genaccounts.NewAppModule(app.accountKeeper),
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
-		wrkchain.NewAppModule(app.wrkChainKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
 		mint.NewAppModule(app.mintKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
+		wrkchain.NewAppModule(app.wrkChainKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
@@ -230,7 +224,6 @@ func NewMainchainApp(
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
-		genaccounts.ModuleName,
 		distr.ModuleName,
 		staking.ModuleName,
 		auth.ModuleName,
@@ -263,9 +256,11 @@ func NewMainchainApp(
 	app.MountKVStores(keys)
 	app.MountTransientStores(tkeys)
 
-	err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
-	if err != nil {
-		cmn.Exit(err.Error())
+	if loadLatest {
+		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
+		if err != nil {
+			cmn.Exit(err.Error())
+		}
 	}
 
 	return app
@@ -279,12 +274,9 @@ func NewDefaultGenesisState() GenesisState {
 }
 
 func (app *mainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
-	var genesisState GenesisState
+	var genesisState simapp.GenesisState
 
-	err := app.cdc.UnmarshalJSON(req.AppStateBytes, &genesisState)
-	if err != nil {
-		panic(err)
-	}
+	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
 	return app.mm.InitGenesis(ctx, genesisState)
 }

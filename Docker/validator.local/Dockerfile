@@ -1,7 +1,5 @@
 FROM golang:1.13.1-alpine
 
-ARG GO_VERSION
-
 RUN apk update && \
     apk upgrade && \
     apk add git make jq gcc libc-dev
@@ -13,9 +11,13 @@ ENV PATH="/usr/local/go/bin:/root/.go/bin:${PATH}"
 ENV LEDGER_ENABLED="false"
 
 RUN mkdir -p $GOPATH/src/github.com/unification-com
-WORKDIR $GOPATH/src/github.com/unification-com
-
 RUN go get -u github.com/go-delve/delve/cmd/dlv
+
+WORKDIR $GOPATH/src/github.com/unification-com/
+RUN git clone https://github.com/unification-com/mainchain-cosmos.git
+WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
+
+RUN make deps
 
 COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos
 

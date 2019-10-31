@@ -6,7 +6,6 @@ services:
       context: ..
       dockerfile: ./Docker/validator.local/Dockerfile
       args:
-        GO_VERSION: 1.13
         WITH_DELVE: "no"
     container_name: node1
     command: /root/.go/bin/und start --home /root/.und_mainchain/node1 --rpc.laddr=tcp://0.0.0.0:26661
@@ -22,7 +21,6 @@ services:
       context: ..
       dockerfile: ./Docker/validator.local/Dockerfile
       args:
-        GO_VERSION: 1.13
         WITH_DELVE: "no"
     container_name: node2
     command: /root/.go/bin/und start --home /root/.und_mainchain/node2 --rpc.laddr=tcp://0.0.0.0:26662
@@ -38,7 +36,6 @@ services:
       context: ..
       dockerfile: ./Docker/validator.local/Dockerfile
       args:
-        GO_VERSION: 1.13
         WITH_DELVE: "no"
     container_name: node3
     command: /root/.go/bin/und start --home /root/.und_mainchain/node3 --rpc.laddr=tcp://0.0.0.0:26663

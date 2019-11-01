@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/context"
+	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -27,9 +31,9 @@ func main() {
 
 	// Read in the configuration file for the sdk
 	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(app.Bech32PrefixAccAddr, app.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(app.Bech32PrefixValAddr, app.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(app.Bech32PrefixConsAddr, app.Bech32PrefixConsPub)
+	config.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
 	config.Seal()
 
 	rootCmd := &cobra.Command{
@@ -56,6 +60,7 @@ func main() {
 		client.LineBreak,
 		version.Cmd,
 		client.NewCompletionCmd(rootCmd, true),
+		denomConversion(cdc),
 	)
 
 	executor := cli.PrepareMainCmd(rootCmd, "UND", app.DefaultCLIHome)
@@ -137,4 +142,34 @@ func initConfig(cmd *cobra.Command) error {
 		return err
 	}
 	return viper.BindPFlag(cli.OutputFlag, cmd.PersistentFlags().Lookup(cli.OutputFlag))
+}
+
+func denomConversion(cdc *amino.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "convert [amount] [from_denom] [to_denom]",
+		Short: "convert between UND denominations",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`convert between UND denominations'
+Example:
+$ %s convert 24 und pund
+`,
+				version.ClientName,
+			),
+		),
+
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, err := undtypes.ConvertUndDenomination(args[0], args[1], args[2])
+
+			if err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cliCtx.Output, "%s %s = %s\n", args[0], args[1], res)
+
+			return nil
+		},
+	}
 }

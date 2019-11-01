@@ -36,7 +36,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRegisterWrkChain is the CLI command for sending a RegisterWrkChain transaction
 func GetCmdRegisterWrkChain(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "register [wrkchain id] [genesis hash] [name] --fees 1000und",
+		Use:   "register [wrkchain id] [genesis hash] [name]",
 		Short: "register a new WRKChain",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Register a new WRKChain, to enable WRKChain hash submissions
@@ -51,6 +51,9 @@ $ %s tx %s register 54372 d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			// automatically apply fees
+			txBldr = txBldr.WithFees(strconv.Itoa(types.RegFee) + types.FeeDenom)
 
 			msg := types.NewMsgRegisterWrkChain(args[0], args[1], args[2], cliCtx.GetFromAddress())
 			err := msg.ValidateBasic()
@@ -82,6 +85,9 @@ $ %s tx %s record WrkChain1234 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			// automatically apply fees
+			txBldr = txBldr.WithFees(strconv.Itoa(types.RecordFee) + types.FeeDenom)
 
 			height, err := strconv.Atoi(args[1])
 

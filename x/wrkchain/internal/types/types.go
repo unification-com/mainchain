@@ -11,14 +11,15 @@ const (
 	RegFee     = 1000
 	RecordFee  = 1
 	PenaltyFee = 1
+	FeeDenom   = "und"
 )
 
 var (
 	// WRKChain fees in sdk.Coin (denom=und) format. Exported in alias.go
-	FeesBaseDenomination         = sdk.NewInt64Coin("und", 0)
-	FeesPenaltyFeeCoin           = sdk.NewInt64Coin("und", PenaltyFee)
-	FeesWrkChainRegistrationCoin = sdk.NewInt64Coin("und", RegFee)
-	FeesWrkChainRecordHashCoin   = sdk.NewInt64Coin("und", RecordFee)
+	FeesBaseDenomination         = sdk.NewInt64Coin(FeeDenom, 0)
+	FeesPenaltyFeeCoin           = sdk.NewInt64Coin(FeeDenom, PenaltyFee)
+	FeesWrkChainRegistrationCoin = sdk.NewInt64Coin(FeeDenom, RegFee)
+	FeesWrkChainRecordHashCoin   = sdk.NewInt64Coin(FeeDenom, RecordFee)
 
 	// WRKChain Fees in sdk.Coins[]. Exported in alias.go
 	FeesWrkChainRegistration = sdk.Coins{FeesWrkChainRegistrationCoin}

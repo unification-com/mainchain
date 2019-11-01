@@ -13,6 +13,10 @@ const (
 	QueryWrkChain            = keeper.QueryWrkChain
 	QueryWrkChainBlock       = keeper.QueryWrkChainBlock
 	QueryWrkChainBlockHashes = keeper.QueryWrkChainBlockHashes
+
+	FeeDenom  = types.FeeDenom
+	RegFee    = types.RegFee
+	RecordFee = types.RecordFee
 )
 
 var (

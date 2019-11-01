@@ -1,4 +1,4 @@
-package app
+package types
 
 const (
 	// Constants defined here are the defaults value for address.
@@ -47,4 +47,5 @@ const (
 	Bech32PrefixConsAddr = Bech32MainPrefix + PrefixValidator + PrefixConsensus
 	// Bech32PrefixConsPub defines the Bech32 prefix of a consensus node public key
 	Bech32PrefixConsPub = Bech32MainPrefix + PrefixValidator + PrefixConsensus + PrefixPublic
+
 )

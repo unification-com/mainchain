@@ -18,8 +18,8 @@ undcli keys import node2 Docker/assets/keys/node2.key
 
 
 ### Useful Defaults
-undcli config chain-id 50009
-undcli config node tcp://localhost:26660
+undcli config chain-id UND-Mainchain-DevNet
+undcli config node tcp://localhost:26661
 
 
 ### Query accounts
@@ -29,7 +29,7 @@ undcli query account cosmos1ss63vffqmpz68ext374cuxa0v3upavghwzw53p
 
 
 ### Interacting with WRKChain
-undcli tx wrkchain register 54372 d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa "My WRKChain" --from node0 --fees 100und
+./build/undcli tx wrkchain register wrkchain1 "genesishashkjwnedjknwed" "Wrkchain 1" --from wrktest --node=http://localhost:26661 --chain-id UND-Mainchain-DevNet
 where 54372 is the WRKChainID
 
 undcli query wrkchain get 54372

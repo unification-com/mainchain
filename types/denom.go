@@ -6,7 +6,6 @@ import (
 )
 
 const (
-
 	UndDenom  = "und"  // 1 (base unit)
 	PundDenom = "pund" // 10^-12 (pico)
 

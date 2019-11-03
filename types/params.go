@@ -1,4 +1,4 @@
-package app
+package types
 
 const (
 	// Constants defined here are the defaults value for address.

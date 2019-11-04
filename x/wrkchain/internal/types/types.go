@@ -8,9 +8,9 @@ import (
 
 const (
 	// WRKChain fees, in nano UND
-	RegFee     = 1000000000000 // 1000 UND
-	RecordFee  = 1000000000 // 1 UND
-	FeeDenom   = "nund"
+	RegFee    = 1000000000000 // 1000 UND
+	RecordFee = 1000000000    // 1 UND
+	FeeDenom  = "nund"
 )
 
 var (

@@ -7,10 +7,10 @@ import (
 
 const (
 	UndDenom  = "und"  // 1 (base unit)
-	PundDenom = "pund" // 10^-12 (pico)
+	NundDenom = "nund" // 10^-9 (nano)
 
-	UndPow  = 1e12  // multiplier for converting from und to pund
-	PundPow = 1e-12 // multiplier for converting from pund to und
+	UndPow  = 1e9  // multiplier for converting from und to (nano) nund
+	NundPow = 1e-9 // multiplier for converting from (nano) nund to und
 )
 
 func ConvertUndDenomination(amount string, from string, to string) (string, error) {
@@ -30,14 +30,14 @@ func ConvertUndDenomination(amount string, from string, to string) (string, erro
 		result := new(big.Int)
 		res.Int(result)
 		return result.String() + to, nil
-	case PundDenom: // from pund to und
+	case NundDenom: // from pund to und
 		fromAmt, err := strconv.ParseFloat(amount, 64)
 		if err != nil {
 			return "", err
 		}
 		fromAmtBf := new(big.Float).SetFloat64(fromAmt)
-		res := fromAmtBf.Mul(fromAmtBf, big.NewFloat(PundPow))
-		return res.Text('f', 12) + to, nil
+		res := fromAmtBf.Mul(fromAmtBf, big.NewFloat(NundPow))
+		return res.Text('f', 9) + to, nil
 	}
 
 	return "", nil

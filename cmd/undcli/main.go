@@ -151,7 +151,7 @@ func denomConversion(cdc *amino.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`convert between UND denominations'
 Example:
-$ %s convert 24 und pund
+$ %s convert 24 und nund
 `,
 				version.ClientName,
 			),

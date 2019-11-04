@@ -46,12 +46,10 @@ var (
 	FeesBaseDenomination         = types.FeesBaseDenomination
 	FeesWrkChainRegistrationCoin = types.FeesWrkChainRegistrationCoin
 	FeesWrkChainRecordHashCoin   = types.FeesWrkChainRecordHashCoin
-	FeesPenaltyFeeCoin           = types.FeesPenaltyFeeCoin
 
 	// WRKChain fees in sdk.Coins[]
 	FeesWrkChainRegistration = types.FeesWrkChainRegistration
 	FeesWrkChainRecordHash   = types.FeesWrkChainRecordHash
-	FeesPenaltyFee           = types.FeesPenaltyFee
 
 	RegisteredWrkChainPrefix        = types.RegisteredWrkChainPrefix
 	RecordedWrkChainBlockHashPrefix = types.RecordedWrkChainBlockHashPrefix

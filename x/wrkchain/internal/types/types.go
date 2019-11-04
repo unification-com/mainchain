@@ -7,24 +7,21 @@ import (
 )
 
 const (
-	// WRKChain fees, UND
-	RegFee     = 1000
-	RecordFee  = 1
-	PenaltyFee = 1
-	FeeDenom   = "und"
+	// WRKChain fees, in nano UND
+	RegFee     = 1000000000000 // 1000 UND
+	RecordFee  = 1000000000 // 1 UND
+	FeeDenom   = "nund"
 )
 
 var (
 	// WRKChain fees in sdk.Coin (denom=und) format. Exported in alias.go
 	FeesBaseDenomination         = sdk.NewInt64Coin(FeeDenom, 0)
-	FeesPenaltyFeeCoin           = sdk.NewInt64Coin(FeeDenom, PenaltyFee)
 	FeesWrkChainRegistrationCoin = sdk.NewInt64Coin(FeeDenom, RegFee)
 	FeesWrkChainRecordHashCoin   = sdk.NewInt64Coin(FeeDenom, RecordFee)
 
 	// WRKChain Fees in sdk.Coins[]. Exported in alias.go
 	FeesWrkChainRegistration = sdk.Coins{FeesWrkChainRegistrationCoin}
 	FeesWrkChainRecordHash   = sdk.Coins{FeesWrkChainRecordHashCoin}
-	FeesPenaltyFee           = sdk.Coins{FeesPenaltyFeeCoin}
 )
 
 // Wrkchain is a struct that contains all the metadata of a registered WRKChain

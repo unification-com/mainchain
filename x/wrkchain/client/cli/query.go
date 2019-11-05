@@ -11,19 +11,19 @@ import (
 )
 
 func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
-	nameserviceQueryCmd := &cobra.Command{
+	wrkchainQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the wrkchain module",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	nameserviceQueryCmd.AddCommand(client.GetCommands(
+	wrkchainQueryCmd.AddCommand(client.GetCommands(
 		GetCmdWrkChain(storeKey, cdc),
 		GetCmdWrkChainBlock(storeKey, cdc),
 		GetCmdWrkChainBlockHashes(storeKey, cdc),
 	)...)
-	return nameserviceQueryCmd
+	return wrkchainQueryCmd
 }
 
 // GetCmdWrkChain queries information about a wrkchain

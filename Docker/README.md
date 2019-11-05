@@ -59,3 +59,10 @@ input hurdle increase palm busy report echo hurry solar hockey around noodle equ
 It is the only way to recover your account if you ever forget your password.
 
 chalk critic click web shove almost day oven awkward husband evoke switch margin judge bread notice envelope remove multiply employ december fatal wisdom rain
+
+Enterprise UND account
+  "name": "ent",
+  "type": "local",
+  "address": "und1v9hrlr95xclj8ehr4na5wrmpqc75sfyw6e0hsj",
+  "pubkey": "undpub1addwnpepq2wfzyg58vg8fwp94365gadmkwdvkxp7e72mv266cak0tdmgnl8zg3gkz26",
+  "mnemonic": "rival tiger struggle forget skull tilt chef tattoo stereo flush order define tell early chase impose harbor divert update apology rib fringe offer napkin"

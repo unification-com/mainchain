@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -25,6 +26,10 @@ func NewKeeper(storeKey sdk.StoreKey, supplyKeeper types.SupplyKeeper, paramSpac
 		supplyKeeper: supplyKeeper,
 		cdc:          cdc,
 	}
+}
+
+func (k Keeper) GetCodeSpace() sdk.CodespaceType {
+	return k.codespace
 }
 
 //__PARAMS______________________________________________________________
@@ -77,7 +82,7 @@ func (k Keeper) GetPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) types.
 
 	if !k.PurchaseOrderExists(ctx, purchaseOrderID) {
 		// return a new empty EnterpriseUndPurchaseOrder struct
-		return types.EnterpriseUndPurchaseOrder{}
+		return types.NewEnterpriseUnd()
 	}
 
 	bz := store.Get(types.PurchaseOrderKey(purchaseOrderID))
@@ -97,7 +102,7 @@ func (k Keeper) GetPurchaseOrderAmount(ctx sdk.Context, purchaseOrderID uint64) 
 	return k.GetPurchaseOrder(ctx, purchaseOrderID).Amount
 }
 
-// GetPurchaseOrderStatus - get the Status of a purchase order for a given purchaseOrderID
+// GetPurchaseOrderStatus - get the Decision of a purchase order for a given purchaseOrderID
 func (k Keeper) GetPurchaseOrderStatus(ctx sdk.Context, purchaseOrderID uint64) types.PurchaseOrderStatus {
 	return k.GetPurchaseOrder(ctx, purchaseOrderID).Status
 }
@@ -152,4 +157,32 @@ func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress,
 	k.SetHighestPurchaseOrderID(ctx, purchaseOrderID+1)
 
 	return purchaseOrderID, nil
+}
+
+func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, decision types.PurchaseOrderStatus) sdk.Error {
+
+	if !k.PurchaseOrderExists(ctx, purchaseOrderID) {
+		errMsg := fmt.Sprintf("purchase order id does not exist: %d", purchaseOrderID)
+        return types.ErrPurchaseOrderDoesNotExist(k.codespace, errMsg)
+	}
+
+	purchaseOrder := k.GetPurchaseOrder(ctx, purchaseOrderID)
+
+	if purchaseOrder.Status == types.StatusAccepted || purchaseOrder.Status == types.StatusRejected {
+		errMsg := fmt.Sprintf("purchase order %d already processed: %s", purchaseOrderID, purchaseOrder.Status.String())
+		return types.ErrPurchaseOrderAlreadyProcessed(k.codespace, errMsg)
+	}
+
+	purchaseOrder.Status = decision
+
+	// update the status
+	err := k.SetPurchaseOrder(ctx, purchaseOrder)
+
+	if err != nil {
+		return err
+	}
+
+	// Todo - actually process based on decision...
+
+	return nil
 }

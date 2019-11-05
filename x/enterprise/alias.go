@@ -21,8 +21,6 @@ const (
 
 var (
 	NewKeeper           = keeper.NewKeeper
-	NewMsgPurchaseUnd   = types.NewMsgRaiseUndPurchaseOrder
-	NewEnterpriseUnd    = types.NewEnterpriseUnd
 	NewGenesisState     = types.NewGenesisState
 	DefaultGenesisState = types.DefaultGenesisState
 	ValidateGenesis     = types.ValidateGenesis
@@ -31,14 +29,21 @@ var (
 	ModuleCdc           = types.ModuleCdc
 
 	// Events
-	EventTypeRaisePurchaseOrder = types.EventTypeRaisePurchaseOrder
-	AttributeValueCategory      = types.AttributeValueCategory
-	AttributeKeyPurchaseOrderID = types.AttributeKeyPurchaseOrderID
-	AttributeKeyPurchaser       = types.AttributeKeyPurchaser
-	AttributeKeyAmount          = types.AttributeKeyAmount
+	EventTypeRaisePurchaseOrder   = types.EventTypeRaisePurchaseOrder
+	EventTypeProcessPurchaseOrder = types.EventTypeProcessPurchaseOrder
+	AttributeValueCategory        = types.AttributeValueCategory
+	AttributeKeyPurchaseOrderID   = types.AttributeKeyPurchaseOrderID
+	AttributeKeyPurchaser         = types.AttributeKeyPurchaser
+	AttributeKeyAmount            = types.AttributeKeyAmount
+	AttributeKeyDecision          = types.AttributeKeyDecision
 
 	// Key functions
 	GetPurchaseOrderIDBytes = types.GetPurchaseOrderIDBytes
+
+	ValidPurchaseOrderAcceptRejectStatus = types.ValidPurchaseOrderAcceptRejectStatus
+
+	// Errors
+	ErrInvalidDecision = types.ErrInvalidDecision
 )
 
 type (
@@ -47,9 +52,9 @@ type (
 	Params       = types.Params
 
 	// Msgs
-	MsgPurchaseUnd    = types.MsgRaiseUndPurchaseOrder
+	MsgPurchaseUnd             = types.MsgUndPurchaseOrder
+	MsgProcessUndPurchaseOrder = types.MsgProcessUndPurchaseOrder
 
 	// Structs
-	EnterpriseUnd = types.EnterpriseUndPurchaseOrder
-
+	EnterpriseUndPurchaseOrder = types.EnterpriseUndPurchaseOrder
 )

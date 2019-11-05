@@ -11,7 +11,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
 		case MsgPurchaseUnd:
-			return handleMMsgPurchaseUnd(ctx, keeper, msg)
+			return handleMsgPurchaseUnd(ctx, keeper, msg)
+		case MsgProcessUndPurchaseOrder:
+			return handleMsgProcessPurchaseUnd(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized enterprise Msg type: %v", msg.Type())
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -19,9 +21,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-func handleMMsgPurchaseUnd(ctx sdk.Context, keeper Keeper, msg MsgPurchaseUnd) sdk.Result {
+func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) sdk.Result {
 
-	purchaseOrderID, err := keeper.RaiseNewPurchaseOrder(ctx, msg.Purchaser, msg.Amount)
+	purchaseOrderID, err := k.RaiseNewPurchaseOrder(ctx, msg.Purchaser, msg.Amount)
 
 	if err != nil {
 		return err.Result()
@@ -39,5 +41,40 @@ func handleMMsgPurchaseUnd(ctx sdk.Context, keeper Keeper, msg MsgPurchaseUnd) s
 	return sdk.Result{
 		Events: ctx.EventManager().Events(),
 		Data:   GetPurchaseOrderIDBytes(purchaseOrderID),
+	}
+}
+
+func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPurchaseOrder) sdk.Result {
+
+	params := k.GetParams(ctx)
+
+	// check only the Enterprise account is signing
+	if !msg.Signer.Equals(params.EntSource) {
+		return sdk.ErrUnauthorized("unauthorised signer processing purchase order").Result()
+	}
+
+    if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
+    	return ErrInvalidDecision(k.GetCodeSpace(), "decision should be accept or reject").Result()
+	}
+
+	err := k.ProcessPurchaseOrder(ctx, msg.PurchaseOrderID, msg.Decision)
+
+	if err != nil {
+		return err.Result()
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			EventTypeProcessPurchaseOrder,
+			sdk.NewAttribute(AttributeKeyPurchaseOrderID, strconv.FormatUint(msg.PurchaseOrderID, 10)),
+			sdk.NewAttribute(AttributeKeyDecision, msg.Decision.String()),
+		),
+	})
+
+	retData := append(GetPurchaseOrderIDBytes(msg.PurchaseOrderID), []byte{byte(msg.Decision)}...)
+
+	return sdk.Result{
+		Events: ctx.EventManager().Events(),
+		Data:   retData,
 	}
 }

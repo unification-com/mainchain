@@ -22,6 +22,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdQueryParams(cdc),
 		GetCmdGetPurchaseOrders(storeKey, cdc),
 		GetCmdGetPurchaseOrderByID(storeKey, cdc),
+		GetCmdGetLockedUndByAddress(storeKey, cdc),
 	)...)
 	return enterpriseQueryCmd
 }
@@ -90,6 +91,28 @@ func GetCmdGetPurchaseOrderByID(queryRoute string, cdc *codec.Codec) *cobra.Comm
 			}
 
 			var out types.EnterpriseUndPurchaseOrder
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdGetLockedUndByAddress queries locked UND for a given address
+func GetCmdGetLockedUndByAddress(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "locked [address]",
+		Short: "get locked UND for an address",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryGetLocked, args[0]), nil)
+			if err != nil {
+				fmt.Printf("could not get query locked UND for address %s\n", args[0])
+				return nil
+			}
+
+			var out types.LockedUnd
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

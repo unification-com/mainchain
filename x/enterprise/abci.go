@@ -31,7 +31,10 @@ func BeginBlocker(ctx sdk.Context, k Keeper) {
 			panic(err)
 		}
 
-		// Todo - flag locked und amount
+		err = k.IncrementLockedUnd(ctx, po.Purchaser, po.Amount)
+		if err != nil {
+			panic(err)
+		}
 
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(

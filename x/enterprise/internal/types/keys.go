@@ -30,8 +30,8 @@ var (
 	// prefix used to temporarily store accepted purchase orders ready for minting in BeginBlocker
 	AcceptedPurchaseOrderIDKeyPrefix = []byte{0x02}
 
-	// AddressKeyPrefix prefix for address keys - used to store locked UND for an account
-	AddressKeyPrefix = []byte{0x03}
+	// LockedUndAddressKeyPrefix prefix for address keys - used to store locked UND for an account
+	LockedUndAddressKeyPrefix = []byte{0x03}
 )
 
 // GetPurchaseOrderIDBytes returns the byte representation of the purchaseOrderID
@@ -58,7 +58,7 @@ func AcceptedPurchaseOrderKey(purchaseOrderID uint64) []byte {
 	return append(AcceptedPurchaseOrderIDKeyPrefix, GetPurchaseOrderIDBytes(purchaseOrderID)...)
 }
 
-// GetAddressStoreKey turn an address to key used for enterprise und/locked data to get it from the store
-func GetAddressStoreKey(acc sdk.AccAddress) []byte {
-	return append(AddressKeyPrefix, acc.Bytes()...)
+// AddressStoreKey turn an address to key used for enterprise und/locked data to get it from the store
+func AddressStoreKey(acc sdk.AccAddress) []byte {
+	return append(LockedUndAddressKeyPrefix, acc.Bytes()...)
 }

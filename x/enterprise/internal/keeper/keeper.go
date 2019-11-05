@@ -214,7 +214,6 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 		return err
 	}
 
-	// Todo - actually process based on decision...
 	if decision == types.StatusAccepted {
 		err := k.SetAcceptedPurchaseOrder(ctx, purchaseOrder)
 
@@ -236,10 +235,103 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) sdk.Error {
 	return k.supplyKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
+// SendCoins implements an alias call to the underlying supply keeper's SendCoinsFromModuleToAccount
+// Used in BeginBlocker to send newly minted coins from enterprise module to recipient account
 func (k Keeper) SendCoins(ctx sdk.Context, recipientAddr sdk.AccAddress, newCoins sdk.Coins) sdk.Error {
 	if newCoins.Empty() {
 		// skip as no coins need to be minted
 		return nil
 	}
 	return k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipientAddr, newCoins)
+}
+
+//__LOCKED_UND__________________________________________________________
+
+// Check if a record exists for locked UND given an account address
+func (k Keeper) LockedUndExists(ctx sdk.Context, address sdk.AccAddress) bool {
+	store := ctx.KVStore(k.storeKey)
+	addressKeyBz := types.AddressStoreKey(address)
+	return store.Has(addressKeyBz)
+}
+
+// Gets a record for Locked UND for a given address
+func (k Keeper) GetLockedUnd(ctx sdk.Context, address sdk.AccAddress) types.LockedUnd {
+	store := ctx.KVStore(k.storeKey)
+
+	if !k.LockedUndExists(ctx, address) {
+		// return a new empty EnterpriseUndPurchaseOrder struct
+		return types.NewLockedUnd(address)
+	}
+
+	bz := store.Get(types.AddressStoreKey(address))
+	var lockedUnd types.LockedUnd
+	k.cdc.MustUnmarshalBinaryBare(bz, &lockedUnd)
+	return lockedUnd
+}
+
+func (k Keeper) GetLockedUndAmount(ctx sdk.Context, address sdk.AccAddress) sdk.Coin {
+	return k.GetLockedUnd(ctx, address).Amount
+}
+
+// Get an iterator over all accounts with Locked UND
+func (k Keeper) GetAllLockedUndIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, types.LockedUndAddressKeyPrefix)
+}
+
+// Deletes the accepted purchase order once processed
+func (k Keeper) DeleteLockedUnd(ctx sdk.Context, address sdk.AccAddress) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.AddressStoreKey(address))
+}
+
+// Sets the Locked UND data
+func (k Keeper) SetLockedUnd(ctx sdk.Context, lockedUnd types.LockedUnd) sdk.Error {
+	// must have an owner
+	if lockedUnd.Owner.Empty() {
+		return sdk.ErrInternal("unable to set locked und - owner cannot be empty")
+	}
+
+	// must be a positive amount, or zero
+	if lockedUnd.Amount.IsNegative() {
+		return sdk.ErrInternal("unable to set locked und - amount must be positive")
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.AddressStoreKey(lockedUnd.Owner), k.cdc.MustMarshalBinaryBare(lockedUnd))
+
+	return nil
+}
+
+// IncrementLockedUnd increments the amount of locked UND - used when purchase order is accepted
+func (k Keeper) IncrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) sdk.Error {
+
+	lockedUnd := k.GetLockedUnd(ctx, address)
+	lockedUnd.Amount = lockedUnd.Amount.Add(amount)
+
+	err := k.SetLockedUnd(ctx, lockedUnd)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DecrementLockedUnd decrements the amount of locked UND - used when purchase order is accepted
+func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) sdk.Error {
+
+	lockedUnd := k.GetLockedUnd(ctx, address)
+	lockedUnd.Amount = lockedUnd.Amount.Sub(amount)
+	if lockedUnd.Amount.IsNegative() || lockedUnd.Amount.IsZero() {
+		// delete
+		k.DeleteLockedUnd(ctx, address)
+		return nil
+	}
+
+	err := k.SetLockedUnd(ctx, lockedUnd)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -160,3 +160,22 @@ Amount: %s
 Decision: %b
 `, po.PurchaseOrderID, po.Purchaser, po.Amount, po.Status))
 }
+
+// LockedUnd is a struct that is used to track "Locked" Enterprise purchased UND
+type LockedUnd struct {
+	Owner  sdk.AccAddress `json:"owner"`
+	Amount sdk.Coin       `json:"amount"`
+}
+
+func NewLockedUnd(owner sdk.AccAddress) LockedUnd {
+	return LockedUnd {
+		Owner:  owner,
+		Amount: sdk.NewInt64Coin("nund", 0),
+	}
+}
+
+func (l LockedUnd) String() string {
+	return strings.TrimSpace(fmt.Sprintf(`Owner: %s
+Amount: %s
+`, l.Owner, l.Amount))
+}

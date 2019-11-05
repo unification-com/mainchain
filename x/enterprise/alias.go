@@ -43,6 +43,8 @@ var (
 
 	ValidPurchaseOrderAcceptRejectStatus = types.ValidPurchaseOrderAcceptRejectStatus
 
+	NewLockedUndRetriever = keeper.NewLockedUndRetriever
+
 	// Errors
 	ErrInvalidDecision = types.ErrInvalidDecision
 )

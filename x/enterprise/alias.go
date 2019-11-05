@@ -31,6 +31,7 @@ var (
 	// Events
 	EventTypeRaisePurchaseOrder   = types.EventTypeRaisePurchaseOrder
 	EventTypeProcessPurchaseOrder = types.EventTypeProcessPurchaseOrder
+	EventTypeUndPurchaseComplete  = types.EventTypeUndPurchaseComplete
 	AttributeValueCategory        = types.AttributeValueCategory
 	AttributeKeyPurchaseOrderID   = types.AttributeKeyPurchaseOrderID
 	AttributeKeyPurchaser         = types.AttributeKeyPurchaser

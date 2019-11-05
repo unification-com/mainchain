@@ -24,11 +24,14 @@ var (
 	// key used to store the current highest purchase order ID
 	HighestPurchaseOrderIDKey = []byte{0x20}
 
-	// prefix used to store/retrieve an actual purchase order from the store
+	// prefix used to store/retrieve an purchase order waiting to be processed from the store
 	PurchaseOrderIDKeyPrefix = []byte{0x01}
 
+	// prefix used to temporarily store accepted purchase orders ready for minting in BeginBlocker
+	AcceptedPurchaseOrderIDKeyPrefix = []byte{0x02}
+
 	// AddressKeyPrefix prefix for address keys - used to store locked UND for an account
-	AddressKeyPrefix = []byte{0x02}
+	AddressKeyPrefix = []byte{0x03}
 )
 
 // GetPurchaseOrderIDBytes returns the byte representation of the purchaseOrderID
@@ -45,9 +48,14 @@ func GetPurchaseOrderIDFromBytes(bz []byte) (purchaseOrderID uint64) {
 	return binary.BigEndian.Uint64(bz)
 }
 
-// PurchaseOrderKey gets a specific purchase order ID from the store
+// PurchaseOrderKey gets a specific purchase order ID key for use in the store
 func PurchaseOrderKey(purchaseOrderID uint64) []byte {
 	return append(PurchaseOrderIDKeyPrefix, GetPurchaseOrderIDBytes(purchaseOrderID)...)
+}
+
+// AcceptedPurchaseOrderKey gets a specific accepted purchase order ID key for use in the store
+func AcceptedPurchaseOrderKey(purchaseOrderID uint64) []byte {
+	return append(AcceptedPurchaseOrderIDKeyPrefix, GetPurchaseOrderIDBytes(purchaseOrderID)...)
 }
 
 // GetAddressStoreKey turn an address to key used for enterprise und/locked data to get it from the store

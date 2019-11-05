@@ -123,6 +123,19 @@ func (status PurchaseOrderStatus) Format(s fmt.State, verb rune) {
 	}
 }
 
+// Proposals is an array of proposal
+type PurchaseOrders []EnterpriseUndPurchaseOrder
+
+// String implements stringer interface
+func (p PurchaseOrders) String() string {
+	out := "ID - [Purchaser] Amount (Status)\n"
+	for _, po := range p {
+		out += fmt.Sprintf("%d - (%s) [%s] %s\n",
+			po.PurchaseOrderID, po.Amount,
+			po.Purchaser, po.Status)
+	}
+	return strings.TrimSpace(out)
+}
 
 // EnterpriseUndPurchaseOrder is a struct that contains information on Enterprise UND purchase orders and their status
 type EnterpriseUndPurchaseOrder struct {

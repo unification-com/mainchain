@@ -32,6 +32,10 @@ func (k Keeper) GetCodeSpace() sdk.CodespaceType {
 	return k.codespace
 }
 
+func (k Keeper) GetCdc() *codec.Codec {
+	return k.cdc
+}
+
 //__PARAMS______________________________________________________________
 
 // GetParams returns the total set of Enterprise UND parameters.
@@ -113,6 +117,12 @@ func (k Keeper) GetAllPurchaseOrdersIterator(ctx sdk.Context) sdk.Iterator {
 	return sdk.KVStorePrefixIterator(store, types.PurchaseOrderIDKeyPrefix)
 }
 
+// Get an iterator over all accepted Purchase Orders - used by BeginBlocker to process minting
+func (k Keeper) GetAllAcceptedPurchaseOrdersIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, types.AcceptedPurchaseOrderIDKeyPrefix)
+}
+
 // Sets the Purchase Order data
 func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) sdk.Error {
 	// must have a purchaser
@@ -134,6 +144,28 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 	store.Set(types.PurchaseOrderKey(purchaseOrder.PurchaseOrderID), k.cdc.MustMarshalBinaryBare(purchaseOrder))
 
 	return nil
+}
+
+// SetAcceptedPurchaseOrder creates a temporary store for an accepted purchase order. This will be queried by
+// BeginBlocker to mint coins
+// Todo - merge with standard PO and create new "complete" status
+func (k Keeper) SetAcceptedPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) sdk.Error {
+
+	//must have accepted status
+	if purchaseOrder.Status != types.StatusAccepted {
+		return sdk.ErrInternal("can only add accepted purchase orders")
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.AcceptedPurchaseOrderKey(purchaseOrder.PurchaseOrderID), k.cdc.MustMarshalBinaryBare(purchaseOrder))
+
+	return nil
+}
+
+// Deletes the accepted purchase order once processed
+func (k Keeper) DeleteAcceptedPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.AcceptedPurchaseOrderKey(purchaseOrderID))
 }
 
 func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress, amount sdk.Coin) (uint64, sdk.Error) {
@@ -183,6 +215,31 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 	}
 
 	// Todo - actually process based on decision...
+	if decision == types.StatusAccepted {
+		err := k.SetAcceptedPurchaseOrder(ctx, purchaseOrder)
+
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
+}
+
+// MintCoins implements an alias call to the underlying supply keeper's
+// MintCoins to be used in BeginBlocker.
+func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) sdk.Error {
+	if newCoins.Empty() {
+		// skip as no coins need to be minted
+		return nil
+	}
+	return k.supplyKeeper.MintCoins(ctx, types.ModuleName, newCoins)
+}
+
+func (k Keeper) SendCoins(ctx sdk.Context, recipientAddr sdk.AccAddress, newCoins sdk.Coins) sdk.Error {
+	if newCoins.Empty() {
+		// skip as no coins need to be minted
+		return nil
+	}
+	return k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipientAddr, newCoins)
 }

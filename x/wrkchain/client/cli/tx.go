@@ -17,7 +17,7 @@ import (
 )
 
 func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
-	nameserviceTxCmd := &cobra.Command{
+	wrkchainTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "WRKChain transaction subcommands",
 		DisableFlagParsing:         true,
@@ -25,12 +25,12 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	nameserviceTxCmd.AddCommand(client.PostCommands(
+	wrkchainTxCmd.AddCommand(client.PostCommands(
 		GetCmdRegisterWrkChain(cdc),
 		GetCmdRecordWrkChainBlock(cdc),
 	)...)
 
-	return nameserviceTxCmd
+	return wrkchainTxCmd
 }
 
 // GetCmdRegisterWrkChain is the CLI command for sending a RegisterWrkChain transaction

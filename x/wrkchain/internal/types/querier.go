@@ -2,7 +2,7 @@ package types
 
 import "strings"
 
-// QueryResNames Queries Result Payload for a WRKChain Block Hashes query
+// QueryResWrkChainBlockHashes Queries Result Payload for a WRKChain Block Hashes query
 type QueryResWrkChainBlockHashes []WrkChainBlock
 
 // implement fmt.Stringer

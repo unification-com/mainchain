@@ -38,7 +38,7 @@ func (ld CheckLockedUndDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 
-	if checkIsWrkChainTx(feeTx) {
+	if wrkchain.CheckIsWrkChainTx(feeTx) {
 		// no need to check locked UND. Continue
 		return next(ctx, tx, simulate)
 	}
@@ -54,17 +54,4 @@ func (ld CheckLockedUndDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 	return ctx, sdkerrors.Wrap(sdkerrors.ErrInsufficientCoins, "Locked UND can only be used for paying WRKChain or BEACON fees")
 
 	//return next(ctx, tx, simulate)
-}
-
-func checkIsWrkChainTx(tx FeeTx) bool {
-	msgs := tx.GetMsgs()
-	for _, msg := range msgs {
-		switch msg.(type) {
-		case wrkchain.MsgRegisterWrkChain:
-			return true
-		case wrkchain.MsgRecordWrkChainBlock:
-			return true
-		}
-	}
-	return false
 }

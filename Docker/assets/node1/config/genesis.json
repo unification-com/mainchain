@@ -118,6 +118,21 @@
             "account_number": "0",
             "sequence": "0"
           }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "und1v9hrlr95xclj8ehr4na5wrmpqc75sfyw6e0hsj",
+            "coins": [
+              {
+                "denom": "nund",
+                "amount": "1"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
         }
       ]
     },
@@ -163,6 +178,12 @@
       "validator_current_rewards": [],
       "delegator_starting_infos": [],
       "validator_slash_events": []
+    },
+    "enterprise": {
+      "params": {
+        "ent_source": "und1v9hrlr95xclj8ehr4na5wrmpqc75sfyw6e0hsj"
+      },
+      "starting_purchase_order_id": "1"
     }
   }
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/unification-com/mainchain-cosmos/app/ante"
+	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	"io"
 	"os"
 
@@ -52,6 +53,7 @@ var (
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
 
+		enterprise.AppModule{},
 		wrkchain.AppModule{},
 	)
 	// account permissions
@@ -61,6 +63,7 @@ var (
 		mint.ModuleName:           {supply.Minter},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
+		enterprise.ModuleName:     {supply.Minter},
 	}
 )
 
@@ -82,15 +85,16 @@ type mainchainApp struct {
 	tkeys map[string]*sdk.TransientStoreKey
 
 	// Keepers
-	accountKeeper  auth.AccountKeeper
-	bankKeeper     bank.Keeper
-	stakingKeeper  staking.Keeper
-	slashingKeeper slashing.Keeper
-	mintKeeper     mint.Keeper
-	distrKeeper    distr.Keeper
-	supplyKeeper   supply.Keeper
-	paramsKeeper   params.Keeper
-	wrkChainKeeper wrkchain.Keeper
+	accountKeeper    auth.AccountKeeper
+	bankKeeper       bank.Keeper
+	stakingKeeper    staking.Keeper
+	slashingKeeper   slashing.Keeper
+	mintKeeper       mint.Keeper
+	distrKeeper      distr.Keeper
+	supplyKeeper     supply.Keeper
+	paramsKeeper     params.Keeper
+	wrkChainKeeper   wrkchain.Keeper
+	enterpriseKeeper enterprise.Keeper
 
 	// Module Manager
 	mm *module.Manager
@@ -110,7 +114,7 @@ func NewMainchainApp(
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, wrkchain.StoreKey)
+		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, wrkchain.StoreKey, enterprise.StoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -131,6 +135,8 @@ func NewMainchainApp(
 	mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
 	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
 	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
+
+	enterpriseSubspace := app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -203,6 +209,14 @@ func NewMainchainApp(
 		app.cdc,
 	)
 
+	app.enterpriseKeeper = enterprise.NewKeeper(
+		keys[enterprise.StoreKey],
+		app.supplyKeeper,
+		enterpriseSubspace,
+		enterprise.DefaultCodespace,
+		app.cdc,
+	)
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper),
@@ -213,9 +227,10 @@ func NewMainchainApp(
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		wrkchain.NewAppModule(app.wrkChainKeeper),
+		enterprise.NewAppModule(app.enterpriseKeeper),
 	)
 
-	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
+	app.mm.SetOrderBeginBlockers(mint.ModuleName, enterprise.ModuleName, distr.ModuleName, slashing.ModuleName)
 	app.mm.SetOrderEndBlockers(staking.ModuleName)
 
 	// Sets the order of Genesis - Order matters, genutil is to always come last
@@ -228,6 +243,7 @@ func NewMainchainApp(
 		bank.ModuleName,
 		slashing.ModuleName,
 		wrkchain.ModuleName,
+		enterprise.ModuleName,
 		mint.ModuleName,
 		supply.ModuleName,
 		genutil.ModuleName,
@@ -247,6 +263,7 @@ func NewMainchainApp(
 			app.accountKeeper,
 			app.supplyKeeper,
 			app.wrkChainKeeper,
+			app.enterpriseKeeper,
 			auth.DefaultSigVerificationGasConsumer,
 		),
 	)

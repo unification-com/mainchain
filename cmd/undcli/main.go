@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	"os"
 	"path"
@@ -22,6 +25,8 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/unification-com/mainchain-cosmos/app"
+
+	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 )
 
 func main() {
@@ -83,7 +88,8 @@ func queryCmd(cdc *amino.Codec) *cobra.Command {
 	}
 
 	queryCmd.AddCommand(
-		authcmd.GetAccountCmd(cdc),
+		//authcmd.GetAccountCmd(cdc),
+		GetAccountWithLockedCmd(cdc),
 		client.LineBreak,
 		rpc.ValidatorCommand(cdc),
 		rpc.BlockCommand(),
@@ -172,4 +178,53 @@ $ %s convert 24 und nund
 			return nil
 		},
 	}
+}
+
+func GetAccountWithLockedCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "account [address]",
+		Short: "Query account information",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			accGetter := auth.NewAccountRetriever(cliCtx)
+
+			lockedUndGetter := enterprise.NewLockedUndRetriever(cliCtx)
+
+			key, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			acc, err := accGetter.GetAccount(key)
+			if err != nil {
+				return err
+			}
+
+			lockedUnd, err := lockedUndGetter.GetLockedUnd(key)
+			if err != nil {
+				return err
+			}
+
+			if lockedUnd.Amount.IsPositive() {
+				// todo - this is a bit hackey
+				accountWithLocked := undtypes.NewAccountWithLocked()
+				entUnd := undtypes.NewEnterpriseUnd()
+
+				entUnd.Locked = lockedUnd.Amount
+				entUnd.Available = acc.GetCoins().Sub(sdk.NewCoins(lockedUnd.Amount))
+
+				accountWithLocked.Account = acc
+				accountWithLocked.Enterprise = entUnd
+
+				return cliCtx.PrintOutput(accountWithLocked)
+			}
+
+			return cliCtx.PrintOutput(acc)
+
+		},
+	}
+
+	return flags.GetCommands(cmd)[0]
 }

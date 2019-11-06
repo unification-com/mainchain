@@ -13,6 +13,7 @@ const (
 	QueryPurchaseOrders   = "get-all-pos"
 	QueryGetPurchaseOrder = "get"
 	QueryGetLocked        = "locked"
+	QueryTotalLocked      = "total-locked"
 )
 
 // NewQuerier is the module level router for state queries
@@ -27,6 +28,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryPurchaseOrderById(ctx, path[1:], keeper)
 		case QueryGetLocked:
 			return queryLockedUndByAddress(ctx, path[1:], keeper)
+		case QueryTotalLocked:
+			return queryTotalLocked(ctx, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown wrkchain query endpoint")
 		}
@@ -88,6 +91,18 @@ func queryLockedUndByAddress(ctx sdk.Context, path []string, k Keeper) ([]byte, 
 	lockedUnd := k.GetLockedUnd(ctx, address)
 
 	res, err := codec.MarshalJSONIndent(k.cdc, lockedUnd)
+	if err != nil {
+		panic("could not marshal result to JSON")
+	}
+
+	return res, nil
+}
+
+func queryTotalLocked(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
+
+	totalLocked := k.GetTotalLockedUnd(ctx)
+
+	res, err := codec.MarshalJSONIndent(k.cdc, totalLocked)
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 )
@@ -13,17 +14,19 @@ type Keeper struct {
 	storeKey     sdk.StoreKey // Unexposed key to access store from sdk.Context
 	paramSpace   params.Subspace
 	codespace    sdk.CodespaceType
-	SupplyKeeper types.SupplyKeeper
+	supplyKeeper types.SupplyKeeper
+	accKeeper    auth.AccountKeeper
 	cdc          *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
 // NewKeeper creates new instances of the enterprise Keeper
-func NewKeeper(storeKey sdk.StoreKey, supplyKeeper types.SupplyKeeper, paramSpace params.Subspace, codespace sdk.CodespaceType, cdc *codec.Codec) Keeper {
+func NewKeeper(storeKey sdk.StoreKey, supplyKeeper types.SupplyKeeper, accKeeper auth.AccountKeeper, paramSpace params.Subspace, codespace sdk.CodespaceType, cdc *codec.Codec) Keeper {
 	return Keeper{
 		storeKey:     storeKey,
 		paramSpace:   paramSpace.WithKeyTable(types.ParamKeyTable()),
 		codespace:    codespace,
-		SupplyKeeper: supplyKeeper,
+		supplyKeeper: supplyKeeper,
+		accKeeper:    accKeeper,
 		cdc:          cdc,
 	}
 }
@@ -69,6 +72,30 @@ func (k Keeper) SetHighestPurchaseOrderID(ctx sdk.Context, purchaseOrderID uint6
 	// convert from uint64 to bytes for storage
 	purchaseOrderIDbz := types.GetPurchaseOrderIDBytes(purchaseOrderID)
 	store.Set(types.HighestPurchaseOrderIDKey, purchaseOrderIDbz)
+}
+
+// __TOTAL_LOCKED_UND___________________________________________________
+
+// GetTotalLockedUnd retuns the total locked UND
+func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(types.TotalLockedUndKey)
+
+	if bz == nil {
+		return sdk.NewInt64Coin(types.DefaultDenomination, 0)
+	}
+
+	var totalLocked sdk.Coin
+	k.cdc.MustUnmarshalBinaryBare(bz, &totalLocked)
+	return totalLocked
+}
+
+// SetTotalLockedUnd sets the total locked UND
+func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) sdk.Error {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.TotalLockedUndKey, k.cdc.MustMarshalBinaryBare(totalLocked))
+	return nil
 }
 
 //__PURCHASE_ORDERS______________________________________________
@@ -225,24 +252,104 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 	return nil
 }
 
-// MintCoins implements an alias call to the underlying supply keeper's
-// MintCoins to be used in BeginBlocker.
-func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) sdk.Error {
-	if newCoins.Empty() {
+// MintCoinsAndLock implements an alias call to the underlying supply keeper's
+// MintCoinsAndLock to be used in BeginBlocker.
+func (k Keeper) MintCoinsAndLock(ctx sdk.Context, recipient sdk.AccAddress, amount sdk.Coin) sdk.Error {
+	if amount.Amount.IsZero() {
 		// skip as no coins need to be minted
 		return nil
 	}
-	return k.SupplyKeeper.MintCoins(ctx, types.ModuleName, newCoins)
+
+	newCoins := sdk.NewCoins(amount)
+	//first mint
+	err := k.supplyKeeper.MintCoins(ctx, types.ModuleName, newCoins)
+
+	// Send them to the purchaser's account
+	err = k.sendCoinsFromModuleToAccount(ctx, recipient, newCoins)
+	if err != nil {
+		return err
+	}
+
+	// Delegate the Enterprise UND so they can't be spent
+	err = k.supplyKeeper.DelegateCoinsFromAccountToModule(ctx, recipient, types.ModuleName, newCoins)
+	if err != nil {
+		return err
+	}
+
+	// keep track of how much UND is locked for this account
+	err = k.incrementLockedUnd(ctx, recipient, amount)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-// SendCoins implements an alias call to the underlying supply keeper's SendCoinsFromModuleToAccount
-// Used in BeginBlocker to send newly minted coins from enterprise module to recipient account
-func (k Keeper) SendCoins(ctx sdk.Context, recipientAddr sdk.AccAddress, newCoins sdk.Coins) sdk.Error {
+func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, feesToPay sdk.Coins) sdk.Error {
+
+	lockedUnd := k.GetLockedUnd(ctx, feePayer).Amount
+	lockedUndCoins := sdk.NewCoins(lockedUnd)
+	blockTime := ctx.BlockHeader().Time
+
+	// calculate how much Locked UND would be left over after deducting Tx fees
+	_, hasNeg := lockedUndCoins.SafeSub(feesToPay)
+
+	if !hasNeg {
+		// locked UND >= total fees
+		// undelegate the fee amount to allow for payment
+		err := k.supplyKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, feesToPay)
+
+		if err != nil {
+			return err
+		}
+
+		// decrement the tracked locked UND
+		feeNund := feesToPay.AmountOf(types.DefaultDenomination)
+		feeNundCoin := sdk.NewCoin(types.DefaultDenomination, feeNund)
+		err = k.DecrementLockedUnd(ctx, feePayer, feeNundCoin)
+		if err != nil {
+			return err
+		}
+	} else {
+		// calculate how much can be undelegated, and if, by undelegating, the account
+		// would have enough to pay for the fees. If not, don't undelegate
+		feePayerAcc := k.accKeeper.GetAccount(ctx, feePayer)
+
+		// How many spendable UND does the account have
+		spendableCoins := feePayerAcc.SpendableCoins(blockTime)
+
+		// calculate how much would be available if UND were unlocked
+		potentiallyAvailable := spendableCoins.Add(lockedUndCoins)
+
+		// is this enough to pay for the fees
+		_, hasNeg := potentiallyAvailable.SafeSub(feesToPay)
+
+		if !hasNeg {
+			// undelegate the fee amount to allow for payment
+			err := k.supplyKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, lockedUndCoins)
+
+			if err != nil {
+				return err
+			}
+
+			err = k.DecrementLockedUnd(ctx, feePayer, lockedUnd)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// sendCoinsFromModuleToAccount implements an alias call to the underlying supply keeper's SendCoinsFromModuleToAccount
+// Used in MintCoinsAndLock to send newly minted coins from enterprise module to recipient account
+func (k Keeper) sendCoinsFromModuleToAccount(ctx sdk.Context, recipientAddr sdk.AccAddress, newCoins sdk.Coins) sdk.Error {
 	if newCoins.Empty() {
 		// skip as no coins need to be minted
 		return nil
 	}
-	return k.SupplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipientAddr, newCoins)
+	return k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipientAddr, newCoins)
 }
 
 //__LOCKED_UND__________________________________________________________
@@ -307,13 +414,21 @@ func (k Keeper) SetLockedUnd(ctx sdk.Context, lockedUnd types.LockedUnd) sdk.Err
 	return nil
 }
 
-// IncrementLockedUnd increments the amount of locked UND - used when purchase order is accepted
-func (k Keeper) IncrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) sdk.Error {
+// incrementLockedUnd increments the amount of locked UND - used when purchase order is accepted
+func (k Keeper) incrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) sdk.Error {
 
 	lockedUnd := k.GetLockedUnd(ctx, address)
 	lockedUnd.Amount = lockedUnd.Amount.Add(amount)
 
 	err := k.SetLockedUnd(ctx, lockedUnd)
+	if err != nil {
+		return err
+	}
+
+	totalLocked := k.GetTotalLockedUnd(ctx)
+	totalLocked = totalLocked.Add(amount)
+	err = k.SetTotalLockedUnd(ctx, totalLocked)
+
 	if err != nil {
 		return err
 	}
@@ -339,6 +454,26 @@ func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 	lockedUnd.Amount = lockedUnd.Amount.Sub(amount)
 
 	err := k.SetLockedUnd(ctx, lockedUnd)
+	if err != nil {
+		return err
+	}
+
+	// update total
+	totalLocked := k.GetTotalLockedUnd(ctx)
+	totalLockedCoins := sdk.NewCoins(totalLocked)
+	_, hasNeg = totalLockedCoins.SafeSub(subAmountCoins)
+
+	if hasNeg {
+		err = k.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(types.DefaultDenomination, 0))
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	totalLocked = totalLocked.Sub(amount)
+	err = k.SetTotalLockedUnd(ctx, totalLocked)
+
 	if err != nil {
 		return err
 	}

@@ -32,6 +32,8 @@ var (
 
 	// LockedUndAddressKeyPrefix prefix for address keys - used to store locked UND for an account
 	LockedUndAddressKeyPrefix = []byte{0x03}
+
+	TotalLockedUndKey = []byte{0x99}
 )
 
 // GetPurchaseOrderIDBytes returns the byte representation of the purchaseOrderID

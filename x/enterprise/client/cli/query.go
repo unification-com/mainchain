@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
@@ -23,6 +24,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdGetPurchaseOrders(storeKey, cdc),
 		GetCmdGetPurchaseOrderByID(storeKey, cdc),
 		GetCmdGetLockedUndByAddress(storeKey, cdc),
+		GetCmdQueryTotalLocked(storeKey, cdc),
 	)...)
 	return enterpriseQueryCmd
 }
@@ -113,6 +115,28 @@ func GetCmdGetLockedUndByAddress(queryRoute string, cdc *codec.Codec) *cobra.Com
 			}
 
 			var out types.LockedUnd
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdQueryTotalLocked implements a command to return the current total locked enterprise und
+func GetCmdQueryTotalLocked(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "total-locked",
+		Short: "Query the current total locked enterprise UND",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryTotalLocked), nil)
+			if err != nil {
+				fmt.Printf("could not get query total locked enterprise UND\n")
+				return nil
+			}
+
+			var out sdk.Coin
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

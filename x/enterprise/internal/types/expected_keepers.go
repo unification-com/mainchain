@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply/exported"
 )
 
-// SupplyKeeper defines the expected supply keeper
+// supplyKeeper defines the expected supply keeper
 type SupplyKeeper interface {
 	GetModuleAddress(name string) sdk.AccAddress
 

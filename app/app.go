@@ -212,6 +212,7 @@ func NewMainchainApp(
 	app.enterpriseKeeper = enterprise.NewKeeper(
 		keys[enterprise.StoreKey],
 		app.supplyKeeper,
+		app.accountKeeper,
 		enterpriseSubspace,
 		enterprise.DefaultCodespace,
 		app.cdc,

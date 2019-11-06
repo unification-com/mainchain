@@ -74,6 +74,30 @@ func (k Keeper) SetHighestPurchaseOrderID(ctx sdk.Context, purchaseOrderID uint6
 	store.Set(types.HighestPurchaseOrderIDKey, purchaseOrderIDbz)
 }
 
+// __TOTAL_LOCKED_UND___________________________________________________
+
+// GetTotalLockedUnd retuns the total locked UND
+func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(types.TotalLockedUndKey)
+
+	if bz == nil {
+		return sdk.NewInt64Coin(types.DefaultDenomination, 0)
+	}
+
+	var totalLocked sdk.Coin
+	k.cdc.MustUnmarshalBinaryBare(bz, &totalLocked)
+	return totalLocked
+}
+
+// SetTotalLockedUnd sets the total locked UND
+func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) sdk.Error {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.TotalLockedUndKey, k.cdc.MustMarshalBinaryBare(totalLocked))
+	return nil
+}
+
 //__PURCHASE_ORDERS______________________________________________
 
 // Check if a raised purchase order for a given purchaseOrderID is in the store or not
@@ -401,6 +425,14 @@ func (k Keeper) incrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 		return err
 	}
 
+	totalLocked := k.GetTotalLockedUnd(ctx)
+	totalLocked = totalLocked.Add(amount)
+	err = k.SetTotalLockedUnd(ctx, totalLocked)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -422,6 +454,26 @@ func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 	lockedUnd.Amount = lockedUnd.Amount.Sub(amount)
 
 	err := k.SetLockedUnd(ctx, lockedUnd)
+	if err != nil {
+		return err
+	}
+
+	// update total
+	totalLocked := k.GetTotalLockedUnd(ctx)
+	totalLockedCoins := sdk.NewCoins(totalLocked)
+	_, hasNeg = totalLockedCoins.SafeSub(subAmountCoins)
+
+	if hasNeg {
+		err = k.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(types.DefaultDenomination, 0))
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	totalLocked = totalLocked.Sub(amount)
+	err = k.SetTotalLockedUnd(ctx, totalLocked)
+
 	if err != nil {
 		return err
 	}

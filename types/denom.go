@@ -6,8 +6,11 @@ import (
 )
 
 const (
+
 	UndDenom  = "und"  // 1 (base unit)
 	NundDenom = "nund" // 10^-9 (nano)
+
+	DefaultDenomination = NundDenom
 
 	UndPow  = 1e9  // multiplier for converting from und to (nano) nund
 	NundPow = 1e-9 // multiplier for converting from (nano) nund to und

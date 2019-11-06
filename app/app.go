@@ -63,7 +63,7 @@ var (
 		mint.ModuleName:           {supply.Minter},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
-		enterprise.ModuleName:     {supply.Minter},
+		enterprise.ModuleName:     {supply.Minter, supply.Staking},
 	}
 )
 

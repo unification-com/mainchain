@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	"strings"
 )
 
@@ -12,6 +13,8 @@ type (
 )
 
 const (
+	DefaultDenomination = undtypes.DefaultDenomination
+	BaseDenomination    = undtypes.BaseDenomination
 	DefaultStartingPurchaseOrderID uint64 = 1 // used in init genesis
 
 	// Valid Purchase Order statuses
@@ -170,7 +173,7 @@ type LockedUnd struct {
 func NewLockedUnd(owner sdk.AccAddress) LockedUnd {
 	return LockedUnd {
 		Owner:  owner,
-		Amount: sdk.NewInt64Coin("nund", 0),
+		Amount: sdk.NewInt64Coin(DefaultDenomination, 0),
 	}
 }
 

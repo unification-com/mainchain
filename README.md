@@ -28,8 +28,37 @@ undcli query account cosmos1cvrv3atsm26t4qhssfzj4cs8u7rvsuv9gzwkn6
 undcli query account cosmos1ss63vffqmpz68ext374cuxa0v3upavghwzw53p
 
 
-### Interacting with WRKChain
-./build/undcli tx wrkchain register wrkchain1 "genesishashkjwnedjknwed" "Wrkchain 1" --from wrktest --node=http://localhost:26661 --chain-id UND-Mainchain-DevNet
+### Interacting with WRKChain module
+
+Register:
+undcli tx wrkchain register wrkchain1 "genesishashkjwnedjknwed" "Wrkchain 1" --from wrktest
 where 54372 is the WRKChainID
 
+Query metadata
 undcli query wrkchain get 54372
+
+Record block hash(es)
+undcli tx wrkchain record wrkchain1 1 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from wrktest
+
+Query a block
+undcli query wrkchain get-block wrkchain1 1
+
+Query all blocks
+./build/undcli query wrkchain blocks wrkchain1
+
+### Purchase Enterprise UND
+
+Raise purchase order:
+undcli tx enterprise purchase 1002000000000nund --from wrktest
+
+List purchase orders:
+undcli query enterprise get-all-pos
+
+get specific purchase order:
+undcli query enterprise get 1
+
+Accept purchase order (must be sent from specified enterprise account)
+undcli tx enterprise process 1 accept --from ent
+
+Reject purchase order:
+undcli tx enterprise process 1 reject --from ent

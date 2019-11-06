@@ -13,6 +13,8 @@ const (
 
 	DefaultCodespace = types.DefaultCodespace
 
+	DefaultDenomination = types.DefaultDenomination
+
 	QuerierRoute          = types.QuerierRoute
 	QueryParameters       = keeper.QueryParameters
 	QueryPurchaseOrders   = keeper.QueryPurchaseOrders

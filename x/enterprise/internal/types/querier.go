@@ -12,4 +12,3 @@ func (po QueryResRaisedPurchaseOrders) String() (out string) {
 	}
 	return strings.TrimSpace(out)
 }
-

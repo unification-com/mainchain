@@ -55,4 +55,3 @@ func BeginBlocker(ctx sdk.Context, k Keeper) {
 		)
 	}
 }
-

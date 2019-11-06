@@ -6,12 +6,11 @@ import (
 )
 
 const (
-
 	UndDenom  = "und"  // 1 (base unit)
 	NundDenom = "nund" // 10^-9 (nano)
 
 	DefaultDenomination = NundDenom // lowest denomination used on chain
-	BaseDenomination = UndDenom // actual Coin - i.e. 1 UND
+	BaseDenomination    = UndDenom  // actual Coin - i.e. 1 UND
 
 	UndPow  = 1e9  // multiplier for converting from und to (nano) nund
 	NundPow = 1e-9 // multiplier for converting from (nano) nund to und

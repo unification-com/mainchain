@@ -13,17 +13,16 @@ type (
 )
 
 const (
-	DefaultDenomination = undtypes.DefaultDenomination
-	BaseDenomination    = undtypes.BaseDenomination
+	DefaultDenomination                   = undtypes.DefaultDenomination
+	BaseDenomination                      = undtypes.BaseDenomination
 	DefaultStartingPurchaseOrderID uint64 = 1 // used in init genesis
 
 	// Valid Purchase Order statuses
-	StatusNil       PurchaseOrderStatus = 0x00
-	StatusRaised    PurchaseOrderStatus = 0x01
-	StatusAccepted  PurchaseOrderStatus = 0x02
-	StatusRejected  PurchaseOrderStatus = 0x03
+	StatusNil      PurchaseOrderStatus = 0x00
+	StatusRaised   PurchaseOrderStatus = 0x01
+	StatusAccepted PurchaseOrderStatus = 0x02
+	StatusRejected PurchaseOrderStatus = 0x03
 )
-
 
 // PurchaseOrderStatusFromString turns a string into a ProposalStatus
 func PurchaseOrderStatusFromString(str string) (PurchaseOrderStatus, error) {
@@ -50,7 +49,7 @@ func PurchaseOrderStatusFromString(str string) (PurchaseOrderStatus, error) {
 func ValidPurchaseOrderStatus(status PurchaseOrderStatus) bool {
 	if status == StatusRaised ||
 		status == StatusAccepted ||
-		status == StatusRejected{
+		status == StatusRejected {
 		return true
 	}
 	return false
@@ -171,7 +170,7 @@ type LockedUnd struct {
 }
 
 func NewLockedUnd(owner sdk.AccAddress) LockedUnd {
-	return LockedUnd {
+	return LockedUnd{
 		Owner:  owner,
 		Amount: sdk.NewInt64Coin(DefaultDenomination, 0),
 	}

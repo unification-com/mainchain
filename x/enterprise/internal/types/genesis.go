@@ -2,7 +2,7 @@ package types
 
 // GenesisState - minter state
 type GenesisState struct {
-	Params                  Params `json:"params" yaml:"params"` // enterprise params
+	Params                  Params `json:"params" yaml:"params"`                                         // enterprise params
 	StartingPurchaseOrderID uint64 `json:"starting_purchase_order_id" yaml:"starting_purchase_order_id"` // should be 1
 }
 
@@ -32,4 +32,3 @@ func ValidateGenesis(data GenesisState) error {
 
 	return nil
 }
-

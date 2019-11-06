@@ -40,9 +40,9 @@ func GetCmdRaisePurchaseOrder(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Raise a new Enterprise UND purchase order
 Example:
-$ %s tx %s purchase 1000000000000nund --from wrktest
+$ %s tx %s purchase 1000000000000%s --from wrktest
 `,
-				version.ClientName, types.ModuleName,
+				version.ClientName, types.ModuleName, types.DefaultDenomination,
 			),
 		),
 		Args: cobra.ExactArgs(1),
@@ -56,7 +56,11 @@ $ %s tx %s purchase 1000000000000nund --from wrktest
 				return err
 			}
 
-			// todo - check denom is nund
+			// Todo - allow und as input and convert to nund
+			if amount.Denom != types.DefaultDenomination {
+				return sdk.ErrInvalidCoins(fmt.Sprintf("denomination should be %s", types.DefaultDenomination))
+			}
+
 			msg := types.NewMsgUndPurchaseOrder(cliCtx.GetFromAddress(), amount)
 			err = msg.ValidateBasic()
 			if err != nil {

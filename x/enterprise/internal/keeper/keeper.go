@@ -13,7 +13,7 @@ type Keeper struct {
 	storeKey     sdk.StoreKey // Unexposed key to access store from sdk.Context
 	paramSpace   params.Subspace
 	codespace    sdk.CodespaceType
-	supplyKeeper types.SupplyKeeper
+	SupplyKeeper types.SupplyKeeper
 	cdc          *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
@@ -23,7 +23,7 @@ func NewKeeper(storeKey sdk.StoreKey, supplyKeeper types.SupplyKeeper, paramSpac
 		storeKey:     storeKey,
 		paramSpace:   paramSpace.WithKeyTable(types.ParamKeyTable()),
 		codespace:    codespace,
-		supplyKeeper: supplyKeeper,
+		SupplyKeeper: supplyKeeper,
 		cdc:          cdc,
 	}
 }
@@ -232,7 +232,7 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins sdk.Coins) sdk.Error {
 		// skip as no coins need to be minted
 		return nil
 	}
-	return k.supplyKeeper.MintCoins(ctx, types.ModuleName, newCoins)
+	return k.SupplyKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
 // SendCoins implements an alias call to the underlying supply keeper's SendCoinsFromModuleToAccount
@@ -242,7 +242,7 @@ func (k Keeper) SendCoins(ctx sdk.Context, recipientAddr sdk.AccAddress, newCoin
 		// skip as no coins need to be minted
 		return nil
 	}
-	return k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipientAddr, newCoins)
+	return k.SupplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipientAddr, newCoins)
 }
 
 //__LOCKED_UND__________________________________________________________
@@ -325,12 +325,18 @@ func (k Keeper) IncrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) sdk.Error {
 
 	lockedUnd := k.GetLockedUnd(ctx, address)
-	lockedUnd.Amount = lockedUnd.Amount.Sub(amount)
-	if lockedUnd.Amount.IsNegative() || lockedUnd.Amount.IsZero() {
+	lockedCoins := sdk.NewCoins(lockedUnd.Amount)
+	subAmountCoins := sdk.NewCoins(amount)
+
+	_, hasNeg := lockedCoins.SafeSub(subAmountCoins)
+
+	if hasNeg {
 		// delete
 		k.DeleteLockedUnd(ctx, address)
 		return nil
 	}
+
+	lockedUnd.Amount = lockedUnd.Amount.Sub(amount)
 
 	err := k.SetLockedUnd(ctx, lockedUnd)
 	if err != nil {
@@ -339,3 +345,7 @@ func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 
 	return nil
 }
+
+// ToDo - temporarily track unlocked/undelegated UND with separate keyPrefix. If WRKChain registration fails
+// (e.g. WRKChain exists etc. - in WRKChain's handler.go) and source was Enterprise UND, then re-lock, and
+// re-delegate the correct amount

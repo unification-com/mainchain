@@ -13,7 +13,8 @@ func BeginBlocker(ctx sdk.Context, k Keeper) {
 	for ; acceptedPurchaseOrders.Valid(); acceptedPurchaseOrders.Next() {
 		var po types.EnterpriseUndPurchaseOrder
 		k.GetCdc().MustUnmarshalBinaryBare(acceptedPurchaseOrders.Value(), &po)
-		// first delete
+
+		// first delete the purchase order
 		k.DeleteAcceptedPurchaseOrder(ctx, po.PurchaseOrderID)
 
 		if po.Status != types.StatusAccepted {
@@ -21,26 +22,7 @@ func BeginBlocker(ctx sdk.Context, k Keeper) {
 		}
 
 		// Mint the Enterprise UND
-		mintedCoins := sdk.NewCoins(po.Amount)
-		err := k.MintCoins(ctx, mintedCoins)
-		if err != nil {
-			panic(err)
-		}
-
-		// Send them to the purchaser's account
-		err = k.SendCoins(ctx, po.Purchaser, mintedCoins)
-		if err != nil {
-			panic(err)
-		}
-
-		// keep track of how much UND is locked
-		err = k.IncrementLockedUnd(ctx, po.Purchaser, po.Amount)
-		if err != nil {
-			panic(err)
-		}
-
-		// Delegate the Enterprise UND so they can't be spent
-		err = k.SupplyKeeper.DelegateCoinsFromAccountToModule(ctx, po.Purchaser, types.ModuleName, mintedCoins)
+		err := k.MintCoinsAndLock(ctx, po.Purchaser, po.Amount)
 		if err != nil {
 			panic(err)
 		}

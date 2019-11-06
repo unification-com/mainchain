@@ -230,7 +230,7 @@ func NewMainchainApp(
 		enterprise.NewAppModule(app.enterpriseKeeper),
 	)
 
-	app.mm.SetOrderBeginBlockers(mint.ModuleName, enterprise.ModuleName, distr.ModuleName, slashing.ModuleName)
+	app.mm.SetOrderBeginBlockers(enterprise.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName)
 	app.mm.SetOrderEndBlockers(staking.ModuleName)
 
 	// Sets the order of Genesis - Order matters, genutil is to always come last

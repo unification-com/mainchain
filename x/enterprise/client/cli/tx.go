@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	"strconv"
 	"strings"
 )
@@ -41,8 +42,10 @@ func GetCmdRaisePurchaseOrder(cdc *codec.Codec) *cobra.Command {
 			fmt.Sprintf(`Raise a new Enterprise UND purchase order
 Example:
 $ %s tx %s purchase 1000000000000%s --from wrktest
+$ %s tx %s purchase 1%s --from wrktest
 `,
 				version.ClientName, types.ModuleName, types.DefaultDenomination,
+				version.ClientName, types.ModuleName, types.BaseDenomination,
 			),
 		),
 		Args: cobra.ExactArgs(1),
@@ -56,7 +59,19 @@ $ %s tx %s purchase 1000000000000%s --from wrktest
 				return err
 			}
 
-			// Todo - allow und as input and convert to nund
+			if amount.Denom == types.BaseDenomination {
+				// convert
+				fromAmount := amount.Amount.String()
+				converted, err := undtypes.ConvertUndDenomination(fromAmount, types.BaseDenomination, types.DefaultDenomination)
+				if err != nil {
+					return err
+				}
+				amount, err = sdk.ParseCoin(converted)
+				if err != nil {
+					return err
+				}
+			}
+
 			if amount.Denom != types.DefaultDenomination {
 				return sdk.ErrInvalidCoins(fmt.Sprintf("denomination should be %s", types.DefaultDenomination))
 			}

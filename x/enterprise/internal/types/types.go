@@ -14,6 +14,7 @@ type (
 
 const (
 	DefaultDenomination = undtypes.DefaultDenomination
+	BaseDenomination    = undtypes.BaseDenomination
 	DefaultStartingPurchaseOrderID uint64 = 1 // used in init genesis
 
 	// Valid Purchase Order statuses

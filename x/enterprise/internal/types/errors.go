@@ -11,7 +11,6 @@ const (
 	CodePurchaseOrderDoesNotExist     = 102
 	CodePurchaseOrderAlreadyProcessed = 103
 	CodeInvalidDecision               = 104
-
 )
 
 // ErrInvalidGenesis error for an invalid governance GenesisState

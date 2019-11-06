@@ -16,15 +16,15 @@ const (
 
 // MsgUndPurchaseOrder defines a UndPurchaseOrder message
 type MsgUndPurchaseOrder struct {
-	Purchaser  sdk.AccAddress `json:"purchaser"`
-	Amount     sdk.Coin       `json:"amount"`
+	Purchaser sdk.AccAddress `json:"purchaser"`
+	Amount    sdk.Coin       `json:"amount"`
 }
 
 // NewMsgUndPurchaseOrder is a constructor function for MsgUndPurchaseOrder
 func NewMsgUndPurchaseOrder(purchaser sdk.AccAddress, amount sdk.Coin) MsgUndPurchaseOrder {
 	return MsgUndPurchaseOrder{
-		Purchaser:  purchaser,
-		Amount:     amount,
+		Purchaser: purchaser,
+		Amount:    amount,
 	}
 }
 
@@ -90,7 +90,7 @@ func (msg MsgProcessUndPurchaseOrder) ValidateBasic() sdk.Error {
 	if msg.Signer.Empty() {
 		return sdk.ErrInvalidAddress(msg.Signer.String())
 	}
-	if msg.PurchaseOrderID <= 0 {
+	if msg.PurchaseOrderID == 0 {
 		return sdk.ErrUnknownRequest("purchase order id must be greater than zero")
 	}
 	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {

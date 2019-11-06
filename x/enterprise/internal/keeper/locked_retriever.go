@@ -1,7 +1,7 @@
 package keeper
 
 import (
-    "fmt"
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 )

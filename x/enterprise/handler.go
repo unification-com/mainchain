@@ -53,8 +53,8 @@ func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPur
 		return sdk.ErrUnauthorized("unauthorised signer processing purchase order").Result()
 	}
 
-    if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
-    	return ErrInvalidDecision(k.GetCodeSpace(), "decision should be accept or reject").Result()
+	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
+		return ErrInvalidDecision(k.GetCodeSpace(), "decision should be accept or reject").Result()
 	}
 
 	err := k.ProcessPurchaseOrder(ctx, msg.PurchaseOrderID, msg.Decision)

@@ -27,7 +27,7 @@ type CheckLockedUndDecorator struct {
 
 func NewCheckLockedUndDecorator(ak auth.AccountKeeper, entk Keeper) CheckLockedUndDecorator {
 	return CheckLockedUndDecorator{
-		ak:  ak,
+		ak:   ak,
 		entk: entk,
 	}
 }

@@ -10,8 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 	undtypes "github.com/unification-com/mainchain-cosmos/types"
+	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 	"strconv"
 	"strings"
 )

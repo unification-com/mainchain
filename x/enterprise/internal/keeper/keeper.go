@@ -136,7 +136,7 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 	}
 
 	//must have an ID
-	if purchaseOrder.PurchaseOrderID <= 0 {
+	if purchaseOrder.PurchaseOrderID == 0 {
 		return sdk.ErrInternal("unable to raise purchase order - id must be positive non-zero")
 	}
 
@@ -195,7 +195,7 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 
 	if !k.PurchaseOrderExists(ctx, purchaseOrderID) {
 		errMsg := fmt.Sprintf("purchase order id does not exist: %d", purchaseOrderID)
-        return types.ErrPurchaseOrderDoesNotExist(k.codespace, errMsg)
+		return types.ErrPurchaseOrderDoesNotExist(k.codespace, errMsg)
 	}
 
 	purchaseOrder := k.GetPurchaseOrder(ctx, purchaseOrderID)

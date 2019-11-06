@@ -6,8 +6,8 @@ import (
 )
 
 type EnterpriseUnd struct {
-	Locked    sdk.Coin         `json:"locked"`
-	Available sdk.Coins        `json:"available_for_wrkchain"`
+	Locked    sdk.Coin  `json:"locked"`
+	Available sdk.Coins `json:"available_for_wrkchain"`
 }
 
 type AccountWithLocked struct {

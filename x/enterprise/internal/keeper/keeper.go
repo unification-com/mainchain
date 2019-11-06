@@ -254,6 +254,10 @@ func (k Keeper) LockedUndExists(ctx sdk.Context, address sdk.AccAddress) bool {
 	return store.Has(addressKeyBz)
 }
 
+func (k Keeper) IsLocked(ctx sdk.Context, address sdk.AccAddress) bool {
+	return k.GetLockedUnd(ctx, address).Amount.IsPositive()
+}
+
 // Gets a record for Locked UND for a given address
 func (k Keeper) GetLockedUnd(ctx sdk.Context, address sdk.AccAddress) types.LockedUnd {
 	store := ctx.KVStore(k.storeKey)

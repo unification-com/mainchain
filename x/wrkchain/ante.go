@@ -49,7 +49,7 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	}
 
 	// check if it's a WRKChain Tx
-	if !checkIsWrkChainTx(feeTx) {
+	if !CheckIsWrkChainTx(feeTx) {
 		// ignore and move on to the next decorator in the chain
 		return next(ctx, tx, simulate)
 	}
@@ -81,7 +81,7 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	return next(ctx, tx, simulate)
 }
 
-func checkIsWrkChainTx(tx FeeTx) bool {
+func CheckIsWrkChainTx(tx FeeTx) bool {
 	msgs := tx.GetMsgs()
 	for _, msg := range msgs {
 		switch msg.(type) {

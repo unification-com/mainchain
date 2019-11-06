@@ -207,13 +207,22 @@ func GetAccountWithLockedCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			// todo - this is a bit hackey
-			accountWithLocked := undtypes.NewAccountWithLocked()
-			accountWithLocked.Account = acc
-			accountWithLocked.Locked = lockedUnd.Amount
-			accountWithLocked.Available = acc.GetCoins().Sub(sdk.NewCoins(lockedUnd.Amount))
+			if lockedUnd.Amount.IsPositive() {
+				// todo - this is a bit hackey
+				accountWithLocked := undtypes.NewAccountWithLocked()
+				entUnd := undtypes.NewEnterpriseUnd()
 
-			return cliCtx.PrintOutput(accountWithLocked)
+				entUnd.Locked = lockedUnd.Amount
+				entUnd.Available = acc.GetCoins().Sub(sdk.NewCoins(lockedUnd.Amount))
+
+				accountWithLocked.Account = acc
+				accountWithLocked.Enterprise = entUnd
+
+				return cliCtx.PrintOutput(accountWithLocked)
+			}
+
+			return cliCtx.PrintOutput(acc)
+
 		},
 	}
 

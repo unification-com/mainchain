@@ -263,6 +263,7 @@ func NewMainchainApp(
 			app.accountKeeper,
 			app.supplyKeeper,
 			app.wrkChainKeeper,
+			app.enterpriseKeeper,
 			auth.DefaultSigVerificationGasConsumer,
 		),
 	)

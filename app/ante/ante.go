@@ -15,13 +15,12 @@ func NewAnteHandler(ak auth.AccountKeeper, supplyKeeper supply.Keeper, wrkchainK
 		authante.NewMempoolFeeDecorator(),
 		authante.NewValidateBasicDecorator(),
 		authante.NewValidateMemoDecorator(ak),
-		enterprise.NewCheckLockedUndDecorator(ak, enterpriseKeeper), // check if account has enough unlocked UND
+		enterprise.NewCheckLockedUndDecorator(ak, enterpriseKeeper), // for WRKChain Tx, check for and undelegate any locked UND
 		wrkchain.NewWrkChainFeeDecorator(ak, wrkchainKeeper), // WRKChain check Tx fees. Specifically check after MemPool, but before consuming fees/gas
 		authante.NewConsumeGasForTxSizeDecorator(ak),
 		authante.NewSetPubKeyDecorator(ak), // SetPubKeyDecorator must be called before all signature verification decorators
 		authante.NewValidateSigCountDecorator(ak),
 		authante.NewDeductFeeDecorator(ak, supplyKeeper),
-		enterprise.NewDeductLockedUndDecorator(enterpriseKeeper), // unlock any und used for WRKChain/BEACON Tx fee
 		authante.NewSigGasConsumeDecorator(ak, sigGasConsumer),
 		authante.NewSigVerificationDecorator(ak),
 		authante.NewIncrementSequenceDecorator(ak), // innermost AnteDecorator

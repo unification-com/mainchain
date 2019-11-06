@@ -21,6 +21,7 @@ func NewAnteHandler(ak auth.AccountKeeper, supplyKeeper supply.Keeper, wrkchainK
 		authante.NewSetPubKeyDecorator(ak), // SetPubKeyDecorator must be called before all signature verification decorators
 		authante.NewValidateSigCountDecorator(ak),
 		authante.NewDeductFeeDecorator(ak, supplyKeeper),
+		enterprise.NewDeductLockedUndDecorator(enterpriseKeeper), // unlock any und used for WRKChain/BEACON Tx fee
 		authante.NewSigGasConsumeDecorator(ak, sigGasConsumer),
 		authante.NewSigVerificationDecorator(ak),
 		authante.NewIncrementSequenceDecorator(ak), // innermost AnteDecorator

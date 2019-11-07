@@ -64,7 +64,7 @@ Reject purchase order:
 undcli tx enterprise process 1 reject --from ent
 
 Query total locked enterprise UND
-undcli query enterprise locked
+undcli query enterprise total-locked
 
 Query locked enterprise UND for an account
 undcli query enterprise locked [address]

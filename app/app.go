@@ -225,7 +225,7 @@ func NewMainchainApp(
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
-		mint.NewAppModule(app.mintKeeper),
+		mint.NewAppModule(app.mintKeeper, app.enterpriseKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		wrkchain.NewAppModule(app.wrkChainKeeper),

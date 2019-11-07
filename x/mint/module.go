@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	"github.com/unification-com/mainchain-cosmos/x/mint/client/cli"
 	"github.com/unification-com/mainchain-cosmos/x/mint/client/rest"
 	"github.com/unification-com/mainchain-cosmos/x/mint/simulation"
@@ -95,14 +96,16 @@ type AppModule struct {
 	AppModuleSimulation
 
 	keeper Keeper
+	enterpriseKeeper enterprise.Keeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper Keeper) AppModule {
+func NewAppModule(keeper Keeper, enterpriseKeeper enterprise.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic:      AppModuleBasic{},
 		AppModuleSimulation: AppModuleSimulation{},
 		keeper:              keeper,
+		enterpriseKeeper:	 enterpriseKeeper,
 	}
 }
 
@@ -148,7 +151,7 @@ func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 
 // BeginBlock returns the begin blocker for the mint module.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	BeginBlocker(ctx, am.keeper)
+	BeginBlocker(ctx, am.keeper, am.enterpriseKeeper)
 }
 
 // EndBlock returns the end blocker for the mint module. It returns no validator

@@ -45,7 +45,8 @@ var (
 
 	ValidPurchaseOrderAcceptRejectStatus = types.ValidPurchaseOrderAcceptRejectStatus
 
-	NewLockedUndRetriever = keeper.NewLockedUndRetriever
+	NewLockedUndRetriever   = keeper.NewLockedUndRetriever
+	NewTotalSupplyRetriever = keeper.NewTotalSupplyRetriever
 
 	// Errors
 	ErrInvalidDecision = types.ErrInvalidDecision
@@ -62,4 +63,5 @@ type (
 
 	// Structs
 	EnterpriseUndPurchaseOrder = types.EnterpriseUndPurchaseOrder
+	UndSupply                  = types.UndSupply
 )

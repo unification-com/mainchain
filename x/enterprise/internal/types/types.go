@@ -181,3 +181,24 @@ func (l LockedUnd) String() string {
 Amount: %s
 `, l.Owner, l.Amount))
 }
+
+type UndSupply struct {
+	Locked   sdk.Coin `json:"locked"`
+	Unlocked sdk.Coin `json:"unlocked"`
+	Total    sdk.Coin `json:"total_supply"`
+}
+
+func NewUndSupply() UndSupply {
+	return UndSupply{
+		Locked:   sdk.NewInt64Coin(DefaultDenomination, 0),
+		Unlocked: sdk.NewInt64Coin(DefaultDenomination, 0),
+		Total:    sdk.NewInt64Coin(DefaultDenomination, 0),
+	}
+}
+
+func (u UndSupply) String() string {
+	return strings.TrimSpace(fmt.Sprintf(`Locked: %s
+Unlocked: %s
+Total: %s
+`, u.Locked, u.Unlocked, u.Total))
+}

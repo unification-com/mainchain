@@ -23,6 +23,33 @@ func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 	return totalLocked
 }
 
+// GetTotalUnLockedUnd returns the amount of unlocked UND - i.e. in active
+// circulation (totalSupply - locked)
+func (k Keeper) GetTotalUnLockedUnd(ctx sdk.Context) sdk.Coin {
+	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(types.DefaultDenomination)
+	total := sdk.NewCoin(types.DefaultDenomination, supply)
+	locked := k.GetTotalLockedUnd(ctx)
+
+	unlocked := total.Sub(locked)
+
+	return unlocked
+}
+
+func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSupply {
+	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(types.DefaultDenomination)
+	total := sdk.NewCoin(types.DefaultDenomination, supply)
+	locked := k.GetTotalLockedUnd(ctx)
+
+	unlocked := total.Sub(locked)
+
+	totalSupply := types.NewUndSupply()
+	totalSupply.Locked = locked
+	totalSupply.Unlocked = unlocked
+	totalSupply.Total = total
+
+	return totalSupply
+}
+
 // SetTotalLockedUnd sets the total locked UND
 func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) sdk.Error {
 	store := ctx.KVStore(k.storeKey)
@@ -104,6 +131,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		// is this enough to pay for the fees
 		_, hasNeg := potentiallyAvailable.SafeSub(feesToPay)
 
+		// only undelegate & unlock if the resulting unlock will be enough to pay for the fees.
 		if !hasNeg {
 			// undelegate the fee amount to allow for payment
 			err := k.supplyKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, lockedUndCoins)

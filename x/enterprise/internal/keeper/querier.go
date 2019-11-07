@@ -14,6 +14,8 @@ const (
 	QueryGetPurchaseOrder = "get"
 	QueryGetLocked        = "locked"
 	QueryTotalLocked      = "total-locked"
+	QueryTotalUnlocked    = "total-unlocked"
+	QueryTotalSupply      = "total-supply"
 )
 
 // NewQuerier is the module level router for state queries
@@ -30,8 +32,12 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryLockedUndByAddress(ctx, path[1:], keeper)
 		case QueryTotalLocked:
 			return queryTotalLocked(ctx, keeper)
+		case QueryTotalUnlocked:
+			return queryTotalUnlocked(ctx, keeper)
+		case QueryTotalSupply:
+			return queryTotalSupply(ctx, keeper)
 		default:
-			return nil, sdk.ErrUnknownRequest("unknown wrkchain query endpoint")
+			return nil, sdk.ErrUnknownRequest("unknown enterprise query endpoint")
 		}
 	}
 }
@@ -103,6 +109,29 @@ func queryTotalLocked(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
 	totalLocked := k.GetTotalLockedUnd(ctx)
 
 	res, err := codec.MarshalJSONIndent(k.cdc, totalLocked)
+	if err != nil {
+		panic("could not marshal result to JSON")
+	}
+
+	return res, nil
+}
+
+func queryTotalUnlocked(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
+
+	totalUnlocked := k.GetTotalUnLockedUnd(ctx)
+
+	res, err := codec.MarshalJSONIndent(k.cdc, totalUnlocked)
+	if err != nil {
+		panic("could not marshal result to JSON")
+	}
+
+	return res, nil
+}
+
+func queryTotalSupply(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
+	totalSupply := k.GetTotalSupplyIncludingLockedUnd(ctx)
+
+	res, err := codec.MarshalJSONIndent(k.cdc, totalSupply)
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}

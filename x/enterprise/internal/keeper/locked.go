@@ -35,6 +35,14 @@ func (k Keeper) GetTotalUnLockedUnd(ctx sdk.Context) sdk.Coin {
 	return unlocked
 }
 
+// GetTotalUndSupply returns the total UND in supply, obtained from the supply module's keeper
+func (k Keeper) GetTotalUndSupply(ctx sdk.Context) sdk.Coin {
+	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(types.DefaultDenomination)
+	total := sdk.NewCoin(types.DefaultDenomination, supply)
+	return total
+}
+
+// GetTotalSupplyIncludingLockedUnd returns information including total UND supply, total locked and unlocked
 func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSupply {
 	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(types.DefaultDenomination)
 	total := sdk.NewCoin(types.DefaultDenomination, supply)

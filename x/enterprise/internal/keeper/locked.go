@@ -226,12 +226,10 @@ func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 	_, hasNeg := lockedCoins.SafeSub(subAmountCoins)
 
 	if hasNeg {
-		// delete
-		k.DeleteLockedUndForAccount(ctx, address)
-		return nil
+		lockedUnd.Amount = sdk.NewInt64Coin(types.DefaultDenomination, 0)
+	} else {
+		lockedUnd.Amount = lockedUnd.Amount.Sub(amount)
 	}
-
-	lockedUnd.Amount = lockedUnd.Amount.Sub(amount)
 
 	err := k.SetLockedUndForAccount(ctx, lockedUnd)
 	if err != nil {

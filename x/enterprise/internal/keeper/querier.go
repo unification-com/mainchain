@@ -88,7 +88,7 @@ func queryLockedUndByAddress(ctx sdk.Context, path []string, k Keeper) ([]byte, 
 		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to parse address", err.Error()))
 	}
 
-	lockedUnd := k.GetLockedUnd(ctx, address)
+	lockedUnd := k.GetLockedUndForAccount(ctx, address)
 
 	res, err := codec.MarshalJSONIndent(k.cdc, lockedUnd)
 	if err != nil {

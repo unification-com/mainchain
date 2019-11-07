@@ -25,7 +25,7 @@ func NewLockedUndRetriever(querier NodeQuerier) LockedUndRetriever {
 	return LockedUndRetriever{querier: querier}
 }
 
-// GetLockedUnd queries for locked UND given an address. An
+// GetLockedUndForAccount queries for locked UND given an address. An
 // error is returned if the query or decoding fails.
 func (ar LockedUndRetriever) GetLockedUnd(addr sdk.AccAddress) (types.LockedUnd, error) {
 	lockedUnd, _, err := ar.GetLockedUndHeight(addr)

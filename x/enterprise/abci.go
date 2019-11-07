@@ -12,7 +12,7 @@ func BeginBlocker(ctx sdk.Context, k Keeper) {
 
 	for ; acceptedPurchaseOrders.Valid(); acceptedPurchaseOrders.Next() {
 		var po types.EnterpriseUndPurchaseOrder
-		k.GetCdc().MustUnmarshalBinaryBare(acceptedPurchaseOrders.Value(), &po)
+		k.Cdc().MustUnmarshalBinaryBare(acceptedPurchaseOrders.Value(), &po)
 
 		// first delete the purchase order
 		k.DeleteAcceptedPurchaseOrder(ctx, po.PurchaseOrderID)

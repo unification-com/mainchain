@@ -13,9 +13,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/mint/client/cli"
-	"github.com/cosmos/cosmos-sdk/x/mint/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/mint/simulation"
+	"github.com/unification-com/mainchain-cosmos/x/mint/client/cli"
+	"github.com/unification-com/mainchain-cosmos/x/mint/client/rest"
+	"github.com/unification-com/mainchain-cosmos/x/mint/simulation"
 	sim "github.com/cosmos/cosmos-sdk/x/simulation"
 )
 

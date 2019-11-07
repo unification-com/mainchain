@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/cosmos/cosmos-sdk/x/mint/internal/types"
+	"github.com/unification-com/mainchain-cosmos/x/mint/internal/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 )
 

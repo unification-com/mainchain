@@ -18,7 +18,7 @@ WORKDIR $GOPATH/src/github.com/unification-com
 RUN git clone https://github.com/unification-com/mainchain-cosmos.git
 WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
 
-RUN make install
+RUN make deps && make install
 
 COPY Docker/assets /root/.und_mainchain
 RUN /root/.go/bin/und validate-genesis /root/.und_mainchain/node1/config/genesis.json

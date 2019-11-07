@@ -3,9 +3,10 @@ package app
 import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/x/mint"
+
 	"github.com/unification-com/mainchain-cosmos/app/ante"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise"
+	"github.com/unification-com/mainchain-cosmos/x/mint"
 	"io"
 	"os"
 

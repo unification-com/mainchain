@@ -96,6 +96,7 @@ func queryCmd(cdc *amino.Codec) *cobra.Command {
 		authcmd.QueryTxsByEventsCmd(cdc),
 		authcmd.QueryTxCmd(cdc),
 		client.LineBreak,
+		GetTotalSupplyWithLockedCmd(cdc),
 	)
 
 	// add modules' query commands
@@ -222,6 +223,56 @@ func GetAccountWithLockedCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			return cliCtx.PrintOutput(acc)
+
+		},
+	}
+
+	return flags.GetCommands(cmd)[0]
+}
+
+func GetTotalSupplyWithLockedCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "supply",
+		Short: "Query total supply including locked enterprise UND",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query total UND supply, including locked and unlocked
+
+Returns three values:
+
+locked
+------
+total UND locked through Enterprise purchases.
+This UND is only available to pay WRKChain/BEACON fees
+and cannot be used for transfers or staking/delegation
+
+unlocked
+--------
+UND in active circulation, which can be used for 
+trasnfers, staking etc. It is the
+LOCKED amount subtracted from TOTAL_SUPPLY
+
+total_supply
+------------
+The total amount of UND currently on the chain, including locked UND
+
+Example:
+$ %s query supply
+`,
+				version.ClientName,
+			),
+		),
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			totalSupplyGetter := enterprise.NewTotalSupplyRetriever(cliCtx)
+
+			totalSupply, err := totalSupplyGetter.GetTotalSupply()
+			if err != nil {
+				return err
+			}
+
+			return cliCtx.PrintOutput(totalSupply)
 
 		},
 	}

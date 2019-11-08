@@ -25,6 +25,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdGetPurchaseOrderByID(storeKey, cdc),
 		GetCmdGetLockedUndByAddress(storeKey, cdc),
 		GetCmdQueryTotalLocked(storeKey, cdc),
+		GetCmdQueryTotalUnlocked(storeKey, cdc),
 	)...)
 	return enterpriseQueryCmd
 }
@@ -67,7 +68,7 @@ func GetCmdGetPurchaseOrders(queryRoute string, cdc *codec.Codec) *cobra.Command
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryPurchaseOrders), nil)
 			if err != nil {
 				fmt.Printf("could not get query raised purchase orders\n")
-				return nil
+				return err
 			}
 
 			var out types.QueryResRaisedPurchaseOrders
@@ -89,7 +90,7 @@ func GetCmdGetPurchaseOrderByID(queryRoute string, cdc *codec.Codec) *cobra.Comm
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryGetPurchaseOrder, args[0]), nil)
 			if err != nil {
 				fmt.Printf("could not get query raised purchase order: ID %s\n", args[0])
-				return nil
+				return err
 			}
 
 			var out types.EnterpriseUndPurchaseOrder
@@ -111,7 +112,7 @@ func GetCmdGetLockedUndByAddress(queryRoute string, cdc *codec.Codec) *cobra.Com
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryGetLocked, args[0]), nil)
 			if err != nil {
 				fmt.Printf("could not get query locked UND for address %s\n", args[0])
-				return nil
+				return err
 			}
 
 			var out types.LockedUnd
@@ -133,7 +134,29 @@ func GetCmdQueryTotalLocked(queryRoute string, cdc *codec.Codec) *cobra.Command 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryTotalLocked), nil)
 			if err != nil {
 				fmt.Printf("could not get query total locked enterprise UND\n")
-				return nil
+				return err
+			}
+
+			var out sdk.Coin
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdQueryTotalUnlocked implements a command to return the current total locked enterprise und
+func GetCmdQueryTotalUnlocked(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "total-unlocked",
+		Short: "Query the current total unlocked und in circulation",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryTotalUnlocked), nil)
+			if err != nil {
+				fmt.Printf("could not get query total unlocked UND\n")
+				return err
 			}
 
 			var out sdk.Coin

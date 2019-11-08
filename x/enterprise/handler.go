@@ -54,7 +54,7 @@ func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPur
 	}
 
 	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
-		return ErrInvalidDecision(k.GetCodeSpace(), "decision should be accept or reject").Result()
+		return ErrInvalidDecision(k.Codespace(), "decision should be accept or reject").Result()
 	}
 
 	err := k.ProcessPurchaseOrder(ctx, msg.PurchaseOrderID, msg.Decision)

@@ -15,7 +15,7 @@ type NodeQuerier interface {
 }
 
 // LockedUndRetriever defines the properties of a type that can be used to
-// retrieve accounts.
+// retrieve locked UND.
 type LockedUndRetriever struct {
 	querier NodeQuerier
 }
@@ -25,7 +25,7 @@ func NewLockedUndRetriever(querier NodeQuerier) LockedUndRetriever {
 	return LockedUndRetriever{querier: querier}
 }
 
-// GetLockedUnd queries for locked UND given an address. An
+// GetLockedUndForAccount queries for locked UND given an address. An
 // error is returned if the query or decoding fails.
 func (ar LockedUndRetriever) GetLockedUnd(addr sdk.AccAddress) (types.LockedUnd, error) {
 	lockedUnd, _, err := ar.GetLockedUndHeight(addr)
@@ -48,4 +48,45 @@ func (ar LockedUndRetriever) GetLockedUndHeight(addr sdk.AccAddress) (types.Lock
 	}
 
 	return lockedUnd, height, nil
+}
+
+
+
+
+
+
+// TotalSupplyRetriever defines the properties of a type that can be used to
+// retrieve total UND supply.
+type TotalSupplyRetriever struct {
+	querier NodeQuerier
+}
+
+// NewTotalSupplyRetriever initialises a new TotalSupplyRetriever instance.
+func NewTotalSupplyRetriever(querier NodeQuerier) TotalSupplyRetriever {
+	return TotalSupplyRetriever{querier: querier}
+}
+
+// GetLockedUndForAccount queries for locked UND given an address. An
+// error is returned if the query or decoding fails.
+func (ar TotalSupplyRetriever) GetTotalSupply() (types.UndSupply, error) {
+	totalSupply, _, err := ar.GetTotalSupplyHeight()
+	return totalSupply, err
+}
+
+// GetLockedUndHeight queries for locked UND  given an address. Returns the
+// height of the query with the account. An error is returned if the query
+// or decoding fails.
+func (ar TotalSupplyRetriever) GetTotalSupplyHeight() (types.UndSupply, int64, error) {
+
+	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryTotalSupply), nil)
+	if err != nil {
+		return types.NewUndSupply(), 0, err
+	}
+
+	var totalSupply types.UndSupply
+	if err := types.ModuleCdc.UnmarshalJSON(res, &totalSupply); err != nil {
+		return types.NewUndSupply(), height, err
+	}
+
+	return totalSupply, height, nil
 }

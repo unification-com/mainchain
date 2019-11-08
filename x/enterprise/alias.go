@@ -48,6 +48,9 @@ var (
 	NewLockedUndRetriever   = keeper.NewLockedUndRetriever
 	NewTotalSupplyRetriever = keeper.NewTotalSupplyRetriever
 
+	RegisterInvariants            = keeper.RegisterInvariants
+	AllInvariants                 = keeper.AllInvariants
+
 	// Errors
 	ErrInvalidDecision = types.ErrInvalidDecision
 )

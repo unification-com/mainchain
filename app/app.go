@@ -3,7 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/simapp"
-
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/unification-com/mainchain-cosmos/app/ante"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
@@ -81,6 +81,8 @@ type mainchainApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
+	invCheckPeriod uint
+
 	// keys to access the substores
 	keys  map[string]*sdk.KVStoreKey
 	tkeys map[string]*sdk.TransientStoreKey
@@ -93,6 +95,7 @@ type mainchainApp struct {
 	mintKeeper       mint.Keeper
 	distrKeeper      distr.Keeper
 	supplyKeeper     supply.Keeper
+	crisisKeeper     crisis.Keeper
 	paramsKeeper     params.Keeper
 	wrkChainKeeper   wrkchain.Keeper
 	enterpriseKeeper enterprise.Keeper
@@ -103,7 +106,8 @@ type mainchainApp struct {
 
 // NewMainchainApp is a constructor function for mainchainApp
 func NewMainchainApp(
-	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, baseAppOptions ...func(*bam.BaseApp),
+	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
+	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
 ) *mainchainApp {
 
 	// First define the top level codec that will be shared by the different modules
@@ -121,10 +125,11 @@ func NewMainchainApp(
 
 	// Here you initialize your application with the store keys it requires
 	var app = &mainchainApp{
-		BaseApp: bApp,
-		cdc:     cdc,
-		keys:    keys,
-		tkeys:   tkeys,
+		BaseApp:        bApp,
+		cdc:            cdc,
+		invCheckPeriod: invCheckPeriod,
+		keys:           keys,
+		tkeys:          tkeys,
 	}
 
 	// The ParamsKeeper handles parameter storage for the application
@@ -136,7 +141,7 @@ func NewMainchainApp(
 	mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
 	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
 	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
-
+	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 	enterpriseSubspace := app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
@@ -197,6 +202,13 @@ func NewMainchainApp(
 		slashing.DefaultCodespace,
 	)
 
+	app.crisisKeeper = crisis.NewKeeper(
+		crisisSubspace,
+		invCheckPeriod,
+		app.supplyKeeper,
+		auth.FeeCollectorName,
+	)
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
@@ -223,6 +235,7 @@ func NewMainchainApp(
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
+		crisis.NewAppModule(&app.crisisKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
 		mint.NewAppModule(app.mintKeeper, app.enterpriseKeeper),
@@ -233,7 +246,7 @@ func NewMainchainApp(
 	)
 
 	app.mm.SetOrderBeginBlockers(enterprise.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName)
-	app.mm.SetOrderEndBlockers(staking.ModuleName)
+	app.mm.SetOrderEndBlockers(crisis.ModuleName, staking.ModuleName)
 
 	// Sets the order of Genesis - Order matters, genutil is to always come last
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -248,8 +261,11 @@ func NewMainchainApp(
 		enterprise.ModuleName,
 		mint.ModuleName,
 		supply.ModuleName,
+		crisis.ModuleName,
 		genutil.ModuleName,
 	)
+
+	app.mm.RegisterInvariants(&app.crisisKeeper)
 
 	// register all module routes and module queriers
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())

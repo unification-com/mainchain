@@ -18,6 +18,12 @@
   },
   "app_hash": "",
   "app_state": {
+    "crisis": {
+      "constant_fee": {
+        "amount":"1333000000000",
+        "denom":"nund"
+      }
+    },
     "slashing": {
       "params": {
         "max_evidence_age": "120000000000",

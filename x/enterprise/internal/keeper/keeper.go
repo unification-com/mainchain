@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	"github.com/cosmos/cosmos-sdk/x/supply/exported"
 	"github.com/tendermint/tendermint/libs/log"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 )
@@ -49,6 +50,11 @@ func (k Keeper) Codespace() sdk.CodespaceType {
 
 func (k Keeper) Cdc() *codec.Codec {
 	return k.cdc
+}
+
+// GetEnterpriseAccount returns the enterprise ModuleAccount
+func (k Keeper) GetEnterpriseAccount(ctx sdk.Context) exported.ModuleAccountI {
+	return k.supplyKeeper.GetModuleAccount(ctx, types.ModuleName)
 }
 
 // ToDo - temporarily track unlocked/undelegated UND with separate keyPrefix. If WRKChain registration fails

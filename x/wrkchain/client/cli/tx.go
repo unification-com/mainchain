@@ -41,7 +41,7 @@ func GetCmdRegisterWrkChain(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Register a new WRKChain, to enable WRKChain hash submissions
 Example:
-$ %s tx %s register 54372 d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa "My WRKChain" --from mykey --fees 1000und
+$ %s tx %s register 54372 d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa "My WRKChain" --from mykey
 `,
 				version.ClientName, types.ModuleName,
 			),
@@ -74,7 +74,7 @@ func GetCmdRecordWrkChainBlock(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Record a new WRKChain block's hashes'
 Example:
-$ %s tx %s record WrkChain1234 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from mykey --fees 1und
+$ %s tx %s record WrkChain1234 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from mykey
 `,
 				version.ClientName, types.ModuleName,
 			),

@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+	"github.com/tendermint/tendermint/libs/log"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -20,6 +22,11 @@ func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 		storeKey: storeKey,
 		cdc:      cdc,
 	}
+}
+
+// Logger returns a module-specific logger.
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
 // Sets the WrkChain metadata struct for a wrkchainId

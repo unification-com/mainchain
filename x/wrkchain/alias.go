@@ -1,6 +1,7 @@
 package wrkchain
 
 import (
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
@@ -57,6 +58,8 @@ var (
 	GetWrkChainStoreKey                = types.GetWrkChainStoreKey
 	GetWrkChainBlockHashStoreKey       = types.GetWrkChainBlockHashStoreKey
 	GetWrkChainBlockHashStoreKeyPrefix = types.GetWrkChainBlockHashStoreKeyPrefix
+
+	CheckIsWrkChainTx = exported.CheckIsWrkChainTx
 
 	// Error messages
 	ErrWrkChainDoesNotExist      = types.ErrWrkChainDoesNotExist

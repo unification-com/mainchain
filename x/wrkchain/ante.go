@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 )
 
 var (
@@ -22,22 +23,24 @@ type FeeTx interface {
 // CorrectWrkChainFeeDecorator checks if the correct fees have been sent to pay for a
 // WRKChain register/record hash Tx, and if the fee paying account has sufficient funds to pay.
 // It first checks if the Tx contains any WRKChain Msgs, and if not, continues on to the next
-// AnteHAndler in the chain. If a WRKChain Msg is detected, it then:
+// AnteHandler in the chain. If a WRKChain Msg is detected, it then:
 //
 // 1. Checks sufficient fees have been included in the Tx, via the --fees flag
 // 2. Checks the fee payer is the WRKChain owner
-// 3. Checks if the fee payer has sufficient funds in their account to pay for it
+// 3. Checks if the fee payer has sufficient funds in their account to pay for it, including any locked enterprise und
 //
 // If any of the checks fail, a suitable error is returned.
 type CorrectWrkChainFeeDecorator struct {
 	ak  auth.AccountKeeper
 	wck Keeper
+	ek enterprise.Keeper
 }
 
-func NewWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper Keeper) CorrectWrkChainFeeDecorator {
+func NewWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper Keeper, enterpriseKeeper enterprise.Keeper) CorrectWrkChainFeeDecorator {
 	return CorrectWrkChainFeeDecorator{
 		ak:  ak,
 		wck: wrkchainKeeper,
+		ek:  enterpriseKeeper,
 	}
 }
 
@@ -54,62 +57,27 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 		return next(ctx, tx, simulate)
 	}
 
-	// Check fees sent in Tx
-	err := checkWrkchainFees(feeTx)
-	if err != nil {
-		return ctx, err
-	}
+	// Check fees amount sent in Tx. Check during CheckTx
+	if ctx.IsCheckTx() && !simulate {
+		err := checkWrkchainFees(feeTx)
+		if err != nil {
+			return ctx, err
+		}
 
-	// check if the WRKChain exists. We don't want to charge fees unnecessarily for re-registration
-	err = checkWrkChainExists(ctx, wfd.wck, feeTx)
-	if err != nil {
-		return ctx, err
-	}
-
-	// check fee payer is WRKChain Owner
-	err = checkWrkChainOwnerFeePayer(feeTx)
-	if err != nil {
-		return ctx, err
+		// check fee payer is WRKChain Owner
+		err = checkWrkChainOwnerFeePayer(feeTx)
+		if err != nil {
+			return ctx, err
+		}
 	}
 
 	// check sender has sufficient funds
-	err = checkFeePayerHasFunds(ctx, wfd.ak, feeTx)
+	err := checkFeePayerHasFunds(ctx, wfd.ak, wfd.ek, feeTx)
 	if err != nil {
 		return ctx, err
 	}
 
 	return next(ctx, tx, simulate)
-}
-
-func CheckIsWrkChainTx(tx FeeTx) bool {
-	msgs := tx.GetMsgs()
-	for _, msg := range msgs {
-		switch msg.(type) {
-		case MsgRegisterWrkChain:
-			return true
-		case MsgRecordWrkChainBlock:
-			return true
-		}
-	}
-	return false
-}
-
-func checkWrkChainExists(ctx sdk.Context, wck Keeper, tx FeeTx) error {
-	msgs := tx.GetMsgs()
-	for _, msg := range msgs {
-		switch m := msg.(type) {
-		case MsgRegisterWrkChain:
-			if wck.IsWrkChainRegistered(ctx, m.WrkChainID) {
-				return sdkerrors.Wrapf(ErrWrkChainAlreadyRegistered, "already registered: %s", m.WrkChainID)
-			}
-		case MsgRecordWrkChainBlock:
-			if !wck.IsWrkChainRegistered(ctx, m.WrkChainID) {
-				return sdkerrors.Wrapf(ErrWrkChainDoesNotExist, "does not exist: %s", m.WrkChainID)
-			}
-		}
-	}
-
-	return nil
 }
 
 func checkWrkchainFees(tx FeeTx) error {
@@ -163,11 +131,10 @@ func checkWrkChainOwnerFeePayer(tx FeeTx) error {
 	return nil
 }
 
-func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, tx FeeTx) error {
+func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek enterprise.Keeper, tx FeeTx) error {
 	feePayer := tx.FeePayer()
 	feePayerAcc := ak.GetAccount(ctx, feePayer)
 	blockTime := ctx.BlockHeader().Time
-	coins := feePayerAcc.GetCoins()
 	fees := tx.GetFee()
 
 	if feePayerAcc == nil {
@@ -178,19 +145,41 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, tx FeeTx) err
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid fee: %s", fees)
 	}
 
-	// verify the account has enough funds to pay for fees
-	_, hasNeg := coins.SafeSub(fees)
+	coins := feePayerAcc.GetCoins()
+
+	potentialCoins := coins
+
+	//get any locked enterprise UND
+	lockedUnd := ek.GetLockedUnd(ctx, feePayer).Amount
+
+	lockedUndCoins := sdk.NewCoins(lockedUnd)
+	// include any locked UND in potential coins. We need to do this because if these checks pass,
+	// the locked UND will be unlocked in the next decorator
+	potentialCoins = potentialCoins.Add(lockedUndCoins)
+
+	// verify the account has enough funds to pay for fees, including any locked enterprise UND
+	_, hasNeg := potentialCoins.SafeSub(fees)
 	if hasNeg {
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
-			"insufficient funds to pay for fees; %s < %s", coins, fees)
+		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+			"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", coins, potentialCoins, fees)
+		ctx.Logger().Info("NOT ENOUGH UND", "isCheckTx", ctx.IsCheckTx(), "err", err)
+		return err
 	}
 
 	// Validate the account has enough "spendable" coins as this will cover cases
 	// such as vesting accounts.
 	spendableCoins := feePayerAcc.SpendableCoins(blockTime)
-	if _, hasNeg := spendableCoins.SafeSub(fees); hasNeg {
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
-			"insufficient funds to pay for fees; %s < %s", spendableCoins, fees)
+	potentialSpendableCoins := spendableCoins
+
+	// include any locked UND in potential coins. We need to do this because if these checks pass,
+	// the locked UND will be unlocked in the next decorator
+	potentialSpendableCoins = potentialSpendableCoins.Add(lockedUndCoins)
+
+	if _, hasNeg := potentialSpendableCoins.SafeSub(fees); hasNeg {
+		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+			"insufficient spendable und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", spendableCoins, potentialSpendableCoins, fees)
+		ctx.Logger().Info("NOT ENOUGH SPENDABLE UND", "isCheckTx", ctx.IsCheckTx(), "err", err)
+		return err
 	}
 
 	return nil

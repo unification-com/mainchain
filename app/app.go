@@ -3,9 +3,10 @@ package app
 import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/x/mint"
+
 	"github.com/unification-com/mainchain-cosmos/app/ante"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise"
+	"github.com/unification-com/mainchain-cosmos/x/mint"
 	"io"
 	"os"
 
@@ -224,7 +225,7 @@ func NewMainchainApp(
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
-		mint.NewAppModule(app.mintKeeper),
+		mint.NewAppModule(app.mintKeeper, app.enterpriseKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		wrkchain.NewAppModule(app.wrkChainKeeper),

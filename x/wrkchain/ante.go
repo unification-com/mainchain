@@ -150,7 +150,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek enterprise
 	potentialCoins := coins
 
 	//get any locked enterprise UND
-	lockedUnd := ek.GetLockedUnd(ctx, feePayer).Amount
+	lockedUnd := ek.GetLockedUndForAccount(ctx, feePayer).Amount
 
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
 	// include any locked UND in potential coins. We need to do this because if these checks pass,

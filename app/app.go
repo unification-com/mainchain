@@ -51,9 +51,9 @@ var (
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		params.AppModuleBasic{},
+		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
-
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
 	)
@@ -241,8 +241,8 @@ func NewMainchainApp(
 		mint.NewAppModule(app.mintKeeper, app.enterpriseKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
-		wrkchain.NewAppModule(app.wrkChainKeeper),
 		enterprise.NewAppModule(app.enterpriseKeeper),
+		wrkchain.NewAppModule(app.wrkChainKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(enterprise.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName)

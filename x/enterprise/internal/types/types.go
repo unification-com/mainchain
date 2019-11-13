@@ -18,10 +18,11 @@ const (
 	DefaultStartingPurchaseOrderID uint64 = 1 // used in init genesis
 
 	// Valid Purchase Order statuses
-	StatusNil      PurchaseOrderStatus = 0x00
-	StatusRaised   PurchaseOrderStatus = 0x01
-	StatusAccepted PurchaseOrderStatus = 0x02
-	StatusRejected PurchaseOrderStatus = 0x03
+	StatusNil       PurchaseOrderStatus = 0x00
+	StatusRaised    PurchaseOrderStatus = 0x01
+	StatusAccepted  PurchaseOrderStatus = 0x02
+	StatusRejected  PurchaseOrderStatus = 0x03
+	StatusCompleted PurchaseOrderStatus = 0x04
 )
 
 // PurchaseOrderStatusFromString turns a string into a ProposalStatus
@@ -36,6 +37,9 @@ func PurchaseOrderStatusFromString(str string) (PurchaseOrderStatus, error) {
 	case "raised":
 		return StatusRaised, nil
 
+	case "complete":
+		return StatusCompleted, nil
+
 	case "":
 		return StatusNil, nil
 
@@ -49,7 +53,8 @@ func PurchaseOrderStatusFromString(str string) (PurchaseOrderStatus, error) {
 func ValidPurchaseOrderStatus(status PurchaseOrderStatus) bool {
 	if status == StatusRaised ||
 		status == StatusAccepted ||
-		status == StatusRejected {
+		status == StatusRejected ||
+		status == StatusCompleted {
 		return true
 	}
 	return false
@@ -107,6 +112,9 @@ func (status PurchaseOrderStatus) String() string {
 
 	case StatusRaised:
 		return "raised"
+
+	case StatusCompleted:
+		return "complete"
 
 	default:
 		return ""

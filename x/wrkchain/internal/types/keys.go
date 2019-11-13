@@ -12,7 +12,7 @@ const (
 	// StoreKey to be used when creating the KVStore
 	StoreKey = ModuleName
 
-	// WRKChain Recorded bloxk hash delimeter
+	// WRKChain Recorded block hash delimeter
 	Delimeter = "_"
 )
 
@@ -31,17 +31,17 @@ func GetWrkChainStoreKey(wrkchainId string) []byte {
 
 func GetWrkChainBlockHashStoreKey(wrkchainId string, height uint64) []byte {
 	heightString := strconv.FormatUint(height, 10)
-	wkrchainIdPRefix := GetWrkChainBlockHashStoreKeyPrefix(wrkchainId)
+	wrkchainIdPrefix := GetWrkChainBlockHashStoreKeyPrefix(wrkchainId)
 	heightSuffix := append([]byte(Delimeter), []byte(heightString)...)
-	return append(wkrchainIdPRefix, heightSuffix...)
+	return append(wrkchainIdPrefix, heightSuffix...)
 }
 
-// GetWrkChainBlockHashStoreKeyPrefix retunrs a key for a WRKChain which can be used
+// GetWrkChainBlockHashStoreKeyPrefix returns a key for a WRKChain which can be used
 // for iterating through the recorded hashes
 func GetWrkChainBlockHashStoreKeyPrefix(wrkchainId string) []byte {
 	h := sha256.New()
 
-	// make WRKchainID into a hash to try and avoid potential clashes with ID + height concatenation
+	// make WRKChainID into a hash to try and avoid potential clashes with ID + height concatenation
 	// todo - get and handle err
 	_, _ = h.Write([]byte(wrkchainId))
 

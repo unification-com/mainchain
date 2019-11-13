@@ -16,6 +16,13 @@ import (
 	"strings"
 )
 
+const (
+	FlagNumLimit            = "limit"
+	FlagPage                = "page"
+	FlagPurchaseOrderStatus = "status"
+	FlagPurchaser           = "purchaser"
+)
+
 func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	enterpriseTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,

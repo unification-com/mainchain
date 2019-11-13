@@ -56,7 +56,3 @@ func (k Keeper) Cdc() *codec.Codec {
 func (k Keeper) GetEnterpriseAccount(ctx sdk.Context) exported.ModuleAccountI {
 	return k.supplyKeeper.GetModuleAccount(ctx, types.ModuleName)
 }
-
-// ToDo - temporarily track unlocked/undelegated UND with separate keyPrefix. If WRKChain registration fails
-// (e.g. WRKChain exists etc. - in WRKChain's handler.go) and source was Enterprise UND, then re-lock, and
-// re-delegate the correct amount

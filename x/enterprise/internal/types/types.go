@@ -133,7 +133,7 @@ func (status PurchaseOrderStatus) Format(s fmt.State, verb rune) {
 	}
 }
 
-// Proposals is an array of proposal
+// PurchaseOrders is an array of purchase orders
 type PurchaseOrders []EnterpriseUndPurchaseOrder
 
 // String implements stringer interface
@@ -169,6 +169,19 @@ Purchaser: %s
 Amount: %s
 Decision: %b
 `, po.PurchaseOrderID, po.Purchaser, po.Amount, po.Status))
+}
+
+// LockedUnds is an array of locked UND
+type LockedUnds []LockedUnd
+
+// String implements stringer interface
+func (lund LockedUnds) String() string {
+	out := "Purchaser [Amount]\n"
+	for _, l := range lund {
+		out += fmt.Sprintf("%s [%s]\n",
+			l.Owner, l.Amount)
+	}
+	return strings.TrimSpace(out)
 }
 
 // LockedUnd is a struct that is used to track "Locked" Enterprise purchased UND

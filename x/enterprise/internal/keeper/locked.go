@@ -19,7 +19,7 @@ func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 	}
 
 	var totalLocked sdk.Coin
-	k.cdc.MustUnmarshalBinaryBare(bz, &totalLocked)
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &totalLocked)
 	return totalLocked
 }
 
@@ -61,7 +61,7 @@ func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSuppl
 // SetTotalLockedUnd sets the total locked UND
 func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) sdk.Error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.TotalLockedUndKey, k.cdc.MustMarshalBinaryBare(totalLocked))
+	store.Set(types.TotalLockedUndKey, k.cdc.MustMarshalBinaryLengthPrefixed(totalLocked))
 	return nil
 }
 
@@ -192,7 +192,7 @@ func (k Keeper) GetLockedUndForAccount(ctx sdk.Context, address sdk.AccAddress) 
 
 	bz := store.Get(types.AddressStoreKey(address))
 	var lockedUnd types.LockedUnd
-	k.cdc.MustUnmarshalBinaryBare(bz, &lockedUnd)
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &lockedUnd)
 	return lockedUnd
 }
 
@@ -204,6 +204,19 @@ func (k Keeper) GetLockedUndAmountForAccount(ctx sdk.Context, address sdk.AccAdd
 func (k Keeper) GetAllLockedUndAccountsIterator(ctx sdk.Context) sdk.Iterator {
 	store := ctx.KVStore(k.storeKey)
 	return sdk.KVStorePrefixIterator(store, types.LockedUndAddressKeyPrefix)
+}
+
+func (k Keeper) GetAllLockedUnds(ctx sdk.Context) types.LockedUnds {
+	lockedIterator := k.GetAllLockedUndAccountsIterator(ctx)
+
+	var lockedUnds types.LockedUnds
+	for ; lockedIterator.Valid(); lockedIterator.Next() {
+		var l types.LockedUnd
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(lockedIterator.Value(), &l)
+		lockedUnds = append(lockedUnds, l)
+	}
+
+	return lockedUnds
 }
 
 // Deletes the accepted purchase order once processed
@@ -225,7 +238,7 @@ func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUn
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.AddressStoreKey(lockedUnd.Owner), k.cdc.MustMarshalBinaryBare(lockedUnd))
+	store.Set(types.AddressStoreKey(lockedUnd.Owner), k.cdc.MustMarshalBinaryLengthPrefixed(lockedUnd))
 
 	return nil
 }

@@ -10,8 +10,8 @@ import (
 
 const (
 	QueryParameters       = "params"
-	QueryPurchaseOrders   = "get-all-pos"
-	QueryGetPurchaseOrder = "get"
+	QueryPurchaseOrders   = "orders"
+	QueryGetPurchaseOrder = "order"
 	QueryGetLocked        = "locked"
 	QueryTotalLocked      = "total-locked"
 	QueryTotalUnlocked    = "total-unlocked"
@@ -25,7 +25,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		case QueryParameters:
 			return queryParams(ctx, keeper)
 		case QueryPurchaseOrders:
-			return queryPurchaseOrders(ctx, keeper)
+			return queryPurchaseOrders(ctx, path[1:], req, keeper)
 		case QueryGetPurchaseOrder:
 			return queryPurchaseOrderById(ctx, path[1:], keeper)
 		case QueryGetLocked:
@@ -53,19 +53,25 @@ func queryParams(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
 	return res, nil
 }
 
-func queryPurchaseOrders(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
-	posIterator := k.GetAllPurchaseOrdersIterator(ctx)
-	var pos []types.EnterpriseUndPurchaseOrder
+func queryPurchaseOrders(ctx sdk.Context, _ []string, req abci.RequestQuery, k Keeper) ([]byte, sdk.Error) {
 
-	for ; posIterator.Valid(); posIterator.Next() {
-		var po types.EnterpriseUndPurchaseOrder
-		k.cdc.MustUnmarshalBinaryBare(posIterator.Value(), &po)
-		pos = append(pos, po)
+	var queryParams types.QueryPurchaseOrdersParams
+
+	err := k.cdc.UnmarshalJSON(req.Data, &queryParams)
+
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest(sdk.AppendMsgToErr("failed to parse params", err.Error()))
 	}
 
-	res, err := codec.MarshalJSONIndent(k.cdc, pos)
+	filteredPurchaseOrders := k.GetPurchaseOrdersFiltered(ctx, queryParams)
+
+	if filteredPurchaseOrders == nil {
+		filteredPurchaseOrders = types.PurchaseOrders{}
+	}
+
+	res, err := codec.MarshalJSONIndent(k.cdc, filteredPurchaseOrders)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil
@@ -82,7 +88,7 @@ func queryPurchaseOrderById(ctx sdk.Context, path []string, k Keeper) ([]byte, s
 
 	res, err := codec.MarshalJSONIndent(k.cdc, purchaseOrder)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil
@@ -98,7 +104,7 @@ func queryLockedUndByAddress(ctx sdk.Context, path []string, k Keeper) ([]byte, 
 
 	res, err := codec.MarshalJSONIndent(k.cdc, lockedUnd)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil
@@ -110,7 +116,7 @@ func queryTotalLocked(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
 
 	res, err := codec.MarshalJSONIndent(k.cdc, totalLocked)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil
@@ -122,7 +128,7 @@ func queryTotalUnlocked(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
 
 	res, err := codec.MarshalJSONIndent(k.cdc, totalUnlocked)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil
@@ -133,7 +139,7 @@ func queryTotalSupply(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
 
 	res, err := codec.MarshalJSONIndent(k.cdc, totalSupply)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil

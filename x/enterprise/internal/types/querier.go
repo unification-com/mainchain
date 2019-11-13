@@ -1,14 +1,36 @@
 package types
 
-import "strings"
+import (
+	"strings"
 
-// QueryResRaisedPurchaseOrders Queries raised Enterprise UND purchase orders
-type QueryResRaisedPurchaseOrders []EnterpriseUndPurchaseOrder
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+// QueryResPurchaseOrders Queries raised Enterprise UND purchase orders
+type QueryResPurchaseOrders []EnterpriseUndPurchaseOrder
 
 // implement fmt.Stringer
-func (po QueryResRaisedPurchaseOrders) String() (out string) {
+func (po QueryResPurchaseOrders) String() (out string) {
 	for _, val := range po {
 		out += val.String() + "\n"
 	}
 	return strings.TrimSpace(out)
+}
+
+// QueryPurchaseOrdersParams Params for query 'custom/enterprise/pos'
+type QueryPurchaseOrdersParams struct {
+	Page                int
+	Limit               int
+	PurchaseOrderStatus PurchaseOrderStatus
+	Purchaser           sdk.AccAddress
+}
+
+// NewQueryPurchaseOrdersParams creates a new instance of QueryPurchaseOrdersParams
+func NewQueryPurchaseOrdersParams(page, limit int, status PurchaseOrderStatus, purchaser sdk.AccAddress) QueryPurchaseOrdersParams {
+	return QueryPurchaseOrdersParams{
+		Page:                page,
+		Limit:               limit,
+		PurchaseOrderStatus: status,
+		Purchaser:           purchaser,
+	}
 }

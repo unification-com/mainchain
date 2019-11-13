@@ -2,11 +2,16 @@ package cli
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	entutils "github.com/unification-com/mainchain-cosmos/x/enterprise/client/utils"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 )
@@ -58,30 +63,86 @@ func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
 
 // GetCmdGetPurchaseOrders queries a list of all purchase orders
 func GetCmdGetPurchaseOrders(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "get-all-pos",
-		Short: "get all current raised Enterprise UND purchase orders",
-		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+	cmd := &cobra.Command{
+		Use:   "orders",
+		Short: "Query Enterprise UND purchase orders with optional filters",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query for a all paginated Enterprise UND purchase orders that match optional filters:
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryPurchaseOrders), nil)
+Example:
+$ %s query enterprise orders --status (raised|accept|reject|complete)
+$ %s query enterprise orders --purchaser und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
+$ %s query enterprise orders --page=2 --limit=100
+`,
+				version.ClientName, version.ClientName, version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			strProposalStatus := viper.GetString(FlagPurchaseOrderStatus)
+			bechPurchaserAddr := viper.GetString(FlagPurchaser)
+			page := viper.GetInt(FlagPage)
+			limit := viper.GetInt(FlagNumLimit)
+
+			var purchaseOrderStatus types.PurchaseOrderStatus
+			var purchaserAddr sdk.AccAddress
+
+			params := types.NewQueryPurchaseOrdersParams(page, limit, purchaseOrderStatus, purchaserAddr)
+
+			if len(strProposalStatus) != 0 {
+				purchaseOrderStatus, err := types.PurchaseOrderStatusFromString(entutils.NormalisePurchaseOrderStatus(strProposalStatus))
+				if err != nil {
+					return err
+				}
+				params.PurchaseOrderStatus = purchaseOrderStatus
+			}
+
+			if len(bechPurchaserAddr) != 0 {
+				purchaserAddr, err := sdk.AccAddressFromBech32(bechPurchaserAddr)
+				if err != nil {
+					return err
+				}
+				params.Purchaser = purchaserAddr
+			}
+
+			bz, err := cdc.MarshalJSON(params)
 			if err != nil {
-				fmt.Printf("could not get query raised purchase orders\n")
 				return err
 			}
 
-			var out types.QueryResRaisedPurchaseOrders
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryPurchaseOrders), bz)
+			if err != nil {
+				return err
+			}
+
+			var matchingOrders types.QueryResPurchaseOrders
+			err = cdc.UnmarshalJSON(res, &matchingOrders)
+
+			if err != nil {
+				return err
+			}
+
+			if len(matchingOrders) == 0 {
+				return fmt.Errorf("no matching purchase orders found")
+			}
+
+			return cliCtx.PrintOutput(matchingOrders)
 		},
 	}
+
+	cmd.Flags().Int(FlagPage, 1, "pagination page of purchase orders to to query for")
+	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of purchase orders to query for")
+	cmd.Flags().String(FlagPurchaseOrderStatus, "", "(optional) filter purchase orders by status, status: raised/accept/reject/complete")
+	cmd.Flags().String(FlagPurchaser, "", "(optional) filter purchase orders raised by address")
+    return cmd
 }
 
 // GetCmdGetPurchaseOrderByID queries a purchase order given an ID
 func GetCmdGetPurchaseOrderByID(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "get [purchase_order_id]",
+		Use:   "order [purchase_order_id]",
 		Short: "get a purchase order by ID",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -89,7 +150,7 @@ func GetCmdGetPurchaseOrderByID(queryRoute string, cdc *codec.Codec) *cobra.Comm
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryGetPurchaseOrder, args[0]), nil)
 			if err != nil {
-				fmt.Printf("could not get query raised purchase order: ID %s\n", args[0])
+				fmt.Printf("could not get query purchase order: ID %s\n", args[0])
 				return err
 			}
 

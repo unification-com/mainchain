@@ -19,6 +19,12 @@ const (
 	QueryParameters       = keeper.QueryParameters
 	QueryPurchaseOrders   = keeper.QueryPurchaseOrders
 	QueryGetPurchaseOrder = keeper.QueryGetPurchaseOrder
+
+	StatusNil       = types.StatusNil
+	StatusRaised    = types.StatusRaised
+	StatusAccepted  = types.StatusAccepted
+	StatusRejected  = types.StatusRejected
+	StatusCompleted = types.StatusCompleted
 )
 
 var (
@@ -51,6 +57,8 @@ var (
 	RegisterInvariants            = keeper.RegisterInvariants
 	AllInvariants                 = keeper.AllInvariants
 
+	NewQueryPurchaseOrdersParams = types.NewQueryPurchaseOrdersParams
+
 	// Errors
 	ErrInvalidDecision = types.ErrInvalidDecision
 )
@@ -60,6 +68,8 @@ type (
 	GenesisState = types.GenesisState
 	Params       = types.Params
 
+	QueryPurchaseOrdersParams = types.QueryPurchaseOrdersParams
+
 	// Msgs
 	MsgPurchaseUnd             = types.MsgUndPurchaseOrder
 	MsgProcessUndPurchaseOrder = types.MsgProcessUndPurchaseOrder
@@ -67,4 +77,5 @@ type (
 	// Structs
 	EnterpriseUndPurchaseOrder = types.EnterpriseUndPurchaseOrder
 	UndSupply                  = types.UndSupply
+	PurchaseOrderStatus        = types.PurchaseOrderStatus
 )

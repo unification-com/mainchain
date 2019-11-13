@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
@@ -50,7 +51,7 @@ func (k Keeper) GetPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) types.
 
 	bz := store.Get(types.PurchaseOrderKey(purchaseOrderID))
 	var enterpriseUndPurchaseOrder types.EnterpriseUndPurchaseOrder
-	k.cdc.MustUnmarshalBinaryBare(bz, &enterpriseUndPurchaseOrder)
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &enterpriseUndPurchaseOrder)
 	return enterpriseUndPurchaseOrder
 }
 
@@ -70,16 +71,65 @@ func (k Keeper) GetPurchaseOrderStatus(ctx sdk.Context, purchaseOrderID uint64) 
 	return k.GetPurchaseOrder(ctx, purchaseOrderID).Status
 }
 
-// Get an iterator over all Purchase Orders
-func (k Keeper) GetAllPurchaseOrdersIterator(ctx sdk.Context) sdk.Iterator {
-	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.PurchaseOrderIDKeyPrefix)
+// IteratePurchaseOrders iterates over the all the purchase orders and performs a callback function
+func (keeper Keeper) IteratePurchaseOrders(ctx sdk.Context, cb func(purchaseOrder types.EnterpriseUndPurchaseOrder) (stop bool)) {
+	store := ctx.KVStore(keeper.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.PurchaseOrderIDKeyPrefix)
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var po types.EnterpriseUndPurchaseOrder
+		keeper.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &po)
+
+		if cb(po) {
+			break
+		}
+	}
 }
 
-// Get an iterator over all accepted Purchase Orders - used by BeginBlocker to process minting
-func (k Keeper) GetAllAcceptedPurchaseOrdersIterator(ctx sdk.Context) sdk.Iterator {
-	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.AcceptedPurchaseOrderIDKeyPrefix)
+// GetAllPurchaseOrders returns all the purchase orders from store
+func (keeper Keeper) GetAllPurchaseOrders(ctx sdk.Context) (purchaseOrders types.PurchaseOrders) {
+	keeper.IteratePurchaseOrders(ctx, func(po types.EnterpriseUndPurchaseOrder) bool {
+		purchaseOrders = append(purchaseOrders, po)
+		return false
+	})
+	return
+}
+
+// GetPurchaseOrdersFiltered retrieves purchase orders filtered by a given set of params which
+// include pagination parameters along a purchase order status.
+//
+// NOTE: If no filters are provided, all proposals will be returned in paginated
+// form.
+func (keeper Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPurchaseOrdersParams) []types.EnterpriseUndPurchaseOrder {
+	purchaseOrders := keeper.GetAllPurchaseOrders(ctx)
+	filteredPurchaseOrders := make([]types.EnterpriseUndPurchaseOrder, 0, len(purchaseOrders))
+
+	for _, po := range purchaseOrders {
+		matchStatus, matchPurchaser := true, true
+
+		// match status (if supplied/valid)
+		if types.ValidPurchaseOrderStatus(params.PurchaseOrderStatus) {
+			matchStatus = po.Status == params.PurchaseOrderStatus
+		}
+
+		if len(params.Purchaser) > 0 {
+			matchPurchaser = po.Purchaser.String() == params.Purchaser.String()
+		}
+
+		if matchStatus && matchPurchaser {
+			filteredPurchaseOrders = append(filteredPurchaseOrders, po)
+		}
+	}
+
+	start, end := client.Paginate(len(filteredPurchaseOrders), params.Page, params.Limit, 100)
+	if start < 0 || end < 0 {
+		filteredPurchaseOrders = []types.EnterpriseUndPurchaseOrder{}
+	} else {
+		filteredPurchaseOrders = filteredPurchaseOrders[start:end]
+	}
+
+	return filteredPurchaseOrders
 }
 
 // Sets the Purchase Order data
@@ -100,31 +150,9 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.PurchaseOrderKey(purchaseOrder.PurchaseOrderID), k.cdc.MustMarshalBinaryBare(purchaseOrder))
+	store.Set(types.PurchaseOrderKey(purchaseOrder.PurchaseOrderID), k.cdc.MustMarshalBinaryLengthPrefixed(purchaseOrder))
 
 	return nil
-}
-
-// SetAcceptedPurchaseOrder creates a temporary store for an accepted purchase order. This will be queried by
-// BeginBlocker to mint coins
-// Todo - merge with standard PO and create new "complete" status
-func (k Keeper) SetAcceptedPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) sdk.Error {
-
-	//must have accepted status
-	if purchaseOrder.Status != types.StatusAccepted {
-		return sdk.ErrInternal("can only add accepted purchase orders")
-	}
-
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.AcceptedPurchaseOrderKey(purchaseOrder.PurchaseOrderID), k.cdc.MustMarshalBinaryBare(purchaseOrder))
-
-	return nil
-}
-
-// Deletes the accepted purchase order once processed
-func (k Keeper) DeleteAcceptedPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.AcceptedPurchaseOrderKey(purchaseOrderID))
 }
 
 func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress, amount sdk.Coin) (uint64, sdk.Error) {
@@ -171,14 +199,6 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 
 	if err != nil {
 		return err
-	}
-
-	if decision == types.StatusAccepted {
-		err := k.SetAcceptedPurchaseOrder(ctx, purchaseOrder)
-
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil

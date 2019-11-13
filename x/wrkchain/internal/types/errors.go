@@ -1,27 +1,49 @@
 package types
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const (
-	DefaultCodespace string = ModuleName
+	DefaultCodespace sdk.CodespaceType = ModuleName
 
-	CodeWrkChainDoesNotExist      = 101
-	CodeWrkChainAlreadyRegistered = 102
+	CodeInvalidGenesis = 101
 
-	CodeWrkChainInsufficientFee = 201
-	CodeWrkChainTooMuchFee      = 202
+	CodeWrkChainDoesNotExist      = 201
+	CodeWrkChainAlreadyRegistered = 202
+	CodeNotWrkChainOwner          = 203
 
-	CodeWrkChainFeePayerNotOwner = 301
+	CodeWrkChainInsufficientFee = 301
+	CodeWrkChainTooMuchFee      = 302
+
+	CodeWrkChainFeePayerNotOwner = 401
 )
 
-var (
-	ErrWrkChainDoesNotExist      = sdkerrors.Register(DefaultCodespace, CodeWrkChainDoesNotExist, "WrkChain does not exist")
-	ErrWrkChainAlreadyRegistered = sdkerrors.Register(DefaultCodespace, CodeWrkChainAlreadyRegistered, "WrkChain already registered")
+// ErrInvalidGenesis error for an invalid governance GenesisState
+func ErrInvalidGenesis(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeInvalidGenesis, msg)
+}
 
-	ErrInsufficientWrkChainFee = sdkerrors.Register(DefaultCodespace, CodeWrkChainInsufficientFee, "insufficient fee to pay for WrkChain tx")
-	ErrTooMuchWrkChainFee      = sdkerrors.Register(DefaultCodespace, CodeWrkChainTooMuchFee, "too much fee sent to pay for WrkChain tx")
+func ErrWrkChainDoesNotExist(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeWrkChainDoesNotExist, msg)
+}
 
-	ErrFeePayerNotOwner = sdkerrors.Register(DefaultCodespace, CodeWrkChainFeePayerNotOwner, "fee payer is not WRKChain owner")
-)
+func ErrNotWrkChainOwner(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeNotWrkChainOwner, msg)
+}
+
+func ErrWrkChainAlreadyRegistered(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeWrkChainAlreadyRegistered, msg)
+}
+
+func ErrInsufficientWrkChainFee(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeWrkChainInsufficientFee, msg)
+}
+
+func ErrTooMuchWrkChainFee(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeWrkChainTooMuchFee, msg)
+}
+
+func ErrFeePayerNotOwner(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeWrkChainFeePayerNotOwner, msg)
+}

@@ -99,13 +99,13 @@ func checkWrkchainFees(tx FeeTx) error {
 
 	totalFees := sdk.Coins{expectedFees}
 	if tx.GetFee().IsAllLT(totalFees) {
-		errMsg := fmt.Sprintf("numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return sdkerrors.Wrap(ErrInsufficientWrkChainFee, errMsg)
+		errMsg := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
+		return ErrInsufficientWrkChainFee(DefaultCodespace, errMsg)
 	}
 
 	if tx.GetFee().IsAllGT(totalFees) {
-		errMsg := fmt.Sprintf("numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return sdkerrors.Wrap(ErrTooMuchWrkChainFee, errMsg)
+		errMsg := fmt.Sprintf("too much fee sent to pay for WrkChain tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
+		return ErrTooMuchWrkChainFee(DefaultCodespace, errMsg)
 	}
 
 	return nil
@@ -118,13 +118,13 @@ func checkWrkChainOwnerFeePayer(tx FeeTx) error {
 		switch m := msg.(type) {
 		case MsgRegisterWrkChain:
 			if !feePayer.Equals(m.Owner) {
-				errMsg := fmt.Sprintf("Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return sdkerrors.Wrap(ErrFeePayerNotOwner, errMsg)
+				errMsg := fmt.Sprintf("fee payer is not WRKChain owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
+				return ErrFeePayerNotOwner(DefaultCodespace, errMsg)
 			}
 		case MsgRecordWrkChainBlock:
 			if !feePayer.Equals(m.Owner) {
-				errMsg := fmt.Sprintf("Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return sdkerrors.Wrap(ErrFeePayerNotOwner, errMsg)
+				errMsg := fmt.Sprintf("fee payer is not WRKChain owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
+				return ErrFeePayerNotOwner(DefaultCodespace, errMsg)
 			}
 		}
 	}

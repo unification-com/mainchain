@@ -33,7 +33,14 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 
 // nolint: unparam
 func queryWrkChain(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	wrkchain := keeper.GetWrkChain(ctx, path[0])
+
+	wrkchainID, err := strconv.Atoi(path[0])
+
+	if err != nil {
+		wrkchainID = 0
+	}
+
+	wrkchain := keeper.GetWrkChain(ctx, uint64(wrkchainID))
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, wrkchain)
 	if err != nil {
@@ -45,13 +52,19 @@ func queryWrkChain(ctx sdk.Context, path []string, req abci.RequestQuery, keeper
 
 func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
 
+	wrkchainID, err := strconv.Atoi(path[0])
+
+	if err != nil {
+		wrkchainID = 0
+	}
+
 	height, err := strconv.Atoi(path[1])
 
 	if err != nil {
 		height = 0
 	}
 
-	wrkchainBlock := keeper.GetWrkChainBlock(ctx, path[0], uint64(height))
+	wrkchainBlock := keeper.GetWrkChainBlock(ctx, uint64(wrkchainID), uint64(height))
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, wrkchainBlock)
 	if err != nil {
@@ -63,7 +76,13 @@ func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, k
 
 func queryWrkChainBlockHashes(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
 
-	blockHashList := keeper.GetWrkChainBlockHashes(ctx, path[0])
+	wrkchainID, err := strconv.Atoi(path[0])
+
+	if err != nil {
+		wrkchainID = 0
+	}
+
+	blockHashList := keeper.GetWrkChainBlockHashes(ctx, uint64(wrkchainID))
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, blockHashList)
 	if err != nil {

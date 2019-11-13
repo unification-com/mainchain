@@ -1,8 +1,7 @@
 package types
 
 import (
-	"crypto/sha256"
-	"strconv"
+	"encoding/binary"
 )
 
 const (
@@ -14,9 +13,16 @@ const (
 
 	// WRKChain Recorded bloxk hash delimeter
 	Delimeter = "_"
+
+	// QuerierRoute is the querier route for the enterprise store.
+	QuerierRoute = StoreKey
 )
 
 var (
+
+	// key used to store the current highest WRKChain ID
+	HighestWrkChainIDKey = []byte{0x20}
+
 	// RegisteredWrkChainPrefix prefix for registered WRKChain store
 	RegisteredWrkChainPrefix = []byte{0x01}
 
@@ -24,26 +30,32 @@ var (
 	RecordedWrkChainBlockHashPrefix = []byte{0x02}
 )
 
-// GetWrkChainStoreKey turn an address to key used to get it from the account store
-func GetWrkChainStoreKey(wrkchainId string) []byte {
-	return append(RegisteredWrkChainPrefix, []byte(wrkchainId)...)
+// GetWrkChainIDBytes returns the byte representation of the wrkChainID
+// used for getting the highest WRKChain ID from the database
+func GetWrkChainIDBytes(wrkChainID uint64) (wrkChainIDBz []byte) {
+	wrkChainIDBz = make([]byte, 8)
+	binary.BigEndian.PutUint64(wrkChainIDBz, wrkChainID)
+	return
 }
 
-func GetWrkChainBlockHashStoreKey(wrkchainId string, height uint64) []byte {
-	heightString := strconv.FormatUint(height, 10)
-	wkrchainIdPRefix := GetWrkChainBlockHashStoreKeyPrefix(wrkchainId)
-	heightSuffix := append([]byte(Delimeter), []byte(heightString)...)
-	return append(wkrchainIdPRefix, heightSuffix...)
+// GetWrkChainIDFromBytes returns wrkChainID in uint64 format from a byte array
+// used for getting the highest WRKChain ID from the database
+func GetWrkChainIDFromBytes(bz []byte) (wrkChainID uint64) {
+	return binary.BigEndian.Uint64(bz)
 }
 
-// GetWrkChainBlockHashStoreKeyPrefix retunrs a key for a WRKChain which can be used
-// for iterating through the recorded hashes
-func GetWrkChainBlockHashStoreKeyPrefix(wrkchainId string) []byte {
-	h := sha256.New()
+// WrkChainKey gets a specific purchase order ID key for use in the store
+func WrkChainKey(wrkChainID uint64) []byte {
+	return append(RegisteredWrkChainPrefix, GetWrkChainIDBytes(wrkChainID)...)
+}
 
-	// make WRKchainID into a hash to try and avoid potential clashes with ID + height concatenation
-	// todo - get and handle err
-	_, _ = h.Write([]byte(wrkchainId))
+func WrkChainAllBlocksKey(wrkChainID uint64) []byte {
+	return append(RecordedWrkChainBlockHashPrefix, GetWrkChainIDBytes(wrkChainID)...)
+}
 
-	return append(RecordedWrkChainBlockHashPrefix, h.Sum(nil)...)
+func WrkChainBlockKey(wrkChainID, height uint64) []byte {
+	blocksKey := WrkChainAllBlocksKey(wrkChainID)
+	heightBz := make([]byte, 8)
+	binary.BigEndian.PutUint64(heightBz, height)
+	return append(blocksKey, heightBz...)
 }

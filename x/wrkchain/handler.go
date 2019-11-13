@@ -23,22 +23,34 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 // Handle a message to register a new WRKChain
 func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWrkChain) sdk.Result {
-	if keeper.IsWrkChainRegistered(ctx, msg.WrkChainID) { // Checks if the WrkChain is already registered
-		return sdk.ErrUnauthorized("WRKChain already registered").Result() // If so, throw an error
-	}
+	//if keeper.IsWrkChainRegistered(ctx, msg.Moniker) { // Checks if the WrkChain is already registered
+	//	return sdk.ErrUnauthorized("WRKChain already registered").Result() // If so, throw an error
+	//}
 
-	keeper.RegisterWrkChain(ctx, msg.WrkChainID, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
+	// todo - search by monker to see if already registered
+
+
+	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
+
+	if err != nil {
+		return err.Result()
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			EventTypeRegisterWrkChain,
-			sdk.NewAttribute(AttributeKeyWrkChainId, msg.WrkChainID),
+			sdk.NewAttribute(AttributeKeyWrkChainId, strconv.FormatUint(wrkChainID, 10)),
+			sdk.NewAttribute(AttributeKeyWrkChainMoniker, msg.Moniker),
 			sdk.NewAttribute(AttributeKeyWrkChainName, msg.WrkChainName),
 			sdk.NewAttribute(AttributeKeyWrkChainGenesisHash, msg.GenesisHash),
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+
+	return sdk.Result{
+		Events: ctx.EventManager().Events(),
+		Data: GetWrkChainIDBytes(wrkChainID),
+	}
 }
 
 func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordWrkChainBlock) sdk.Result {
@@ -59,7 +71,7 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			EventTypeRecordWrkChainBlock,
-			sdk.NewAttribute(AttributeKeyWrkChainId, msg.WrkChainID),
+			sdk.NewAttribute(AttributeKeyWrkChainId, strconv.FormatUint(msg.WrkChainID, 10)),
 			sdk.NewAttribute(AttributeKeyBlockHeight, strconv.FormatUint(msg.Height, 10)),
 			sdk.NewAttribute(AttributeKeyBlockHash, msg.BlockHash),
 			sdk.NewAttribute(AttributeKeyParentHash, msg.ParentHash),

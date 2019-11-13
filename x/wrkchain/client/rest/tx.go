@@ -13,7 +13,7 @@ import (
 
 type registerWrkChainReq struct {
 	BaseReq      rest.BaseReq `json:"base_req"`
-	WrkChainID   string       `json:"id"`
+	Moniker      string       `json:"moniker"`
 	WrkChainName string       `json:"name"`
 	GenesisHash  string       `json:"genesis"`
 	Owner        string       `json:"owner"`
@@ -21,7 +21,7 @@ type registerWrkChainReq struct {
 
 type recordWrkChainBlockReq struct {
 	BaseReq    rest.BaseReq `json:"base_req"`
-	WrkChainID string       `json:"id"`
+	WrkChainID uint64       `json:"id"`
 	Height     uint64       `json:"height"`
 	BlockHash  string       `json:"blockhash"`
 	ParentHash string       `json:"parenthash"`
@@ -51,7 +51,7 @@ func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		// create the message
-		msg := types.NewMsgRegisterWrkChain(req.WrkChainID, req.WrkChainName, req.GenesisHash, addr)
+		msg := types.NewMsgRegisterWrkChain(req.Moniker, req.WrkChainName, req.GenesisHash, addr)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

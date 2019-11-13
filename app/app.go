@@ -219,6 +219,7 @@ func NewMainchainApp(
 
 	app.wrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
+		wrkchain.DefaultCodespace,
 		app.cdc,
 	)
 

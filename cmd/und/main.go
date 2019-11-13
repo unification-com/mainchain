@@ -25,6 +25,10 @@ import (
 	"github.com/unification-com/mainchain-cosmos/app"
 )
 
+const flagInvCheckPeriod = "inv-check-period"
+
+var invCheckPeriod uint
+
 func main() {
 	cobra.EnableCommandSorting = false
 
@@ -60,6 +64,8 @@ func main() {
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "UND", app.DefaultNodeHome)
+	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
+		0, "Assert registered invariants every N blocks")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -73,7 +79,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		cache = store.NewCommitKVStoreCacheManager()
 	}
 
-	return app.NewMainchainApp(logger, db, traceStore, true,
+	return app.NewMainchainApp(logger, db, traceStore, true, invCheckPeriod,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
@@ -87,7 +93,7 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		undApp := app.NewMainchainApp(logger, db, traceStore, false)
+		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1))
 		err := undApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -95,7 +101,7 @@ func exportAppStateAndTMValidators(
 		return undApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	undApp := app.NewMainchainApp(logger, db, traceStore, true)
+	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1))
 
 	return undApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

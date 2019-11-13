@@ -68,3 +68,14 @@ undcli query enterprise total-locked
 
 Query locked enterprise UND for an account
 undcli query enterprise locked [address]
+
+## Invariance checking
+
+Start a full node with the `--inv-check-period` flag. Value of 1 will
+check every block for invariances:
+
+und start --inv-check-period 1
+
+Invariance Tx can be sent using:
+
+undcli tx crisis invariant-broken enterprise module-account --from wrktest

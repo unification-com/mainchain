@@ -15,16 +15,16 @@ const (
 
 // MsgRegisterWrkChain defines a RegisterWrkChain message
 type MsgRegisterWrkChain struct {
-	WrkChainID   string         `json:"id"`
+	Moniker      string         `json:"moniker"`
 	WrkChainName string         `json:"name"`
 	GenesisHash  string         `json:"genesis"`
 	Owner        sdk.AccAddress `json:"owner"`
 }
 
 // NewMsgRegisterWrkChain is a constructor function for MsgRegisterWrkChain
-func NewMsgRegisterWrkChain(wrkchainId string, genesisHash string, wrkchainName string, owner sdk.AccAddress) MsgRegisterWrkChain {
+func NewMsgRegisterWrkChain(moniker string, genesisHash string, wrkchainName string, owner sdk.AccAddress) MsgRegisterWrkChain {
 	return MsgRegisterWrkChain{
-		WrkChainID:   wrkchainId,
+		Moniker:      moniker,
 		WrkChainName: wrkchainName,
 		GenesisHash:  genesisHash,
 		Owner:        owner,
@@ -42,8 +42,8 @@ func (msg MsgRegisterWrkChain) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
 	}
-	if len(msg.WrkChainID) == 0 || len(msg.GenesisHash) == 0 || len(msg.WrkChainName) == 0 {
-		return sdk.ErrUnknownRequest("WrkChainID, Genesis Hash and WRKChain Name cannot be empty")
+	if len(msg.Moniker) == 0 || len(msg.GenesisHash) == 0 || len(msg.WrkChainName) == 0 {
+		return sdk.ErrUnknownRequest("Moniker, Genesis Hash and WRKChain Name cannot be empty")
 	}
 	return nil
 }
@@ -62,7 +62,7 @@ func (msg MsgRegisterWrkChain) GetSigners() []sdk.AccAddress {
 
 // MsgRecordWrkChainBlock defines a RecordWrkChainBlock message
 type MsgRecordWrkChainBlock struct {
-	WrkChainID string         `json:"id"`
+	WrkChainID uint64         `json:"wrkchain_id"`
 	Height     uint64         `json:"height"`
 	BlockHash  string         `json:"blockhash"`
 	ParentHash string         `json:"parenthash"`
@@ -74,7 +74,7 @@ type MsgRecordWrkChainBlock struct {
 
 // NewMsgRecordWrkChainBlock is a constructor function for MsgRecordWrkChainBlock
 func NewMsgRecordWrkChainBlock(
-	wrkchainId string,
+	wrkchainId uint64,
 	height uint64,
 	blockHash string,
 	parentHash string,
@@ -106,8 +106,11 @@ func (msg MsgRecordWrkChainBlock) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
 	}
-	if len(msg.WrkChainID) == 0 || len(msg.BlockHash) == 0 {
-		return sdk.ErrUnknownRequest("WrkChainID and BlockHash cannot be empty")
+	if msg.WrkChainID == 0 {
+		return sdk.ErrUnknownRequest("ID must be greater than zero")
+	}
+	if len(msg.BlockHash) == 0 {
+		return sdk.ErrUnknownRequest("BlockHash cannot be empty")
 	}
 	if msg.Height == 0 {
 		return sdk.ErrUnknownRequest("Height cannot be zero")

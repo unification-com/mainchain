@@ -32,19 +32,23 @@ undcli query account cosmos1ss63vffqmpz68ext374cuxa0v3upavghwzw53p
 
 Register:
 undcli tx wrkchain register wrkchain1 "genesishashkjwnedjknwed" "Wrkchain 1" --from wrktest
-where 54372 is the WRKChainID
+
+then run:
+undcli query tx [TX HASH]
+
+this will return the generated WRKChain ID integer
 
 Query metadata
-undcli query wrkchain get 54372
+undcli query wrkchain get 1
 
 Record block hash(es)
-undcli tx wrkchain record wrkchain1 1 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from wrktest
+undcli tx wrkchain record 1 1 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from wrktest
 
 Query a block
-undcli query wrkchain get-block wrkchain1 1
+undcli query wrkchain get-block 1 1
 
 Query all blocks
-./build/undcli query wrkchain blocks wrkchain1
+undcli query wrkchain blocks 1
 
 ### Purchase Enterprise UND
 

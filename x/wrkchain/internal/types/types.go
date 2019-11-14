@@ -11,6 +11,8 @@ const (
 	RegFee    = 1000000000000 // 1000 UND
 	RecordFee = 1000000000    // 1 UND
 	FeeDenom  = "nund"
+
+	DefaultStartingWrkChainID uint64 = 1 // used in init genesis
 )
 
 var (
@@ -24,13 +26,28 @@ var (
 	FeesWrkChainRecordHash   = sdk.Coins{FeesWrkChainRecordHashCoin}
 )
 
+// Proposals is an array of proposal
+type WrkChains []WrkChain
+
+// String implements stringer interface
+func (w WrkChains) String() string {
+	out := "ID - [Moniker] 'Name' (Genesis) {LastBlock} Owner\n"
+	for _, wc := range w {
+		out += fmt.Sprintf("%d - [%s] '%s' (%s) {%d} %s\n",
+			wc.WrkChainID, wc.Moniker,
+			wc.Name, wc.GenesisHash, wc.LastBlock, wc.Owner)
+	}
+	return strings.TrimSpace(out)
+}
+
 // Wrkchain is a struct that contains all the metadata of a registered WRKChain
 type WrkChain struct {
-	WrkChainID   string         `json:"id"`
-	WrkChainName string         `json:"name"`
-	GenesisHash  string         `json:"genesis"`
-	LastBlock    uint64         `json:"lastblock"`
-	Owner        sdk.AccAddress `json:"owner"`
+	WrkChainID  uint64         `json:"wrkchain_id"`
+	Moniker     string         `json:"moniker"`
+	Name        string         `json:"name"`
+	GenesisHash string         `json:"genesis"`
+	LastBlock   uint64         `json:"lastblock"`
+	Owner       sdk.AccAddress `json:"owner"`
 }
 
 // NewWrkChain returns a new WrkChain struct
@@ -40,16 +57,17 @@ func NewWrkChain() WrkChain {
 
 // implement fmt.Stringer
 func (w WrkChain) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`WrkChainID: %s
-WrkChainName: %s
+	return strings.TrimSpace(fmt.Sprintf(`WRKChainID: %d
+Moniker: %s
+Name: %s
 GenesisHash: %s
 LastBlock: %d
-Owner: %s`, w.WrkChainID, w.WrkChainName, w.GenesisHash, w.LastBlock, w.Owner))
+Owner: %s`, w.WrkChainID, w.Moniker, w.Name, w.GenesisHash, w.LastBlock, w.Owner))
 }
 
 // WrkChainBlock is a struct that contains a wrkchain's recorded block
 type WrkChainBlock struct {
-	WrkChainID string         `json:"id"`
+	WrkChainID uint64         `json:"wrkchain_id"`
 	Height     uint64         `json:"height"`
 	BlockHash  string         `json:"blockhash"`
 	ParentHash string         `json:"parenthash"`
@@ -67,7 +85,7 @@ func NewWrkChainBlock() WrkChainBlock {
 
 // implement fmt.Stringer
 func (w WrkChainBlock) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`WrkChainID: %s
+	return strings.TrimSpace(fmt.Sprintf(`Moniker: %d
 Height: %d
 BlockHash: %s
 ParentHash: %s

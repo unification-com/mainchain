@@ -37,6 +37,7 @@
       "missed_blocks": {}
     },
     "wrkchain": {
+      "starting_wrkchain_id": "1",
       "registered_wrkchains": []
     },
     "mint": {

@@ -11,7 +11,10 @@ const (
 	RouterKey  = types.RouterKey
 	StoreKey   = types.StoreKey
 
+	DefaultCodespace = types.DefaultCodespace
+
 	QueryWrkChain            = keeper.QueryWrkChain
+	QueryWrkChains           = keeper.QueryWrkChains
 	QueryWrkChainBlock       = keeper.QueryWrkChainBlock
 	QueryWrkChainBlockHashes = keeper.QueryWrkChainBlockHashes
 
@@ -33,6 +36,7 @@ var (
 	EventTypeRecordWrkChainBlock = types.EventTypeRecordWrkChainBlock
 
 	AttributeKeyWrkChainId          = types.AttributeKeyWrkChainId
+	AttributeKeyWrkChainMoniker     = types.AttributeKeyWrkChainMoniker
 	AttributeKeyWrkChainName        = types.AttributeKeyWrkChainName
 	AttributeKeyWrkChainGenesisHash = types.AttributeKeyWrkChainGenesisHash
 	AttributeKeyOwner               = types.AttributeKeyOwner
@@ -55,9 +59,7 @@ var (
 	RegisteredWrkChainPrefix        = types.RegisteredWrkChainPrefix
 	RecordedWrkChainBlockHashPrefix = types.RecordedWrkChainBlockHashPrefix
 
-	GetWrkChainStoreKey                = types.GetWrkChainStoreKey
-	GetWrkChainBlockHashStoreKey       = types.GetWrkChainBlockHashStoreKey
-	GetWrkChainBlockHashStoreKeyPrefix = types.GetWrkChainBlockHashStoreKeyPrefix
+	GetWrkChainIDBytes = types.GetWrkChainIDBytes
 
 	CheckIsWrkChainTx = exported.CheckIsWrkChainTx
 
@@ -67,17 +69,29 @@ var (
 	ErrInsufficientWrkChainFee   = types.ErrInsufficientWrkChainFee
 	ErrTooMuchWrkChainFee        = types.ErrTooMuchWrkChainFee
 	ErrFeePayerNotOwner          = types.ErrFeePayerNotOwner
+
+	NewGenesisState     = types.NewGenesisState
+	DefaultGenesisState = types.DefaultGenesisState
+	ValidateGenesis     = types.ValidateGenesis
 )
 
 type (
 	Keeper = keeper.Keeper
+
+	GenesisState = types.GenesisState
+
+	QueryWrkChainParams = types.QueryWrkChainParams
 
 	// Msgs
 	MsgRegisterWrkChain    = types.MsgRegisterWrkChain
 	MsgRecordWrkChainBlock = types.MsgRecordWrkChainBlock
 
 	// Structs
-	WrkChain = types.WrkChain
+	WrkChain       = types.WrkChain
+	WrkChainExport = types.WrkChainExport
+	WrkChainBlock  = types.WrkChainBlock
+
+	WrkChains = types.WrkChains
 
 	// Queries
 	QueryResWrkChainBlockHashes = types.QueryResWrkChainBlockHashes

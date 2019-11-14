@@ -1,54 +1,48 @@
 package wrkchain
 
 import (
-	"fmt"
+	"encoding/binary"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
 
-type GenesisState struct {
-	WrkChains []WrkChain `json:"registered_wrkchains"`
-}
-
-func NewGenesisState(wrkChains []WrkChain) GenesisState {
-	return GenesisState{WrkChains: nil}
-}
-
-func ValidateGenesis(data GenesisState) error {
-	for _, record := range data.WrkChains {
-		if record.Owner == nil {
-			return fmt.Errorf("Invalid WrkChain: Owner: %s. Error: Missing Owner", record.Owner)
-		}
-		if record.WrkChainID == "" {
-			return fmt.Errorf("Invalid WrkChain: WrkChainID: %s. Error: Missing ID", record.WrkChainID)
-		}
-		if record.GenesisHash == "" {
-			return fmt.Errorf("Invalid WrkChain: GenesisHash: %s. Error: Missing Genesis Hash", record.GenesisHash)
-		}
-	}
-	return nil
-}
-
-func DefaultGenesisState() GenesisState {
-	return GenesisState{
-		WrkChains: []WrkChain{},
-	}
-}
-
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
+	keeper.SetHighestWrkChainID(ctx, data.StartingWrkChainID)
 	for _, record := range data.WrkChains {
-		keeper.SetWrkChain(ctx, record.WrkChainID, record)
+		keeper.SetWrkChain(ctx, record.WrkChain)
 	}
 	return []abci.ValidatorUpdate{}
 }
 
 func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
-	var records []WrkChain
+	var records []WrkChainExport
+
 	iterator := k.GetWrkChainsIterator(ctx)
 	for ; iterator.Valid(); iterator.Next() {
-		wrkchainId := string(iterator.Key())
-		wrkChain := k.GetWrkChain(ctx, wrkchainId)
-		records = append(records, wrkChain)
+		wrkchainId := iterator.Key()
+		num := binary.LittleEndian.Uint64(wrkchainId)
+		blockHashList := k.GetWrkChainBlockHashes(ctx, num)
+
+		var hashes []types.WrkChainBlock
+
+		for _, value := range blockHashList {
+			hash := types.WrkChainBlock{
+				num,
+				value.Height,
+				value.BlockHash,
+				value.ParentHash,
+				value.Hash1,
+				value.Hash2,
+				value.Hash3,
+				value.SubmitTime,
+				value.Owner,
+			}
+			hashes = append(hashes, hash)
+		}
+
+		wrkChain := k.GetWrkChain(ctx, num)
+		records = append(records, WrkChainExport{WrkChain: wrkChain, WrkChainBlocks: hashes})
 	}
 	return GenesisState{WrkChains: records}
 }

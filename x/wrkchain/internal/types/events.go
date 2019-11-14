@@ -8,6 +8,7 @@ var (
 
 	AttributeKeyOwner               = "wrkchain-owner"
 	AttributeKeyWrkChainId          = "wrkchain-id"
+	AttributeKeyWrkChainMoniker     = "wrkchain-moniker"
 	AttributeKeyWrkChainName        = "wrkchain-name"
 	AttributeKeyWrkChainGenesisHash = "wrkchain-genesis-hash"
 	AttributeKeyBlockHash           = "wrkchain-block-hash"

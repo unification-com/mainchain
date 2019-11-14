@@ -3,6 +3,7 @@ package wrkchain
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 	"strconv"
 )
 
@@ -23,22 +24,36 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 // Handle a message to register a new WRKChain
 func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWrkChain) sdk.Result {
-	if keeper.IsWrkChainRegistered(ctx, msg.WrkChainID) { // Checks if the WrkChain is already registered
-		return sdk.ErrUnauthorized("WRKChain already registered").Result() // If so, throw an error
+
+	params := types.NewQueryWrkChainParams(1, 1, msg.Moniker, sdk.AccAddress{})
+	wrkChains := keeper.GetWrkChainsFiltered(ctx, params)
+
+	if (len(wrkChains)) > 0 {
+		errMsg := fmt.Sprintf("wrkchain already registered with moniker '%s' - id: %d, owner: %s", msg.Moniker, wrkChains[0].WrkChainID, wrkChains[0].Owner)
+		return types.ErrWrkChainAlreadyRegistered(keeper.Codespace(), errMsg).Result()
 	}
 
-	keeper.RegisterWrkChain(ctx, msg.WrkChainID, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
+	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
+
+	if err != nil {
+		return err.Result()
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			EventTypeRegisterWrkChain,
-			sdk.NewAttribute(AttributeKeyWrkChainId, msg.WrkChainID),
+			sdk.NewAttribute(AttributeKeyWrkChainId, strconv.FormatUint(wrkChainID, 10)),
+			sdk.NewAttribute(AttributeKeyWrkChainMoniker, msg.Moniker),
 			sdk.NewAttribute(AttributeKeyWrkChainName, msg.WrkChainName),
 			sdk.NewAttribute(AttributeKeyWrkChainGenesisHash, msg.GenesisHash),
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+
+	return sdk.Result{
+		Events: ctx.EventManager().Events(),
+		Data: GetWrkChainIDBytes(wrkChainID),
+	}
 }
 
 func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordWrkChainBlock) sdk.Result {
@@ -54,12 +69,16 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 		return sdk.ErrUnauthorized("WRKChain block hashes have already been recorded for this height").Result()
 	}
 
-	keeper.RecordWrkchainHashes(ctx, msg.WrkChainID, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3, msg.Owner)
+	err := keeper.RecordWrkchainHashes(ctx, msg.WrkChainID, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3, msg.Owner)
+
+	if err != nil {
+		return err.Result()
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			EventTypeRecordWrkChainBlock,
-			sdk.NewAttribute(AttributeKeyWrkChainId, msg.WrkChainID),
+			sdk.NewAttribute(AttributeKeyWrkChainId, strconv.FormatUint(msg.WrkChainID, 10)),
 			sdk.NewAttribute(AttributeKeyBlockHeight, strconv.FormatUint(msg.Height, 10)),
 			sdk.NewAttribute(AttributeKeyBlockHash, msg.BlockHash),
 			sdk.NewAttribute(AttributeKeyParentHash, msg.ParentHash),

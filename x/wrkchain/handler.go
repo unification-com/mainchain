@@ -3,6 +3,7 @@ package wrkchain
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 	"strconv"
 )
 
@@ -23,12 +24,14 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 // Handle a message to register a new WRKChain
 func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWrkChain) sdk.Result {
-	//if keeper.IsWrkChainRegistered(ctx, msg.Moniker) { // Checks if the WrkChain is already registered
-	//	return sdk.ErrUnauthorized("WRKChain already registered").Result() // If so, throw an error
-	//}
 
-	// todo - search by monker to see if already registered
+	params := types.NewQueryWrkChainParams(1, 1, msg.Moniker, sdk.AccAddress{})
+	wrkChains := keeper.GetWrkChainsFiltered(ctx, params)
 
+	if (len(wrkChains)) > 0 {
+		errMsg := fmt.Sprintf("wrkchain already registered with moniker '%s' - id: %d, owner: %s", msg.Moniker, wrkChains[0].WrkChainID, wrkChains[0].Owner)
+		return types.ErrWrkChainAlreadyRegistered(keeper.Codespace(), errMsg).Result()
+	}
 
 	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
 
@@ -67,7 +70,7 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 	}
 
 	err := keeper.RecordWrkchainHashes(ctx, msg.WrkChainID, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3, msg.Owner)
-	
+
 	if err != nil {
 		return err.Result()
 	}

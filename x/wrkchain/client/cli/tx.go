@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
 	"strconv"
 	"strings"
 
@@ -50,13 +51,38 @@ $ %s tx %s register MyWrkChain d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
+			// first check if a WRKChain exists with the same moniker.
+			// The moniker should be a unique string identifier for the WRKChain
+			params := types.NewQueryWrkChainParams(1, 1, args[0], sdk.AccAddress{})
+			bz, err := cdc.MarshalJSON(params)
+			if err != nil {
+				return err
+			}
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryWrkChains), bz)
+			if err != nil {
+				return err
+			}
+			var matchingWrkChains types.QueryResWrkChains
+			err = cdc.UnmarshalJSON(res, &matchingWrkChains)
+
+			if err != nil {
+				return err
+			}
+
+			// WRKchain already registered with same moniker - output an error instead of broadcasting
+			// the Tx and therefore charging reg fees
+			if (len(matchingWrkChains)) > 0 {
+				errMsg := fmt.Sprintf("wrkchain already registered with moniker '%s' - wrkchain id: %d, owner: %s", args[0], matchingWrkChains[0].WrkChainID, matchingWrkChains[0].Owner)
+				return types.ErrWrkChainAlreadyRegistered(types.DefaultCodespace, errMsg)
+			}
+
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
 			txBldr = txBldr.WithFees(strconv.Itoa(types.RegFee) + types.FeeDenom)
 
 			msg := types.NewMsgRegisterWrkChain(args[0], args[1], args[2], cliCtx.GetFromAddress())
-			err := msg.ValidateBasic()
+			err = msg.ValidateBasic()
 			if err != nil {
 				return err
 			}

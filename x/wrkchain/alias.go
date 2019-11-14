@@ -14,6 +14,7 @@ const (
 	DefaultCodespace = types.DefaultCodespace
 
 	QueryWrkChain            = keeper.QueryWrkChain
+	QueryWrkChains           = keeper.QueryWrkChains
 	QueryWrkChainBlock       = keeper.QueryWrkChainBlock
 	QueryWrkChainBlockHashes = keeper.QueryWrkChainBlockHashes
 
@@ -79,6 +80,8 @@ type (
 
 	GenesisState = types.GenesisState
 
+	QueryWrkChainParams = types.QueryWrkChainParams
+
 	// Msgs
 	MsgRegisterWrkChain    = types.MsgRegisterWrkChain
 	MsgRecordWrkChainBlock = types.MsgRecordWrkChainBlock
@@ -87,6 +90,8 @@ type (
 	WrkChain       = types.WrkChain
 	WrkChainExport = types.WrkChainExport
 	WrkChainBlock  = types.WrkChainBlock
+
+	WrkChains = types.WrkChains
 
 	// Queries
 	QueryResWrkChainBlockHashes = types.QueryResWrkChainBlockHashes

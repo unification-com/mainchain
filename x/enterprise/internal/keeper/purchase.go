@@ -23,7 +23,7 @@ func (k Keeper) GetHighestPurchaseOrderID(ctx sdk.Context) (purchaseOrderID uint
 	return purchaseOrderID, nil
 }
 
-// SetProposalID sets the new proposal ID to the store
+// SetHighestPurchaseOrderID sets the new proposal ID to the store
 func (k Keeper) SetHighestPurchaseOrderID(ctx sdk.Context, purchaseOrderID uint64) {
 	store := ctx.KVStore(k.storeKey)
 	// convert from uint64 to bytes for storage

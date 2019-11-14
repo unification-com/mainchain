@@ -84,7 +84,9 @@ type (
 	MsgRecordWrkChainBlock = types.MsgRecordWrkChainBlock
 
 	// Structs
-	WrkChain = types.WrkChain
+	WrkChain       = types.WrkChain
+	WrkChainExport = types.WrkChainExport
+	WrkChainBlock  = types.WrkChainBlock
 
 	// Queries
 	QueryResWrkChainBlockHashes = types.QueryResWrkChainBlockHashes

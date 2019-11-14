@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/tendermint/tendermint/libs/log"
 	"time"
 
@@ -123,11 +124,79 @@ func (k Keeper) GetWrkChainsIterator(ctx sdk.Context) sdk.Iterator {
 	return sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
 }
 
+// IterateWrkChains iterates over the all the wrkchain metadata and performs a callback function
+func (k Keeper) IterateWrkChains(ctx sdk.Context, cb func(wrkChain types.WrkChain) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var wc types.WrkChain
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &wc)
+
+		if cb(wc) {
+			break
+		}
+	}
+}
+
+// GetAllWrkChains returns all the registered wrkchain metadata from store
+func (keeper Keeper) GetAllWrkChains(ctx sdk.Context) (wrkChains types.WrkChains) {
+	keeper.IterateWrkChains(ctx, func(wc types.WrkChain) bool {
+		wrkChains = append(wrkChains, wc)
+		return false
+	})
+	return
+}
+
+// GetPurchaseOrdersFiltered retrieves purchase orders filtered by a given set of params which
+// include pagination parameters along a purchase order status.
+//
+// NOTE: If no filters are provided, all proposals will be returned in paginated
+// form.
+func (keeper Keeper) GetWrkChainsFiltered(ctx sdk.Context, params types.QueryWrkChainParams) []types.WrkChain {
+	wrkChains := keeper.GetAllWrkChains(ctx)
+	filteredWrkChains := make([]types.WrkChain, 0, len(wrkChains))
+
+	for _, wc := range wrkChains {
+		matchMoniker, matchOwner := true, true
+
+		if len(params.Moniker) > 0 {
+			matchMoniker = wc.Moniker == params.Moniker
+		}
+
+		if len(params.Owner) > 0 {
+			matchOwner = wc.Owner.String() == params.Owner.String()
+		}
+
+		if matchMoniker && matchOwner {
+			filteredWrkChains = append(filteredWrkChains, wc)
+		}
+	}
+
+	start, end := client.Paginate(len(filteredWrkChains), params.Page, params.Limit, 100)
+	if start < 0 || end < 0 {
+		filteredWrkChains = []types.WrkChain{}
+	} else {
+		filteredWrkChains = filteredWrkChains[start:end]
+	}
+
+	return filteredWrkChains
+}
+
 func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName string, genesisHash string, owner sdk.AccAddress) (uint64, sdk.Error) {
 
 	wrkChainId, err := k.GetHighestWrkChainID(ctx)
 	if err != nil {
 		return 0, err
+	}
+
+	params := types.NewQueryWrkChainParams(1, 1, moniker, sdk.AccAddress{})
+	wrkChains := k.GetWrkChainsFiltered(ctx, params)
+
+	if (len(wrkChains)) > 0 {
+		errMsg := fmt.Sprintf("wrkchain already registered with moniker '%s' - id: %d, owner: %s", moniker, wrkChains[0].WrkChainID, wrkChains[0].Owner)
+		return 0, types.ErrWrkChainAlreadyRegistered(k.codespace, errMsg)
 	}
 
 	wrkchain := k.GetWrkChain(ctx, wrkChainId)

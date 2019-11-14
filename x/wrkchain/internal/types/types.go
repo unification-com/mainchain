@@ -26,6 +26,20 @@ var (
 	FeesWrkChainRecordHash   = sdk.Coins{FeesWrkChainRecordHashCoin}
 )
 
+// Proposals is an array of proposal
+type WrkChains []WrkChain
+
+// String implements stringer interface
+func (w WrkChains) String() string {
+	out := "ID - [Moniker] 'Name' (Genesis) {LastBlock} Owner\n"
+	for _, wc := range w {
+		out += fmt.Sprintf("%d - [%s] '%s' (%s) {%d} %s\n",
+			wc.WrkChainID, wc.Moniker,
+			wc.Name, wc.GenesisHash, wc.LastBlock, wc.Owner)
+	}
+	return strings.TrimSpace(out)
+}
+
 // Wrkchain is a struct that contains all the metadata of a registered WRKChain
 type WrkChain struct {
 	WrkChainID  uint64         `json:"wrkchain_id"`

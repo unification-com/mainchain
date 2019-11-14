@@ -74,7 +74,7 @@ func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) sdk.Error 
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.WrkChainKey(wrkchain.WrkChainID), k.cdc.MustMarshalBinaryBare(wrkchain))
+	store.Set(types.WrkChainKey(wrkchain.WrkChainID), k.cdc.MustMarshalBinaryLengthPrefixed(wrkchain))
 
 	return nil
 }
@@ -102,7 +102,7 @@ func (k Keeper) GetWrkChain(ctx sdk.Context, wrkchainId uint64) types.WrkChain {
 	}
 	bz := store.Get(types.WrkChainKey(wrkchainId))
 	var wrkchain types.WrkChain
-	k.cdc.MustUnmarshalBinaryBare(bz, &wrkchain)
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &wrkchain)
 	return wrkchain
 }
 
@@ -159,7 +159,7 @@ func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlock types.WrkChainBl
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.WrkChainBlockKey(wrkchainBlock.WrkChainID, wrkchainBlock.Height), k.cdc.MustMarshalBinaryBare(wrkchainBlock))
+	store.Set(types.WrkChainBlockKey(wrkchainBlock.WrkChainID, wrkchainBlock.Height), k.cdc.MustMarshalBinaryLengthPrefixed(wrkchainBlock))
 
 	return nil
 }
@@ -189,7 +189,7 @@ func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, height uint
 
 	bz := store.Get(blockKey)
 	var wrkchainBlock types.WrkChainBlock
-	k.cdc.MustUnmarshalBinaryBare(bz, &wrkchainBlock)
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &wrkchainBlock)
 	return wrkchainBlock
 }
 
@@ -203,7 +203,7 @@ func (k Keeper) GetWrkChainBlockHashes(ctx sdk.Context, wrkchainId uint64) []typ
 
 	for ; iterator.Valid(); iterator.Next() {
 		var block types.WrkChainBlock
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &block)
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &block)
 		wrkchainBlocks = append(wrkchainBlocks, block)
 	}
 

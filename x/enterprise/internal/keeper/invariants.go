@@ -29,7 +29,7 @@ func ModuleAccountInvariant(keeper Keeper) sdk.Invariant {
 		lockedIterator := keeper.GetAllLockedUndAccountsIterator(ctx)
 		for ; lockedIterator.Valid(); lockedIterator.Next() {
 			var l types.LockedUnd
-			keeper.cdc.MustUnmarshalBinaryBare(lockedIterator.Value(), &l)
+			keeper.cdc.MustUnmarshalBinaryLengthPrefixed(lockedIterator.Value(), &l)
 			lockedByAccount = lockedByAccount.Add(l.Amount)
 		}
 

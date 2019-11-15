@@ -33,7 +33,7 @@ type FeeTx interface {
 type CorrectWrkChainFeeDecorator struct {
 	ak  auth.AccountKeeper
 	wck Keeper
-	ek enterprise.Keeper
+	ek  enterprise.Keeper
 }
 
 func NewWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper Keeper, enterpriseKeeper enterprise.Keeper) CorrectWrkChainFeeDecorator {

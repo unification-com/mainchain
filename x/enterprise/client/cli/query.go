@@ -136,7 +136,7 @@ $ %s query enterprise orders --page=2 --limit=100
 	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of purchase orders to query for")
 	cmd.Flags().String(FlagPurchaseOrderStatus, "", "(optional) filter purchase orders by status, status: raised/accept/reject/complete")
 	cmd.Flags().String(FlagPurchaser, "", "(optional) filter purchase orders raised by address")
-    return cmd
+	return cmd
 }
 
 // GetCmdGetPurchaseOrderByID queries a purchase order given an ID

@@ -9,9 +9,10 @@ const (
 
 	CodeInvalidGenesis = 101
 
-	CodeWrkChainDoesNotExist      = 201
-	CodeWrkChainAlreadyRegistered = 202
-	CodeNotWrkChainOwner          = 203
+	CodeWrkChainDoesNotExist         = 201
+	CodeWrkChainAlreadyRegistered    = 202
+	CodeWrkChainBlockAlreadyRecorded = 203
+	CodeNotWrkChainOwner             = 204
 
 	CodeWrkChainInsufficientFee = 301
 	CodeWrkChainTooMuchFee      = 302
@@ -34,6 +35,10 @@ func ErrNotWrkChainOwner(codespace sdk.CodespaceType, msg string) sdk.Error {
 
 func ErrWrkChainAlreadyRegistered(codespace sdk.CodespaceType, msg string) sdk.Error {
 	return sdk.NewError(codespace, CodeWrkChainAlreadyRegistered, msg)
+}
+
+func ErrWrkChainBlockAlreadyRecorded(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeWrkChainBlockAlreadyRecorded, msg)
 }
 
 func ErrInsufficientWrkChainFee(codespace sdk.CodespaceType, msg string) sdk.Error {

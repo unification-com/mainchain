@@ -50,11 +50,6 @@ func (ar LockedUndRetriever) GetLockedUndHeight(addr sdk.AccAddress) (types.Lock
 	return lockedUnd, height, nil
 }
 
-
-
-
-
-
 // TotalSupplyRetriever defines the properties of a type that can be used to
 // retrieve total UND supply.
 type TotalSupplyRetriever struct {

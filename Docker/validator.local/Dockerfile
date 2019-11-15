@@ -1,4 +1,4 @@
-FROM golang:1.13.1-alpine
+FROM golang:1.13.3-alpine
 
 RUN apk update && \
     apk upgrade && \
@@ -13,17 +13,9 @@ ENV LEDGER_ENABLED="false"
 RUN mkdir -p $GOPATH/src/github.com/unification-com
 RUN go get -u github.com/go-delve/delve/cmd/dlv
 
-WORKDIR $GOPATH/src/github.com/unification-com/
-RUN git clone https://github.com/unification-com/mainchain-cosmos.git
-WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
-
-RUN make deps
-
 COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos
 
 WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
-
-RUN more $GOPATH/src/github.com/unification-com/mainchain-cosmos/go.mod
 
 ARG WITH_DELVE="no"
 ENV WITH_DELVE=$WITH_DELVE

@@ -261,7 +261,7 @@ $ %s query supply
 				version.ClientName,
 			),
 		),
-		Args:  cobra.NoArgs,
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 

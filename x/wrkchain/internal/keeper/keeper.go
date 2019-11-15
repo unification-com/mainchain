@@ -3,11 +3,9 @@ package keeper
 import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/tendermint/tendermint/libs/log"
-	"time"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/libs/log"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
 
@@ -66,12 +64,12 @@ func (k Keeper) SetHighestWrkChainID(ctx sdk.Context, wrkChainID uint64) {
 func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) sdk.Error {
 	// must have an owner
 	if wrkchain.Owner.Empty() {
-		return sdk.ErrInternal("unable to register WRKChain - must have an owner")
+		return sdk.ErrInternal("unable to set WRKChain - must have an owner")
 	}
 
 	//must have an ID
 	if wrkchain.WrkChainID == 0 {
-		return sdk.ErrInternal("unable to register WRKChain - id must be positive non-zero")
+		return sdk.ErrInternal("unable to set WRKChain - id must be positive non-zero")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -87,11 +85,11 @@ func (k Keeper) SetLastBlock(ctx sdk.Context, wrkchainId uint64, blockNum uint64
 		// doesn't exist. Don't update
 		return types.ErrWrkChainDoesNotExist(k.codespace, "WRKChain does not exist")
 	}
-	if blockNum <= wrkchain.LastBlock {
-		return sdk.ErrInternal("this block must be greater than last block")
+	if blockNum > wrkchain.LastBlock {
+		wrkchain.LastBlock = blockNum
+		return k.SetWrkChain(ctx, wrkchain)
 	}
-	wrkchain.LastBlock = blockNum
-	return k.SetWrkChain(ctx, wrkchain)
+	return nil
 }
 
 // Gets the entire WRKChain metadata struct for a wrkchainId
@@ -207,6 +205,8 @@ func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName s
 	wrkchain.Owner = owner
 	wrkchain.Name = wrkchainName
 	wrkchain.GenesisHash = genesisHash
+	wrkchain.RegisterHeight = ctx.BlockHeight()
+	wrkchain.RegisterTime = ctx.BlockTime().Unix()
 
 	err = k.SetWrkChain(ctx, wrkchain)
 	if err != nil {
@@ -296,6 +296,11 @@ func (k Keeper) RecordWrkchainHashes(
 	}
 
 	wrkchain := k.GetWrkChain(ctx, wrkchainId)
+
+	if k.IsWrkChainBlockRecorded(ctx, wrkchain.WrkChainID, height) {
+		return types.ErrWrkChainBlockAlreadyRecorded(k.codespace, "Block hashes already recorded for this height")
+	}
+
 	wrkchainBlock := k.GetWrkChainBlock(ctx, wrkchain.WrkChainID, height)
 
 	wrkchainBlock.WrkChainID = wrkchain.WrkChainID
@@ -306,7 +311,8 @@ func (k Keeper) RecordWrkchainHashes(
 	wrkchainBlock.Hash2 = hash2
 	wrkchainBlock.Hash3 = hash3
 	wrkchainBlock.Owner = owner
-	wrkchainBlock.SubmitTime = uint64(time.Now().Unix()) // todo - change to block time?
+	wrkchainBlock.SubmitTime = ctx.BlockTime().Unix()
+	wrkchainBlock.SubmitHeight = ctx.BlockHeight()
 
 	err := k.SetWrkChainBlock(ctx, wrkchainBlock)
 

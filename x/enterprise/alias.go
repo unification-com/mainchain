@@ -57,6 +57,10 @@ var (
 
 	NewQueryPurchaseOrdersParams = types.NewQueryPurchaseOrdersParams
 
+	// Msg functions
+	NewMsgUndPurchaseOrder        = types.NewMsgUndPurchaseOrder
+	NewMsgProcessUndPurchaseOrder = types.NewMsgProcessUndPurchaseOrder
+
 	// Errors
 	ErrInvalidDecision     = types.ErrInvalidDecision
 	ErrInvalidDenomination = types.ErrInvalidDenomination

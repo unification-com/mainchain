@@ -83,3 +83,7 @@ und start --inv-check-period 1
 Invariance Tx can be sent using:
 
 undcli tx crisis invariant-broken enterprise module-account --from wrktest
+
+## Simulation
+
+go test -mod=readonly ./simapp -run=TestFullAppSimulation -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5  -v -timeout 24h

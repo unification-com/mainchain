@@ -16,6 +16,7 @@ func (h QueryResWrkChainBlockHashes) String() (out string) {
 	}
 	return strings.TrimSpace(out)
 }
+
 // QueryResWrkChains Queries wrkchains
 type QueryResWrkChains []WrkChain
 
@@ -26,7 +27,6 @@ func (wc QueryResWrkChains) String() (out string) {
 	}
 	return strings.TrimSpace(out)
 }
-
 
 // QueryWrkChainParams Params for query 'custom/wrkchain/registered'
 type QueryWrkChainParams struct {

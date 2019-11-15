@@ -54,8 +54,8 @@ var (
 	NewLockedUndRetriever   = keeper.NewLockedUndRetriever
 	NewTotalSupplyRetriever = keeper.NewTotalSupplyRetriever
 
-	RegisterInvariants            = keeper.RegisterInvariants
-	AllInvariants                 = keeper.AllInvariants
+	RegisterInvariants = keeper.RegisterInvariants
+	AllInvariants      = keeper.AllInvariants
 
 	NewQueryPurchaseOrdersParams = types.NewQueryPurchaseOrdersParams
 

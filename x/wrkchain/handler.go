@@ -52,7 +52,7 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 
 	return sdk.Result{
 		Events: ctx.EventManager().Events(),
-		Data: GetWrkChainIDBytes(wrkChainID),
+		Data:   GetWrkChainIDBytes(wrkChainID),
 	}
 }
 

@@ -13,11 +13,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	sim "github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	"github.com/unification-com/mainchain-cosmos/x/mint/client/cli"
 	"github.com/unification-com/mainchain-cosmos/x/mint/client/rest"
 	"github.com/unification-com/mainchain-cosmos/x/mint/simulation"
-	sim "github.com/cosmos/cosmos-sdk/x/simulation"
 )
 
 var (
@@ -95,7 +95,7 @@ type AppModule struct {
 	AppModuleBasic
 	AppModuleSimulation
 
-	keeper Keeper
+	keeper           Keeper
 	enterpriseKeeper enterprise.Keeper
 }
 
@@ -105,7 +105,7 @@ func NewAppModule(keeper Keeper, enterpriseKeeper enterprise.Keeper) AppModule {
 		AppModuleBasic:      AppModuleBasic{},
 		AppModuleSimulation: AppModuleSimulation{},
 		keeper:              keeper,
-		enterpriseKeeper:	 enterpriseKeeper,
+		enterpriseKeeper:    enterpriseKeeper,
 	}
 }
 

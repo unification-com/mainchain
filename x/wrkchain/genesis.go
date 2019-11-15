@@ -17,6 +17,7 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 
 func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 	var records []WrkChainExport
+	initialWrkChainID, _ := k.GetHighestWrkChainID(ctx)
 
 	iterator := k.GetWrkChainsIterator(ctx)
 	for ; iterator.Valid(); iterator.Next() {
@@ -45,5 +46,8 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		wrkChain := k.GetWrkChain(ctx, num)
 		records = append(records, WrkChainExport{WrkChain: wrkChain, WrkChainBlocks: hashes})
 	}
-	return GenesisState{WrkChains: records}
+	return GenesisState{
+		StartingWrkChainID: initialWrkChainID,
+		WrkChains: records,
+	}
 }

@@ -58,15 +58,15 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 
 func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordWrkChainBlock) sdk.Result {
 	if !keeper.IsWrkChainRegistered(ctx, msg.WrkChainID) { // Checks if the WrkChain is already registered
-		return sdk.ErrUnauthorized("WRKChain has not been registered yet").Result() // If not, throw an error
+		return types.ErrWrkChainDoesNotExist(keeper.Codespace(), "WRKChain has not been registered yet").Result() // If not, throw an error
 	}
 
 	if !keeper.IsAuthorisedToRecord(ctx, msg.WrkChainID, msg.Owner) {
-		return sdk.ErrUnauthorized("you are not the owner of this WRKChain").Result()
+		return types.ErrNotWrkChainOwner(keeper.Codespace(), "you are not the owner of this WRKChain").Result()
 	}
 
 	if keeper.IsWrkChainBlockRecorded(ctx, msg.WrkChainID, msg.Height) {
-		return sdk.ErrUnauthorized("WRKChain block hashes have already been recorded for this height").Result()
+		return types.ErrWrkChainBlockAlreadyRecorded(keeper.Codespace(), "WRKChain block hashes have already been recorded for this height").Result()
 	}
 
 	err := keeper.RecordWrkchainHashes(ctx, msg.WrkChainID, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3, msg.Owner)
@@ -89,5 +89,4 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}
-
 }

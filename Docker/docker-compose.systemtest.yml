@@ -16,6 +16,38 @@ services:
     ports:
       - "26661:26661"
 
+  node2:
+    hostname: node2
+    build:
+      context: ..
+      dockerfile: ./Docker/validator.systemtest/Dockerfile
+      args:
+        WITH_DELVE: "no"
+        GO_VERSION: 1.13.1
+    container_name: node2
+    command: python -m mainnet.systemtest.upgrade
+    networks:
+      mainchain_devnet:
+        ipv4_address: 172.25.0.4
+    ports:
+      - "26662:26662"
+
+  node3:
+    hostname: node3
+    build:
+      context: ..
+      dockerfile: ./Docker/validator.systemtest/Dockerfile
+      args:
+        WITH_DELVE: "no"
+        GO_VERSION: 1.13.1
+    container_name: node3
+    command: python -m mainnet.systemtest.upgrade
+    networks:
+      mainchain_devnet:
+        ipv4_address: 172.25.0.5
+    ports:
+      - "26663:26663"
+
 networks:
   mainchain_devnet:
     ipam:

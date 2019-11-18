@@ -58,6 +58,13 @@ devnet-pristine:
 devnet-pristine-down:
 	docker-compose -f Docker/docker-compose.upstream.yml down
 
+devnet-systemtest:
+	docker-compose -f Docker/docker-compose.systemtest.yml down --remove-orphans
+	docker-compose -f Docker/docker-compose.systemtest.yml up --build
+
+devnet-systemtest-down:
+	docker-compose -f Docker/docker-compose.systemtest.yml down
+
 # Used during active development
 
 deps:

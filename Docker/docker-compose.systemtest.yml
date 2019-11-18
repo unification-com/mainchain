@@ -48,6 +48,20 @@ services:
     ports:
       - "26663:26663"
 
+  systemtest:
+    hostname: systemtest
+    build:
+      context: ..
+      dockerfile: ./Docker/validator.systemtest/Dockerfile
+      args:
+        WITH_DELVE: "no"
+        GO_VERSION: 1.13.1
+    container_name: systemtest
+    command: python -m mainnet.systemtest.wrkchain
+    networks:
+      mainchain_devnet:
+        ipv4_address: 172.25.0.6
+
 networks:
   mainchain_devnet:
     ipam:

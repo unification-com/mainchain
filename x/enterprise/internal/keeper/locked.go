@@ -14,7 +14,7 @@ func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 	bz := store.Get(types.TotalLockedUndKey)
 
 	if bz == nil {
-		return sdk.NewInt64Coin(types.DefaultDenomination, 0)
+		return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
 	}
 
 	var totalLocked sdk.Coin
@@ -25,8 +25,8 @@ func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 // GetTotalUnLockedUnd returns the amount of unlocked UND - i.e. in active
 // circulation (totalSupply - locked)
 func (k Keeper) GetTotalUnLockedUnd(ctx sdk.Context) sdk.Coin {
-	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(types.DefaultDenomination)
-	total := sdk.NewCoin(types.DefaultDenomination, supply)
+	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(k.GetParamDenom(ctx))
+	total := sdk.NewCoin(k.GetParamDenom(ctx), supply)
 	locked := k.GetTotalLockedUnd(ctx)
 
 	unlocked := total.Sub(locked)
@@ -36,20 +36,20 @@ func (k Keeper) GetTotalUnLockedUnd(ctx sdk.Context) sdk.Coin {
 
 // GetTotalUndSupply returns the total UND in supply, obtained from the supply module's keeper
 func (k Keeper) GetTotalUndSupply(ctx sdk.Context) sdk.Coin {
-	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(types.DefaultDenomination)
-	total := sdk.NewCoin(types.DefaultDenomination, supply)
+	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(k.GetParamDenom(ctx))
+	total := sdk.NewCoin(k.GetParamDenom(ctx), supply)
 	return total
 }
 
 // GetTotalSupplyIncludingLockedUnd returns information including total UND supply, total locked and unlocked
 func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSupply {
-	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(types.DefaultDenomination)
-	total := sdk.NewCoin(types.DefaultDenomination, supply)
+	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(k.GetParamDenom(ctx))
+	total := sdk.NewCoin(k.GetParamDenom(ctx), supply)
 	locked := k.GetTotalLockedUnd(ctx)
 
 	unlocked := total.Sub(locked)
 
-	totalSupply := types.NewUndSupply()
+	totalSupply := types.NewUndSupply(k.GetParamDenom(ctx))
 	totalSupply.Locked = locked
 	totalSupply.Unlocked = unlocked
 	totalSupply.Total = total
@@ -118,8 +118,8 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		}
 
 		// decrement the tracked locked UND
-		feeNund := feesToPay.AmountOf(types.DefaultDenomination)
-		feeNundCoin := sdk.NewCoin(types.DefaultDenomination, feeNund)
+		feeNund := feesToPay.AmountOf(k.GetParamDenom(ctx))
+		feeNundCoin := sdk.NewCoin(k.GetParamDenom(ctx), feeNund)
 		err = k.DecrementLockedUnd(ctx, feePayer, feeNundCoin)
 		if err != nil {
 			return err
@@ -186,7 +186,7 @@ func (k Keeper) GetLockedUndForAccount(ctx sdk.Context, address sdk.AccAddress) 
 
 	if !k.AccountHasLockedUnd(ctx, address) {
 		// return a new empty EnterpriseUndPurchaseOrder struct
-		return types.NewLockedUnd(address)
+		return types.NewLockedUnd(address, k.GetParamDenom(ctx))
 	}
 
 	bz := store.Get(types.AddressStoreKey(address))
@@ -274,7 +274,7 @@ func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 	_, hasNeg := lockedCoins.SafeSub(subAmountCoins)
 
 	if hasNeg {
-		lockedUnd.Amount = sdk.NewInt64Coin(types.DefaultDenomination, 0)
+		lockedUnd.Amount = sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
 	} else {
 		lockedUnd.Amount = lockedUnd.Amount.Sub(amount)
 	}
@@ -290,7 +290,7 @@ func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 	_, hasNeg = totalLockedCoins.SafeSub(subAmountCoins)
 
 	if hasNeg {
-		err = k.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(types.DefaultDenomination, 0))
+		err = k.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(k.GetParamDenom(ctx), 0))
 		if err != nil {
 			return err
 		}

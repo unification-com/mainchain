@@ -2,7 +2,9 @@ package keeper
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 )
 
@@ -37,17 +39,35 @@ func (ar LockedUndRetriever) GetLockedUnd(addr sdk.AccAddress) (types.LockedUnd,
 // or decoding fails.
 func (ar LockedUndRetriever) GetLockedUndHeight(addr sdk.AccAddress) (types.LockedUnd, int64, error) {
 
+	params, _, err := ar.getParams()
+	if err != nil {
+		return types.NewLockedUnd(addr, undtypes.DefaultDenomination), 0, err
+	}
+
 	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", types.QuerierRoute, QueryGetLocked, addr.String()), nil)
 	if err != nil {
-		return types.NewLockedUnd(addr), 0, err
+		return types.NewLockedUnd(addr, params.Denom), 0, err
 	}
 
 	var lockedUnd types.LockedUnd
 	if err := types.ModuleCdc.UnmarshalJSON(res, &lockedUnd); err != nil {
-		return types.NewLockedUnd(addr), height, err
+		return types.NewLockedUnd(addr, params.Denom), height, err
 	}
 
 	return lockedUnd, height, nil
+}
+
+func (ar LockedUndRetriever) getParams() (types.Params, int64, error) {
+	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryParameters), nil)
+	if err != nil {
+		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+	}
+
+	var params types.Params
+	if err := types.ModuleCdc.UnmarshalJSON(res, &params); err != nil {
+		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+	}
+	return params, height, nil
 }
 
 // TotalSupplyRetriever defines the properties of a type that can be used to
@@ -73,15 +93,70 @@ func (ar TotalSupplyRetriever) GetTotalSupply() (types.UndSupply, error) {
 // or decoding fails.
 func (ar TotalSupplyRetriever) GetTotalSupplyHeight() (types.UndSupply, int64, error) {
 
+	params, _, err := ar.getParams()
+	if err != nil {
+		return types.NewUndSupply(undtypes.DefaultDenomination), 0, err
+	}
+
 	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryTotalSupply), nil)
 	if err != nil {
-		return types.NewUndSupply(), 0, err
+		return types.NewUndSupply(params.Denom), 0, err
 	}
 
 	var totalSupply types.UndSupply
 	if err := types.ModuleCdc.UnmarshalJSON(res, &totalSupply); err != nil {
-		return types.NewUndSupply(), height, err
+		return types.NewUndSupply(params.Denom), height, err
 	}
 
 	return totalSupply, height, nil
+}
+
+func (ar TotalSupplyRetriever) getParams() (types.Params, int64, error) {
+	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryParameters), nil)
+	if err != nil {
+		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+	}
+
+	var params types.Params
+	if err := types.ModuleCdc.UnmarshalJSON(res, &params); err != nil {
+		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+	}
+	return params, height, nil
+}
+
+
+// ParamsRetriever defines the properties of a type that can be used to
+// retrieve enterprise params.
+type ParamsRetriever struct {
+	querier NodeQuerier
+}
+
+// NewParamsRetriever initialises a new ParamsRetriever instance.
+func NewParamsRetriever(querier NodeQuerier) ParamsRetriever {
+	return ParamsRetriever{querier: querier}
+}
+
+// GetParams queries for parameters. An
+// error is returned if the query or decoding fails.
+func (ar ParamsRetriever) GetParams() (types.Params, error) {
+	params, _, err := ar.GetParamsHeight()
+	return params, err
+}
+
+// GetParamsHeight queries for parameters. Returns the
+// height of the query with the params. An error is returned if the query
+// or decoding fails.
+func (ar ParamsRetriever) GetParamsHeight() (types.Params, int64, error) {
+
+	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryParameters), nil)
+	if err != nil {
+		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+	}
+
+	var params types.Params
+	if err := types.ModuleCdc.UnmarshalJSON(res, &params); err != nil {
+		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+	}
+
+	return params, height, nil
 }

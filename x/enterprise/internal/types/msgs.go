@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -44,9 +43,6 @@ func (msg MsgUndPurchaseOrder) ValidateBasic() sdk.Error {
 	}
 	if msg.Amount.IsNegative() {
 		return sdk.ErrInvalidCoins("amount must be a positive value")
-	}
-	if msg.Amount.Denom != DefaultDenomination {
-		return sdk.ErrInvalidCoins(fmt.Sprintf("denomination must be in %s", DefaultDenomination))
 	}
 	return nil
 }

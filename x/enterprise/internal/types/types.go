@@ -14,7 +14,6 @@ type (
 
 const (
 	DefaultDenomination                   = undtypes.DefaultDenomination
-	BaseDenomination                      = undtypes.BaseDenomination
 	DefaultStartingPurchaseOrderID uint64 = 1 // used in init genesis
 
 	// Valid Purchase Order statuses
@@ -190,10 +189,10 @@ type LockedUnd struct {
 	Amount sdk.Coin       `json:"amount"`
 }
 
-func NewLockedUnd(owner sdk.AccAddress) LockedUnd {
+func NewLockedUnd(owner sdk.AccAddress, denom string) LockedUnd {
 	return LockedUnd{
 		Owner:  owner,
-		Amount: sdk.NewInt64Coin(DefaultDenomination, 0),
+		Amount: sdk.NewInt64Coin(denom, 0),
 	}
 }
 
@@ -209,11 +208,11 @@ type UndSupply struct {
 	Total    sdk.Coin `json:"total_supply"`
 }
 
-func NewUndSupply() UndSupply {
+func NewUndSupply(denom string) UndSupply {
 	return UndSupply{
-		Locked:   sdk.NewInt64Coin(DefaultDenomination, 0),
-		Unlocked: sdk.NewInt64Coin(DefaultDenomination, 0),
-		Total:    sdk.NewInt64Coin(DefaultDenomination, 0),
+		Locked:   sdk.NewInt64Coin(denom, 0),
+		Unlocked: sdk.NewInt64Coin(denom, 0),
+		Total:    sdk.NewInt64Coin(denom, 0),
 	}
 }
 

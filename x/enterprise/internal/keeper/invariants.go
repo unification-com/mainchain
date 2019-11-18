@@ -24,7 +24,8 @@ func ModuleAccountInvariant(keeper Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 
 		totalLocked := sdk.NewCoins(keeper.GetTotalLockedUnd(ctx))
-		lockedByAccount := sdk.NewInt64Coin(types.DefaultDenomination, 0)
+
+		lockedByAccount := sdk.NewInt64Coin(keeper.GetParamDenom(ctx), 0)
 
 		lockedIterator := keeper.GetAllLockedUndAccountsIterator(ctx)
 		for ; lockedIterator.Valid(); lockedIterator.Next() {

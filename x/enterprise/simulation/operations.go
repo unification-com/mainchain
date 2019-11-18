@@ -66,7 +66,15 @@ func SimulateMsgProcessUndPurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) 
 		entAcc := GenerateEntSourceSimAccount()
 		account := ak.GetAccount(ctx, entAcc.Address)
 
-		rndPo := simulation.RandIntBetween(r, 0, len(raisedPos))
+		if len(raisedPos) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		rndPo := 0
+		if len(raisedPos) > 1 {
+			rndPo = rand.Intn(len(raisedPos) - 1)
+		}
+
 		po := raisedPos[rndPo]
 
 		coins := account.SpendableCoins(ctx.BlockTime())

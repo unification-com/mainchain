@@ -71,6 +71,7 @@ func AppStateFn(cdc *codec.Codec, simManager *module.SimulationManager) simulati
 			appState, simAccs = AppStateRandomizedFn(simManager, r, cdc, accs, genesisTimestamp, appParams)
 		}
 
+		//fmt.Printf("appState: %s", appState)
 		return appState, simAccs, chainID, genesisTimestamp
 	}
 }
@@ -127,6 +128,7 @@ func AppStateRandomizedFn(
 	simManager.GenerateGenesisStates(simState)
 
 	appState, err := cdc.MarshalJSON(genesisState)
+
 	if err != nil {
 		panic(err)
 	}

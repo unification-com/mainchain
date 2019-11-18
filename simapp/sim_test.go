@@ -16,14 +16,12 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	banksim "github.com/cosmos/cosmos-sdk/x/bank/simulation"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	distrsim "github.com/cosmos/cosmos-sdk/x/distribution/simulation"
-	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -31,8 +29,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingsim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
 	entsim "github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
-
+	"github.com/unification-com/mainchain-cosmos/x/mint"
+	wrkchainsim "github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
 )
 
 // Get flags every time the simulator is run
@@ -191,11 +191,33 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 				var v int
 				ap.GetOrGenerate(app.cdc, OpWeightMsgProcessUndPurchaseOrder, &v, nil,
 					func(_ *rand.Rand) {
-						v = 20
+						v = 80
 					})
 				return v
 			}(nil),
 			entsim.SimulateMsgProcessUndPurchaseOrder(app.AccountKeeper, app.EnterpriseKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRegisterWrkChain, &v, nil,
+					func(_ *rand.Rand) {
+						v = 20
+					})
+				return v
+			}(nil),
+			wrkchainsim.SimulateMsgRegisterWrkChain(app.AccountKeeper, app.WrkChainKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRecordWrkChainBlock, &v, nil,
+					func(_ *rand.Rand) {
+						v = 20
+					})
+				return v
+			}(nil),
+			wrkchainsim.SimulateMsgRecordWrkChainBlock(app.AccountKeeper, app.WrkChainKeeper),
 		},
 
 	}

@@ -18,4 +18,6 @@ const (
 	OpWeightMsgUnjail                      = "op_weight_msg_unjail"
 	OpWeightMsgRaisePurchaseOrder          = "op_weight_msg_purchase_enteprise_und"
 	OpWeightMsgProcessUndPurchaseOrder     = "op_weight_msg_process_enteprise_und_purchase_order"
+	OpWeightMsgRegisterWrkChain            = "op_weight_msg_register_wrkchain"
+	OpWeightMsgRecordWrkChainBlock         = "op_weight_msg_record_wrkchain_block"
 )

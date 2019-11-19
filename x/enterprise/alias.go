@@ -13,8 +13,6 @@ const (
 
 	DefaultCodespace = types.DefaultCodespace
 
-	DefaultDenomination = types.DefaultDenomination
-
 	QuerierRoute          = types.QuerierRoute
 	QueryParameters       = keeper.QueryParameters
 	QueryPurchaseOrders   = keeper.QueryPurchaseOrders
@@ -60,7 +58,8 @@ var (
 	NewQueryPurchaseOrdersParams = types.NewQueryPurchaseOrdersParams
 
 	// Errors
-	ErrInvalidDecision = types.ErrInvalidDecision
+	ErrInvalidDecision     = types.ErrInvalidDecision
+	ErrInvalidDenomination = types.ErrInvalidDenomination
 )
 
 type (

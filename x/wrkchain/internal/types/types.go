@@ -2,28 +2,19 @@ package types
 
 import (
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strings"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	undtypes "github.com/unification-com/mainchain-cosmos/types"
 )
 
 const (
 	// WRKChain fees, in nano UND
-	RegFee    = 1000000000000 // 1000 UND
-	RecordFee = 1000000000    // 1 UND
-	FeeDenom  = "nund"
+	RegFee    = 1000000000000                // 1000 UND - used in init genesis
+	RecordFee = 1000000000                   // 1 UND - used in init genesis
+	FeeDenom  = undtypes.DefaultDenomination // used in init genesis
 
 	DefaultStartingWrkChainID uint64 = 1 // used in init genesis
-)
-
-var (
-	// WRKChain fees in sdk.Coin (denom=und) format. Exported in alias.go
-	FeesBaseDenomination         = sdk.NewInt64Coin(FeeDenom, 0)
-	FeesWrkChainRegistrationCoin = sdk.NewInt64Coin(FeeDenom, RegFee)
-	FeesWrkChainRecordHashCoin   = sdk.NewInt64Coin(FeeDenom, RecordFee)
-
-	// WRKChain Fees in sdk.Coins[]. Exported in alias.go
-	FeesWrkChainRegistration = sdk.Coins{FeesWrkChainRegistrationCoin}
-	FeesWrkChainRecordHash   = sdk.Coins{FeesWrkChainRecordHashCoin}
 )
 
 // Proposals is an array of proposal

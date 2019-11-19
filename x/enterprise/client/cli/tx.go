@@ -51,8 +51,8 @@ Example:
 $ %s tx %s purchase 1000000000000%s --from wrktest
 $ %s tx %s purchase 1%s --from wrktest
 `,
-				version.ClientName, types.ModuleName, types.DefaultDenomination,
-				version.ClientName, types.ModuleName, types.BaseDenomination,
+				version.ClientName, types.ModuleName, undtypes.DefaultDenomination,
+				version.ClientName, types.ModuleName, undtypes.BaseDenomination,
 			),
 		),
 		Args: cobra.ExactArgs(1),
@@ -66,10 +66,10 @@ $ %s tx %s purchase 1%s --from wrktest
 				return err
 			}
 
-			if amount.Denom == types.BaseDenomination {
+			if amount.Denom == undtypes.BaseDenomination {
 				// convert
 				fromAmount := amount.Amount.String()
-				converted, err := undtypes.ConvertUndDenomination(fromAmount, types.BaseDenomination, types.DefaultDenomination)
+				converted, err := undtypes.ConvertUndDenomination(fromAmount, undtypes.BaseDenomination, undtypes.DefaultDenomination)
 				if err != nil {
 					return err
 				}
@@ -79,8 +79,8 @@ $ %s tx %s purchase 1%s --from wrktest
 				}
 			}
 
-			if amount.Denom != types.DefaultDenomination {
-				return sdk.ErrInvalidCoins(fmt.Sprintf("denomination should be %s", types.DefaultDenomination))
+			if amount.Denom != undtypes.DefaultDenomination {
+				return sdk.ErrInvalidCoins(fmt.Sprintf("denomination should be %s", undtypes.DefaultDenomination))
 			}
 
 			msg := types.NewMsgUndPurchaseOrder(cliCtx.GetFromAddress(), amount)

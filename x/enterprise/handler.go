@@ -23,6 +23,10 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) sdk.Result {
 
+	if msg.Amount.Denom != k.GetParamDenom(ctx) {
+		return ErrInvalidDenomination(k.Codespace(), fmt.Sprintf("denomination must be %s", k.GetParamDenom(ctx))).Result()
+	}
+
 	purchaseOrderID, err := k.RaiseNewPurchaseOrder(ctx, msg.Purchaser, msg.Amount)
 
 	if err != nil {

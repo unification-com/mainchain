@@ -11,6 +11,7 @@ import (
 
 // query endpoints supported by the wrkchain Querier
 const (
+	QueryParameters          = "params"
 	QueryWrkChain            = "get"
 	QueryWrkChains           = "wrkchains"
 	QueryWrkChainBlock       = "get-block"
@@ -21,6 +22,8 @@ const (
 func NewQuerier(keeper Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
 		switch path[0] {
+		case QueryParameters:
+			return queryParams(ctx, keeper)
 		case QueryWrkChain:
 			return queryWrkChain(ctx, path[1:], req, keeper)
 		case QueryWrkChains:
@@ -33,6 +36,17 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return nil, sdk.ErrUnknownRequest("unknown wrkchain query endpoint")
 		}
 	}
+}
+
+func queryParams(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
+	params := k.GetParams(ctx)
+
+	res, err := codec.MarshalJSONIndent(k.cdc, params)
+	if err != nil {
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
+	}
+
+	return res, nil
 }
 
 // nolint: unparam

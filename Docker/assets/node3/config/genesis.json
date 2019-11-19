@@ -37,6 +37,11 @@
       "missed_blocks": {}
     },
     "wrkchain": {
+      "params": {
+        "fee_register": "1000000000000",
+        "fee_record": "1000000000",
+        "denom": "nund"
+      },
       "starting_wrkchain_id": "1",
       "registered_wrkchains": []
     },
@@ -188,11 +193,12 @@
     },
     "enterprise": {
       "params": {
-        "ent_source": "und1v9hrlr95xclj8ehr4na5wrmpqc75sfyw6e0hsj"
+        "ent_source": "und1v9hrlr95xclj8ehr4na5wrmpqc75sfyw6e0hsj",
+        "denom": "nund"
       },
       "starting_purchase_order_id": "1",
-      "purchase_orders": [],
-      "locked_und": [],
+      "purchase_orders": null,
+      "locked_und": null,
       "total_locked": {
         "denom": "nund",
         "amount": "0"

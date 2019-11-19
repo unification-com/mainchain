@@ -8,6 +8,7 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
+	keeper.SetParams(ctx, data.Params)
 	keeper.SetHighestWrkChainID(ctx, data.StartingWrkChainID)
 
 	logger := ctx.Logger()
@@ -28,6 +29,7 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 }
 
 func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
+	params := k.GetParams(ctx)
 	var records []WrkChainExport
 	initialWrkChainID, _ := k.GetHighestWrkChainID(ctx)
 
@@ -59,7 +61,8 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		records = append(records, WrkChainExport{WrkChain: wrkChain, WrkChainBlocks: hashes})
 	}
 	return GenesisState{
+		Params:             params,
 		StartingWrkChainID: initialWrkChainID,
-		WrkChains: records,
+		WrkChains:          records,
 	}
 }

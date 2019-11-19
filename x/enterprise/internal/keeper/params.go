@@ -17,3 +17,7 @@ func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
+
+func (k Keeper) GetParamDenom(ctx sdk.Context) string {
+	return k.GetParams(ctx).Denom
+}

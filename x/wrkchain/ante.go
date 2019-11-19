@@ -59,7 +59,7 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 
 	// Check fees amount sent in Tx. Check during CheckTx
 	if ctx.IsCheckTx() && !simulate {
-		err := checkWrkchainFees(feeTx)
+		err := checkWrkchainFees(ctx, feeTx, wfd.wck)
 		if err != nil {
 			return ctx, err
 		}
@@ -80,19 +80,19 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	return next(ctx, tx, simulate)
 }
 
-func checkWrkchainFees(tx FeeTx) error {
+func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck Keeper) error {
 	msgs := tx.GetMsgs()
 	numMsgs := 0
-	expectedFees := FeesBaseDenomination
+	expectedFees := wck.GetZeroFeeAsCoin(ctx)
 
 	// go through Msgs wrapped in the Tx, and check for WRKChain messages
 	for _, msg := range msgs {
 		switch msg.(type) {
 		case MsgRegisterWrkChain:
-			expectedFees = expectedFees.Add(FeesWrkChainRegistrationCoin)
+			expectedFees = expectedFees.Add(wck.GetRegistrationFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
 		case MsgRecordWrkChainBlock:
-			expectedFees = expectedFees.Add(FeesWrkChainRecordHashCoin)
+			expectedFees = expectedFees.Add(wck.GetRecordFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
 		}
 	}

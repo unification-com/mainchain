@@ -25,10 +25,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { entAddress = GetEntSourceAddress() },
 	)
 
+	// NOTE: for simulation, we're using sdk.DefaultBondDenom ("stake"), since "stake" is hard-coded
+	// into the SDK's module simulation functions
 	entGenesis := types.NewGenesisState(
-		types.NewParams(entAddress),
+		types.NewParams(entAddress, sdk.DefaultBondDenom),
 		startingPurchaseOrderID,
-		sdk.NewInt64Coin(types.DefaultDenomination, 0),
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 	)
 
 	fmt.Printf("Selected randomly generated enterprise parameters:\n%s\n", codec.MustMarshalJSONIndent(simState.Cdc, entGenesis))

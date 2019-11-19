@@ -32,7 +32,7 @@ func SimulateMsgRaisePurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) simul
 
 		msg := types.NewMsgUndPurchaseOrder(
 			simAccount.Address,
-			sdk.NewInt64Coin(types.DefaultDenomination, int64(simulation.RandIntBetween(r, 100000000000, 1000000000000))),
+			sdk.NewInt64Coin(k.GetParamDenom(ctx), int64(simulation.RandIntBetween(r, 100000000000, 1000000000000))),
 		)
 
 		tx := helpers.GenTx(
@@ -105,13 +105,9 @@ func SimulateMsgProcessUndPurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) 
 }
 
 func randomDecision(r *rand.Rand) types.PurchaseOrderStatus {
-	rnd := simulation.RandIntBetween(r, 0, 1)
-	switch rnd {
-	case 0:
-		return types.StatusRejected
-	case 1:
-		return types.StatusAccepted
-	default:
+	rnd := simulation.RandIntBetween(r, 0, 100)
+	if rnd >= 50 {
 		return types.StatusAccepted
 	}
+	return types.StatusRejected
 }

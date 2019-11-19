@@ -36,7 +36,7 @@ func TestDecodeStore(t *testing.T) {
 	purchaseOrder.Amount = sdk.NewInt64Coin(types.DefaultDenomination, 100000000)
 	purchaseOrder.PurchaseOrderID = 1
 
-	lockedUnd := types.NewLockedUnd(delAddr1)
+	lockedUnd := types.NewLockedUnd(delAddr1, types.DefaultDenomination)
 	lockedUnd.Amount = sdk.NewInt64Coin(types.DefaultDenomination, 100000000)
 
 	totalLocked := sdk.NewInt64Coin(types.DefaultDenomination, 100000000)

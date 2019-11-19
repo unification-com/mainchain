@@ -2,7 +2,9 @@ package simulation
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
@@ -11,7 +13,12 @@ import (
 func RandomizedGenState(simState *module.SimulationState) {
 	startingWrkChainID := uint64(simState.Rand.Intn(100))
 
+
+
+	// NOTE: for simulation, we're using sdk.DefaultBondDenom ("stake"), since "stake" is hard-coded
+	// into the SDK's module simulation functions
 	wrkchainGenesis := types.NewGenesisState(
+		types.NewParams(1000000, 1000000, sdk.DefaultBondDenom),
 		startingWrkChainID,
 	)
 

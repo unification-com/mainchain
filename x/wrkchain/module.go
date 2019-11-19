@@ -2,6 +2,7 @@ package wrkchain
 
 import (
 	"encoding/json"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
 	"math/rand"
 
 	"github.com/gorilla/mux"
@@ -125,12 +126,12 @@ type AppModuleSimulation struct{}
 
 // RegisterStoreDecoder registers a decoder for auth module's types
 func (AppModuleSimulation) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	//sdr[StoreKey] = simulation.DecodeStore
+	sdr[StoreKey] = simulation.DecodeStore
 }
 
 // GenerateGenesisState creates a randomized GenState of the enterprise module
 func (AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState) {
-	//simulation.RandomizedGenState(simState)
+	simulation.RandomizedGenState(simState)
 }
 
 // RandomizedParams creates randomized auth param changes for the simulator.

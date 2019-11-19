@@ -146,6 +146,7 @@ func NewUndSimApp(
 	slashingSubspace := app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
 	crisisSubspace := app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
 	enterpriseSubspace := app.ParamsKeeper.Subspace(enterprise.DefaultParamspace)
+	wrkchainSubspace := app.ParamsKeeper.Subspace(wrkchain.DefaultParamspace)
 
 	// add keepers
 	app.AccountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
@@ -168,6 +169,7 @@ func NewUndSimApp(
 
 	app.WrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
+		wrkchainSubspace,
 		wrkchain.DefaultCodespace,
 		app.cdc,
 	)

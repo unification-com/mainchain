@@ -11,8 +11,24 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 )
 
-// SimAppChainID hardcoded chainID for simulation
-const SimAppChainID = "simulation-app"
+const (
+	SimAppChainID = "UND-Simulation-App" // SimAppChainID hardcoded chainID for simulation
+    charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+)
+
+var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func GenerateRandomStringWithCharset(length int, charset string) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
+func GenerateRandomString(length int) string {
+	return GenerateRandomStringWithCharset(length, charset)
+}
 
 // GenTx generates a signed mock transaction.
 func GenTx(msgs []sdk.Msg, feeAmt sdk.Coins, chainID string, accnums []uint64, seq []uint64, priv ...crypto.PrivKey) auth.StdTx {

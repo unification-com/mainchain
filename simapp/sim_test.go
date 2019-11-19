@@ -180,7 +180,7 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 				var v int
 				ap.GetOrGenerate(app.cdc, OpWeightMsgRaisePurchaseOrder, &v, nil,
 					func(_ *rand.Rand) {
-						v = 100
+						v = 80
 					})
 				return v
 			}(nil),
@@ -202,7 +202,7 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 				var v int
 				ap.GetOrGenerate(app.cdc, OpWeightMsgRegisterWrkChain, &v, nil,
 					func(_ *rand.Rand) {
-						v = 20
+						v = 40
 					})
 				return v
 			}(nil),
@@ -213,7 +213,7 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 				var v int
 				ap.GetOrGenerate(app.cdc, OpWeightMsgRecordWrkChainBlock, &v, nil,
 					func(_ *rand.Rand) {
-						v = 20
+						v = 100
 					})
 				return v
 			}(nil),
@@ -282,8 +282,6 @@ func TestFullAppSimulation(t *testing.T) {
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		// for memdb:
-		// fmt.Println("Database Size", db.Stats()["database.size"])
 		fmt.Println("\nGoLevelDB Stats")
 		fmt.Println(db.Stats()["leveldb.stats"])
 		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])

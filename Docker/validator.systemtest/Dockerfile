@@ -28,7 +28,6 @@ WORKDIR $GOPATH/src/github.com/unification-com
 
 RUN git clone https://github.com/unification-com/mainchain-cosmos.git
 WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
-
 RUN make install
 
 COPY Docker/assets /root/.und_mainchain
@@ -46,6 +45,10 @@ WORKDIR /ev-provision/src
 RUN pip install -r requirements.txt
 
 COPY ev-provision /ev-provision
+
+COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos
+WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
+RUN make install
 
 WORKDIR /ev-provision/src
 

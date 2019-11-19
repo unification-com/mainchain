@@ -13,8 +13,6 @@ import (
 func RandomizedGenState(simState *module.SimulationState) {
 	startingWrkChainID := uint64(simState.Rand.Intn(100))
 
-
-
 	// NOTE: for simulation, we're using sdk.DefaultBondDenom ("stake"), since "stake" is hard-coded
 	// into the SDK's module simulation functions
 	wrkchainGenesis := types.NewGenesisState(

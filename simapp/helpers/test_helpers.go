@@ -13,7 +13,7 @@ import (
 
 const (
 	SimAppChainID = "UND-Simulation-App" // SimAppChainID hardcoded chainID for simulation
-    charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+	charset       = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
 )
 
 var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))

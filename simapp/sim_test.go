@@ -219,7 +219,6 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 			}(nil),
 			wrkchainsim.SimulateMsgRecordWrkChainBlock(app.AccountKeeper, app.WrkChainKeeper),
 		},
-
 	}
 }
 

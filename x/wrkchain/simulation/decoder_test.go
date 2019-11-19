@@ -1,4 +1,5 @@
 package simulation
+
 import (
 	"fmt"
 	"testing"

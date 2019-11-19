@@ -13,11 +13,11 @@ import (
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
 )
 
 // Setup initializes a new UndSimApp. A Nop logger is set in UndSimApp.

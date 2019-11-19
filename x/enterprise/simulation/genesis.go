@@ -19,7 +19,7 @@ const (
 func RandomizedGenState(simState *module.SimulationState) {
 	startingPurchaseOrderID := uint64(simState.Rand.Intn(100))
 
-    var entAddress sdk.AccAddress
+	var entAddress sdk.AccAddress
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, EnterpriseSourceAddress, &entAddress, simState.Rand,
 		func(r *rand.Rand) { entAddress = GetEntSourceAddress() },

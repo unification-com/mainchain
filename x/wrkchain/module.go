@@ -21,8 +21,8 @@ import (
 
 // type check to ensure the interface is properly implemented
 var (
-	_ module.AppModule      = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModule           = AppModule{}
+	_ module.AppModuleBasic      = AppModuleBasic{}
 	_ module.AppModuleSimulation = AppModuleSimulation{}
 )
 
@@ -138,4 +138,3 @@ func (AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState
 func (AppModuleSimulation) RandomizedParams(r *rand.Rand) []sim.ParamChange {
 	return []sim.ParamChange{}
 }
-

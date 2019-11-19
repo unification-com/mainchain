@@ -28,4 +28,3 @@ func DecodeStore(cdc *codec.Codec, kvA, kvB cmn.KVPair) string {
 		panic(fmt.Sprintf("invalid wrkchain key prefix %X", kvA.Key[:1]))
 	}
 }
-

@@ -30,7 +30,8 @@ func SimulateMsgRegisterWrkChain(ak auth.AccountKeeper, k keeper.Keeper) simulat
 
 		coins := account.SpendableCoins(ctx.BlockTime())
 
-		coins, hasNeg := coins.SafeSub(fees)
+		_, hasNeg := coins.SafeSub(fees)
+
 		if hasNeg {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
@@ -60,7 +61,6 @@ func SimulateMsgRegisterWrkChain(ak auth.AccountKeeper, k keeper.Keeper) simulat
 
 	}
 }
-
 
 // SimulateMsgRecordWrkChainBlock generates a MsgRecordWrkChainBlock with random values
 // nolint: funlen
@@ -109,7 +109,8 @@ func SimulateMsgRecordWrkChainBlock(ak auth.AccountKeeper, k keeper.Keeper) simu
 		fees := k.GetRecordFeeAsCoins(ctx)
 
 		coins := account.SpendableCoins(ctx.BlockTime())
-		coins, hasNeg := coins.SafeSub(fees)
+		_, hasNeg := coins.SafeSub(fees)
+
 		if hasNeg {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}

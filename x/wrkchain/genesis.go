@@ -9,8 +9,20 @@ import (
 
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
 	keeper.SetHighestWrkChainID(ctx, data.StartingWrkChainID)
+
+	logger := ctx.Logger()
+
 	for _, record := range data.WrkChains {
-		keeper.SetWrkChain(ctx, record.WrkChain)
+		wrkChain := record.WrkChain
+		_ = keeper.SetWrkChain(ctx, wrkChain)
+		_, _ = keeper.RegisterWrkChain(ctx, wrkChain.Moniker, wrkChain.Name, wrkChain.GenesisHash, wrkChain.Owner)
+
+		logger.Info("Registering WRKChain", wrkChain.WrkChainID)
+
+		for _, block := range record.WrkChainBlocks {
+			logger.Info("Registering Block for WRKChain", wrkChain.WrkChainID, block.Height)
+			_ = keeper.RecordWrkchainHashes(ctx, block.WrkChainID, block.Height, block.BlockHash, block.ParentHash, block.Hash1, block.Hash2, block.Hash3, block.Owner)
+		}
 	}
 	return []abci.ValidatorUpdate{}
 }

@@ -26,7 +26,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/unification-com/mainchain-cosmos/app/ante"
-	"github.com/unification-com/mainchain-cosmos/simapp"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
@@ -305,12 +304,8 @@ func NewMainchainApp(
 // GenesisState represents chain state at the start of the chain. Any initial state (account balances) are stored here.
 type GenesisState map[string]json.RawMessage
 
-func NewDefaultGenesisState() GenesisState {
-	return ModuleBasics.DefaultGenesis()
-}
-
 func (app *mainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
-	var genesisState simapp.GenesisState
+	var genesisState GenesisState
 
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 

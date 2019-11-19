@@ -86,4 +86,17 @@ undcli tx crisis invariant-broken enterprise module-account --from wrktest
 
 ## Simulation
 
-go test -mod=readonly ./simapp -run=TestFullAppSimulation -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5  -v -timeout 24h
+go test -mod=readonly ./simapp \
+    -run=TestFullAppSimulation \
+    -Enabled=true \
+    -NumBlocks=500 \
+    -BlockSize=300 \
+    -Commit=true \
+    -Seed=24 \
+    -Period=1 \
+    -PrintAllInvariants=true \
+    -ExportParamsPath=/path/to/.simapp/params.json \
+    -ExportStatePath=/path/to/.simapp/state.json \
+    -ExportStatsPath=/path/to/.simapp/statistics.json \
+    -v \
+    -timeout 24h

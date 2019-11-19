@@ -16,7 +16,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	// NOTE: for simulation, we're using sdk.DefaultBondDenom ("stake"), since "stake" is hard-coded
 	// into the SDK's module simulation functions
 	wrkchainGenesis := types.NewGenesisState(
-		types.NewParams(1000000, 1000000, sdk.DefaultBondDenom),
+		types.NewParams(10000000, 10000000, sdk.DefaultBondDenom),
 		startingWrkChainID,
 	)
 

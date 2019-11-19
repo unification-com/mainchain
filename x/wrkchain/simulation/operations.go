@@ -2,7 +2,6 @@ package simulation
 
 import (
 	"errors"
-	"fmt"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -24,11 +23,10 @@ func SimulateMsgRegisterWrkChain(ak auth.AccountKeeper, k keeper.Keeper) simulat
 		simAccount, _ := simulation.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 
-		randSuffix := uint64(r.Intn(1000000))
-		moniker := "wrkchain_" + fmt.Sprint(randSuffix)
-		name := "WRKChain " + fmt.Sprint(randSuffix)
+		moniker := helpers.GenerateRandomString(16)
+		name := helpers.GenerateRandomString(16)
 
-		fees := types.FeesWrkChainRegistration
+		fees := k.GetRegistrationFeeAsCoins(ctx)
 
 		coins := account.SpendableCoins(ctx.BlockTime())
 
@@ -39,7 +37,7 @@ func SimulateMsgRegisterWrkChain(ak auth.AccountKeeper, k keeper.Keeper) simulat
 
 		msg := types.NewMsgRegisterWrkChain(
 			moniker,
-			"genesishash",
+			helpers.GenerateRandomString(32),
 			name,
 			simAccount.Address,
 		)
@@ -71,37 +69,44 @@ func SimulateMsgRecordWrkChainBlock(ak auth.AccountKeeper, k keeper.Keeper) simu
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simulation.Account, chainID string,
 	) (simulation.OperationMsg, []simulation.FutureOperation, error) {
 
-		simAccount, _ := simulation.RandomAcc(r, accs)
-		account := ak.GetAccount(ctx, simAccount.Address)
-
-		params := types.NewQueryWrkChainParams(1, 100, "", simAccount.Address)
-		registeredWrkChains := k.GetWrkChainsFiltered(ctx, params)
-
-		if len(registeredWrkChains) == 0 {
+		// randomly select a WRKChain
+		wrkChains := k.GetAllWrkChains(ctx)
+		if len(wrkChains) == 0 {
+			// nothing registered yet
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
 
-		// get a random wrkchain
 		rWc := 0
-		if len(registeredWrkChains) > 1 {
-			rWc = rand.Intn(len(registeredWrkChains) - 1)
+		if len(wrkChains) > 1 {
+			rWc = rand.Intn(len(wrkChains) - 1)
+		}
+		wrkChain := wrkChains[rWc]
+
+		ownerAddr := wrkChain.Owner
+		var simAccount simulation.Account
+
+		for _, ac := range accs {
+			if ac.Address.String() == ownerAddr.String() {
+				simAccount = ac
+			}
 		}
 
-		wrkChain := registeredWrkChains[rWc]
+		account := ak.GetAccount(ctx, ownerAddr)
+
 		height := wrkChain.LastBlock + 1
 
 		msg := types.NewMsgRecordWrkChainBlock(
 			wrkChain.WrkChainID,
 			height,
-			"blockhash",
-			"parenthash",
-			"hash1",
-			"hash2",
-			"hash3",
-			simAccount.Address,
+			helpers.GenerateRandomString(32),
+			helpers.GenerateRandomString(32),
+			helpers.GenerateRandomString(32),
+			helpers.GenerateRandomString(32),
+			helpers.GenerateRandomString(32),
+			ownerAddr,
 		)
 
-		fees := types.FeesWrkChainRecordHash
+		fees := k.GetRecordFeeAsCoins(ctx)
 
 		coins := account.SpendableCoins(ctx.BlockTime())
 		coins, hasNeg := coins.SafeSub(fees)

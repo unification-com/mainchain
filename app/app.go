@@ -143,6 +143,7 @@ func NewMainchainApp(
 	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 	enterpriseSubspace := app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
+	wrkchainSubspace := app.paramsKeeper.Subspace(wrkchain.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -219,6 +220,7 @@ func NewMainchainApp(
 
 	app.wrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
+		wrkchainSubspace,
 		wrkchain.DefaultCodespace,
 		app.cdc,
 	)

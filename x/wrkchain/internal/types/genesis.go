@@ -5,7 +5,8 @@ import (
 )
 
 // GenesisState - enterprise state
-type GenesisState struct { // enterprise params
+type GenesisState struct {
+	Params             Params           `json:"params" yaml:"params"`                             // wrkchain params
 	StartingWrkChainID uint64           `json:"starting_wrkchain_id" yaml:"starting_wrkchain_id"` // should be 1
 	WrkChains          []WrkChainExport `json:"registered_wrkchains"`
 }
@@ -16,8 +17,9 @@ type WrkChainExport struct {
 }
 
 // NewGenesisState creates a new GenesisState object
-func NewGenesisState(startingWrkChainID uint64) GenesisState {
+func NewGenesisState(params Params, startingWrkChainID uint64) GenesisState {
 	return GenesisState{
+		Params:             params,
 		StartingWrkChainID: startingWrkChainID,
 		WrkChains:          nil,
 	}
@@ -26,6 +28,7 @@ func NewGenesisState(startingWrkChainID uint64) GenesisState {
 // DefaultGenesisState creates a default GenesisState object
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
+		Params: DefaultParams(),
 		StartingWrkChainID: DefaultStartingWrkChainID,
 	}
 }
@@ -33,6 +36,11 @@ func DefaultGenesisState() GenesisState {
 // ValidateGenesis validates the provided genesis state to ensure the
 // expected invariants holds.
 func ValidateGenesis(data GenesisState) error {
+	err := ValidateParams(data.Params)
+	if err != nil {
+		return err
+	}
+
 	for _, record := range data.WrkChains {
 		if record.WrkChain.Owner == nil {
 			return fmt.Errorf("Invalid WrkChain: Owner: %s. Error: Missing Owner", record.WrkChain.Owner)

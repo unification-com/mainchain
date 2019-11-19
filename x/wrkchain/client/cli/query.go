@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -19,11 +20,37 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	wrkchainQueryCmd.AddCommand(client.GetCommands(
+		GetCmdQueryParams(cdc),
 		GetCmdWrkChain(storeKey, cdc),
 		GetCmdWrkChainBlock(storeKey, cdc),
 		GetCmdWrkChainBlockHashes(storeKey, cdc),
 	)...)
 	return wrkchainQueryCmd
+}
+
+// GetCmdQueryParams implements a command to return the current WRKChain parameters.
+func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "params",
+		Short: "Query the current WRKChain parameters",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryParameters)
+			res, _, err := cliCtx.QueryWithData(route, nil)
+			if err != nil {
+				return err
+			}
+
+			var params types.Params
+			if err := cdc.UnmarshalJSON(res, &params); err != nil {
+				return err
+			}
+
+			return cliCtx.PrintOutput(params)
+		},
+	}
 }
 
 // GetCmdWrkChain queries information about a wrkchain

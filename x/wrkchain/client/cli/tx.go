@@ -79,7 +79,13 @@ $ %s tx %s register MyWrkChain d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
-			txBldr = txBldr.WithFees(strconv.Itoa(types.RegFee) + types.FeeDenom)
+			paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+			wrkchainParams, err := paramsRetriever.GetParams()
+			if err != nil {
+				return err
+			}
+
+			txBldr = txBldr.WithFees(strconv.Itoa(int(wrkchainParams.FeeRegister)) + wrkchainParams.Denom)
 
 			msg := types.NewMsgRegisterWrkChain(args[0], args[1], args[2], cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()

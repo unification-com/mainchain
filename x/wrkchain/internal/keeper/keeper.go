@@ -5,21 +5,24 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/tendermint/tendermint/libs/log"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
-	storeKey  sdk.StoreKey // Unexposed key to access store from sdk.Context
-	codespace sdk.CodespaceType
-	cdc       *codec.Codec // The wire codec for binary encoding/decoding.
+	storeKey   sdk.StoreKey // Unexposed key to access store from sdk.Context
+	paramSpace params.Subspace
+	codespace  sdk.CodespaceType
+	cdc        *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
 // NewKeeper creates new instances of the wrkchain Keeper
-func NewKeeper(storeKey sdk.StoreKey, codespace sdk.CodespaceType, cdc *codec.Codec) Keeper {
+func NewKeeper(storeKey sdk.StoreKey, paramSpace params.Subspace, codespace sdk.CodespaceType, cdc *codec.Codec) Keeper {
 	return Keeper{
 		storeKey:  storeKey,
+		paramSpace:   paramSpace.WithKeyTable(types.ParamKeyTable()),
 		codespace: codespace,
 		cdc:       cdc,
 	}

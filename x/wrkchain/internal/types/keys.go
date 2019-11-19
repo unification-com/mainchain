@@ -11,8 +11,7 @@ const (
 	// StoreKey to be used when creating the KVStore
 	StoreKey = ModuleName
 
-	// WRKChain Recorded block hash delimeter
-	Delimeter = "_"
+	DefaultParamspace = ModuleName
 
 	// QuerierRoute is the querier route for the enterprise store.
 	QuerierRoute = StoreKey

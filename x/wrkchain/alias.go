@@ -11,16 +11,16 @@ const (
 	RouterKey  = types.RouterKey
 	StoreKey   = types.StoreKey
 
+	DefaultParamspace = types.DefaultParamspace
+
 	DefaultCodespace = types.DefaultCodespace
 
+	QueryParameters          = keeper.QueryParameters
 	QueryWrkChain            = keeper.QueryWrkChain
 	QueryWrkChains           = keeper.QueryWrkChains
 	QueryWrkChainBlock       = keeper.QueryWrkChainBlock
 	QueryWrkChainBlockHashes = keeper.QueryWrkChainBlockHashes
 
-	FeeDenom  = types.FeeDenom
-	RegFee    = types.RegFee
-	RecordFee = types.RecordFee
 )
 
 var (
@@ -47,18 +47,6 @@ var (
 	AttributeKeyHash2               = types.AttributeKeyHash2
 	AttributeKeyHash3               = types.AttributeKeyHash3
 
-	// WRKChain fees in sdk.Coin(denom=und)
-	FeesBaseDenomination         = types.FeesBaseDenomination
-	FeesWrkChainRegistrationCoin = types.FeesWrkChainRegistrationCoin
-	FeesWrkChainRecordHashCoin   = types.FeesWrkChainRecordHashCoin
-
-	// WRKChain fees in sdk.Coins[]
-	FeesWrkChainRegistration = types.FeesWrkChainRegistration
-	FeesWrkChainRecordHash   = types.FeesWrkChainRecordHash
-
-	RegisteredWrkChainPrefix        = types.RegisteredWrkChainPrefix
-	RecordedWrkChainBlockHashPrefix = types.RecordedWrkChainBlockHashPrefix
-
 	GetWrkChainIDBytes = types.GetWrkChainIDBytes
 
 	CheckIsWrkChainTx = exported.CheckIsWrkChainTx
@@ -73,6 +61,7 @@ var (
 	NewGenesisState     = types.NewGenesisState
 	DefaultGenesisState = types.DefaultGenesisState
 	ValidateGenesis     = types.ValidateGenesis
+
 )
 
 type (

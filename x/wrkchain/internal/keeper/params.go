@@ -53,4 +53,3 @@ func (k Keeper) GetRegistrationFeeAsCoins(ctx sdk.Context) sdk.Coins {
 func (k Keeper) GetRecordFeeAsCoins(ctx sdk.Context) sdk.Coins {
 	return sdk.Coins{k.GetRecordFeeAsCoin(ctx)}
 }
-

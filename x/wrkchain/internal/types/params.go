@@ -8,8 +8,8 @@ import (
 // Parameter store keys
 var (
 	KeyFeeRegister = []byte("FeeRegister")
-	KeyFeeRecord = []byte("FeeRecord")
-	KeyDenom  = []byte("Denom")
+	KeyFeeRecord   = []byte("FeeRecord")
+	KeyDenom       = []byte("Denom")
 )
 
 // enterprise UND parameters

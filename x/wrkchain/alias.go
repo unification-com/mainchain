@@ -20,7 +20,6 @@ const (
 	QueryWrkChains           = keeper.QueryWrkChains
 	QueryWrkChainBlock       = keeper.QueryWrkChainBlock
 	QueryWrkChainBlockHashes = keeper.QueryWrkChainBlockHashes
-
 )
 
 var (
@@ -61,7 +60,6 @@ var (
 	NewGenesisState     = types.NewGenesisState
 	DefaultGenesisState = types.DefaultGenesisState
 	ValidateGenesis     = types.ValidateGenesis
-
 )
 
 type (

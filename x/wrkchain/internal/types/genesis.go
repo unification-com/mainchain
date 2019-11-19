@@ -28,7 +28,7 @@ func NewGenesisState(params Params, startingWrkChainID uint64) GenesisState {
 // DefaultGenesisState creates a default GenesisState object
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		Params: DefaultParams(),
+		Params:             DefaultParams(),
 		StartingWrkChainID: DefaultStartingWrkChainID,
 	}
 }

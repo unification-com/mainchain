@@ -124,7 +124,6 @@ func (ar TotalSupplyRetriever) getParams() (types.Params, int64, error) {
 	return params, height, nil
 }
 
-
 // ParamsRetriever defines the properties of a type that can be used to
 // retrieve enterprise params.
 type ParamsRetriever struct {

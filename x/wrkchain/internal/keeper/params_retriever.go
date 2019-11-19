@@ -49,4 +49,3 @@ func (ar ParamsRetriever) GetParamsHeight() (types.Params, int64, error) {
 
 	return params, height, nil
 }
-

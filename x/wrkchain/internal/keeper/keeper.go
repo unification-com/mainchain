@@ -21,10 +21,10 @@ type Keeper struct {
 // NewKeeper creates new instances of the wrkchain Keeper
 func NewKeeper(storeKey sdk.StoreKey, paramSpace params.Subspace, codespace sdk.CodespaceType, cdc *codec.Codec) Keeper {
 	return Keeper{
-		storeKey:  storeKey,
-		paramSpace:   paramSpace.WithKeyTable(types.ParamKeyTable()),
-		codespace: codespace,
-		cdc:       cdc,
+		storeKey:   storeKey,
+		paramSpace: paramSpace.WithKeyTable(types.ParamKeyTable()),
+		codespace:  codespace,
+		cdc:        cdc,
 	}
 }
 

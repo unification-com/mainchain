@@ -1,7 +1,6 @@
 package wrkchain
 
 import (
-	"encoding/binary"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
@@ -33,17 +32,25 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 	var records []WrkChainExport
 	initialWrkChainID, _ := k.GetHighestWrkChainID(ctx)
 
-	iterator := k.GetWrkChainsIterator(ctx)
-	for ; iterator.Valid(); iterator.Next() {
-		wrkchainId := iterator.Key()
-		num := binary.LittleEndian.Uint64(wrkchainId)
-		blockHashList := k.GetWrkChainBlockHashes(ctx, num)
+	wrkChains := k.GetAllWrkChains(ctx)
+
+	if len(wrkChains) == 0 {
+		return GenesisState{
+			Params:             params,
+			StartingWrkChainID: initialWrkChainID,
+			WrkChains:          nil,
+		}
+	}
+
+	for _, wc := range wrkChains {
+		wrkchainId := wc.WrkChainID
+		blockHashList := k.GetWrkChainBlockHashes(ctx, wrkchainId)
 
 		var hashes []types.WrkChainBlock
 
 		for _, value := range blockHashList {
 			hash := types.WrkChainBlock{
-				WrkChainID:   num,
+				WrkChainID:   value.WrkChainID,
 				Height:       value.Height,
 				BlockHash:    value.BlockHash,
 				ParentHash:   value.ParentHash,
@@ -57,8 +64,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 			hashes = append(hashes, hash)
 		}
 
-		wrkChain := k.GetWrkChain(ctx, num)
-		records = append(records, WrkChainExport{WrkChain: wrkChain, WrkChainBlocks: hashes})
+		records = append(records, WrkChainExport{WrkChain: wc, WrkChainBlocks: hashes})
 	}
 	return GenesisState{
 		Params:             params,

@@ -138,6 +138,10 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 		return sdk.ErrInternal("unable to raise purchase order - purchaser cannot be empty")
 	}
 
+	if !purchaseOrder.Amount.IsValid() {
+		return sdk.ErrInternal("unable to raise purchase order - amount not valid")
+	}
+
 	// must be a positive amount
 	if purchaseOrder.Amount.IsZero() || purchaseOrder.Amount.IsNegative() {
 		return sdk.ErrInternal("unable to raise purchase order - amount must be positive")

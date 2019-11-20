@@ -45,7 +45,7 @@ func (k Keeper) GetPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) types.
 
 	if !k.PurchaseOrderExists(ctx, purchaseOrderID) {
 		// return a new empty EnterpriseUndPurchaseOrder struct
-		return types.NewEnterpriseUnd()
+		return types.NewEnterpriseUndPurchaseOrder()
 	}
 
 	bz := store.Get(types.PurchaseOrderKey(purchaseOrderID))

@@ -30,7 +30,7 @@ func makeTestCodec() (cdc *codec.Codec) {
 func TestDecodeStore(t *testing.T) {
 	cdc := makeTestCodec()
 
-	purchaseOrder := types.NewEnterpriseUnd()
+	purchaseOrder := types.NewEnterpriseUndPurchaseOrder()
 	purchaseOrder.Purchaser = delAddr1
 	purchaseOrder.Status = types.StatusRaised
 	purchaseOrder.Amount = sdk.NewInt64Coin(types.DefaultDenomination, 100000000)

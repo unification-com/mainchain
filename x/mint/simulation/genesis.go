@@ -81,6 +81,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { goalBonded = GenGoalBonded(r) },
 	)
 
+	// NOTE: for simulation, we're using sdk.DefaultBondDenom ("stake"), since "stake" is hard-coded
+	// into the SDK's module simulation functions
 	mintDenom := sdk.DefaultBondDenom
 	blocksPerYear := uint64(60 * 60 * 8766 / 5)
 	params := types.NewParams(mintDenom, inflationRateChange, inflationMax, inflationMin, goalBonded, blocksPerYear)

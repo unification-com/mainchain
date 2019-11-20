@@ -2,6 +2,8 @@ package wrkchain
 
 import (
 	"encoding/json"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
+	"math/rand"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -13,13 +15,15 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sim "github.com/cosmos/cosmos-sdk/x/simulation"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // type check to ensure the interface is properly implemented
 var (
-	_ module.AppModule      = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModule           = AppModule{}
+	_ module.AppModuleBasic      = AppModuleBasic{}
+	_ module.AppModuleSimulation = AppModuleSimulation{}
 )
 
 // app module Basics object
@@ -65,6 +69,7 @@ func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
+	AppModuleSimulation
 	keeper Keeper
 }
 
@@ -112,4 +117,24 @@ func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.Va
 func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 	gs := ExportGenesis(ctx, am.keeper)
 	return ModuleCdc.MustMarshalJSON(gs)
+}
+
+//____________________________________________________________________________
+
+// AppModuleSimulation defines the module simulation functions used by the auth module.
+type AppModuleSimulation struct{}
+
+// RegisterStoreDecoder registers a decoder for auth module's types
+func (AppModuleSimulation) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+	sdr[StoreKey] = simulation.DecodeStore
+}
+
+// GenerateGenesisState creates a randomized GenState of the enterprise module
+func (AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState) {
+	simulation.RandomizedGenState(simState)
+}
+
+// RandomizedParams creates randomized auth param changes for the simulator.
+func (AppModuleSimulation) RandomizedParams(r *rand.Rand) []sim.ParamChange {
+	return []sim.ParamChange{}
 }

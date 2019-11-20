@@ -77,6 +77,9 @@ func (k Keeper) MintCoinsAndLock(ctx sdk.Context, recipient sdk.AccAddress, amou
 	newCoins := sdk.NewCoins(amount)
 	//first mint
 	err := k.supplyKeeper.MintCoins(ctx, types.ModuleName, newCoins)
+	if err != nil {
+		return err
+	}
 
 	// Send them to the purchaser's account
 	err = k.sendCoinsFromModuleToAccount(ctx, recipient, newCoins)

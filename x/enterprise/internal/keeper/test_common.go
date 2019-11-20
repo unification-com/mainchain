@@ -123,7 +123,9 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 	supplyKeeper := supply.NewKeeper(cdc, keySupply, accountKeeper, bankKeeper, maccPerms)
 
 	sk := staking.NewKeeper(cdc, keyStaking, supplyKeeper, pk.Subspace(staking.DefaultParamspace), staking.DefaultCodespace)
-	sk.SetParams(ctx, staking.DefaultParams())
+	skParams := staking.DefaultParams()
+	skParams.BondDenom = types.DefaultDenomination //set to nund
+	sk.SetParams(ctx, skParams)
 
 	keeper := NewKeeper(
 		keyEnt, supplyKeeper, accountKeeper, pk.Subspace(types.DefaultParamspace), types.DefaultCodespace, cdc,

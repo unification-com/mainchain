@@ -26,6 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/unification-com/mainchain-cosmos/app/ante"
+	"github.com/unification-com/mainchain-cosmos/x/beacon"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
@@ -54,6 +55,8 @@ var (
 		supply.AppModuleBasic{},
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
+		beacon.AppModule{},
+
 	)
 	// account permissions
 	maccPerms = map[string][]string{
@@ -97,6 +100,7 @@ type mainchainApp struct {
 	paramsKeeper     params.Keeper
 	wrkChainKeeper   wrkchain.Keeper
 	enterpriseKeeper enterprise.Keeper
+	beaconKeeper     beacon.Keeper
 
 	// Module Manager
 	mm *module.Manager
@@ -142,6 +146,7 @@ func NewMainchainApp(
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 	enterpriseSubspace := app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
 	wrkchainSubspace := app.paramsKeeper.Subspace(wrkchain.DefaultParamspace)
+	beaconSubspace := app.paramsKeeper.Subspace(beacon.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -232,6 +237,13 @@ func NewMainchainApp(
 		app.cdc,
 	)
 
+	app.beaconKeeper = beacon.NewKeeper(
+		keys[beacon.StoreKey],
+		beaconSubspace,
+		beacon.DefaultCodespace,
+		app.cdc,
+	)
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper),
@@ -244,6 +256,7 @@ func NewMainchainApp(
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		enterprise.NewAppModule(app.enterpriseKeeper),
 		wrkchain.NewAppModule(app.wrkChainKeeper),
+		beacon.NewAppModule(app.beaconKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(enterprise.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName)
@@ -260,6 +273,7 @@ func NewMainchainApp(
 		slashing.ModuleName,
 		wrkchain.ModuleName,
 		enterprise.ModuleName,
+		beacon.ModuleName,
 		mint.ModuleName,
 		supply.ModuleName,
 		crisis.ModuleName,

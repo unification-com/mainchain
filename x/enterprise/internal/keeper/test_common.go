@@ -7,6 +7,7 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -25,23 +26,37 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
+const TestDenomination = "testc"
+
 // dummy addresses used for testing
 var (
-	delPk1   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51")
-	delPk2   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
-	delPk3   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB52")
-	delAddr1 = sdk.AccAddress(delPk1.Address())
-	delAddr2 = sdk.AccAddress(delPk2.Address())
-	delAddr3 = sdk.AccAddress(delPk3.Address())
+	entSrcPk   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB53")
+	entPk1     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51")
+	entPk2     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
+	entPk3     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB52")
+	entPk4     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB54")
+	entPk5     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB55")
+	EntSrcAddr = sdk.AccAddress(entSrcPk.Address())
+	entAddr1   = sdk.AccAddress(entPk1.Address())
+	entAddr2   = sdk.AccAddress(entPk2.Address())
+	entAddr3   = sdk.AccAddress(entPk3.Address())
+	entAddr4   = sdk.AccAddress(entPk4.Address())
+	entAddr5   = sdk.AccAddress(entPk5.Address())
 
 	TestAddrs = []sdk.AccAddress{
-		delAddr1, delAddr2, delAddr3,
+		entAddr1, entAddr2, entAddr3, entAddr4, entAddr5,
 	}
-
-	emptyDelAddr sdk.AccAddress
-	emptyValAddr sdk.ValAddress
-	emptyPubkey  crypto.PubKey
 )
+
+func GenerateRandomAddresses(num int) []sdk.AccAddress {
+	var testAddrs []sdk.AccAddress
+	for i := 0; i < num; i++ {
+		privK := ed25519.GenPrivKey()
+		pubKey := privK.PubKey()
+		testAddrs = append(testAddrs, sdk.AccAddress(pubKey.Address()))
+	}
+	return testAddrs
+}
 
 func newPubKey(pk string) (res crypto.PubKey) {
 	pkBytes, err := hex.DecodeString(pk)
@@ -122,20 +137,23 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 	bankKeeper := bank.NewBaseKeeper(accountKeeper, pk.Subspace(bank.DefaultParamspace), bank.DefaultCodespace, blacklistedAddrs)
 	supplyKeeper := supply.NewKeeper(cdc, keySupply, accountKeeper, bankKeeper, maccPerms)
 
-	sk := staking.NewKeeper(cdc, keyStaking, supplyKeeper, pk.Subspace(staking.DefaultParamspace), staking.DefaultCodespace)
+	stakingKeeper := staking.NewKeeper(cdc, keyStaking, supplyKeeper, pk.Subspace(staking.DefaultParamspace), staking.DefaultCodespace)
 	skParams := staking.DefaultParams()
-	skParams.BondDenom = types.DefaultDenomination //set to nund
-	sk.SetParams(ctx, skParams)
+	skParams.BondDenom = TestDenomination
+	stakingKeeper.SetParams(ctx, skParams)
 
 	keeper := NewKeeper(
 		keyEnt, supplyKeeper, accountKeeper, pk.Subspace(types.DefaultParamspace), types.DefaultCodespace, cdc,
 	)
 
 	keeper.SetHighestPurchaseOrderID(ctx, types.DefaultStartingPurchaseOrderID)
-	keeper.SetParams(ctx, types.DefaultParams())
+	entParams := types.DefaultParams()
+	entParams.EntSource = EntSrcAddr
+	entParams.Denom = stakingKeeper.BondDenom(ctx)
+	keeper.SetParams(ctx, entParams)
 
-	initCoins := sdk.NewCoins(sdk.NewCoin(sk.BondDenom(ctx), initTokens))
-	totalSupply := sdk.NewCoins(sdk.NewCoin(sk.BondDenom(ctx), initTokens.MulRaw(int64(len(TestAddrs)))))
+	initCoins := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), initTokens))
+	totalSupply := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), initTokens.MulRaw(int64(len(TestAddrs)))))
 	supplyKeeper.SetSupply(ctx, supply.NewSupply(totalSupply))
 
 	for _, addr := range TestAddrs {
@@ -143,16 +161,57 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 		require.Nil(t, err)
 	}
 
+	_, err := bankKeeper.AddCoins(ctx, EntSrcAddr, initCoins)
+	require.Nil(t, err)
+
 	keeper.supplyKeeper.SetModuleAccount(ctx, feeCollectorAcc)
 	keeper.supplyKeeper.SetModuleAccount(ctx, entAcc)
 	keeper.supplyKeeper.SetModuleAccount(ctx, bondPool)
 	keeper.supplyKeeper.SetModuleAccount(ctx, notBondedPool)
 
-	return ctx, accountKeeper, keeper, sk, supplyKeeper
+	return ctx, accountKeeper, keeper, stakingKeeper, supplyKeeper
 }
 
 // PurchaseOrderEqual checks if two purchase orders are equal
 func PurchaseOrderEqual(poA types.EnterpriseUndPurchaseOrder, poB types.EnterpriseUndPurchaseOrder) bool {
 	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(poA),
 		types.ModuleCdc.MustMarshalBinaryBare(poB))
+}
+
+func ParamsEqual(paramsA, paramsB types.Params) bool {
+	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(paramsA),
+		types.ModuleCdc.MustMarshalBinaryBare(paramsB))
+}
+
+func LockedUndEqual(lA, lB types.LockedUnd) bool {
+	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(lA),
+		types.ModuleCdc.MustMarshalBinaryBare(lB))
+}
+
+func RandomDecision() types.PurchaseOrderStatus {
+	rnd := rand.Intn(100)
+	if rnd >= 50 {
+		return types.StatusAccepted
+	}
+	return types.StatusRejected
+}
+
+func RandomStatus() types.PurchaseOrderStatus {
+	rnd := RandInBetween(1, 4)
+	switch rnd {
+	case 1:
+		return types.StatusRaised
+	case 2:
+		return types.StatusAccepted
+	case 3:
+		return types.StatusRejected
+	case 4:
+		return types.StatusCompleted
+	default:
+		return types.StatusRaised
+	}
+}
+
+func RandInBetween(min, max int) int {
+	return rand.Intn(max-min) + min
 }

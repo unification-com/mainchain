@@ -101,32 +101,38 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 
-	from := TestAddrs[1]
-	amt := int64(1000000)
-	amount := sdk.NewInt64Coin(types.DefaultDenomination, amt)
+	testAddresses := GenerateRandomAddresses(100)
 
-	expectedPo := types.NewEnterpriseUndPurchaseOrder()
-	expectedPo.PurchaseOrderID = 1
-	expectedPo.Amount = amount
-	expectedPo.Purchaser = TestAddrs[1]
-	expectedPo.Status = types.StatusRaised
+	i, _ := keeper.GetHighestPurchaseOrderID(ctx)
 
-	poID, err := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
-	require.NoError(t, err)
-	require.True(t, poID == expectedPo.PurchaseOrderID)
+	for _, from := range testAddresses {
+		amt := int64(RandInBetween(1, 10000))
+		amount := sdk.NewInt64Coin(types.DefaultDenomination, amt)
 
-	poExists := keeper.PurchaseOrderExists(ctx, poID)
-	require.True(t, poExists)
+		expectedPo := types.NewEnterpriseUndPurchaseOrder()
+		expectedPo.PurchaseOrderID = i
+		expectedPo.Amount = amount
+		expectedPo.Purchaser = from
+		expectedPo.Status = types.StatusRaised
 
-	poDb := keeper.GetPurchaseOrder(ctx, poID)
-	require.True(t, poDb.PurchaseOrderID == expectedPo.PurchaseOrderID)
-	require.True(t, poDb.Status == types.StatusRaised)
-	require.True(t, poDb.Purchaser.String() == from.String())
-	require.True(t, poDb.Amount.Denom == types.DefaultDenomination)
-	require.True(t, poDb.Amount.Amount.Int64() == amt)
-	require.True(t, poDb.Amount.IsEqual(expectedPo.Amount))
-	require.True(t, PurchaseOrderEqual(expectedPo, poDb))
+		poID, err := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
+		require.NoError(t, err)
+		require.True(t, poID == expectedPo.PurchaseOrderID)
 
+		poExists := keeper.PurchaseOrderExists(ctx, poID)
+		require.True(t, poExists)
+
+		poDb := keeper.GetPurchaseOrder(ctx, poID)
+		require.True(t, poDb.PurchaseOrderID == expectedPo.PurchaseOrderID)
+		require.True(t, poDb.Status == types.StatusRaised)
+		require.True(t, poDb.Purchaser.String() == from.String())
+		require.True(t, poDb.Amount.Denom == types.DefaultDenomination)
+		require.True(t, poDb.Amount.Amount.Int64() == amt)
+		require.True(t, poDb.Amount.IsEqual(expectedPo.Amount))
+		require.True(t, PurchaseOrderEqual(expectedPo, poDb))
+
+		i = i + 1
+	}
 }
 
 func TestFailRaiseNewPurchaseOrder(t *testing.T) {
@@ -192,5 +198,27 @@ func TestPurchaseOrderExistsAfterRaise(t *testing.T) {
 
 		po := keeper.GetPurchaseOrder(ctx, poID)
 		require.True(t, po.PurchaseOrderID == poID && po.PurchaseOrderID == i)
+	}
+}
+
+// Tests for processing Purchase Orders
+
+func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+
+	for i := uint64(1); i < 1000; i++ {
+		amount := sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
+		from := TestAddrs[1]
+		poID, _ := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
+		decision := RandomDecision()
+
+		poExists := keeper.PurchaseOrderExists(ctx, poID)
+		require.True(t, poExists)
+
+		err := keeper.ProcessPurchaseOrder(ctx, poID, decision)
+		require.NoError(t, err)
+
+		po := keeper.GetPurchaseOrder(ctx, poID)
+		require.True(t, po.Status == decision)
 	}
 }

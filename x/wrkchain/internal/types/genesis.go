@@ -1,6 +1,7 @@
 package types
 
 import (
+	"bytes"
 	"fmt"
 )
 
@@ -31,6 +32,18 @@ func DefaultGenesisState() GenesisState {
 		Params:             DefaultParams(),
 		StartingWrkChainID: DefaultStartingWrkChainID,
 	}
+}
+
+// Equal checks whether two enterprise GenesisState structs are equivalent
+func (data GenesisState) Equal(data2 GenesisState) bool {
+	b1 := ModuleCdc.MustMarshalBinaryBare(data)
+	b2 := ModuleCdc.MustMarshalBinaryBare(data2)
+	return bytes.Equal(b1, b2)
+}
+
+// IsEmpty returns true if a GenesisState is empty
+func (data GenesisState) IsEmpty() bool {
+	return data.Equal(GenesisState{})
 }
 
 // ValidateGenesis validates the provided genesis state to ensure the

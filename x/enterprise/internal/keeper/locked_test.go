@@ -31,21 +31,21 @@ func TestSetGetLockedUndForAccount(t *testing.T) {
 
 	testAddresses := GenerateRandomAddresses(100)
 
-    for _, addr := range testAddresses {
-    	amount := int64(rand.Intn(10000) + 1)
-    	denom := TestDenomination
+	for _, addr := range testAddresses {
+		amount := int64(rand.Intn(10000) + 1)
+		denom := TestDenomination
 
-    	locked := types.NewLockedUnd(addr, denom)
-    	locked.Amount = sdk.NewInt64Coin(denom, amount)
+		locked := types.NewLockedUnd(addr, denom)
+		locked.Amount = sdk.NewInt64Coin(denom, amount)
 
-    	err := keeper.SetLockedUndForAccount(ctx, locked)
-    	require.NoError(t, err)
+		err := keeper.SetLockedUndForAccount(ctx, locked)
+		require.NoError(t, err)
 
-    	lockedDb := keeper.GetLockedUndForAccount(ctx, addr)
-    	require.True(t, LockedUndEqual(locked, lockedDb))
+		lockedDb := keeper.GetLockedUndForAccount(ctx, addr)
+		require.True(t, LockedUndEqual(locked, lockedDb))
 
-    	lockedDbAmount := keeper.GetLockedUndAmountForAccount(ctx, addr)
-    	require.True(t, lockedDbAmount.IsEqual(locked.Amount))
+		lockedDbAmount := keeper.GetLockedUndAmountForAccount(ctx, addr)
+		require.True(t, lockedDbAmount.IsEqual(locked.Amount))
 	}
 }
 
@@ -66,7 +66,7 @@ func TestIsLocked(t *testing.T) {
 	l3.Amount = sdk.NewInt64Coin(denom, 100)
 
 	testCases := []struct {
-		l          types.LockedUnd
+		l           types.LockedUnd
 		expIsLocked bool
 	}{
 		{l0, false},
@@ -80,7 +80,7 @@ func TestIsLocked(t *testing.T) {
 		require.NoError(t, err)
 
 		isLocked := keeper.IsLocked(ctx, tc.l.Owner)
-		require.Equal(t, tc.expIsLocked, isLocked )
+		require.Equal(t, tc.expIsLocked, isLocked)
 	}
 }
 

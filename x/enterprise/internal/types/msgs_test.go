@@ -39,9 +39,9 @@ func TestMsgUndPurchaseOrder(t *testing.T) {
 
 func TestMsgProcessUndPurchaseOrder(t *testing.T) {
 	tests := []struct {
-		poID     uint64
-		decision PurchaseOrderStatus
-		signer   sdk.AccAddress
+		poID       uint64
+		decision   PurchaseOrderStatus
+		signer     sdk.AccAddress
 		expectPass bool
 	}{
 		{1, StatusAccepted, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},

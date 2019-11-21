@@ -62,7 +62,7 @@ func getQueriedPurchaseOrders(t *testing.T, ctx sdk.Context, cdc *codec.Codec, q
 	require.NotNil(t, bz)
 
 	var matchingOrders types.QueryResPurchaseOrders
-	require.NoError(t,  cdc.UnmarshalJSON(bz, &matchingOrders))
+	require.NoError(t, cdc.UnmarshalJSON(bz, &matchingOrders))
 
 	return matchingOrders
 }
@@ -89,7 +89,7 @@ func TestQueryPurchaseOrder(t *testing.T) {
 		po := types.NewEnterpriseUndPurchaseOrder()
 		po.Purchaser = addr
 		po.PurchaseOrderID = uint64(poId)
-		po.Amount = sdk.NewInt64Coin(types.DefaultDenomination, int64(i + 1))
+		po.Amount = sdk.NewInt64Coin(types.DefaultDenomination, int64(i+1))
 		po.Status = RandomStatus()
 
 		err := keeper.SetPurchaseOrder(ctx, po)
@@ -99,8 +99,8 @@ func TestQueryPurchaseOrder(t *testing.T) {
 
 	for i, tPo := range testPos {
 		poId := i + 1
-        po := getQueriedPurchaseOrder(t, ctx, keeper.cdc, querier, uint64(poId))
-        require.True(t, PurchaseOrderEqual(tPo, po))
+		po := getQueriedPurchaseOrder(t, ctx, keeper.cdc, querier, uint64(poId))
+		require.True(t, PurchaseOrderEqual(tPo, po))
 	}
 }
 
@@ -121,7 +121,7 @@ func TestQueryPurchaseOrdersFilters(t *testing.T) {
 		po := types.NewEnterpriseUndPurchaseOrder()
 		po.Purchaser = addr
 		po.PurchaseOrderID = uint64(poId)
-		po.Amount = sdk.NewInt64Coin(types.DefaultDenomination, int64(i + 1))
+		po.Amount = sdk.NewInt64Coin(types.DefaultDenomination, int64(i+1))
 		po.Status = status
 
 		err := keeper.SetPurchaseOrder(ctx, po)
@@ -140,7 +140,7 @@ func TestQueryPurchaseOrdersFilters(t *testing.T) {
 	}
 
 	queryRaised := getQueriedPurchaseOrders(t, ctx, keeper.cdc, querier, 1, numTests, types.StatusRaised, sdk.AccAddress{})
-    require.True(t, len(queryRaised) == len(testPosRaised))
+	require.True(t, len(queryRaised) == len(testPosRaised))
 
 	queryCompleted := getQueriedPurchaseOrders(t, ctx, keeper.cdc, querier, 1, numTests, types.StatusCompleted, sdk.AccAddress{})
 	require.True(t, len(queryCompleted) == len(testPosCompleted))

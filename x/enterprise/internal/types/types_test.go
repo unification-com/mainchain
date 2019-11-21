@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-
 func TestPurchaseOrderStatusFormat(t *testing.T) {
 	statusRaised, _ := PurchaseOrderStatusFromString("raised")
 	statusAccept, _ := PurchaseOrderStatusFromString("accept")

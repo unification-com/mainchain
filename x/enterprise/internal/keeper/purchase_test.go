@@ -180,7 +180,7 @@ func TestHighestPurchaseOrderIdAfterRaise(t *testing.T) {
 		_, _ = keeper.RaiseNewPurchaseOrder(ctx, from, amount)
 
 		nextID, _ := keeper.GetHighestPurchaseOrderID(ctx)
-		expectedNextID := i+1
+		expectedNextID := i + 1
 		require.True(t, nextID == expectedNextID)
 	}
 }

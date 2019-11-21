@@ -68,7 +68,6 @@ func newPubKey(pk string) (res crypto.PubKey) {
 	return pkEd
 }
 
-
 func makeTestCodec() *codec.Codec {
 	var cdc = codec.New()
 	auth.RegisterCodec(cdc)

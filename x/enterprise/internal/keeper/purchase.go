@@ -45,7 +45,7 @@ func (k Keeper) GetPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) types.
 
 	if !k.PurchaseOrderExists(ctx, purchaseOrderID) {
 		// return a new empty EnterpriseUndPurchaseOrder struct
-		return types.NewEnterpriseUnd()
+		return types.NewEnterpriseUndPurchaseOrder()
 	}
 
 	bz := store.Get(types.PurchaseOrderKey(purchaseOrderID))
@@ -71,14 +71,14 @@ func (k Keeper) GetPurchaseOrderStatus(ctx sdk.Context, purchaseOrderID uint64) 
 }
 
 // IteratePurchaseOrders iterates over the all the purchase orders and performs a callback function
-func (keeper Keeper) IteratePurchaseOrders(ctx sdk.Context, cb func(purchaseOrder types.EnterpriseUndPurchaseOrder) (stop bool)) {
-	store := ctx.KVStore(keeper.storeKey)
+func (k Keeper) IteratePurchaseOrders(ctx sdk.Context, cb func(purchaseOrder types.EnterpriseUndPurchaseOrder) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.PurchaseOrderIDKeyPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var po types.EnterpriseUndPurchaseOrder
-		keeper.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &po)
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &po)
 
 		if cb(po) {
 			break
@@ -87,8 +87,8 @@ func (keeper Keeper) IteratePurchaseOrders(ctx sdk.Context, cb func(purchaseOrde
 }
 
 // GetAllPurchaseOrders returns all the purchase orders from store
-func (keeper Keeper) GetAllPurchaseOrders(ctx sdk.Context) (purchaseOrders types.PurchaseOrders) {
-	keeper.IteratePurchaseOrders(ctx, func(po types.EnterpriseUndPurchaseOrder) bool {
+func (k Keeper) GetAllPurchaseOrders(ctx sdk.Context) (purchaseOrders types.PurchaseOrders) {
+	k.IteratePurchaseOrders(ctx, func(po types.EnterpriseUndPurchaseOrder) bool {
 		purchaseOrders = append(purchaseOrders, po)
 		return false
 	})
@@ -100,8 +100,8 @@ func (keeper Keeper) GetAllPurchaseOrders(ctx sdk.Context) (purchaseOrders types
 //
 // NOTE: If no filters are provided, all proposals will be returned in paginated
 // form.
-func (keeper Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPurchaseOrdersParams) []types.EnterpriseUndPurchaseOrder {
-	purchaseOrders := keeper.GetAllPurchaseOrders(ctx)
+func (k Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPurchaseOrdersParams) []types.EnterpriseUndPurchaseOrder {
+	purchaseOrders := k.GetAllPurchaseOrders(ctx)
 	filteredPurchaseOrders := make([]types.EnterpriseUndPurchaseOrder, 0, len(purchaseOrders))
 
 	for _, po := range purchaseOrders {
@@ -136,6 +136,10 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 	// must have a purchaser
 	if purchaseOrder.Purchaser.Empty() {
 		return sdk.ErrInternal("unable to raise purchase order - purchaser cannot be empty")
+	}
+
+	if !purchaseOrder.Amount.IsValid() {
+		return sdk.ErrInternal("unable to raise purchase order - amount not valid")
 	}
 
 	// must be a positive amount

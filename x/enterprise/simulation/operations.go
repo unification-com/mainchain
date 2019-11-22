@@ -84,7 +84,7 @@ func SimulateMsgProcessUndPurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) 
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
-		msg := types.NewMsgProcessUndPurchaseOrder(po.PurchaseOrderID, randomDecision(r), entAcc.Address)
+		msg := types.NewMsgProcessUndPurchaseOrder(po.PurchaseOrderID, keeper.RandomDecision(), entAcc.Address)
 
 		tx := helpers.GenTx(
 			[]sdk.Msg{msg},
@@ -102,12 +102,4 @@ func SimulateMsgProcessUndPurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) 
 
 		return simulation.NewOperationMsg(msg, true, ""), nil, nil
 	}
-}
-
-func randomDecision(r *rand.Rand) types.PurchaseOrderStatus {
-	rnd := simulation.RandIntBetween(r, 0, 100)
-	if rnd >= 50 {
-		return types.StatusAccepted
-	}
-	return types.StatusRejected
 }

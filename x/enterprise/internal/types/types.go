@@ -154,8 +154,8 @@ type EnterpriseUndPurchaseOrder struct {
 	Status          PurchaseOrderStatus `json:"status"`
 }
 
-// NewEnterpriseUnd returns a new EnterpriseUndPurchaseOrder struct
-func NewEnterpriseUnd() EnterpriseUndPurchaseOrder {
+// NewEnterpriseUndPurchaseOrder returns a new EnterpriseUndPurchaseOrder struct
+func NewEnterpriseUndPurchaseOrder() EnterpriseUndPurchaseOrder {
 	return EnterpriseUndPurchaseOrder{
 		Status: StatusNil,
 	}

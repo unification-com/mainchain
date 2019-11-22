@@ -114,7 +114,7 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 
 	maccPerms := map[string][]string{
 		auth.FeeCollectorName:     nil,
-		types.ModuleName:          nil,
+		types.ModuleName:          {supply.Minter, supply.Staking},
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 	}
@@ -152,7 +152,7 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 	keeper.SetParams(ctx, entParams)
 
 	initCoins := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), initTokens))
-	totalSupply := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), initTokens.MulRaw(int64(len(TestAddrs)))))
+	totalSupply := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), initTokens.MulRaw(int64(len(TestAddrs) + 1))))
 	supplyKeeper.SetSupply(ctx, supply.NewSupply(totalSupply))
 
 	for _, addr := range TestAddrs {

@@ -40,25 +40,3 @@ func (k Keeper) Codespace() sdk.CodespaceType {
 func (k Keeper) Cdc() *codec.Codec {
 	return k.cdc
 }
-
-//__WRKCHAIN_ID_________________________________________________________
-
-// GetHighestWrkChainID gets the highest WRKChain ID
-func (k Keeper) GetHighestWrkChainID(ctx sdk.Context) (wrkChainID uint64, err sdk.Error) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.HighestWrkChainIDKey)
-	if bz == nil {
-		return 0, types.ErrInvalidGenesis(k.codespace, "initial wrkchain ID hasn't been set")
-	}
-	// convert from bytes to uint64
-	wrkChainID = types.GetWrkChainIDFromBytes(bz)
-	return wrkChainID, nil
-}
-
-// SetHighestWrkChainID sets the new highest WRKChain ID to the store
-func (k Keeper) SetHighestWrkChainID(ctx sdk.Context, wrkChainID uint64) {
-	store := ctx.KVStore(k.storeKey)
-	// convert from uint64 to bytes for storage
-	wrkChainIDbz := types.GetWrkChainIDBytes(wrkChainID)
-	store.Set(types.HighestWrkChainIDKey, wrkChainIDbz)
-}

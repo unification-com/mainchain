@@ -8,6 +8,30 @@ import (
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
 
+//__WRKCHAIN_ID_________________________________________________________
+
+// GetHighestWrkChainID gets the highest WRKChain ID
+func (k Keeper) GetHighestWrkChainID(ctx sdk.Context) (wrkChainID uint64, err sdk.Error) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.HighestWrkChainIDKey)
+	if bz == nil {
+		return 0, types.ErrInvalidGenesis(k.codespace, "initial wrkchain ID hasn't been set")
+	}
+	// convert from bytes to uint64
+	wrkChainID = types.GetWrkChainIDFromBytes(bz)
+	return wrkChainID, nil
+}
+
+// SetHighestWrkChainID sets the new highest WRKChain ID to the store
+func (k Keeper) SetHighestWrkChainID(ctx sdk.Context, wrkChainID uint64) {
+	store := ctx.KVStore(k.storeKey)
+	// convert from uint64 to bytes for storage
+	wrkChainIDbz := types.GetWrkChainIDBytes(wrkChainID)
+	store.Set(types.HighestWrkChainIDKey, wrkChainIDbz)
+}
+
+//__WRKCHAINS___________________________________________________________
+
 // SetWrkChain Sets the WrkChain metadata struct for a wrkchainId
 func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) sdk.Error {
 	// must have an owner
@@ -18,6 +42,11 @@ func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) sdk.Error 
 	//must have an ID
 	if wrkchain.WrkChainID == 0 {
 		return sdk.ErrInternal("unable to set WRKChain - id must be positive non-zero")
+	}
+
+	//must have a moniker
+	if len(wrkchain.Moniker) == 0 {
+		return sdk.ErrInternal("unable to set WRKChain - must have a moniker")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -132,6 +161,11 @@ func (k Keeper) GetWrkChainsFiltered(ctx sdk.Context, params types.QueryWrkChain
 
 // RegisterWrkChain registers a WRKChain in the store
 func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName string, genesisHash string, owner sdk.AccAddress) (uint64, sdk.Error) {
+
+	//must have a moniker
+	if len(moniker) == 0 {
+		return 0, sdk.ErrInternal("unable to set WRKChain - must have a moniker")
+	}
 
 	wrkChainId, err := k.GetHighestWrkChainID(ctx)
 	if err != nil {

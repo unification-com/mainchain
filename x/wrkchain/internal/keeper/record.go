@@ -84,6 +84,10 @@ func (k Keeper) RecordWrkchainHashes(
 
 	wrkchain := k.GetWrkChain(ctx, wrkchainId)
 
+	if !k.IsAuthorisedToRecord(ctx, wrkchain.WrkChainID, owner) {
+		return types.ErrNotWrkChainOwner(k.codespace, "not authorised to record hashes for this wrkchain")
+	}
+
 	if k.IsWrkChainBlockRecorded(ctx, wrkchain.WrkChainID, height) {
 		return types.ErrWrkChainBlockAlreadyRecorded(k.codespace, "Block hashes already recorded for this height")
 	}

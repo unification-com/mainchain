@@ -14,14 +14,19 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 
 	for _, record := range data.WrkChains {
 		wrkChain := record.WrkChain
-		_ = keeper.SetWrkChain(ctx, wrkChain)
-		_, _ = keeper.RegisterWrkChain(ctx, wrkChain.Moniker, wrkChain.Name, wrkChain.GenesisHash, wrkChain.Owner)
+		err := keeper.SetWrkChain(ctx, wrkChain)
+		if err != nil {
+			panic(err)
+		}
 
 		logger.Info("Registering WRKChain", wrkChain.WrkChainID)
 
 		for _, block := range record.WrkChainBlocks {
 			logger.Info("Registering Block for WRKChain", wrkChain.WrkChainID, block.Height)
-			_ = keeper.RecordWrkchainHashes(ctx, block.WrkChainID, block.Height, block.BlockHash, block.ParentHash, block.Hash1, block.Hash2, block.Hash3, block.Owner)
+			err = keeper.SetWrkChainBlock(ctx, block)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 	return []abci.ValidatorUpdate{}

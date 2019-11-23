@@ -34,7 +34,7 @@ func GenerateRandomString(length int) string {
 func GenTx(msgs []sdk.Msg, feeAmt sdk.Coins, chainID string, accnums []uint64, seq []uint64, priv ...crypto.PrivKey) auth.StdTx {
 	fee := auth.StdFee{
 		Amount: feeAmt,
-		Gas:    1000000, // TODO: this should be a param
+		Gas:    1100000, // TODO: this should be a param
 	}
 
 	sigs := make([]auth.StdSignature, len(priv))

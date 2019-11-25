@@ -65,6 +65,9 @@ type (
 
 	GenesisState = types.GenesisState
 
+	BeaconExport = types.BeaconExport
+	BeaconTimestamp = types.BeaconTimestamp
+
 	// Msgs
 	MsgRegisterBeacon        = types.MsgRegisterBeacon
 	MsgRecordBeaconTimestamp = types.MsgRecordBeaconTimestamp

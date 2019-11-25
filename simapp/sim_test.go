@@ -33,6 +33,7 @@ import (
 	entsim "github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
 	wrkchainsim "github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
+	beaconsim "github.com/unification-com/mainchain-cosmos/x/beacon/simulation"
 )
 
 // Get flags every time the simulator is run
@@ -218,6 +219,28 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 				return v
 			}(nil),
 			wrkchainsim.SimulateMsgRecordWrkChainBlock(app.AccountKeeper, app.WrkChainKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRegisterBeacon, &v, nil,
+					func(_ *rand.Rand) {
+						v = 40
+					})
+				return v
+			}(nil),
+			beaconsim.SimulateMsgRegisterBeacon(app.AccountKeeper, app.BeaconKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRecordBeaconTimestamp, &v, nil,
+					func(_ *rand.Rand) {
+						v = 100
+					})
+				return v
+			}(nil),
+			beaconsim.SimulateMsgRecordBeaconTimestamp(app.AccountKeeper, app.BeaconKeeper),
 		},
 	}
 }

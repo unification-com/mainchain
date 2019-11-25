@@ -128,7 +128,7 @@ func NewUndSimApp(
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		params.StoreKey, wrkchain.StoreKey, enterprise.StoreKey)
+		params.StoreKey, wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey)
 	tkeys := sdk.NewTransientStoreKeys(params.TStoreKey)
 
 	app := &UndSimApp{
@@ -244,7 +244,7 @@ func NewUndSimApp(
 		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
-		//beacon.NewAppModule(app.BeaconKeeper), //Todo - implement simulation
+		beacon.NewAppModule(app.BeaconKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()

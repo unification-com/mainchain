@@ -7,6 +7,7 @@ import (
 
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
 	keeper.SetParams(ctx, data.Params)
+	keeper.SetHighestBeaconID(ctx, data.StartingBeaconID)
 	return []abci.ValidatorUpdate{}
 }
 

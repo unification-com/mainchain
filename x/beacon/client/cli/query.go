@@ -62,7 +62,7 @@ func GetCmdBeacon(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			beaconID := args[0]
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/get/%s", queryRoute, beaconID), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/beacon/%s", queryRoute, beaconID), nil)
 			if err != nil {
 				fmt.Printf("could not find beacon - %s \n", beaconID)
 				return nil
@@ -87,7 +87,7 @@ func GetCmdBeaconTimestamp(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			beaconID := args[0]
 			timestampID := args[1]
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/get-ts/%s/%s", queryRoute, beaconID, timestampID), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/timestamp/%s/%s", queryRoute, beaconID, timestampID), nil)
 			if err != nil {
 				fmt.Printf("could not find beacon %s timestamp %s \n", beaconID, timestampID)
 				return nil

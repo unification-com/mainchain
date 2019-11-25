@@ -70,6 +70,40 @@ Query all blocks
 undcli query wrkchain blocks 1
 ```
 
+
+### Interacting with BEACON module
+
+Register:
+undcli tx beacon register beacon1 "Beacon 1" --from wrktest
+
+then run:
+```
+undcli query tx [TX HASH]
+```
+
+this will return the generated Beacon ID integer
+
+Query metadata
+```
+undcli query beacon beacon 1
+```
+
+Record Timestamp hash
+```
+undcli tx beacon record 1 d04b98f48e8 $(date +%s) --from wrktest
+```
+
+Query a Timestamp
+```
+undcli query beacon timestamp 1 1
+```
+
+Query all tmestamps
+```
+undcli query beacon timestamps 1
+```
+
+
 ### Purchase Enterprise UND
 
 Raise purchase order:

@@ -1,6 +1,7 @@
 package simapp
 
 import (
+	"github.com/unification-com/mainchain-cosmos/x/beacon"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
 	"io"
@@ -55,6 +56,7 @@ var (
 		supply.AppModuleBasic{},
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
+		beacon.AppModule{},
 	)
 
 	// module account permissions
@@ -103,6 +105,7 @@ type UndSimApp struct {
 	ParamsKeeper     params.Keeper
 	WrkChainKeeper   wrkchain.Keeper
 	EnterpriseKeeper enterprise.Keeper
+	BeaconKeeper     beacon.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -147,6 +150,7 @@ func NewUndSimApp(
 	crisisSubspace := app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
 	enterpriseSubspace := app.ParamsKeeper.Subspace(enterprise.DefaultParamspace)
 	wrkchainSubspace := app.ParamsKeeper.Subspace(wrkchain.DefaultParamspace)
+	beaconSubspace := app.ParamsKeeper.Subspace(beacon.DefaultParamspace)
 
 	// add keepers
 	app.AccountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
@@ -183,6 +187,13 @@ func NewUndSimApp(
 		app.cdc,
 	)
 
+	app.BeaconKeeper = beacon.NewKeeper(
+		keys[beacon.StoreKey],
+		beaconSubspace,
+		beacon.DefaultCodespace,
+		app.cdc,
+	)
+
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(
@@ -197,6 +208,7 @@ func NewUndSimApp(
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
+		beacon.NewAppModule(app.BeaconKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -210,7 +222,7 @@ func NewUndSimApp(
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		auth.ModuleName, distr.ModuleName, staking.ModuleName,
-		bank.ModuleName, slashing.ModuleName, wrkchain.ModuleName,
+		bank.ModuleName, slashing.ModuleName, wrkchain.ModuleName, beacon.ModuleName,
 		enterprise.ModuleName, mint.ModuleName, supply.ModuleName,
 		crisis.ModuleName, genutil.ModuleName,
 	)
@@ -232,6 +244,7 @@ func NewUndSimApp(
 		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
+		//beacon.NewAppModule(app.BeaconKeeper), //Todo - implement simulation
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -248,6 +261,7 @@ func NewUndSimApp(
 			app.AccountKeeper,
 			app.SupplyKeeper,
 			app.WrkChainKeeper,
+			app.BeaconKeeper,
 			app.EnterpriseKeeper,
 			auth.DefaultSigVerificationGasConsumer,
 		),

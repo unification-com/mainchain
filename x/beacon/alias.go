@@ -1,6 +1,7 @@
 package beacon
 
 import (
+	"github.com/unification-com/mainchain-cosmos/x/beacon/exported"
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
 )
@@ -54,6 +55,8 @@ var (
 
 	GetBeaconIDBytes    = types.GetBeaconIDBytes
 	GetTimestampIDBytes = types.GetTimestampIDBytes
+
+	CheckIsBeaconTx = exported.CheckIsBeaconTx
 
 )
 

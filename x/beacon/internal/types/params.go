@@ -5,7 +5,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 )
 
-
 // Parameter store keys
 var (
 	KeyFeeRegister = []byte("FeeRegister")
@@ -13,7 +12,7 @@ var (
 	KeyDenom       = []byte("Denom")
 )
 
-// enterprise UND parameters
+// beacon parameters
 type Params struct {
 	FeeRegister uint64 `json:"fee_register" yaml:"fee_register"` // Fee for registering a BEACON
 	FeeRecord   uint64 `json:"fee_record" yaml:"fee_record"`     // Fee for recording timestamps for a BEACON

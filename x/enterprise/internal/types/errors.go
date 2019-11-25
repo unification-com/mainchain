@@ -14,7 +14,7 @@ const (
 	CodeInvalidDenomination           = 105
 )
 
-// ErrInvalidGenesis error for an invalid governance GenesisState
+// ErrInvalidGenesis error for an invalid enterprise GenesisState
 func ErrInvalidGenesis(codespace sdk.CodespaceType, msg string) sdk.Error {
 	return sdk.NewError(codespace, CodeInvalidGenesis, msg)
 }

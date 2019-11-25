@@ -188,9 +188,9 @@ func TestRecordBeaconTimestampsFail(t *testing.T) {
 		{bID, 1, "hash", TestAddrs[1], types.ErrNotBeaconOwner(keeper.codespace, "not authorised to record hashes for this beacon"), 0},
 		{bID, 1, "hash", sdk.AccAddress{}, types.ErrNotBeaconOwner(keeper.codespace, "not authorised to record hashes for this beacon"), 0},
 		{bID, 1, "", TestAddrs[0], sdk.ErrInternal("must include owner, id, submit time and hash"), 0},
-		{bID, 0, "timstamphash",TestAddrs[0], sdk.ErrInternal("must include owner, id, submit time and hash"), 0},
-		{bID, 1, "timstamphash",TestAddrs[0], nil, 1},
-		{bID, 1, "timstamphash",TestAddrs[0], types.ErrBeaconTimestampAlreadyRecorded(keeper.codespace, "timestamp hash timstamphash already recorded at time 1"), 0},
+		{bID, 0, "timstamphash", TestAddrs[0], sdk.ErrInternal("must include owner, id, submit time and hash"), 0},
+		{bID, 1, "timstamphash", TestAddrs[0], nil, 1},
+		{bID, 1, "timstamphash", TestAddrs[0], types.ErrBeaconTimestampAlreadyRecorded(keeper.codespace, "timestamp hash timstamphash already recorded at time 1"), 0},
 	}
 
 	for _, tc := range testCases {

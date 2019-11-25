@@ -76,7 +76,6 @@ func GetCmdBeacon(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-
 // GetCmdBeaconTimestamp queries information about a beacon's recorded timestamp
 func GetCmdBeaconTimestamp(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{

@@ -119,7 +119,6 @@ func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 	return ModuleCdc.MustMarshalJSON(gs)
 }
 
-
 //____________________________________________________________________________
 
 // AppModuleSimulation defines the module simulation functions used by the auth module.

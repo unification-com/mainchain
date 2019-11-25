@@ -72,4 +72,3 @@ func TestDecodeStore(t *testing.T) {
 		})
 	}
 }
-

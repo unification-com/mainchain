@@ -11,16 +11,16 @@ import (
 func TestMsgRegisterBeacon(t *testing.T) {
 
 	tests := []struct {
-		moniker  string
-		name     string
-		owner    sdk.AccAddress
+		moniker    string
+		name       string
+		owner      sdk.AccAddress
 		expectPass bool
 	}{
 		{"b1", "BEACON 1", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
 		{"", "BEACON 1", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
 		{"b2", "", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{"b3", "BEACON 3",sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{"b4", "BEACON 4",sdk.AccAddress{}, false},
+		{"b3", "BEACON 3", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{"b4", "BEACON 4", sdk.AccAddress{}, false},
 	}
 
 	for i, tc := range tests {
@@ -53,7 +53,7 @@ func TestMsgRecordBeaconTimestamp(t *testing.T) {
 		{1, 1234, "beaconhash", addr, true},
 		{1, 1, "beaconhash", emptyAddr, false},
 		{1, 1, "", addr, false},
-		{1, 0, "beaconhash",addr, false},
+		{1, 0, "beaconhash", addr, false},
 		{0, 1, "beaconhash", addr, false},
 		{0, 0, "", addr, false},
 		{0, 0, "", emptyAddr, false},

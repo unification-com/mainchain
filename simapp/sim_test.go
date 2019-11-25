@@ -30,10 +30,10 @@ import (
 	stakingsim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
+	beaconsim "github.com/unification-com/mainchain-cosmos/x/beacon/simulation"
 	entsim "github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
 	wrkchainsim "github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
-	beaconsim "github.com/unification-com/mainchain-cosmos/x/beacon/simulation"
 )
 
 // Get flags every time the simulator is run

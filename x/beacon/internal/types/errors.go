@@ -20,7 +20,7 @@ const (
 	CodeBeaconFeePayerNotOwner = 401
 )
 
-// ErrInvalidGenesis error for an invalid governance GenesisState
+// ErrInvalidGenesis error for an invalid beacon GenesisState
 func ErrInvalidGenesis(codespace sdk.CodespaceType, msg string) sdk.Error {
 	return sdk.NewError(codespace, CodeInvalidGenesis, msg)
 }

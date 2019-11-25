@@ -15,9 +15,9 @@ const (
 
 // MsgRegisterBeacon defines a RegisterBeacon message
 type MsgRegisterBeacon struct {
-	Moniker     string         `json:"moniker"`
-	BeaconName  string         `json:"name"`
-	Owner       sdk.AccAddress `json:"owner"`
+	Moniker    string         `json:"moniker"`
+	BeaconName string         `json:"name"`
+	Owner      sdk.AccAddress `json:"owner"`
 }
 
 // NewMsgRegisterBeacon is a constructor function for MsgRegisterBeacon
@@ -114,4 +114,3 @@ func (msg MsgRecordBeaconTimestamp) GetSignBytes() []byte {
 func (msg MsgRecordBeaconTimestamp) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Owner}
 }
-

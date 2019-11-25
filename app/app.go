@@ -56,7 +56,6 @@ var (
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
 		beacon.AppModule{},
-
 	)
 	// account permissions
 	maccPerms = map[string][]string{

@@ -1,6 +1,5 @@
 package keeper
 
-
 import (
 	"fmt"
 	"testing"

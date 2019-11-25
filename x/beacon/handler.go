@@ -1,6 +1,5 @@
 package beacon
 
-
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -87,6 +86,6 @@ func handleMsgRecordBeaconTimestamp(ctx sdk.Context, keeper Keeper, msg MsgRecor
 	})
 	return sdk.Result{
 		Events: ctx.EventManager().Events(),
-		Data: GetTimestampIDBytes(tsID),
+		Data:   GetTimestampIDBytes(tsID),
 	}
 }

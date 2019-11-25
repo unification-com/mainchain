@@ -7,7 +7,6 @@ import (
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
 )
 
-
 // SetBeaconTimestamp Sets the Beacon timestamp struct for a beaconID + timestampID
 func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconTimestamp types.BeaconTimestamp) sdk.Error {
 	// must have an owner, Beacon ID, TimestampID and Hash
@@ -115,7 +114,6 @@ func (k Keeper) GetBeaconTimestampsFiltered(ctx sdk.Context, params types.QueryB
 	return filteredTimestamps
 }
 
-
 // RecordBeaconTimestamp records a BEACON timestamp hash for a registered BEACON
 func (k Keeper) RecordBeaconTimestamp(
 	ctx sdk.Context,
@@ -166,4 +164,3 @@ func (k Keeper) RecordBeaconTimestamp(
 
 	return timestampID, nil
 }
-

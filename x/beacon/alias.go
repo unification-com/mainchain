@@ -57,7 +57,6 @@ var (
 	GetTimestampIDBytes = types.GetTimestampIDBytes
 
 	CheckIsBeaconTx = exported.CheckIsBeaconTx
-
 )
 
 type (
@@ -65,7 +64,7 @@ type (
 
 	GenesisState = types.GenesisState
 
-	BeaconExport = types.BeaconExport
+	BeaconExport    = types.BeaconExport
 	BeaconTimestamp = types.BeaconTimestamp
 
 	// Msgs

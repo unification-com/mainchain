@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	wrkchain "github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
 	beacon "github.com/unification-com/mainchain-cosmos/x/beacon/exported"
+	wrkchain "github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
 )
 
 var (

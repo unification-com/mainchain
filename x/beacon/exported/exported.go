@@ -25,4 +25,3 @@ func CheckIsBeaconTx(tx FeeTx) bool {
 	}
 	return false
 }
-

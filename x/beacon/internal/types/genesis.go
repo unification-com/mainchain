@@ -20,9 +20,9 @@ type BeaconExport struct {
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(params Params, startingBeaconID uint64) GenesisState {
 	return GenesisState{
-		Params:             params,
+		Params:           params,
 		StartingBeaconID: startingBeaconID,
-		Beacons:            nil,
+		Beacons:          nil,
 	}
 }
 

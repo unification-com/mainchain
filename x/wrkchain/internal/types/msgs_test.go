@@ -1,7 +1,6 @@
 package types
 
 import (
-
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,10 +11,10 @@ import (
 func TestMsgRegisterWrkChain(t *testing.T) {
 
 	tests := []struct {
-		moniker  string
-		name     string
-		genesis  string
-		owner    sdk.AccAddress
+		moniker    string
+		name       string
+		genesis    string
+		owner      sdk.AccAddress
 		expectPass bool
 	}{
 		{"wc1", "WC 1", "genhash1", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},

@@ -42,9 +42,9 @@ func TestWrkChainBlockKey(t *testing.T) {
 	wcIDbz := key[1:9]
 	heightBz := key[9:]
 
-    wcIdFromBz := binary.BigEndian.Uint64(wcIDbz)
-    heightFromBz := binary.BigEndian.Uint64(heightBz)
+	wcIdFromBz := binary.BigEndian.Uint64(wcIDbz)
+	heightFromBz := binary.BigEndian.Uint64(heightBz)
 
-    require.True(t, wcIdFromBz == wcID)
+	require.True(t, wcIdFromBz == wcID)
 	require.True(t, heightFromBz == height)
 }

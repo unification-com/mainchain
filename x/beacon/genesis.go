@@ -40,7 +40,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 
 	if len(beacons) == 0 {
 		return GenesisState{
-			Params:             params,
+			Params:           params,
 			StartingBeaconID: initialBeaconID,
 			Beacons:          nil,
 		}
@@ -57,8 +57,8 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 				BeaconID:    value.BeaconID,
 				TimestampID: value.TimestampID,
 				Hash:        value.Hash,
-				SubmitTime:   value.SubmitTime,
-				Owner:        value.Owner,
+				SubmitTime:  value.SubmitTime,
+				Owner:       value.Owner,
 			}
 			tss = append(tss, ts)
 		}

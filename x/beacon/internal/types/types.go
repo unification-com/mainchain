@@ -17,7 +17,6 @@ const (
 	DefaultStartingBeaconID uint64 = 1 // used in init genesis
 )
 
-
 // Beacons is an array of Beacon
 type Beacons []Beacon
 
@@ -71,11 +70,11 @@ func (b BeaconTimestamps) String() string {
 
 // BeaconTimestamp is a struct that contains a BEACON's recorded timestamp hash
 type BeaconTimestamp struct {
-	BeaconID     uint64         `json:"beacon_id"`
-	TimestampID  uint64         `json:"timestamp_id"`
-	SubmitTime   uint64          `json:"submit_time"`
-	Hash         string         `json:"hash"`
-	Owner        sdk.AccAddress `json:"owner"`
+	BeaconID    uint64         `json:"beacon_id"`
+	TimestampID uint64         `json:"timestamp_id"`
+	SubmitTime  uint64         `json:"submit_time"`
+	Hash        string         `json:"hash"`
+	Owner       sdk.AccAddress `json:"owner"`
 }
 
 // NewBeaconTimestamp returns a new BeaconTimestamp struct

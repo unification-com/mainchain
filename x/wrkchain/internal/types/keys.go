@@ -13,7 +13,7 @@ const (
 
 	DefaultParamspace = ModuleName
 
-	// QuerierRoute is the querier route for the enterprise store.
+	// QuerierRoute is the querier route for the wrkchain store.
 	QuerierRoute = StoreKey
 )
 

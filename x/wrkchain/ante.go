@@ -36,7 +36,7 @@ type CorrectWrkChainFeeDecorator struct {
 	ek  enterprise.Keeper
 }
 
-func NewWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper Keeper, enterpriseKeeper enterprise.Keeper) CorrectWrkChainFeeDecorator {
+func NewCorrectWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper Keeper, enterpriseKeeper enterprise.Keeper) CorrectWrkChainFeeDecorator {
 	return CorrectWrkChainFeeDecorator{
 		ak:  ak,
 		wck: wrkchainKeeper,

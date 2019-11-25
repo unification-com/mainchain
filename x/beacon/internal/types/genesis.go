@@ -56,13 +56,30 @@ func ValidateGenesis(data GenesisState) error {
 
 	for _, record := range data.Beacons {
 		if record.Beacon.Owner == nil {
-			return fmt.Errorf("Invalid Beacon: Owner: %s. Error: Missing Owner", record.Beacon.Owner)
+			return fmt.Errorf("invalid Beacon: Owner: %s. Error: Missing Owner", record.Beacon.Owner)
 		}
 		if record.Beacon.BeaconID == 0 {
-			return fmt.Errorf("Invalid Beacon: Moniker: %d. Error: Missing ID", record.Beacon.BeaconID)
+			return fmt.Errorf("invalid Beacon: Moniker: %d. Error: Missing ID", record.Beacon.BeaconID)
 		}
 		if record.Beacon.Name == "" {
-			return fmt.Errorf("Invalid Beacon: NAme: %s. Error: Missing name", record.Beacon.Name)
+			return fmt.Errorf("invalid Beacon: Name: %s. Error: Missing name", record.Beacon.Name)
+		}
+		for _, timestamp := range record.BeaconTimestamps {
+			if timestamp.Owner == nil {
+				return fmt.Errorf("invalid Beacon timestamp: Owner: %s. Error: Missing Owner", timestamp.Owner)
+			}
+			if timestamp.Hash == "" {
+				return fmt.Errorf("invalid Beacon timestamp: Hash: %s. Error: Missing Hash", timestamp.Hash)
+			}
+			if timestamp.SubmitTime == 0 {
+				return fmt.Errorf("invalid Beacon timestamp: SubmitTime: %d. Error: Missing SubmitTime", timestamp.SubmitTime)
+			}
+			if timestamp.TimestampID == 0 {
+				return fmt.Errorf("invalid Beacon timestamp: TimestampID: %d. Error: Missing TimestampID", timestamp.TimestampID)
+			}
+			if timestamp.BeaconID == 0 {
+				return fmt.Errorf("invalid Beacon timestamp: BeaconID: %d. Error: Missing BeaconID", timestamp.BeaconID)
+			}
 		}
 	}
 	return nil

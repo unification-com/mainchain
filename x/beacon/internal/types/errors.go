@@ -37,7 +37,7 @@ func ErrBeaconAlreadyRegistered(codespace sdk.CodespaceType, msg string) sdk.Err
 	return sdk.NewError(codespace, CodeBeaconAlreadyRegistered, msg)
 }
 
-func ErrBeaconBlockAlreadyRecorded(codespace sdk.CodespaceType, msg string) sdk.Error {
+func ErrBeaconTimestampAlreadyRecorded(codespace sdk.CodespaceType, msg string) sdk.Error {
 	return sdk.NewError(codespace, CodeBeaconBlockAlreadyRecorded, msg)
 }
 

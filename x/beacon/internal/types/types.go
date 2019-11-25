@@ -22,9 +22,9 @@ const (
 type Beacons []Beacon
 
 // String implements stringer interface
-func (w Beacons) String() string {
+func (b Beacons) String() string {
 	out := "ID - [Moniker] 'Name' {LastTimestampId} Owner\n"
-	for _, b := range w {
+	for _, b := range b {
 		out += fmt.Sprintf("%d - [%s] '%s' {%d} %s\n",
 			b.BeaconID, b.Moniker,
 			b.Name, b.LastTimestampID, b.Owner)
@@ -55,11 +55,25 @@ LastTimestampID: %d
 Owner: %s`, b.BeaconID, b.Moniker, b.Name, b.LastTimestampID, b.Owner))
 }
 
+// BeaconTimestamps is an array of BeaconTimestamp
+type BeaconTimestamps []BeaconTimestamp
+
+// String implements stringer interface
+func (b BeaconTimestamps) String() string {
+	out := "ID - [TimestampID] 'SubmitTime' {Hash} Owner\n"
+	for _, b := range b {
+		out += fmt.Sprintf("%d - [%d] '%d' {%s} %s\n",
+			b.BeaconID, b.TimestampID,
+			b.SubmitTime, b.Hash, b.Owner)
+	}
+	return strings.TrimSpace(out)
+}
+
 // BeaconTimestamp is a struct that contains a BEACON's recorded timestamp hash
 type BeaconTimestamp struct {
 	BeaconID     uint64         `json:"beacon_id"`
 	TimestampID  uint64         `json:"timestamp_id"`
-	SubmitTime   int64          `json:"submit_time"`
+	SubmitTime   uint64          `json:"submit_time"`
 	Hash         string         `json:"hash"`
 	Owner        sdk.AccAddress `json:"owner"`
 }

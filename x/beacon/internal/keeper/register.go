@@ -99,16 +99,16 @@ func (k Keeper) GetBeaconsIterator(ctx sdk.Context) sdk.Iterator {
 }
 
 // IterateBeacons iterates over the all the BEACON metadata and performs a callback function
-func (k Keeper) IterateBeacons(ctx sdk.Context, cb func(wrkChain types.Beacon) (stop bool)) {
+func (k Keeper) IterateBeacons(ctx sdk.Context, cb func(beacon types.Beacon) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.RegisteredBeaconPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
-		var wc types.Beacon
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &wc)
+		var b types.Beacon
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &b)
 
-		if cb(wc) {
+		if cb(b) {
 			break
 		}
 	}

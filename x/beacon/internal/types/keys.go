@@ -52,10 +52,10 @@ func BeaconAllTimestampsKey(beaconID uint64) []byte {
 }
 
 // BeaconTimestampKey gets the key for a single BEACON's specific timestamp ID
-func BeaconTimestampKey(beaconID, height uint64) []byte {
+func BeaconTimestampKey(beaconID, timestampID uint64) []byte {
 	blocksKey := BeaconAllTimestampsKey(beaconID)
 	heightBz := make([]byte, 8)
-	binary.BigEndian.PutUint64(heightBz, height)
+	binary.BigEndian.PutUint64(heightBz, timestampID)
 	return append(blocksKey, heightBz...)
 }
 

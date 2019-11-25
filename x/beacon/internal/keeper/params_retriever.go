@@ -9,7 +9,7 @@ import (
 // NodeQuerier is an interface that is satisfied by types that provide the QueryWithData method
 type NodeQuerier interface {
 	// QueryWithData performs a query to a Tendermint node with the provided path
-	// and a data payload. It returns the result and height of the query upon success
+	// and a data payload. It returns the result and subTime of the query upon success
 	// or an error if the query fails.
 	QueryWithData(path string, data []byte) ([]byte, int64, error)
 }
@@ -33,7 +33,7 @@ func (ar ParamsRetriever) GetParams() (types.Params, error) {
 }
 
 // GetParamsHeight queries for parameters. Returns the
-// height of the query with the params. An error is returned if the query
+// subTime of the query with the params. An error is returned if the query
 // or decoding fails.
 func (ar ParamsRetriever) GetParamsHeight() (types.Params, int64, error) {
 

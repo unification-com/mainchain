@@ -45,3 +45,23 @@ func NewQueryBeaconParams(page, limit int, monkker string, owner sdk.AccAddress)
 		Owner:   owner,
 	}
 }
+
+// QueryBeaconTimestampParams Params for query 'custom/beacon/timestamps'
+type QueryBeaconTimestampParams struct {
+	BeaconID   uint64
+	Page       int
+	Limit      int
+	SubmitTime uint64
+	Hash       string
+}
+
+// NewQueryBeaconTimestampParams creates a new instance of QueryBeaconTimestampParams
+func NewQueryBeaconTimestampParams(page, limit int, beaconID uint64, hash string, submitTime uint64) QueryBeaconTimestampParams {
+	return QueryBeaconTimestampParams{
+		BeaconID:   beaconID,
+		Page:       page,
+		Limit:      limit,
+		SubmitTime: submitTime,
+		Hash:       hash,
+	}
+}

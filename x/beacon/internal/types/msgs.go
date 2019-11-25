@@ -13,7 +13,7 @@ const (
 
 // --- Register a BEACON Msg ---
 
-// MsgRegisterBeacon defines a RegisterWrkChain message
+// MsgRegisterBeacon defines a RegisterBeacon message
 type MsgRegisterBeacon struct {
 	Moniker     string         `json:"moniker"`
 	BeaconName  string         `json:"name"`

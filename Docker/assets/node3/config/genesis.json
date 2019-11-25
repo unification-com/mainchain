@@ -45,6 +45,15 @@
       "starting_wrkchain_id": "1",
       "registered_wrkchains": []
     },
+    "beacon": {
+      "params": {
+        "fee_register": "1000000000000",
+        "fee_record": "1000000000",
+        "denom": "nund"
+      },
+      "starting_beacon_id": "1",
+      "registered_beacons": []
+    },
     "mint": {
       "minter": {
         "inflation": "0.130000000000000000",

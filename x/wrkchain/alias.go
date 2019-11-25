@@ -51,15 +51,19 @@ var (
 	CheckIsWrkChainTx = exported.CheckIsWrkChainTx
 
 	// Error messages
-	ErrWrkChainDoesNotExist      = types.ErrWrkChainDoesNotExist
-	ErrWrkChainAlreadyRegistered = types.ErrWrkChainAlreadyRegistered
-	ErrInsufficientWrkChainFee   = types.ErrInsufficientWrkChainFee
-	ErrTooMuchWrkChainFee        = types.ErrTooMuchWrkChainFee
-	ErrFeePayerNotOwner          = types.ErrFeePayerNotOwner
+	ErrWrkChainDoesNotExist         = types.ErrWrkChainDoesNotExist
+	ErrWrkChainAlreadyRegistered    = types.ErrWrkChainAlreadyRegistered
+	ErrInsufficientWrkChainFee      = types.ErrInsufficientWrkChainFee
+	ErrTooMuchWrkChainFee           = types.ErrTooMuchWrkChainFee
+	ErrFeePayerNotOwner             = types.ErrFeePayerNotOwner
+	ErrNotWrkChainOwner             = types.ErrNotWrkChainOwner
+	ErrWrkChainBlockAlreadyRecorded = types.ErrWrkChainBlockAlreadyRecorded
 
 	NewGenesisState     = types.NewGenesisState
 	DefaultGenesisState = types.DefaultGenesisState
 	ValidateGenesis     = types.ValidateGenesis
+
+	NewQueryWrkChainParams = types.NewQueryWrkChainParams
 )
 
 type (

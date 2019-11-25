@@ -3,7 +3,6 @@ package wrkchain
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
 
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
@@ -51,10 +50,10 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		wrkchainId := wc.WrkChainID
 		blockHashList := k.GetWrkChainBlockHashes(ctx, wrkchainId)
 
-		var hashes []types.WrkChainBlock
+		var hashes []WrkChainBlock
 
 		for _, value := range blockHashList {
-			hash := types.WrkChainBlock{
+			hash := WrkChainBlock{
 				WrkChainID:   value.WrkChainID,
 				Height:       value.Height,
 				BlockHash:    value.BlockHash,

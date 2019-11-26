@@ -12,19 +12,28 @@ func BeginBlocker(ctx sdk.Context, k Keeper, keeper enterprise.Keeper) {
 	minter := k.GetMinter(ctx)
 	params := k.GetParams(ctx)
 
-	// recalculate inflation rate
-	totalUNDSupply := keeper.GetTotalUndSupply(ctx)
-	totalLockedUND := keeper.GetTotalLockedUnd(ctx)
-	liquidUND := totalUNDSupply.Sub(totalLockedUND)
-
+	var mintedCoins sdk.Coins
+	var mintedCoin sdk.Coin
 	bondedRatio := k.BondedRatio(ctx)
-	minter.Inflation = minter.NextInflationRate(params, bondedRatio)
-	minter.AnnualProvisions = minter.NextAnnualProvisions(params, liquidUND.Amount)
-	k.SetMinter(ctx, minter)
 
-	// mint coins, update supply
-	mintedCoin := minter.BlockProvision(params)
-	mintedCoins := sdk.NewCoins(mintedCoin)
+	if ctx.BlockHeight() < 100 {
+		mintedCoin = sdk.NewCoin(params.MintDenom, sdk.NewInt(100))
+		mintedCoins = sdk.NewCoins(mintedCoin)
+
+	} else {
+		// recalculate inflation rate
+		totalUNDSupply := keeper.GetTotalUndSupply(ctx)
+		totalLockedUND := keeper.GetTotalLockedUnd(ctx)
+		liquidUND := totalUNDSupply.Sub(totalLockedUND)
+
+		minter.Inflation = minter.NextInflationRate(params, bondedRatio)
+		minter.AnnualProvisions = minter.NextAnnualProvisions(params, liquidUND.Amount)
+		k.SetMinter(ctx, minter)
+
+		// mint coins, update supply
+		mintedCoin = minter.BlockProvision(params)
+		mintedCoins = sdk.NewCoins(mintedCoin)
+	}
 
 	err := k.MintCoins(ctx, mintedCoins)
 	if err != nil {

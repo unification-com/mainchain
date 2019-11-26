@@ -135,21 +135,25 @@ func (k Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPur
 func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) sdk.Error {
 	// must have a purchaser
 	if purchaseOrder.Purchaser.Empty() {
-		return sdk.ErrInternal("unable to raise purchase order - purchaser cannot be empty")
+		return sdk.ErrInternal("unable to set purchase order - purchaser cannot be empty")
 	}
 
 	if !purchaseOrder.Amount.IsValid() {
-		return sdk.ErrInternal("unable to raise purchase order - amount not valid")
+		return sdk.ErrInternal("unable to set purchase order - amount not valid")
 	}
 
 	// must be a positive amount
 	if purchaseOrder.Amount.IsZero() || purchaseOrder.Amount.IsNegative() {
-		return sdk.ErrInternal("unable to raise purchase order - amount must be positive")
+		return sdk.ErrInternal("unable to set purchase order - amount must be positive")
 	}
 
 	//must have an ID
 	if purchaseOrder.PurchaseOrderID == 0 {
-		return sdk.ErrInternal("unable to raise purchase order - id must be positive non-zero")
+		return sdk.ErrInternal("unable to set purchase order - id must be positive non-zero")
+	}
+
+	if !types.ValidPurchaseOrderStatus(purchaseOrder.Status) {
+		return sdk.ErrInternal("unable to set purchase order - invalid status")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -159,6 +163,8 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 }
 
 func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress, amount sdk.Coin) (uint64, sdk.Error) {
+
+	logger := k.Logger(ctx)
 
 	purchaseOrderID, err := k.GetHighestPurchaseOrderID(ctx)
 	if err != nil {
@@ -178,19 +184,33 @@ func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress,
 
 	k.SetHighestPurchaseOrderID(ctx, purchaseOrderID+1)
 
+	logger.Info(fmt.Sprintf("enterprise und purchase order raised - id: %d, amt: %s, from: %s",
+		purchaseOrderID, amount.String(), purchaser.String()))
+
 	return purchaseOrderID, nil
 }
 
 func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, decision types.PurchaseOrderStatus) sdk.Error {
+
+	logger := k.Logger(ctx)
 
 	if !k.PurchaseOrderExists(ctx, purchaseOrderID) {
 		errMsg := fmt.Sprintf("purchase order id does not exist: %d", purchaseOrderID)
 		return types.ErrPurchaseOrderDoesNotExist(k.codespace, errMsg)
 	}
 
+	if !types.ValidPurchaseOrderAcceptRejectStatus(decision) {
+		return types.ErrInvalidDecision(k.Codespace(), "decision should be accept or reject")
+	}
+
 	purchaseOrder := k.GetPurchaseOrder(ctx, purchaseOrderID)
 
-	if purchaseOrder.Status == types.StatusAccepted || purchaseOrder.Status == types.StatusRejected {
+	if purchaseOrder.Status == types.StatusNil {
+		errMsg := fmt.Sprintf("purchase order %d not raised!", purchaseOrderID)
+		return types.ErrPurchaseOrderNotRaised(k.codespace, errMsg)
+	}
+
+	if purchaseOrder.Status != types.StatusRaised {
 		errMsg := fmt.Sprintf("purchase order %d already processed: %s", purchaseOrderID, purchaseOrder.Status.String())
 		return types.ErrPurchaseOrderAlreadyProcessed(k.codespace, errMsg)
 	}
@@ -203,6 +223,9 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 	if err != nil {
 		return err
 	}
+
+	logger.Info(fmt.Sprintf("enterprise und purchase order processed - id: %d, decision: %s",
+		purchaseOrderID, decision.String()))
 
 	return nil
 }

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -62,6 +63,7 @@ func TestSetEmptyPurchaseOrderValues(t *testing.T) {
 
 	// Empty
 	po1 := types.NewEnterpriseUndPurchaseOrder()
+	po1.Status = types.StatusRaised
 
 	// Only purchaser set
 	po2 := po1
@@ -78,15 +80,23 @@ func TestSetEmptyPurchaseOrderValues(t *testing.T) {
 	po5 := po4
 	po5.PurchaseOrderID = 1
 
+	po6 := po5
+	po6.Status = 0x05
+
+	po7 := po6
+	po7.Status = types.StatusNil
+
 	testCases := []struct {
 		po          types.EnterpriseUndPurchaseOrder
 		expectedErr sdk.Error
 	}{
-		{po1, sdk.ErrInternal("unable to raise purchase order - purchaser cannot be empty")},
-		{po2, sdk.ErrInternal("unable to raise purchase order - amount not valid")},
-		{po3, sdk.ErrInternal("unable to raise purchase order - amount must be positive")},
-		{po4, sdk.ErrInternal("unable to raise purchase order - id must be positive non-zero")},
+		{po1, sdk.ErrInternal("unable to set purchase order - purchaser cannot be empty")},
+		{po2, sdk.ErrInternal("unable to set purchase order - amount not valid")},
+		{po3, sdk.ErrInternal("unable to set purchase order - amount must be positive")},
+		{po4, sdk.ErrInternal("unable to set purchase order - id must be positive non-zero")},
 		{po5, nil},
+		{po6, sdk.ErrInternal("unable to set purchase order - invalid status")},
+		{po7, sdk.ErrInternal("unable to set purchase order - invalid status")},
 	}
 
 	for _, tc := range testCases {
@@ -158,9 +168,9 @@ func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 		expectedErr  sdk.Error
 		expectedPoID uint64
 	}{
-		{po1, sdk.ErrInternal("unable to raise purchase order - purchaser cannot be empty"), 0},
-		{po2, sdk.ErrInternal("unable to raise purchase order - amount not valid"), 0},
-		{po3, sdk.ErrInternal("unable to raise purchase order - amount must be positive"), 0},
+		{po1, sdk.ErrInternal("unable to set purchase order - purchaser cannot be empty"), 0},
+		{po2, sdk.ErrInternal("unable to set purchase order - amount not valid"), 0},
+		{po3, sdk.ErrInternal("unable to set purchase order - amount must be positive"), 0},
 		{po4, nil, 1},
 	}
 
@@ -220,5 +230,90 @@ func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
 
 		po := keeper.GetPurchaseOrder(ctx, poID)
 		require.True(t, po.Status == decision)
+	}
+}
+
+func TestProcessNotExistPurchaseOrder(t *testing.T) {
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	for i := uint64(1); i < 1000; i++ {
+		err := keeper.ProcessPurchaseOrder(ctx, i, RandomDecision())
+		errMsg := fmt.Sprintf("purchase order id does not exist: %d", i)
+		expectedErr := types.ErrPurchaseOrderDoesNotExist(keeper.codespace, errMsg)
+		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+	}
+}
+
+func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
+
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+
+	for i := uint64(1); i < 1000; i++ {
+		amount := sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
+		from := TestAddrs[1]
+		poID, _ := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
+		decision := RandomDecision()
+		err := keeper.ProcessPurchaseOrder(ctx, poID, decision)
+		require.NoError(t, err)
+
+		// reprocess
+		errMsg := fmt.Sprintf("purchase order %d already processed: %s", poID, decision)
+		expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
+
+		err = keeper.ProcessPurchaseOrder(ctx, poID, decision)
+		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+
+		// mock complete
+		if decision == types.StatusAccepted {
+			po := keeper.GetPurchaseOrder(ctx, poID)
+			po.Status = types.StatusCompleted
+			_ = keeper.SetPurchaseOrder(ctx, po)
+
+			errMsg := fmt.Sprintf("purchase order %d already processed: complete", poID)
+			expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
+
+			err = keeper.ProcessPurchaseOrder(ctx, poID, decision)
+			require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+		} else {
+			errMsg := fmt.Sprintf("purchase order %d already processed: reject", poID)
+			expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
+
+			err = keeper.ProcessPurchaseOrder(ctx, poID, decision)
+			require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+		}
+	}
+}
+
+func TestProcessPurchaseOrderInvalidDecision(t *testing.T) {
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+
+	po := types.NewEnterpriseUndPurchaseOrder()
+	po.Status = types.StatusRaised
+	po.PurchaseOrderID = 1
+	po.Amount = sdk.NewInt64Coin(TestDenomination, 10000)
+	po.Purchaser = TestAddrs[0]
+
+	_ = keeper.SetPurchaseOrder(ctx, po)
+
+	po.PurchaseOrderID = 2
+	_ = keeper.SetPurchaseOrder(ctx, po)
+
+	testCases := []struct {
+		poId         uint64
+		decision     types.PurchaseOrderStatus
+		expectedErr  sdk.Error
+	}{
+		{1, types.StatusRaised, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
+		{1, types.StatusCompleted, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
+		{1, types.StatusNil, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
+		{1, 0x05, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
+		{1, 0x06, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
+		{1, 0x07, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
+		{1, types.StatusAccepted, nil},
+		{2, types.StatusRejected, nil},
+	}
+
+	for _, tc := range testCases {
+		err := keeper.ProcessPurchaseOrder(ctx, tc.poId, tc.decision)
+		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
 	}
 }

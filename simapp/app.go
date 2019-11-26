@@ -1,9 +1,6 @@
 package simapp
 
 import (
-	"github.com/unification-com/mainchain-cosmos/x/beacon"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
 	"io"
 	"os"
 
@@ -28,7 +25,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/unification-com/mainchain-cosmos/ante"
+	"github.com/unification-com/mainchain-cosmos/x/beacon"
+	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
 )
 
 const appName = "UndSimApp"

@@ -1,11 +1,13 @@
-package wrkchain
+package ante
 
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
 
 var (
@@ -32,11 +34,11 @@ type FeeTx interface {
 // If any of the checks fail, a suitable error is returned.
 type CorrectWrkChainFeeDecorator struct {
 	ak  auth.AccountKeeper
-	wck Keeper
-	ek  enterprise.Keeper
+	wck keeper.Keeper
+	ek  types.EnterpriseKeeper
 }
 
-func NewCorrectWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper Keeper, enterpriseKeeper enterprise.Keeper) CorrectWrkChainFeeDecorator {
+func NewCorrectWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper keeper.Keeper, enterpriseKeeper types.EnterpriseKeeper) CorrectWrkChainFeeDecorator {
 	return CorrectWrkChainFeeDecorator{
 		ak:  ak,
 		wck: wrkchainKeeper,
@@ -52,7 +54,7 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	}
 
 	// check if it's a WRKChain Tx
-	if !CheckIsWrkChainTx(feeTx) {
+	if !exported.CheckIsWrkChainTx(feeTx) {
 		// ignore and move on to the next decorator in the chain
 		return next(ctx, tx, simulate)
 	}
@@ -80,7 +82,7 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	return next(ctx, tx, simulate)
 }
 
-func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck Keeper) error {
+func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck keeper.Keeper) error {
 	msgs := tx.GetMsgs()
 	numMsgs := 0
 	expectedFees := wck.GetZeroFeeAsCoin(ctx)
@@ -88,10 +90,10 @@ func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck Keeper) error {
 	// go through Msgs wrapped in the Tx, and check for WRKChain messages
 	for _, msg := range msgs {
 		switch msg.(type) {
-		case MsgRegisterWrkChain:
+		case types.MsgRegisterWrkChain:
 			expectedFees = expectedFees.Add(wck.GetRegistrationFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
-		case MsgRecordWrkChainBlock:
+		case types.MsgRecordWrkChainBlock:
 			expectedFees = expectedFees.Add(wck.GetRecordFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
 		}
@@ -100,12 +102,12 @@ func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck Keeper) error {
 	totalFees := sdk.Coins{expectedFees}
 	if tx.GetFee().IsAllLT(totalFees) {
 		errMsg := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return ErrInsufficientWrkChainFee(DefaultCodespace, errMsg)
+		return types.ErrInsufficientWrkChainFee(types.DefaultCodespace, errMsg)
 	}
 
 	if tx.GetFee().IsAllGT(totalFees) {
 		errMsg := fmt.Sprintf("too much fee sent to pay for WrkChain tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return ErrTooMuchWrkChainFee(DefaultCodespace, errMsg)
+		return types.ErrTooMuchWrkChainFee(types.DefaultCodespace, errMsg)
 	}
 
 	return nil
@@ -116,22 +118,22 @@ func checkWrkChainOwnerFeePayer(tx FeeTx) error {
 	feePayer := tx.FeePayer()
 	for _, msg := range msgs {
 		switch m := msg.(type) {
-		case MsgRegisterWrkChain:
+		case types.MsgRegisterWrkChain:
 			if !feePayer.Equals(m.Owner) {
 				errMsg := fmt.Sprintf("fee payer is not WRKChain owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return ErrFeePayerNotOwner(DefaultCodespace, errMsg)
+				return types.ErrFeePayerNotOwner(types.DefaultCodespace, errMsg)
 			}
-		case MsgRecordWrkChainBlock:
+		case types.MsgRecordWrkChainBlock:
 			if !feePayer.Equals(m.Owner) {
 				errMsg := fmt.Sprintf("fee payer is not WRKChain owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return ErrFeePayerNotOwner(DefaultCodespace, errMsg)
+				return types.ErrFeePayerNotOwner(types.DefaultCodespace, errMsg)
 			}
 		}
 	}
 	return nil
 }
 
-func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek enterprise.Keeper, tx FeeTx) error {
+func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek types.EnterpriseKeeper, tx FeeTx) error {
 	feePayer := tx.FeePayer()
 	feePayerAcc := ak.GetAccount(ctx, feePayer)
 	blockTime := ctx.BlockHeader().Time
@@ -150,7 +152,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek enterprise
 	potentialCoins := coins
 
 	//get any locked enterprise UND
-	lockedUnd := ek.GetLockedUndForAccount(ctx, feePayer).Amount
+	lockedUnd := ek.GetLockedUndAmountForAccount(ctx, feePayer)
 
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
 	// include any locked UND in potential coins. We need to do this because if these checks pass,

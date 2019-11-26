@@ -8,7 +8,6 @@ import (
 	"github.com/unification-com/mainchain-cosmos/x/beacon/exported"
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 )
 
 var (
@@ -36,10 +35,10 @@ type FeeTx interface {
 type CorrectBeaconFeeDecorator struct {
 	ak auth.AccountKeeper
 	bk keeper.Keeper
-	ek enterprise.Keeper
+	ek types.EnterpriseKeeper
 }
 
-func NewCorrectBeaconFeeDecorator(ak auth.AccountKeeper, beaconKeeper keeper.Keeper, enterpriseKeeper enterprise.Keeper) CorrectBeaconFeeDecorator {
+func NewCorrectBeaconFeeDecorator(ak auth.AccountKeeper, beaconKeeper keeper.Keeper, enterpriseKeeper types.EnterpriseKeeper) CorrectBeaconFeeDecorator {
 	return CorrectBeaconFeeDecorator{
 		ak: ak,
 		bk: beaconKeeper,
@@ -134,7 +133,7 @@ func checkBeaconOwnerFeePayer(tx FeeTx) error {
 	return nil
 }
 
-func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek enterprise.Keeper, tx FeeTx) error {
+func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek types.EnterpriseKeeper, tx FeeTx) error {
 	feePayer := tx.FeePayer()
 	feePayerAcc := ak.GetAccount(ctx, feePayer)
 	blockTime := ctx.BlockHeader().Time
@@ -153,7 +152,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek enterprise
 	potentialCoins := coins
 
 	//get any locked enterprise UND
-	lockedUnd := ek.GetLockedUndForAccount(ctx, feePayer).Amount
+	lockedUnd := ek.GetLockedUndAmountForAccount(ctx, feePayer)
 
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
 	// include any locked UND in potential coins. We need to do this because if these checks pass,

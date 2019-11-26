@@ -20,6 +20,12 @@ import (
 	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
 )
 
+type TestAccount struct {
+	PrivKey ed25519.PrivKeyEd25519
+	PubKey  crypto.PubKey
+	Address sdk.AccAddress
+}
+
 // Setup initializes a new UndSimApp. A Nop logger is set in UndSimApp.
 func Setup(isCheckTx bool) *UndSimApp {
 	db := dbm.NewMemDB()
@@ -74,6 +80,63 @@ func SetupWithGenesisAccounts(genAccs []authexported.GenesisAccount) *UndSimApp 
 	app.BeginBlock(abci.RequestBeginBlock{Header: abci.Header{Height: app.LastBlockHeight() + 1}})
 
 	return app
+}
+
+// SetupUnitTestApp creates a simApp and context for testing with some sensible chain defaults
+func SetupUnitTestApp(isCheckTx bool, genAccs int, amt int64, testDenom string) (*UndSimApp, sdk.Context, TestAccount, []TestAccount) {
+
+	accAmt := sdk. NewInt(amt)
+
+	app := Setup(isCheckTx)
+	ctx := app.BaseApp.NewContext(isCheckTx, abci.Header{ChainID: "und-unit-test-chain"})
+
+	skParams := app.StakingKeeper.GetParams(ctx)
+	skParams.BondDenom = testDenom
+	app.StakingKeeper.SetParams(ctx, skParams)
+
+	testAccs := make([]TestAccount, genAccs)
+	for i := 0; i < genAccs; i++ {
+		privK := ed25519.GenPrivKey()
+		pubK := privK.PubKey()
+		addr := sdk.AccAddress(pubK.Address())
+		testAccs[0] = TestAccount{PrivKey: privK, PubKey: pubK, Address: addr}
+	}
+
+	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt))
+	totalSupply := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt.MulRaw(int64(len(testAccs)))))
+	prevSupply := app.SupplyKeeper.GetSupply(ctx)
+	app.SupplyKeeper.SetSupply(ctx, supply.NewSupply(prevSupply.GetTotal().Add(totalSupply)))
+
+	app.BeaconKeeper.SetHighestBeaconID(ctx, 1)
+	beaconParams := app.BeaconKeeper.GetParams(ctx)
+	beaconParams.Denom = app.StakingKeeper.BondDenom(ctx)
+	app.BeaconKeeper.SetParams(ctx, beaconParams)
+
+	app.WrkChainKeeper.SetHighestWrkChainID(ctx, 1)
+	wrkchainParams := app.WrkChainKeeper.GetParams(ctx)
+	wrkchainParams.Denom = app.StakingKeeper.BondDenom(ctx)
+	app.WrkChainKeeper.SetParams(ctx, wrkchainParams)
+
+	entPrivK := ed25519.GenPrivKey()
+	entPubKey := entPrivK.PubKey()
+	entAddr := sdk.AccAddress(entPubKey.Address())
+	entAcc := TestAccount{PrivKey: entPrivK, PubKey: entPubKey, Address: entAddr}
+
+	app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, 1)
+	entParams := app.EnterpriseKeeper.GetParams(ctx)
+	entParams.Denom = app.StakingKeeper.BondDenom(ctx)
+	entParams.EntSource = entAddr
+	app.EnterpriseKeeper.SetParams(ctx, entParams)
+
+	// fill all the addresses with some coins, set the loose pool tokens simultaneously
+	for _, ta := range testAccs {
+		_, err := app.BankKeeper.AddCoins(ctx, ta.Address, initCoins)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return app, ctx, entAcc, testAccs
 }
 
 // AddTestAddrs constructs and returns accNum amount of accounts with an

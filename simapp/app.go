@@ -27,7 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-	"github.com/unification-com/mainchain-cosmos/app/ante"
+	"github.com/unification-com/mainchain-cosmos/ante"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
 )
 

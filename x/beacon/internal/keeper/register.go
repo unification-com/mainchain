@@ -161,6 +161,8 @@ func (k Keeper) GetBeaconsFiltered(ctx sdk.Context, params types.QueryBeaconPara
 // RegisterBeacon registers a BEACON in the store
 func (k Keeper) RegisterBeacon(ctx sdk.Context, moniker string, beaconName string, owner sdk.AccAddress) (uint64, sdk.Error) {
 
+	logger := k.Logger(ctx)
+
 	//must have a moniker
 	if len(moniker) == 0 {
 		return 0, sdk.ErrInternal("unable to register beacon - must have a moniker")
@@ -193,6 +195,8 @@ func (k Keeper) RegisterBeacon(ctx sdk.Context, moniker string, beaconName strin
 	}
 
 	k.SetHighestBeaconID(ctx, beaconID+1)
+
+	logger.Info("beacon registered", "id", beaconID, "moniker", moniker, "owner", owner.String())
 
 	return beaconID, nil
 }

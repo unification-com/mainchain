@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 )
@@ -130,8 +129,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 			return err
 		}
 
-		logger.Debug(fmt.Sprintf("enterprise und - unlocking %s for account %s",
-			feeNundCoin.Amount, feePayer.String()))
+		logger.Debug("enterprise unlocking und", "for", feePayer.String(), "amt", feeNundCoin.Amount)
 
 	} else {
 		// calculate how much can be undelegated, and if, by undelegating, the account
@@ -160,8 +158,9 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 			if err != nil {
 				return err
 			}
-			logger.Debug(fmt.Sprintf("enterprise und - unlocking %s for account %s",
-				lockedUnd.Amount, feePayer.String()))
+
+			logger.Debug("enterprise unlocking und", "for", feePayer.String(), "amt", lockedUnd.Amount)
+
 		}
 	}
 

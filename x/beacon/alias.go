@@ -2,6 +2,7 @@ package beacon
 
 import (
 	"github.com/unification-com/mainchain-cosmos/x/beacon/exported"
+	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/ante"
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
 )
@@ -16,6 +17,12 @@ const (
 	DefaultCodespace = types.DefaultCodespace
 
 	QueryParameters = keeper.QueryParameters
+	QuerierRoute = types.QuerierRoute
+	QueryBeacons = keeper.QueryBeacons
+
+	RecordFee = types.RecordFee
+	FeeDenom  = types.FeeDenom
+
 )
 
 var (
@@ -29,7 +36,11 @@ var (
 	DefaultGenesisState = types.DefaultGenesisState
 	ValidateGenesis     = types.ValidateGenesis
 
-	NewQueryBeaconParams = types.NewQueryBeaconParams
+	NewQueryBeaconParams        = types.NewQueryBeaconParams
+	NewMsgRegisterBeacon        = types.NewMsgRegisterBeacon
+	NewMsgRecordBeaconTimestamp = types.NewMsgRecordBeaconTimestamp
+
+	NewParamsRetriever = keeper.NewParamsRetriever
 
 	// Errors
 	ErrInvalidGenesis                 = types.ErrInvalidGenesis
@@ -57,6 +68,10 @@ var (
 	GetTimestampIDBytes = types.GetTimestampIDBytes
 
 	CheckIsBeaconTx = exported.CheckIsBeaconTx
+
+	DefaultParams = types.DefaultParams
+
+	NewCorrectBeaconFeeDecorator = ante.NewCorrectBeaconFeeDecorator
 )
 
 type (
@@ -64,8 +79,15 @@ type (
 
 	GenesisState = types.GenesisState
 
-	BeaconExport    = types.BeaconExport
+	Params          = types.Params
+	Beacon          = types.Beacon
 	BeaconTimestamp = types.BeaconTimestamp
+	BeaconExport    = types.BeaconExport
+
+	QueryResBeacons               = types.QueryResBeacons
+	QueryResBeaconTimestampHashes = types.QueryResBeaconTimestampHashes
+	QueryBeaconParams             = types.QueryBeaconParams
+	QueryBeaconTimestampParams    = types.QueryBeaconTimestampParams
 
 	// Msgs
 	MsgRegisterBeacon        = types.MsgRegisterBeacon

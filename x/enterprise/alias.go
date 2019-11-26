@@ -1,6 +1,7 @@
 package enterprise
 
 import (
+	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/ante"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 )
@@ -64,6 +65,8 @@ var (
 	// Errors
 	ErrInvalidDecision     = types.ErrInvalidDecision
 	ErrInvalidDenomination = types.ErrInvalidDenomination
+
+	NewCheckLockedUndDecorator = ante.NewCheckLockedUndDecorator
 )
 
 type (

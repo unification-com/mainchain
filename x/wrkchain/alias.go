@@ -2,6 +2,7 @@ package wrkchain
 
 import (
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/ante"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
@@ -64,6 +65,8 @@ var (
 	ValidateGenesis     = types.ValidateGenesis
 
 	NewQueryWrkChainParams = types.NewQueryWrkChainParams
+
+	NewCorrectWrkChainFeeDecorator = ante.NewCorrectWrkChainFeeDecorator
 )
 
 type (

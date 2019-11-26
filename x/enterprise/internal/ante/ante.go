@@ -1,10 +1,11 @@
-package enterprise
+package ante
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	beacon "github.com/unification-com/mainchain-cosmos/x/beacon/exported"
+	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/keeper"
 	wrkchain "github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
 )
 
@@ -21,10 +22,10 @@ type FeeTx interface {
 }
 
 type CheckLockedUndDecorator struct {
-	entk Keeper
+	entk keeper.Keeper
 }
 
-func NewCheckLockedUndDecorator(entk Keeper) CheckLockedUndDecorator {
+func NewCheckLockedUndDecorator(entk keeper.Keeper) CheckLockedUndDecorator {
 	return CheckLockedUndDecorator{
 		entk: entk,
 	}

@@ -173,6 +173,7 @@ go test -mod=readonly ./simapp \
     -ExportParamsPath=/path/to/.simapp/params.json \
     -ExportStatePath=/path/to/.simapp/state.json \
     -ExportStatsPath=/path/to/.simapp/statistics.json \
+    -Verbose=true \
     -v \
     -timeout 24h
 ```

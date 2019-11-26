@@ -30,6 +30,7 @@ import (
 	stakingsim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
+	beaconsim "github.com/unification-com/mainchain-cosmos/x/beacon/simulation"
 	entsim "github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
 	wrkchainsim "github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
@@ -218,6 +219,28 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 				return v
 			}(nil),
 			wrkchainsim.SimulateMsgRecordWrkChainBlock(app.AccountKeeper, app.WrkChainKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRegisterBeacon, &v, nil,
+					func(_ *rand.Rand) {
+						v = 40
+					})
+				return v
+			}(nil),
+			beaconsim.SimulateMsgRegisterBeacon(app.AccountKeeper, app.BeaconKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRecordBeaconTimestamp, &v, nil,
+					func(_ *rand.Rand) {
+						v = 100
+					})
+				return v
+			}(nil),
+			beaconsim.SimulateMsgRecordBeaconTimestamp(app.AccountKeeper, app.BeaconKeeper),
 		},
 	}
 }

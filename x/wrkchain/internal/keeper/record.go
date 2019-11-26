@@ -5,8 +5,7 @@ import (
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
 
-
-// SetWrkChainBlock Sets the WrkChain Block struct for a sha256(wrkchainId + height)
+// SetWrkChainBlock Sets the WrkChain Block struct for a wrkchainId & height
 func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlock types.WrkChainBlock) sdk.Error {
 	// must have an owner, WRKChain ID, Height and BlockHash
 	if wrkchainBlock.Owner.Empty() || wrkchainBlock.WrkChainID == 0 || wrkchainBlock.Height == 0 || len(wrkchainBlock.BlockHash) == 0 {

@@ -29,29 +29,29 @@ func TestSetGetWrkChain(t *testing.T) {
 	ctx, _, keeper := createTestInput(t, false, 100, 1000)
 
 	wcID := uint64(1)
-    for _, addr := range TestAddrs {
+	for _, addr := range TestAddrs {
 
-    	wc := types.NewWrkChain()
-    	wc.Owner = addr
-    	wc.WrkChainID = wcID
-    	wc.LastBlock = 1
-    	wc.RegisterTime = time.Now().Unix()
-    	wc.RegisterHeight = 10
-    	wc.Moniker = GenerateRandomString(12)
-    	wc.Name = GenerateRandomString(20)
-    	wc.GenesisHash = GenerateRandomString(32)
+		wc := types.NewWrkChain()
+		wc.Owner = addr
+		wc.WrkChainID = wcID
+		wc.LastBlock = 1
+		wc.RegisterTime = time.Now().Unix()
+		wc.RegisterHeight = 10
+		wc.Moniker = GenerateRandomString(12)
+		wc.Name = GenerateRandomString(20)
+		wc.GenesisHash = GenerateRandomString(32)
 
-    	err := keeper.SetWrkChain(ctx, wc)
-    	require.NoError(t, err)
+		err := keeper.SetWrkChain(ctx, wc)
+		require.NoError(t, err)
 
-    	isRegistered := keeper.IsWrkChainRegistered(ctx, wcID)
-    	require.True(t, isRegistered)
+		isRegistered := keeper.IsWrkChainRegistered(ctx, wcID)
+		require.True(t, isRegistered)
 
-    	wcDb := keeper.GetWrkChain(ctx, wcID)
-    	require.True(t, WRKChainEqual(wcDb, wc))
+		wcDb := keeper.GetWrkChain(ctx, wcID)
+		require.True(t, WRKChainEqual(wcDb, wc))
 
-    	wcDbOwner := keeper.GetWrkChainOwner(ctx, wcID)
-    	require.True(t, wcDbOwner.String() == addr.String())
+		wcDbOwner := keeper.GetWrkChainOwner(ctx, wcID)
+		require.True(t, wcDbOwner.String() == addr.String())
 
 		wcID = wcID + 1
 	}

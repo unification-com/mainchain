@@ -12,14 +12,14 @@ var (
 	KeyDenom       = []byte("Denom")
 )
 
-// enterprise UND parameters
+// wrkchain parameters
 type Params struct {
 	FeeRegister uint64 `json:"fee_register" yaml:"fee_register"` // Fee for registering a WRKChain
 	FeeRecord   uint64 `json:"fee_record" yaml:"fee_record"`     // Fee for recording hashes for a WRKChain
 	Denom       string `json:"denom" yaml:"denom"`               // Fee denomination
 }
 
-// ParamTable for enterprise UND module.
+// ParamTable for wrkchain module.
 func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&Params{})
 }
@@ -32,7 +32,7 @@ func NewParams(feeReg, feeRec uint64, denom string) Params {
 	}
 }
 
-// default enterprise UND module parameters
+// default wrkchain module parameters
 func DefaultParams() Params {
 	return Params{
 		FeeRegister: RegFee,

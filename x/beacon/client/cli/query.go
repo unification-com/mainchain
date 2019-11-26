@@ -21,6 +21,9 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	}
 	beaconQueryCmd.AddCommand(client.GetCommands(
 		GetCmdQueryParams(cdc),
+		GetCmdBeacon(storeKey, cdc),
+		GetCmdBeaconTimestamp(storeKey, cdc),
+		GetCmdBeaconTimestamps(storeKey, cdc),
 	)...)
 	return beaconQueryCmd
 }
@@ -49,3 +52,75 @@ func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
+
+// GetCmdBeacon queries information about a BEACON
+func GetCmdBeacon(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "beacon [beacon id]",
+		Short: "Query a BEACON for given ID",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			beaconID := args[0]
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/beacon/%s", queryRoute, beaconID), nil)
+			if err != nil {
+				fmt.Printf("could not find beacon - %s \n", beaconID)
+				return nil
+			}
+
+			var out types.Beacon
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdBeaconTimestamp queries information about a beacon's recorded timestamp
+func GetCmdBeaconTimestamp(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "timestamp [beacon id] [timestamp id]",
+		Short: "Query a BEACON for given ID and timestamp ID to retrieve recorded timestamp",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			beaconID := args[0]
+			timestampID := args[1]
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/timestamp/%s/%s", queryRoute, beaconID, timestampID), nil)
+			if err != nil {
+				fmt.Printf("could not find beacon %s timestamp %s \n", beaconID, timestampID)
+				return nil
+			}
+
+			var out types.BeaconTimestamp
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdBeaconTimestamps queries information about a beacon's recorded timestamps
+func GetCmdBeaconTimestamps(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "timestamps [beacon id]",
+		Short: "Query a BEACON for given ID to retrieve recorded timestamps",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			beaconID := args[0]
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/timestamps/%s", queryRoute, beaconID), nil)
+			if err != nil {
+				fmt.Printf("could not find beacon %s timestamps \n", beaconID)
+				return nil
+			}
+
+			var out types.QueryResBeaconTimestampHashes
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// Todo - query by params - sub time, hash & get all with pagination

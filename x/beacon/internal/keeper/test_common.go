@@ -6,9 +6,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
 	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -26,26 +27,30 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
-const TestDenomination = "testc"
+const (
+	charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+
+	TestDenomination = "testc"
+)
 
 // dummy addresses used for testing
 var (
-	entSrcPk   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB53")
-	entPk1     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51")
-	entPk2     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
-	entPk3     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB52")
-	entPk4     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB54")
-	entPk5     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB55")
-	EntSrcAddr = sdk.AccAddress(entSrcPk.Address())
-	entAddr1   = sdk.AccAddress(entPk1.Address())
-	entAddr2   = sdk.AccAddress(entPk2.Address())
-	entAddr3   = sdk.AccAddress(entPk3.Address())
-	entAddr4   = sdk.AccAddress(entPk4.Address())
-	entAddr5   = sdk.AccAddress(entPk5.Address())
+	bPk1   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51")
+	bPk2   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
+	bPk3   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB52")
+	bPk4   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB54")
+	bPk5   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB55")
+	bAddr1 = sdk.AccAddress(bPk1.Address())
+	bAddr2 = sdk.AccAddress(bPk2.Address())
+	bAddr3 = sdk.AccAddress(bPk3.Address())
+	bAddr4 = sdk.AccAddress(bPk4.Address())
+	bAddr5 = sdk.AccAddress(bPk5.Address())
 
 	TestAddrs = []sdk.AccAddress{
-		entAddr1, entAddr2, entAddr3, entAddr4, entAddr5,
+		bAddr1, bAddr2, bAddr3, bAddr4, bAddr5,
 	}
+
+	seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
 func GenerateRandomAddresses(num int) []sdk.AccAddress {
@@ -80,12 +85,12 @@ func makeTestCodec() *codec.Codec {
 	return cdc
 }
 
-func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context, auth.AccountKeeper, Keeper, staking.Keeper, types.SupplyKeeper) {
+func createTestInput(t *testing.T, isCheckTx bool, initPower int64, genAccs int) (sdk.Context, auth.AccountKeeper, Keeper) {
 
 	initTokens := sdk.TokensFromConsensusPower(initPower)
 
 	keyAcc := sdk.NewKVStoreKey(auth.StoreKey)
-	keyEnt := sdk.NewKVStoreKey(types.StoreKey)
+	keyBeacon := sdk.NewKVStoreKey(types.StoreKey)
 	keyStaking := sdk.NewKVStoreKey(staking.StoreKey)
 	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
 	keyParams := sdk.NewKVStoreKey(params.StoreKey)
@@ -96,7 +101,7 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 
 	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keySupply, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyEnt, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyBeacon, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyStaking, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
@@ -114,20 +119,18 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 
 	maccPerms := map[string][]string{
 		auth.FeeCollectorName:     nil,
-		types.ModuleName:          {supply.Minter, supply.Staking},
+		types.ModuleName:          nil,
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 	}
 
 	// create module accounts
 	feeCollectorAcc := supply.NewEmptyModuleAccount(auth.FeeCollectorName)
-	entAcc := supply.NewEmptyModuleAccount(types.ModuleName, supply.Minter, supply.Staking)
 	notBondedPool := supply.NewEmptyModuleAccount(staking.NotBondedPoolName, supply.Burner, supply.Staking)
 	bondPool := supply.NewEmptyModuleAccount(staking.BondedPoolName, supply.Burner, supply.Staking)
 
 	blacklistedAddrs := make(map[string]bool)
 	blacklistedAddrs[feeCollectorAcc.GetAddress().String()] = true
-	blacklistedAddrs[entAcc.GetAddress().String()] = true
 	blacklistedAddrs[notBondedPool.GetAddress().String()] = true
 	blacklistedAddrs[bondPool.GetAddress().String()] = true
 
@@ -142,17 +145,22 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 	stakingKeeper.SetParams(ctx, skParams)
 
 	keeper := NewKeeper(
-		keyEnt, supplyKeeper, accountKeeper, pk.Subspace(types.DefaultParamspace), types.DefaultCodespace, cdc,
+		keyBeacon, pk.Subspace(types.DefaultParamspace), types.DefaultCodespace, cdc,
 	)
 
-	keeper.SetHighestPurchaseOrderID(ctx, types.DefaultStartingPurchaseOrderID)
-	entParams := types.DefaultParams()
-	entParams.EntSource = EntSrcAddr
-	entParams.Denom = stakingKeeper.BondDenom(ctx)
-	keeper.SetParams(ctx, entParams)
+	keeper.SetHighestBeaconID(ctx, types.DefaultStartingBeaconID)
+	beaconParams := types.DefaultParams()
+	beaconParams.FeeRegister = 10
+	beaconParams.FeeRecord = 1
+	beaconParams.Denom = stakingKeeper.BondDenom(ctx)
+	keeper.SetParams(ctx, beaconParams)
+
+	if genAccs > 0 {
+		TestAddrs = GenerateRandomAddresses(genAccs)
+	}
 
 	initCoins := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), initTokens))
-	totalSupply := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), initTokens.MulRaw(int64(len(TestAddrs)+1))))
+	totalSupply := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), initTokens.MulRaw(int64(len(TestAddrs)))))
 	supplyKeeper.SetSupply(ctx, supply.NewSupply(totalSupply))
 
 	for _, addr := range TestAddrs {
@@ -160,57 +168,42 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 		require.Nil(t, err)
 	}
 
-	_, err := bankKeeper.AddCoins(ctx, EntSrcAddr, initCoins)
-	require.Nil(t, err)
-
-	keeper.supplyKeeper.SetModuleAccount(ctx, feeCollectorAcc)
-	keeper.supplyKeeper.SetModuleAccount(ctx, entAcc)
-	keeper.supplyKeeper.SetModuleAccount(ctx, bondPool)
-	keeper.supplyKeeper.SetModuleAccount(ctx, notBondedPool)
-
-	return ctx, accountKeeper, keeper, stakingKeeper, supplyKeeper
+	return ctx, accountKeeper, keeper
 }
 
-// PurchaseOrderEqual checks if two purchase orders are equal
-func PurchaseOrderEqual(poA types.EnterpriseUndPurchaseOrder, poB types.EnterpriseUndPurchaseOrder) bool {
-	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(poA),
-		types.ModuleCdc.MustMarshalBinaryBare(poB))
+// BeaconEqual checks if two Beacons are equal
+func BeaconEqual(wcA types.Beacon, wcB types.Beacon) bool {
+	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(wcA),
+		types.ModuleCdc.MustMarshalBinaryBare(wcB))
 }
 
+// ParamsEqual checks params are equal
 func ParamsEqual(paramsA, paramsB types.Params) bool {
 	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(paramsA),
 		types.ModuleCdc.MustMarshalBinaryBare(paramsB))
 }
 
-func LockedUndEqual(lA, lB types.LockedUnd) bool {
+// BeaconTimestampEqual checks if two BeaconTimestamps are equal
+func BeaconTimestampEqual(lA, lB types.BeaconTimestamp) bool {
 	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(lA),
 		types.ModuleCdc.MustMarshalBinaryBare(lB))
 }
 
-func RandomDecision() types.PurchaseOrderStatus {
-	rnd := rand.Intn(100)
-	if rnd >= 50 {
-		return types.StatusAccepted
-	}
-	return types.StatusRejected
-}
-
-func RandomStatus() types.PurchaseOrderStatus {
-	rnd := RandInBetween(1, 4)
-	switch rnd {
-	case 1:
-		return types.StatusRaised
-	case 2:
-		return types.StatusAccepted
-	case 3:
-		return types.StatusRejected
-	case 4:
-		return types.StatusCompleted
-	default:
-		return types.StatusRaised
-	}
-}
-
+// RandInBetween generates a random number between two given values
 func RandInBetween(min, max int) int {
 	return rand.Intn(max-min) + min
+}
+
+// GenerateRandomStringWithCharset generates a random string given a length and character set
+func GenerateRandomStringWithCharset(length int, charset string) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
+// GenerateRandomString generates a random string given a length, based on a set character set
+func GenerateRandomString(length int) string {
+	return GenerateRandomStringWithCharset(length, charset)
 }

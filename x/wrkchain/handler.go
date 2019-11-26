@@ -2,9 +2,9 @@ package wrkchain
 
 import (
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 	"strconv"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // NewHandler returns a handler for "wrkchain" type messages.
@@ -25,12 +25,12 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // Handle a message to register a new WRKChain
 func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWrkChain) sdk.Result {
 
-	params := types.NewQueryWrkChainParams(1, 1, msg.Moniker, sdk.AccAddress{})
+	params := NewQueryWrkChainParams(1, 1, msg.Moniker, sdk.AccAddress{})
 	wrkChains := keeper.GetWrkChainsFiltered(ctx, params)
 
 	if (len(wrkChains)) > 0 {
 		errMsg := fmt.Sprintf("wrkchain already registered with moniker '%s' - id: %d, owner: %s", msg.Moniker, wrkChains[0].WrkChainID, wrkChains[0].Owner)
-		return types.ErrWrkChainAlreadyRegistered(keeper.Codespace(), errMsg).Result()
+		return ErrWrkChainAlreadyRegistered(keeper.Codespace(), errMsg).Result()
 	}
 
 	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
@@ -58,15 +58,15 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 
 func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordWrkChainBlock) sdk.Result {
 	if !keeper.IsWrkChainRegistered(ctx, msg.WrkChainID) { // Checks if the WrkChain is already registered
-		return types.ErrWrkChainDoesNotExist(keeper.Codespace(), "WRKChain has not been registered yet").Result() // If not, throw an error
+		return ErrWrkChainDoesNotExist(keeper.Codespace(), "WRKChain has not been registered yet").Result() // If not, throw an error
 	}
 
 	if !keeper.IsAuthorisedToRecord(ctx, msg.WrkChainID, msg.Owner) {
-		return types.ErrNotWrkChainOwner(keeper.Codespace(), "you are not the owner of this WRKChain").Result()
+		return ErrNotWrkChainOwner(keeper.Codespace(), "you are not the owner of this WRKChain").Result()
 	}
 
 	if keeper.IsWrkChainBlockRecorded(ctx, msg.WrkChainID, msg.Height) {
-		return types.ErrWrkChainBlockAlreadyRecorded(keeper.Codespace(), "WRKChain block hashes have already been recorded for this height").Result()
+		return ErrWrkChainBlockAlreadyRecorded(keeper.Codespace(), "WRKChain block hashes have already been recorded for this height").Result()
 	}
 
 	err := keeper.RecordWrkchainHashes(ctx, msg.WrkChainID, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3, msg.Owner)

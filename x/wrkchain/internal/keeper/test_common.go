@@ -1,34 +1,34 @@
 package keeper
 
 import (
-"bytes"
-"encoding/hex"
-"github.com/cosmos/cosmos-sdk/codec"
-"github.com/tendermint/tendermint/crypto"
-"github.com/tendermint/tendermint/crypto/ed25519"
-"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
-"math/rand"
-"testing"
+	"bytes"
+	"encoding/hex"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/ed25519"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"math/rand"
+	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
-abci "github.com/tendermint/tendermint/abci/types"
-"github.com/tendermint/tendermint/libs/log"
-tmtypes "github.com/tendermint/tendermint/types"
-dbm "github.com/tendermint/tm-db"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmtypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
-"github.com/cosmos/cosmos-sdk/store"
-sdk "github.com/cosmos/cosmos-sdk/types"
-"github.com/cosmos/cosmos-sdk/x/auth"
-"github.com/cosmos/cosmos-sdk/x/bank"
-"github.com/cosmos/cosmos-sdk/x/params"
-"github.com/cosmos/cosmos-sdk/x/staking"
-"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/cosmos/cosmos-sdk/store"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/params"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
 const (
-	charset       = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+	charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
 
 	TestDenomination = "testc"
 )

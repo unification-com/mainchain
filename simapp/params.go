@@ -20,4 +20,6 @@ const (
 	OpWeightMsgProcessUndPurchaseOrder     = "op_weight_msg_process_enteprise_und_purchase_order"
 	OpWeightMsgRegisterWrkChain            = "op_weight_msg_register_wrkchain"
 	OpWeightMsgRecordWrkChainBlock         = "op_weight_msg_record_wrkchain_block"
+	OpWeightMsgRegisterBeacon              = "op_weight_msg_register_beacon"
+	OpWeightMsgRecordBeaconTimestamp       = "op_weight_msg_record_beacon_timestamp"
 )

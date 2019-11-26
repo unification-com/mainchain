@@ -17,7 +17,7 @@ const (
 	DefaultStartingWrkChainID uint64 = 1 // used in init genesis
 )
 
-// Proposals is an array of proposal
+// WrkChains is an array of WrkChain
 type WrkChains []WrkChain
 
 // String implements stringer interface

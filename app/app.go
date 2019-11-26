@@ -56,7 +56,6 @@ var (
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
 		beacon.AppModule{},
-
 	)
 	// account permissions
 	maccPerms = map[string][]string{
@@ -121,7 +120,8 @@ func NewMainchainApp(
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey, wrkchain.StoreKey, enterprise.StoreKey)
+		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey,
+		wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -272,8 +272,8 @@ func NewMainchainApp(
 		bank.ModuleName,
 		slashing.ModuleName,
 		wrkchain.ModuleName,
-		enterprise.ModuleName,
 		beacon.ModuleName,
+		enterprise.ModuleName,
 		mint.ModuleName,
 		supply.ModuleName,
 		crisis.ModuleName,
@@ -296,6 +296,7 @@ func NewMainchainApp(
 			app.accountKeeper,
 			app.supplyKeeper,
 			app.wrkChainKeeper,
+			app.beaconKeeper,
 			app.enterpriseKeeper,
 			auth.DefaultSigVerificationGasConsumer,
 		),

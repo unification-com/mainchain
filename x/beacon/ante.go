@@ -1,4 +1,4 @@
-package wrkchain
+package beacon
 
 import (
 	"fmt"
@@ -20,52 +20,52 @@ type FeeTx interface {
 	FeePayer() sdk.AccAddress
 }
 
-// CorrectWrkChainFeeDecorator checks if the correct fees have been sent to pay for a
-// WRKChain register/record hash Tx, and if the fee paying account has sufficient funds to pay.
-// It first checks if the Tx contains any WRKChain Msgs, and if not, continues on to the next
-// AnteHandler in the chain. If a WRKChain Msg is detected, it then:
+// CorrectBeaconFeeDecorator checks if the correct fees have been sent to pay for a
+// BEACON register/record hash Tx, and if the fee paying account has sufficient funds to pay.
+// It first checks if the Tx contains any BEACON Msgs, and if not, continues on to the next
+// AnteHandler in the chain. If a BEACON Msg is detected, it then:
 //
 // 1. Checks sufficient fees have been included in the Tx, via the --fees flag
-// 2. Checks the fee payer is the WRKChain owner
+// 2. Checks the fee payer is the BEACON owner
 // 3. Checks if the fee payer has sufficient funds in their account to pay for it, including any locked enterprise und
 //
 // If any of the checks fail, a suitable error is returned.
-type CorrectWrkChainFeeDecorator struct {
-	ak  auth.AccountKeeper
-	wck Keeper
-	ek  enterprise.Keeper
+type CorrectBeaconFeeDecorator struct {
+	ak auth.AccountKeeper
+	bk Keeper
+	ek enterprise.Keeper
 }
 
-func NewCorrectWrkChainFeeDecorator(ak auth.AccountKeeper, wrkchainKeeper Keeper, enterpriseKeeper enterprise.Keeper) CorrectWrkChainFeeDecorator {
-	return CorrectWrkChainFeeDecorator{
-		ak:  ak,
-		wck: wrkchainKeeper,
-		ek:  enterpriseKeeper,
+func NewCorrectBeaconFeeDecorator(ak auth.AccountKeeper, beaconKeeper Keeper, enterpriseKeeper enterprise.Keeper) CorrectBeaconFeeDecorator {
+	return CorrectBeaconFeeDecorator{
+		ak: ak,
+		bk: beaconKeeper,
+		ek: enterpriseKeeper,
 	}
 }
 
-func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
+func (wfd CorrectBeaconFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
 	feeTx, ok := tx.(FeeTx)
 
 	if !ok {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "WRKChain Tx must be a FeeTx")
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "BEACON Tx must be a FeeTx")
 	}
 
-	// check if it's a WRKChain Tx
-	if !CheckIsWrkChainTx(feeTx) {
+	// check if it's a BEACON Tx
+	if !CheckIsBeaconTx(feeTx) {
 		// ignore and move on to the next decorator in the chain
 		return next(ctx, tx, simulate)
 	}
 
 	// Check fees amount sent in Tx. Check during CheckTx
 	if ctx.IsCheckTx() && !simulate {
-		err := checkWrkchainFees(ctx, feeTx, wfd.wck)
+		err := checkBeaconFees(ctx, feeTx, wfd.bk)
 		if err != nil {
 			return ctx, err
 		}
 
-		// check fee payer is WRKChain Owner
-		err = checkWrkChainOwnerFeePayer(feeTx)
+		// check fee payer is BEACON Owner
+		err = checkBeaconOwnerFeePayer(feeTx)
 		if err != nil {
 			return ctx, err
 		}
@@ -80,50 +80,50 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	return next(ctx, tx, simulate)
 }
 
-func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck Keeper) error {
+func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk Keeper) error {
 	msgs := tx.GetMsgs()
 	numMsgs := 0
-	expectedFees := wck.GetZeroFeeAsCoin(ctx)
+	expectedFees := bk.GetZeroFeeAsCoin(ctx)
 
-	// go through Msgs wrapped in the Tx, and check for WRKChain messages
+	// go through Msgs wrapped in the Tx, and check for BEACON messages
 	for _, msg := range msgs {
 		switch msg.(type) {
-		case MsgRegisterWrkChain:
-			expectedFees = expectedFees.Add(wck.GetRegistrationFeeAsCoin(ctx))
+		case MsgRegisterBeacon:
+			expectedFees = expectedFees.Add(bk.GetRegistrationFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
-		case MsgRecordWrkChainBlock:
-			expectedFees = expectedFees.Add(wck.GetRecordFeeAsCoin(ctx))
+		case MsgRecordBeaconTimestamp:
+			expectedFees = expectedFees.Add(bk.GetRecordFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
 		}
 	}
 
 	totalFees := sdk.Coins{expectedFees}
 	if tx.GetFee().IsAllLT(totalFees) {
-		errMsg := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return ErrInsufficientWrkChainFee(DefaultCodespace, errMsg)
+		errMsg := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
+		return ErrInsufficientBeaconFee(DefaultCodespace, errMsg)
 	}
 
 	if tx.GetFee().IsAllGT(totalFees) {
-		errMsg := fmt.Sprintf("too much fee sent to pay for WrkChain tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return ErrTooMuchWrkChainFee(DefaultCodespace, errMsg)
+		errMsg := fmt.Sprintf("too much fee sent to pay for beacon tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
+		return ErrTooMuchBeaconFee(DefaultCodespace, errMsg)
 	}
 
 	return nil
 }
 
-func checkWrkChainOwnerFeePayer(tx FeeTx) error {
+func checkBeaconOwnerFeePayer(tx FeeTx) error {
 	msgs := tx.GetMsgs()
 	feePayer := tx.FeePayer()
 	for _, msg := range msgs {
 		switch m := msg.(type) {
-		case MsgRegisterWrkChain:
+		case MsgRegisterBeacon:
 			if !feePayer.Equals(m.Owner) {
-				errMsg := fmt.Sprintf("fee payer is not WRKChain owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
+				errMsg := fmt.Sprintf("fee payer is not beacon owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
 				return ErrFeePayerNotOwner(DefaultCodespace, errMsg)
 			}
-		case MsgRecordWrkChainBlock:
+		case MsgRecordBeaconTimestamp:
 			if !feePayer.Equals(m.Owner) {
-				errMsg := fmt.Sprintf("fee payer is not WRKChain owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
+				errMsg := fmt.Sprintf("fee payer is not beacon owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
 				return ErrFeePayerNotOwner(DefaultCodespace, errMsg)
 			}
 		}

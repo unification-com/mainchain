@@ -191,14 +191,14 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 	require.NoError(t, err)
 
 	testCases := []struct {
-		wrkchainId uint64
-		height uint64
-		blockHash string
-		parentHash string
-		hash1 string
-		hash2 string
-		hash3 string
-		owner sdk.AccAddress
+		wrkchainId  uint64
+		height      uint64
+		blockHash   string
+		parentHash  string
+		hash1       string
+		hash2       string
+		hash3       string
+		owner       sdk.AccAddress
 		expectedErr sdk.Error
 	}{
 		{0, 0, "", "", "", "", "", sdk.AccAddress{}, types.ErrWrkChainDoesNotExist(keeper.codespace, "WRKChain does not exist")},

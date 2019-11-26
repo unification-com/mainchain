@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// GenesisState - enterprise state
+// GenesisState - wrkchain state
 type GenesisState struct {
 	Params             Params           `json:"params" yaml:"params"`                             // wrkchain params
 	StartingWrkChainID uint64           `json:"starting_wrkchain_id" yaml:"starting_wrkchain_id"` // should be 1
@@ -34,7 +34,7 @@ func DefaultGenesisState() GenesisState {
 	}
 }
 
-// Equal checks whether two enterprise GenesisState structs are equivalent
+// Equal checks whether two wrkchain GenesisState structs are equivalent
 func (data GenesisState) Equal(data2 GenesisState) bool {
 	b1 := ModuleCdc.MustMarshalBinaryBare(data)
 	b2 := ModuleCdc.MustMarshalBinaryBare(data2)
@@ -56,13 +56,27 @@ func ValidateGenesis(data GenesisState) error {
 
 	for _, record := range data.WrkChains {
 		if record.WrkChain.Owner == nil {
-			return fmt.Errorf("Invalid WrkChain: Owner: %s. Error: Missing Owner", record.WrkChain.Owner)
+			return fmt.Errorf("invalid WrkChain: Owner: %s. Error: Missing Owner", record.WrkChain.Owner)
 		}
 		if record.WrkChain.WrkChainID == 0 {
-			return fmt.Errorf("Invalid WrkChain: Moniker: %d. Error: Missing ID", record.WrkChain.WrkChainID)
+			return fmt.Errorf("invalid WrkChain: Moniker: %d. Error: Missing ID", record.WrkChain.WrkChainID)
 		}
 		if record.WrkChain.GenesisHash == "" {
-			return fmt.Errorf("Invalid WrkChain: GenesisHash: %s. Error: Missing Genesis Timestamp", record.WrkChain.GenesisHash)
+			return fmt.Errorf("invalid WrkChain: GenesisHash: %s. Error: Missing Genesis Timestamp", record.WrkChain.GenesisHash)
+		}
+		for _, block := range record.WrkChainBlocks {
+			if block.Owner == nil {
+				return fmt.Errorf("invalid WrkChain block: Owner: %s. Error: Missing Owner", block.Owner)
+			}
+			if block.BlockHash == "" {
+				return fmt.Errorf("invalid WrkChain block: BlockHash: %s. Error: Missing BlockHash", block.BlockHash)
+			}
+			if block.Height == 0 {
+				return fmt.Errorf("invalid WrkChain block: Height: %d. Error: Missing Height", block.Height)
+			}
+			if block.WrkChainID == 0 {
+				return fmt.Errorf("invalid WrkChain block: WrkChainID: %d. Error: Missing WrkChainID", block.WrkChainID)
+			}
 		}
 	}
 	return nil

@@ -1,10 +1,13 @@
-package beacon
+package ante
 
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/unification-com/mainchain-cosmos/x/beacon/exported"
+	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
+	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 )
 
@@ -32,11 +35,11 @@ type FeeTx interface {
 // If any of the checks fail, a suitable error is returned.
 type CorrectBeaconFeeDecorator struct {
 	ak auth.AccountKeeper
-	bk Keeper
+	bk keeper.Keeper
 	ek enterprise.Keeper
 }
 
-func NewCorrectBeaconFeeDecorator(ak auth.AccountKeeper, beaconKeeper Keeper, enterpriseKeeper enterprise.Keeper) CorrectBeaconFeeDecorator {
+func NewCorrectBeaconFeeDecorator(ak auth.AccountKeeper, beaconKeeper keeper.Keeper, enterpriseKeeper enterprise.Keeper) CorrectBeaconFeeDecorator {
 	return CorrectBeaconFeeDecorator{
 		ak: ak,
 		bk: beaconKeeper,
@@ -52,7 +55,7 @@ func (wfd CorrectBeaconFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simu
 	}
 
 	// check if it's a BEACON Tx
-	if !CheckIsBeaconTx(feeTx) {
+	if !exported.CheckIsBeaconTx(feeTx) {
 		// ignore and move on to the next decorator in the chain
 		return next(ctx, tx, simulate)
 	}
@@ -80,7 +83,7 @@ func (wfd CorrectBeaconFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simu
 	return next(ctx, tx, simulate)
 }
 
-func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk Keeper) error {
+func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk keeper.Keeper) error {
 	msgs := tx.GetMsgs()
 	numMsgs := 0
 	expectedFees := bk.GetZeroFeeAsCoin(ctx)
@@ -88,10 +91,10 @@ func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk Keeper) error {
 	// go through Msgs wrapped in the Tx, and check for BEACON messages
 	for _, msg := range msgs {
 		switch msg.(type) {
-		case MsgRegisterBeacon:
+		case types.MsgRegisterBeacon:
 			expectedFees = expectedFees.Add(bk.GetRegistrationFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
-		case MsgRecordBeaconTimestamp:
+		case types.MsgRecordBeaconTimestamp:
 			expectedFees = expectedFees.Add(bk.GetRecordFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
 		}
@@ -100,12 +103,12 @@ func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk Keeper) error {
 	totalFees := sdk.Coins{expectedFees}
 	if tx.GetFee().IsAllLT(totalFees) {
 		errMsg := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return ErrInsufficientBeaconFee(DefaultCodespace, errMsg)
+		return types.ErrInsufficientBeaconFee(types.DefaultCodespace, errMsg)
 	}
 
 	if tx.GetFee().IsAllGT(totalFees) {
 		errMsg := fmt.Sprintf("too much fee sent to pay for beacon tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return ErrTooMuchBeaconFee(DefaultCodespace, errMsg)
+		return types.ErrTooMuchBeaconFee(types.DefaultCodespace, errMsg)
 	}
 
 	return nil
@@ -116,15 +119,15 @@ func checkBeaconOwnerFeePayer(tx FeeTx) error {
 	feePayer := tx.FeePayer()
 	for _, msg := range msgs {
 		switch m := msg.(type) {
-		case MsgRegisterBeacon:
+		case types.MsgRegisterBeacon:
 			if !feePayer.Equals(m.Owner) {
 				errMsg := fmt.Sprintf("fee payer is not beacon owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return ErrFeePayerNotOwner(DefaultCodespace, errMsg)
+				return types.ErrFeePayerNotOwner(types.DefaultCodespace, errMsg)
 			}
-		case MsgRecordBeaconTimestamp:
+		case types.MsgRecordBeaconTimestamp:
 			if !feePayer.Equals(m.Owner) {
 				errMsg := fmt.Sprintf("fee payer is not beacon owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return ErrFeePayerNotOwner(DefaultCodespace, errMsg)
+				return types.ErrFeePayerNotOwner(types.DefaultCodespace, errMsg)
 			}
 		}
 	}

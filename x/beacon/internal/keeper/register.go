@@ -22,11 +22,11 @@ func (k Keeper) GetHighestBeaconID(ctx sdk.Context) (beaconID uint64, err sdk.Er
 }
 
 // SetHighestBeaconID sets the new highest BEACON ID to the store
-func (k Keeper) SetHighestBeaconID(ctx sdk.Context, wrkChainID uint64) {
+func (k Keeper) SetHighestBeaconID(ctx sdk.Context, beaconID uint64) {
 	store := ctx.KVStore(k.storeKey)
 	// convert from uint64 to bytes for storage
-	wrkChainIDbz := types.GetBeaconIDBytes(wrkChainID)
-	store.Set(types.HighestBeaconIDKey, wrkChainIDbz)
+	beaconIDbz := types.GetBeaconIDBytes(beaconID)
+	store.Set(types.HighestBeaconIDKey, beaconIDbz)
 }
 
 //__BEACONS_____________________________________________________________

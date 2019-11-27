@@ -89,7 +89,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	feeInt := int64(actualRegFeeAmt - 1)
 	feeDenom := actualFeeDenom
 
-	msg := types.NewMsgRegisterWrkChain("test", "hash","Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -111,7 +111,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 
 	// Record
 	feeInt = int64(actualRecFeeAmt - 1)
-	msg1 := types.NewMsgRecordWrkChainBlock(1, 1,"test", "test","", "", "", addr)
+	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx1 := helpers.GenTx(
@@ -172,7 +172,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 
 	// Record
 	feeInt = int64(actualRecFeeAmt + 1)
-	msg1 := types.NewMsgRecordWrkChainBlock(1, 1,"test", "test","", "", "", addr)
+	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx1 := helpers.GenTx(
@@ -233,7 +233,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 
 	// Record
 	feeInt = int64(actualRecFeeAmt)
-	msg1 := types.NewMsgRecordWrkChainBlock(1, 1,"test", "test","", "", "", addr)
+	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx1 := helpers.GenTx(
@@ -301,7 +301,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	}
 
 	// Record
-	msg1 :=  types.NewMsgRecordWrkChainBlock(1, 1,"test", "test","", "", "", addr)
+	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, int64(actualRecFeeAmt)))
 
 	tx1 := helpers.GenTx(
@@ -348,7 +348,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	_, _ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
 
 	lockedUnd := enterprise.LockedUnd{
-		Owner: addr,
+		Owner:  addr,
 		Amount: sdk.NewInt64Coin(actualFeeDenom, 1),
 	}
 	_ = app.EnterpriseKeeper.SetLockedUndForAccount(ctx, lockedUnd)
@@ -381,7 +381,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	}
 
 	// Record
-	msg1 :=  types.NewMsgRecordWrkChainBlock(1, 1,"test", "test","", "", "", addr)
+	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, int64(actualRecFeeAmt)))
 
 	tx1 := helpers.GenTx(
@@ -403,7 +403,6 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 	}
 }
-
 
 func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	app, ctx := createTestApp(true)
@@ -448,7 +447,7 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	require.NoError(t, err)
 
 	// Record
-	msg1 :=  types.NewMsgRecordWrkChainBlock(1, 1,"test", "test","", "", "", addr)
+	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, int64(actualRecFeeAmt)))
 
 	tx1 := helpers.GenTx(
@@ -488,7 +487,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	_, _ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
 
 	lockedUnd := enterprise.LockedUnd{
-		Owner: addr,
+		Owner:  addr,
 		Amount: sdk.NewInt64Coin(actualFeeDenom, int64(actualRegFeeAmt)),
 	}
 	_ = app.EnterpriseKeeper.SetLockedUndForAccount(ctx, lockedUnd)
@@ -512,7 +511,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	require.NoError(t, err)
 
 	// Record
-	msg1 :=  types.NewMsgRecordWrkChainBlock(1, 1,"test", "test","", "", "", addr)
+	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, int64(actualRecFeeAmt)))
 
 	tx1 := helpers.GenTx(

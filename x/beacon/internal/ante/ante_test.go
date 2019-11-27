@@ -301,7 +301,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	}
 
 	// Record
-	msg1 :=  types.NewMsgRecordBeaconTimestamp(1, "test", 1, addr)
+	msg1 := types.NewMsgRecordBeaconTimestamp(1, "test", 1, addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, int64(actualRecFeeAmt)))
 
 	tx1 := helpers.GenTx(
@@ -348,7 +348,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, _ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
 
 	lockedUnd := enterprise.LockedUnd{
-		Owner: addr,
+		Owner:  addr,
 		Amount: sdk.NewInt64Coin(actualFeeDenom, 1),
 	}
 	_ = app.EnterpriseKeeper.SetLockedUndForAccount(ctx, lockedUnd)
@@ -381,7 +381,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	}
 
 	// Record
-	msg1 :=  types.NewMsgRecordBeaconTimestamp(1, "test", 1, addr)
+	msg1 := types.NewMsgRecordBeaconTimestamp(1, "test", 1, addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, int64(actualRecFeeAmt)))
 
 	tx1 := helpers.GenTx(
@@ -403,7 +403,6 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 	}
 }
-
 
 func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 	app, ctx := createTestApp(true)
@@ -448,7 +447,7 @@ func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 	require.NoError(t, err)
 
 	// Record
-	msg1 :=  types.NewMsgRecordBeaconTimestamp(1, "test", 1, addr)
+	msg1 := types.NewMsgRecordBeaconTimestamp(1, "test", 1, addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, int64(actualRecFeeAmt)))
 
 	tx1 := helpers.GenTx(
@@ -488,7 +487,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	_, _ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
 
 	lockedUnd := enterprise.LockedUnd{
-		Owner: addr,
+		Owner:  addr,
 		Amount: sdk.NewInt64Coin(actualFeeDenom, int64(actualRegFeeAmt)),
 	}
 	_ = app.EnterpriseKeeper.SetLockedUndForAccount(ctx, lockedUnd)
@@ -512,7 +511,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	require.NoError(t, err)
 
 	// Record
-	msg1 :=  types.NewMsgRecordBeaconTimestamp(1, "test", 1, addr)
+	msg1 := types.NewMsgRecordBeaconTimestamp(1, "test", 1, addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, int64(actualRecFeeAmt)))
 
 	tx1 := helpers.GenTx(

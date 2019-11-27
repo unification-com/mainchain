@@ -66,6 +66,8 @@ var (
 
 	NewQueryWrkChainParams = types.NewQueryWrkChainParams
 
+	DefaultParams = types.DefaultParams
+
 	NewCorrectWrkChainFeeDecorator = ante.NewCorrectWrkChainFeeDecorator
 )
 

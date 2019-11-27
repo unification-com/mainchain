@@ -298,9 +298,9 @@ func TestProcessPurchaseOrderInvalidDecision(t *testing.T) {
 	_ = keeper.SetPurchaseOrder(ctx, po)
 
 	testCases := []struct {
-		poId         uint64
-		decision     types.PurchaseOrderStatus
-		expectedErr  sdk.Error
+		poId        uint64
+		decision    types.PurchaseOrderStatus
+		expectedErr sdk.Error
 	}{
 		{1, types.StatusRaised, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
 		{1, types.StatusCompleted, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},

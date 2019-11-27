@@ -85,7 +85,7 @@ func SetupWithGenesisAccounts(genAccs []authexported.GenesisAccount) *UndSimApp 
 // SetupUnitTestApp creates a simApp and context for testing with some sensible chain defaults
 func SetupUnitTestApp(isCheckTx bool, genAccs int, amt int64, testDenom string) (*UndSimApp, sdk.Context, TestAccount, []TestAccount) {
 
-	accAmt := sdk. NewInt(amt)
+	accAmt := sdk.NewInt(amt)
 
 	app := Setup(isCheckTx)
 	ctx := app.BaseApp.NewContext(isCheckTx, abci.Header{ChainID: "und-unit-test-chain"})

@@ -14,8 +14,9 @@ const (
 	CodeBeaconBlockAlreadyRecorded = 203
 	CodeNotBeaconOwner             = 204
 
-	CodeBeaconInsufficientFee = 301
-	CodeBeaconTooMuchFee      = 302
+	CodeBeaconInsufficientFee   = 301
+	CodeBeaconTooMuchFee        = 302
+	CodeBeaconIncorrectFeeDenom = 303
 
 	CodeBeaconFeePayerNotOwner = 401
 )
@@ -51,4 +52,8 @@ func ErrTooMuchBeaconFee(codespace sdk.CodespaceType, msg string) sdk.Error {
 
 func ErrFeePayerNotOwner(codespace sdk.CodespaceType, msg string) sdk.Error {
 	return sdk.NewError(codespace, CodeBeaconFeePayerNotOwner, msg)
+}
+
+func ErrIncorrectFeeDenomination(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeBeaconIncorrectFeeDenom, msg)
 }

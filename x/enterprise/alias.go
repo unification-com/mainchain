@@ -67,6 +67,8 @@ var (
 	ErrInvalidDenomination = types.ErrInvalidDenomination
 
 	NewCheckLockedUndDecorator = ante.NewCheckLockedUndDecorator
+
+	DefaultParams = types.DefaultParams
 )
 
 type (
@@ -84,4 +86,5 @@ type (
 	EnterpriseUndPurchaseOrder = types.EnterpriseUndPurchaseOrder
 	UndSupply                  = types.UndSupply
 	PurchaseOrderStatus        = types.PurchaseOrderStatus
+	LockedUnd                  = types.LockedUnd
 )

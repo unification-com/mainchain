@@ -17,12 +17,11 @@ const (
 	DefaultCodespace = types.DefaultCodespace
 
 	QueryParameters = keeper.QueryParameters
-	QuerierRoute = types.QuerierRoute
-	QueryBeacons = keeper.QueryBeacons
+	QuerierRoute    = types.QuerierRoute
+	QueryBeacons    = keeper.QueryBeacons
 
 	RecordFee = types.RecordFee
 	FeeDenom  = types.FeeDenom
-
 )
 
 var (

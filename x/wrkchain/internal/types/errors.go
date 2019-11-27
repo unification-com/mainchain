@@ -14,8 +14,9 @@ const (
 	CodeWrkChainBlockAlreadyRecorded = 203
 	CodeNotWrkChainOwner             = 204
 
-	CodeWrkChainInsufficientFee = 301
-	CodeWrkChainTooMuchFee      = 302
+	CodeWrkChainInsufficientFee   = 301
+	CodeWrkChainTooMuchFee        = 302
+	CodeWrkChainIncorrectFeeDenom = 303
 
 	CodeWrkChainFeePayerNotOwner = 401
 )
@@ -51,4 +52,8 @@ func ErrTooMuchWrkChainFee(codespace sdk.CodespaceType, msg string) sdk.Error {
 
 func ErrFeePayerNotOwner(codespace sdk.CodespaceType, msg string) sdk.Error {
 	return sdk.NewError(codespace, CodeWrkChainFeePayerNotOwner, msg)
+}
+
+func ErrIncorrectFeeDenomination(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeWrkChainIncorrectFeeDenom, msg)
 }

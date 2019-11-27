@@ -1,4 +1,4 @@
-PACKAGES=$(shell go list ./... | grep -v '/simulation')
+PACKAGES=$(shell go list ./... )
 
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
@@ -39,7 +39,11 @@ lint:
 	go mod verify
 
 test:
-	@go test -mod=readonly $(PACKAGES)
+	@go test -mod=readonly ./...
+
+test-no-cache:
+	@go clean -testcache
+	@go test -v -mod=readonly ./...
 
 clean:
 	rm -rf build/

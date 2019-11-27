@@ -46,6 +46,8 @@ RUN pip install -r requirements.txt
 
 COPY ev-provision /ev-provision
 
+WORKDIR $GOPATH/src/github.com/unification-com
+RUN rm -rf mainchain-cosmos
 COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos
 WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
 RUN make install

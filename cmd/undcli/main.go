@@ -248,7 +248,7 @@ and cannot be used for transfers or staking/delegation
 unlocked
 --------
 UND in active circulation, which can be used for 
-trasnfers, staking etc. It is the
+transfers, staking etc. It is the
 LOCKED amount subtracted from TOTAL_SUPPLY
 
 total_supply

@@ -184,8 +184,7 @@ func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress,
 
 	k.SetHighestPurchaseOrderID(ctx, purchaseOrderID+1)
 
-	logger.Info(fmt.Sprintf("enterprise und purchase order raised - id: %d, amt: %s, from: %s",
-		purchaseOrderID, amount.String(), purchaser.String()))
+	logger.Info("enterprise und purchase order raised", "id", purchaseOrderID, "from", purchaser.String(), "amt", amount.String())
 
 	return purchaseOrderID, nil
 }
@@ -224,8 +223,7 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 		return err
 	}
 
-	logger.Info(fmt.Sprintf("enterprise und purchase order processed - id: %d, decision: %s",
-		purchaseOrderID, decision.String()))
+	logger.Info("enterprise und purchase order processed", "id", purchaseOrderID, "decision", decision)
 
 	return nil
 }

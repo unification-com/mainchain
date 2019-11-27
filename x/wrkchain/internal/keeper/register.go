@@ -162,6 +162,8 @@ func (k Keeper) GetWrkChainsFiltered(ctx sdk.Context, params types.QueryWrkChain
 // RegisterWrkChain registers a WRKChain in the store
 func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName string, genesisHash string, owner sdk.AccAddress) (uint64, sdk.Error) {
 
+	logger := k.Logger(ctx)
+
 	//must have a moniker
 	if len(moniker) == 0 {
 		return 0, sdk.ErrInternal("unable to set WRKChain - must have a moniker")
@@ -197,6 +199,8 @@ func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName s
 	}
 
 	k.SetHighestWrkChainID(ctx, wrkChainId+1)
+
+	logger.Info("wrkchain registered", "id", wrkChainId, "moniker", moniker, "owner", owner.String())
 
 	return wrkChainId, nil
 }

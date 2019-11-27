@@ -76,6 +76,8 @@ func (k Keeper) RecordWrkchainHashes(
 	hash3 string,
 	owner sdk.AccAddress) sdk.Error {
 
+	logger := k.Logger(ctx)
+
 	if !k.IsWrkChainRegistered(ctx, wrkchainId) {
 		// can't record hashes if WRKChain isn't registered
 		return types.ErrWrkChainDoesNotExist(k.codespace, "WRKChain does not exist")
@@ -115,6 +117,8 @@ func (k Keeper) RecordWrkchainHashes(
 	if err != nil {
 		return err
 	}
+
+	logger.Debug("wrkchain hashes recorded", "wcid", wrkchain.WrkChainID, "height", height, "hash", blockHash, "owner", owner.String())
 
 	return nil
 }

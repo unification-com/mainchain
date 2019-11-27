@@ -122,6 +122,8 @@ func (k Keeper) RecordBeaconTimestamp(
 	submitTime uint64,
 	owner sdk.AccAddress) (uint64, sdk.Error) {
 
+	logger := k.Logger(ctx)
+
 	if !k.IsBeaconRegistered(ctx, beaconID) {
 		// can't record hashes if BEACON isn't registered
 		return 0, types.ErrBeaconDoesNotExist(k.codespace, "beacon does not exist")
@@ -161,6 +163,8 @@ func (k Keeper) RecordBeaconTimestamp(
 	if err != nil {
 		return 0, err
 	}
+
+	logger.Debug("beacon timestamp recorded", "bid", beacon.BeaconID, "tid", timestampID, "hash", hash, "owner", owner.String())
 
 	return timestampID, nil
 }

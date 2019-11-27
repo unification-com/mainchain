@@ -174,7 +174,7 @@ $ %s convert 24 und nund
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cliCtx.Output, "%s %s = %s\n", args[0], args[1], res)
+			_, _ = fmt.Fprintf(cliCtx.Output, "%s%s = %s\n", args[0], args[1], res)
 
 			return nil
 		},

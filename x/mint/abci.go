@@ -16,10 +16,15 @@ func BeginBlocker(ctx sdk.Context, k Keeper, keeper enterprise.Keeper) {
 	var mintedCoin sdk.Coin
 	bondedRatio := k.BondedRatio(ctx)
 
-	if ctx.BlockHeight() < 100 {
-		mintedCoin = sdk.NewCoin(params.MintDenom, sdk.NewInt(100))
+	if ctx.BlockHeight() < 1577880 {
+		mintedCoin = sdk.NewCoin(params.MintDenom, sdk.NewInt(25781428245))
 		mintedCoins = sdk.NewCoins(mintedCoin)
-
+	} else if ctx.BlockHeight() < 3155760 {
+		mintedCoin = sdk.NewCoin(params.MintDenom, sdk.NewInt(12890714123))
+		mintedCoins = sdk.NewCoins(mintedCoin)
+	} else if ctx.BlockHeight() < 6311520 {
+		mintedCoin = sdk.NewCoin(params.MintDenom, sdk.NewInt(6445357061))
+		mintedCoins = sdk.NewCoins(mintedCoin)
 	} else {
 		// recalculate inflation rate
 		totalUNDSupply := keeper.GetTotalUndSupply(ctx)

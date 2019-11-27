@@ -86,6 +86,19 @@ func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk keeper.Keeper) error {
 	msgs := tx.GetMsgs()
 	numMsgs := 0
 	expectedFees := bk.GetZeroFeeAsCoin(ctx)
+	expectedFeeDenom := bk.GetParamDenom(ctx)
+	hasFeeDenom := false
+
+	for _, feeCoin := range tx.GetFee() {
+		if feeCoin.Denom == expectedFeeDenom {
+			hasFeeDenom = true
+		}
+	}
+
+	if !hasFeeDenom {
+		errMsg := fmt.Sprintf("incorrect fee denomination. expected %s", expectedFeeDenom)
+		return types.ErrIncorrectFeeDenomination(types.DefaultCodespace, errMsg)
+	}
 
 	// go through Msgs wrapped in the Tx, and check for BEACON messages
 	for _, msg := range msgs {
@@ -106,7 +119,7 @@ func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk keeper.Keeper) error {
 	}
 
 	if tx.GetFee().IsAllGT(totalFees) {
-		errMsg := fmt.Sprintf("too much fee sent to pay for beacon tx: numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
+		errMsg := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
 		return types.ErrTooMuchBeaconFee(types.DefaultCodespace, errMsg)
 	}
 

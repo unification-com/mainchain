@@ -36,7 +36,6 @@ func TestSetGetWrkChain(t *testing.T) {
 		wc.WrkChainID = wcID
 		wc.LastBlock = 1
 		wc.RegisterTime = time.Now().Unix()
-		wc.RegisterHeight = 10
 		wc.Moniker = GenerateRandomString(12)
 		wc.Name = GenerateRandomString(20)
 		wc.GenesisHash = GenerateRandomString(32)
@@ -68,7 +67,6 @@ func TestSetLastBlock(t *testing.T) {
 	wc.WrkChainID = wcID
 	wc.LastBlock = lastBlock
 	wc.RegisterTime = time.Now().Unix()
-	wc.RegisterHeight = 10
 	wc.Moniker = GenerateRandomString(12)
 	wc.Name = GenerateRandomString(20)
 	wc.GenesisHash = GenerateRandomString(32)
@@ -141,7 +139,6 @@ func TestRegisterWrkChain(t *testing.T) {
 		expectedWc.WrkChainID = i
 		expectedWc.LastBlock = 0
 		expectedWc.RegisterTime = time.Now().Unix()
-		expectedWc.RegisterHeight = 0
 		expectedWc.Moniker = moniker
 		expectedWc.Name = name
 		expectedWc.GenesisHash = genesisHash

@@ -34,7 +34,6 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 			block.Hash1 = GenerateRandomString(32)
 			block.Hash2 = GenerateRandomString(32)
 			block.Hash3 = GenerateRandomString(32)
-			block.SubmitHeight = 0
 			block.SubmitTime = time.Now().Unix()
 
 			err := keeper.SetWrkChainBlock(ctx, block)
@@ -68,7 +67,6 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 			block.Hash1 = GenerateRandomString(32)
 			block.Hash2 = GenerateRandomString(32)
 			block.Hash3 = GenerateRandomString(32)
-			block.SubmitHeight = 0
 			block.SubmitTime = time.Now().Unix()
 
 			err := keeper.SetWrkChainBlock(ctx, block)
@@ -82,7 +80,7 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 
 func TestGetWrkChainBlockHashes(t *testing.T) {
 	ctx, _, keeper := createTestInput(t, false, 100, 0)
-	numToRecord := uint64(100)
+	numToRecord := uint64(1000)
 
 	for _, addr := range TestAddrs {
 		name := GenerateRandomString(20)
@@ -104,7 +102,6 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 			block.Hash1 = GenerateRandomString(32)
 			block.Hash2 = GenerateRandomString(32)
 			block.Hash3 = GenerateRandomString(32)
-			block.SubmitHeight = 0
 			block.SubmitTime = time.Now().Unix()
 
 			testBlocks = append(testBlocks, block)
@@ -113,7 +110,7 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		allBlocks := keeper.GetWrkChainBlockHashes(ctx, wcID)
+		allBlocks := keeper.GetAllWrkChainBlockHashes(ctx, wcID)
 		require.True(t, len(allBlocks) == int(numToRecord) && len(allBlocks) == len(testBlocks))
 
 		for i := 0; i < int(numToRecord); i++ {
@@ -166,7 +163,6 @@ func TestRecordWrkchainHashes(t *testing.T) {
 		expectedBlock.Hash1 = GenerateRandomString(32)
 		expectedBlock.Hash2 = GenerateRandomString(32)
 		expectedBlock.Hash3 = GenerateRandomString(32)
-		expectedBlock.SubmitHeight = 0
 		expectedBlock.SubmitTime = time.Now().Unix()
 
 		err := keeper.RecordWrkchainHashes(ctx, wcID, h, expectedBlock.BlockHash, expectedBlock.ParentHash, expectedBlock.Hash1, expectedBlock.Hash2, expectedBlock.Hash3, TestAddrs[0])

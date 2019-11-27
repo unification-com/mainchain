@@ -17,6 +17,19 @@ import (
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
 
+const (
+	FlagNumLimit   = "limit"
+	FlagPage       = "page"
+	FlagMoniker    = "moniker"
+	FlagOwner      = "owner"
+	FlagMinHeight  = "min"
+	FlagMaxHeight  = "max"
+	FlagMinDate    = "after"
+	FlagMaxDate    = "before"
+	FlagBlockHash  = "hash"
+	FlagWrkChainID = "id"
+)
+
 func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	wrkchainTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -58,7 +71,7 @@ $ %s tx %s register MyWrkChain d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65
 			if err != nil {
 				return err
 			}
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryWrkChains), bz)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryWrkChainsFiltered), bz)
 			if err != nil {
 				return err
 			}

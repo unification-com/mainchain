@@ -38,7 +38,6 @@ func TestDecodeStore(t *testing.T) {
 	wrkChain.GenesisHash = "testgenesissha256hash"
 	wrkChain.LastBlock = 1
 	wrkChain.Owner = wcAddr1
-	wrkChain.RegisterHeight = 10
 	wrkChain.RegisterTime = time.Now().Unix()
 
 	wrkChainBlock := types.NewWrkChainBlock()
@@ -50,7 +49,6 @@ func TestDecodeStore(t *testing.T) {
 	wrkChainBlock.Hash1 = "hash1"
 	wrkChainBlock.Hash2 = "hash2"
 	wrkChainBlock.Hash3 = "hash3"
-	wrkChainBlock.SubmitHeight = 11
 	wrkChainBlock.SubmitTime = time.Now().Unix()
 
 	kvPairs := cmn.KVPairs{

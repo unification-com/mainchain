@@ -17,10 +17,6 @@ const (
 	DefaultCodespace = types.DefaultCodespace
 
 	QueryParameters          = keeper.QueryParameters
-	QueryWrkChain            = keeper.QueryWrkChain
-	QueryWrkChains           = keeper.QueryWrkChains
-	QueryWrkChainBlock       = keeper.QueryWrkChainBlock
-	QueryWrkChainBlockHashes = keeper.QueryWrkChainBlockHashes
 )
 
 var (
@@ -64,7 +60,8 @@ var (
 	DefaultGenesisState = types.DefaultGenesisState
 	ValidateGenesis     = types.ValidateGenesis
 
-	NewQueryWrkChainParams = types.NewQueryWrkChainParams
+	NewQueryWrkChainParams      = types.NewQueryWrkChainParams
+	NewQueryWrkChainBlockParams = types.NewQueryWrkChainBlockParams
 
 	DefaultParams = types.DefaultParams
 
@@ -76,7 +73,8 @@ type (
 
 	GenesisState = types.GenesisState
 
-	QueryWrkChainParams = types.QueryWrkChainParams
+	QueryWrkChainParams      = types.QueryWrkChainParams
+	QueryWrkChainBlockParams = types.QueryWrkChainBlockParams
 
 	// Msgs
 	MsgRegisterWrkChain    = types.MsgRegisterWrkChain

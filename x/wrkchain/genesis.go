@@ -48,7 +48,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 
 	for _, wc := range wrkChains {
 		wrkchainId := wc.WrkChainID
-		blockHashList := k.GetWrkChainBlockHashes(ctx, wrkchainId)
+		blockHashList := k.GetAllWrkChainBlockHashes(ctx, wrkchainId)
 
 		var hashes []WrkChainBlock
 
@@ -62,7 +62,6 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 				Hash2:        value.Hash2,
 				Hash3:        value.Hash3,
 				SubmitTime:   value.SubmitTime,
-				SubmitHeight: value.SubmitHeight,
 				Owner:        value.Owner,
 			}
 			hashes = append(hashes, hash)

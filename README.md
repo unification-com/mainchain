@@ -55,6 +55,14 @@ Query metadata
 undcli query wrkchain get 1
 ```
 
+Filter WRKChain metadata
+
+```
+undcli query wrkchain search --moniker wrkchain1
+undcli query wrkchain search --owner und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
+undcli query wrkchain search --page=2 --limit=100
+```
+
 Record block hash(es)
 ```
 undcli tx wrkchain record 1 1 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from wrktest
@@ -68,6 +76,14 @@ undcli query wrkchain get-block 1 1
 Query all blocks
 ```
 undcli query wrkchain blocks 1
+```
+
+Filter Blocks
+
+```
+undcli query wrkchain search-blocks 1 --before 1574871069 --after 1573481124
+undcli query wrkchain search-blocks 1 --min 123 --max 456
+undcli query wrkchain search-blocks 1 --page=2 --limit=100
 ```
 
 

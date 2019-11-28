@@ -245,6 +245,89 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 	}
 }
 
+func testAndRunUndOnlyTxs(app *UndSimApp, config simulation.Config) []simulation.WeightedOperation {
+	ap := make(simulation.AppParams)
+
+	if config.ParamsFile != "" {
+		bz, err := ioutil.ReadFile(config.ParamsFile)
+		if err != nil {
+			panic(err)
+		}
+
+		app.cdc.MustUnmarshalJSON(bz, &ap)
+	}
+
+	// nolint: govet
+	return []simulation.WeightedOperation{
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRaisePurchaseOrder, &v, nil,
+					func(_ *rand.Rand) {
+						v = 80
+					})
+				return v
+			}(nil),
+			entsim.SimulateMsgRaisePurchaseOrder(app.AccountKeeper, app.EnterpriseKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgProcessUndPurchaseOrder, &v, nil,
+					func(_ *rand.Rand) {
+						v = 80
+					})
+				return v
+			}(nil),
+			entsim.SimulateMsgProcessUndPurchaseOrder(app.AccountKeeper, app.EnterpriseKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRegisterWrkChain, &v, nil,
+					func(_ *rand.Rand) {
+						v = 40
+					})
+				return v
+			}(nil),
+			wrkchainsim.SimulateMsgRegisterWrkChain(app.AccountKeeper, app.WrkChainKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRecordWrkChainBlock, &v, nil,
+					func(_ *rand.Rand) {
+						v = 100
+					})
+				return v
+			}(nil),
+			wrkchainsim.SimulateMsgRecordWrkChainBlock(app.AccountKeeper, app.WrkChainKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRegisterBeacon, &v, nil,
+					func(_ *rand.Rand) {
+						v = 40
+					})
+				return v
+			}(nil),
+			beaconsim.SimulateMsgRegisterBeacon(app.AccountKeeper, app.BeaconKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgRecordBeaconTimestamp, &v, nil,
+					func(_ *rand.Rand) {
+						v = 100
+					})
+				return v
+			}(nil),
+			beaconsim.SimulateMsgRecordBeaconTimestamp(app.AccountKeeper, app.BeaconKeeper),
+		},
+	}
+}
+
 // fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
 // an IAVLStore for faster simulation speed.
 func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
@@ -288,6 +371,59 @@ func TestFullAppSimulation(t *testing.T) {
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, AppStateFn(app.Codec(), app.sm),
 		testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
+	)
+
+	// export state and params before the simulation error is checked
+	if config.ExportStatePath != "" {
+		err := ExportStateToJSON(app, config.ExportStatePath)
+		require.NoError(t, err)
+	}
+
+	if config.ExportParamsPath != "" {
+		err := ExportParamsToJSON(simParams, config.ExportParamsPath)
+		require.NoError(t, err)
+	}
+
+	require.NoError(t, simErr)
+
+	if config.Commit {
+		fmt.Println("\nGoLevelDB Stats")
+		fmt.Println(db.Stats()["leveldb.stats"])
+		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
+	}
+}
+
+func TestUndSpecificAppSimulation(t *testing.T) {
+	if !FlagEnabledValue {
+		t.Skip("skipping und specific tx application simulation")
+	}
+
+	var logger log.Logger
+	config := NewConfigFromFlags()
+	config.ChainID = helpers.SimAppChainID
+
+	if FlagVerboseValue {
+		logger = log.TestingLogger()
+	} else {
+		logger = log.NewNopLogger()
+	}
+
+	var db dbm.DB
+	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
+	db, _ = sdk.NewLevelDB("Simulation", dir)
+
+	defer func() {
+		db.Close()
+		os.RemoveAll(dir)
+	}()
+
+	app := NewUndSimApp(logger, db, nil, true, FlagPeriodValue, fauxMerkleModeOpt)
+	require.Equal(t, "UndSimApp", app.Name())
+
+	// Run randomized simulation
+	_, simParams, simErr := simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp, AppStateFn(app.Codec(), app.sm),
+		testAndRunUndOnlyTxs(app, config), app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked

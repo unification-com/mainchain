@@ -41,7 +41,7 @@ undcli query account cosmos1ss63vffqmpz68ext374cuxa0v3upavghwzw53p
 ### Interacting with WRKChain module
 
 Register:
-undcli tx wrkchain register wrkchain1 "genesishashkjwnedjknwed" "Wrkchain 1" --from wrktest
+undcli tx wrkchain register wrkchain1 "genesishashkjwnedjknwed" "Wrkchain 1" --from wrktest --gas=auto --gas-adjustment=1.15
 
 then run:
 ```
@@ -65,7 +65,7 @@ undcli query wrkchain search --page=2 --limit=100
 
 Record block hash(es)
 ```
-undcli tx wrkchain record 1 1 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from wrktest
+undcli tx wrkchain record 1 1 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from wrktest --gas=auto --gas-adjustment=1.15
 ```
 
 Query a block
@@ -106,7 +106,7 @@ undcli query beacon beacon 1
 
 Record Timestamp hash
 ```
-undcli tx beacon record 1 d04b98f48e8 $(date +%s) --from wrktest
+undcli tx beacon record 1 d04b98f48e8 $(date +%s) --from wrktest --gas=auto --gas-adjustment=1.15
 ```
 
 Query a Timestamp
@@ -124,7 +124,7 @@ undcli query beacon timestamps 1
 
 Raise purchase order:
 ```
-undcli tx enterprise purchase 1002000000000nund --from wrktest
+undcli tx enterprise purchase 1002000000000nund --from wrktest --gas=auto --gas-adjustment=1.15
 ```
 
 List purchase orders:
@@ -139,12 +139,12 @@ undcli query enterprise get 1
 
 Accept purchase order (must be sent from specified enterprise account)
 ```
-undcli tx enterprise process 1 accept --from ent
+undcli tx enterprise process 1 accept --from ent --gas=auto --gas-adjustment=1.15
 ```
 
 Reject purchase order:
 ```
-undcli tx enterprise process 1 reject --from ent
+undcli tx enterprise process 1 reject --from ent --gas=auto --gas-adjustment=1.15
 ```
 
 Query total locked enterprise UND
@@ -198,4 +198,14 @@ go test -mod=readonly ./simapp \
 
 ```
 go test -mod=readonly -benchmem -run=^$ github.com/unification-com/mainchain-cosmos/simapp -bench ^BenchmarkFullAppSimulation -Commit=true -cpuprofile /path/to/.simapp/cpu.out -v -timeout 24h
+```
+
+#### pprof tools
+
+```
+go tool pprof /path/to/.simapp/cpu.out
+(pprof) top
+(pprof) list [function]
+(pprof) web
+(pprof) quit
 ```

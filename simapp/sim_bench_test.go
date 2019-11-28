@@ -125,3 +125,52 @@ func BenchmarkInvariants(b *testing.B) {
 		})
 	}
 }
+
+func BenchmarkUndSpecificAppSimulation(b *testing.B) {
+	logger := log.NewNopLogger()
+	config := NewConfigFromFlags()
+	config.ChainID = helpers.SimAppChainID
+
+	var db dbm.DB
+	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
+	db, _ = sdk.NewLevelDB("Simulation", dir)
+	defer func() {
+		db.Close()
+		os.RemoveAll(dir)
+	}()
+
+	app := NewUndSimApp(logger, db, nil, true, FlagPeriodValue, interBlockCacheOpt())
+
+	// Run randomized simulation
+	// TODO: parameterize numbers, save for a later PR
+	_, simParams, simErr := simulation.SimulateFromSeed(
+		b, os.Stdout, app.BaseApp, AppStateFn(app.Codec(), app.sm),
+		testAndRunUndOnlyTxs(app, config), app.ModuleAccountAddrs(), config,
+	)
+
+	// export state and params before the simulation error is checked
+	if config.ExportStatePath != "" {
+		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
+			fmt.Println(err)
+			b.Fail()
+		}
+	}
+
+	if config.ExportParamsPath != "" {
+		if err := ExportParamsToJSON(simParams, config.ExportParamsPath); err != nil {
+			fmt.Println(err)
+			b.Fail()
+		}
+	}
+
+	if simErr != nil {
+		fmt.Println(simErr)
+		b.FailNow()
+	}
+
+	if config.Commit {
+		fmt.Println("\nGoLevelDB Stats")
+		fmt.Println(db.Stats()["leveldb.stats"])
+		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
+	}
+}

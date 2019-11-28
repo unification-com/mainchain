@@ -37,11 +37,34 @@ type QueryWrkChainParams struct {
 }
 
 // NewQueryWrkChainParams creates a new instance of QueryWrkChainParams
-func NewQueryWrkChainParams(page, limit int, monkker string, owner sdk.AccAddress) QueryWrkChainParams {
+func NewQueryWrkChainParams(page, limit int, moniker string, owner sdk.AccAddress) QueryWrkChainParams {
 	return QueryWrkChainParams{
 		Page:    page,
 		Limit:   limit,
-		Moniker: monkker,
+		Moniker: moniker,
 		Owner:   owner,
+	}
+}
+
+//QueryWrkChainBlockParams Params for filtering a WRKChain's block hashes
+type QueryWrkChainBlockParams struct {
+	Page      int
+	Limit     int
+	MinHeight uint64
+	MaxHeight uint64
+	MinDate   uint64
+	MaxDate   uint64
+	BlockHash string
+}
+
+func NewQueryWrkChainBlockParams(page, limit int, minHeight, maxHeight, minDate, maxDate uint64, hash string) QueryWrkChainBlockParams {
+	return QueryWrkChainBlockParams {
+		Page:      page,
+		Limit:     limit,
+		MinHeight: minHeight,
+		MaxHeight: maxHeight,
+		MinDate:   minDate,
+		MaxDate:   maxDate,
+		BlockHash: hash,
 	}
 }

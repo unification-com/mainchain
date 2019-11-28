@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
 )
@@ -47,21 +48,83 @@ func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, height uint
 	return wrkchainBlock
 }
 
-// GetWrkChainBlockHashes Get an iterator over all WrkChains in which the keys are the WrkChain Ids and the values are the WrkChains
-func (k Keeper) GetWrkChainBlockHashes(ctx sdk.Context, wrkchainId uint64) []types.WrkChainBlock {
+// GetWrkChainBlockHashesIterator Gets an iterator over all WrkChain hashess in
+// which the keys are the WrkChain Ids and the values are the WrkChainBlocks
+func (k Keeper) GetWrkChainBlockHashesIterator(ctx sdk.Context, wrkchainID uint64) sdk.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	var wrkchainBlocks []types.WrkChainBlock
+	return sdk.KVStorePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
+}
 
-	iterator := sdk.KVStorePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainId))
+// IterateWrkChainBlockHashes iterates over the all the hashes for a wrkchain and performs a callback function
+func (k Keeper) IterateWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64, cb func(wrkChain types.WrkChainBlock) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
+
 	defer iterator.Close()
-
 	for ; iterator.Valid(); iterator.Next() {
-		var block types.WrkChainBlock
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &block)
-		wrkchainBlocks = append(wrkchainBlocks, block)
+		var wcb types.WrkChainBlock
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &wcb)
+
+		if cb(wcb) {
+			break
+		}
+	}
+}
+
+// GetAllWrkChainBlockHashes returns all the wrkchain's hashes from store
+func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks types.WrkChainBlocks) {
+	k.IterateWrkChainBlockHashes(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
+		wrkChainBlocks = append(wrkChainBlocks, wcb)
+		return false
+	})
+	return
+}
+
+// GetWrkChainsFiltered retrieves wrkchains filtered by a given set of params which
+// include pagination parameters along a moniker and owner address.
+//
+// NOTE: If no filters are provided, all proposals will be returned in paginated
+// form.
+func (k Keeper) GetWrkChainBlockHashesFiltered(ctx sdk.Context, wrkchainID uint64, params types.QueryWrkChainBlockParams) []types.WrkChainBlock {
+	wrkChainHashes := k.GetAllWrkChainBlockHashes(ctx, wrkchainID)
+	filteredWrkChainHashes := make([]types.WrkChainBlock, 0, len(wrkChainHashes))
+
+	for _, wcb := range wrkChainHashes {
+		matchMinHeight, matchMaxHeight, matchMinDate, matchMaxDate, matchHash := true, true, true, true, true
+
+		if params.MinHeight > 0 {
+			matchMinHeight = wcb.Height >= params.MinHeight
+		}
+
+		if params.MaxHeight > 0 {
+			matchMaxHeight = wcb.Height <= params.MaxHeight
+		}
+
+		if params.MinDate > 0 {
+			matchMinDate = wcb.SubmitTime >= int64(params.MinDate)
+		}
+
+		if params.MaxDate > 0 {
+			matchMaxDate = wcb.SubmitTime <= int64(params.MaxDate)
+		}
+
+		if len(params.BlockHash) > 0 {
+			matchHash = wcb.BlockHash == params.BlockHash
+		}
+
+		if matchMinHeight && matchMaxHeight && matchMinDate && matchMaxDate && matchHash {
+			filteredWrkChainHashes = append(filteredWrkChainHashes, wcb)
+		}
 	}
 
-	return wrkchainBlocks
+	start, end := client.Paginate(len(filteredWrkChainHashes), params.Page, params.Limit, 100)
+	if start < 0 || end < 0 {
+		filteredWrkChainHashes = []types.WrkChainBlock{}
+	} else {
+		filteredWrkChainHashes = filteredWrkChainHashes[start:end]
+	}
+
+	return filteredWrkChainHashes
 }
 
 // RecordWrkchainHashes records a WRKChain block has for a registered wRKchain
@@ -104,7 +167,6 @@ func (k Keeper) RecordWrkchainHashes(
 	wrkchainBlock.Hash3 = hash3
 	wrkchainBlock.Owner = owner
 	wrkchainBlock.SubmitTime = ctx.BlockTime().Unix()
-	wrkchainBlock.SubmitHeight = ctx.BlockHeight()
 
 	err := k.SetWrkChainBlock(ctx, wrkchainBlock)
 

@@ -86,11 +86,11 @@ func getQueriedWrkChainsFiltered(t *testing.T, ctx sdk.Context, cdc *codec.Codec
 	params := types.NewQueryWrkChainParams(page, limit, moniker, owner)
 
 	query := abci.RequestQuery{
-		Path: strings.Join([]string{custom, types.QuerierRoute, QueryWrkChains}, "/"),
+		Path: strings.Join([]string{custom, types.QuerierRoute, QueryWrkChainsFiltered}, "/"),
 		Data: cdc.MustMarshalJSON(params),
 	}
 
-	bz, err := querier(ctx, []string{QueryWrkChains}, query)
+	bz, err := querier(ctx, []string{QueryWrkChainsFiltered}, query)
 	require.NoError(t, err)
 	require.NotNil(t, bz)
 
@@ -122,7 +122,6 @@ func TestQueryWrkChainByID(t *testing.T) {
 		wc.WrkChainID = wcID
 		wc.LastBlock = 0
 		wc.RegisterTime = time.Now().Unix()
-		wc.RegisterHeight = 10
 		wc.Moniker = GenerateRandomString(12)
 		wc.Name = GenerateRandomString(20)
 		wc.GenesisHash = GenerateRandomString(32)
@@ -152,7 +151,6 @@ func TestQueryWrkChainBlockByHeight(t *testing.T) {
 	wc.WrkChainID = wcID
 	wc.LastBlock = 0
 	wc.RegisterTime = time.Now().Unix()
-	wc.RegisterHeight = 10
 	wc.Moniker = GenerateRandomString(12)
 	wc.Name = GenerateRandomString(20)
 	wc.GenesisHash = GenerateRandomString(32)
@@ -170,7 +168,6 @@ func TestQueryWrkChainBlockByHeight(t *testing.T) {
 		block.Hash1 = GenerateRandomString(32)
 		block.Hash2 = GenerateRandomString(32)
 		block.Hash3 = GenerateRandomString(32)
-		block.SubmitHeight = 0
 		block.SubmitTime = time.Now().Unix()
 
 		err := keeper.SetWrkChainBlock(ctx, block)
@@ -198,7 +195,6 @@ func TestQueryWrkChainBlockHashes(t *testing.T) {
 	wc.WrkChainID = wcID
 	wc.LastBlock = 0
 	wc.RegisterTime = time.Now().Unix()
-	wc.RegisterHeight = 10
 	wc.Moniker = GenerateRandomString(12)
 	wc.Name = GenerateRandomString(20)
 	wc.GenesisHash = GenerateRandomString(32)
@@ -216,7 +212,6 @@ func TestQueryWrkChainBlockHashes(t *testing.T) {
 		block.Hash1 = GenerateRandomString(32)
 		block.Hash2 = GenerateRandomString(32)
 		block.Hash3 = GenerateRandomString(32)
-		block.SubmitHeight = 0
 		block.SubmitTime = time.Now().Unix()
 
 		err := keeper.SetWrkChainBlock(ctx, block)

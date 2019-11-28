@@ -39,7 +39,6 @@ type WrkChain struct {
 	GenesisHash    string         `json:"genesis"`
 	LastBlock      uint64         `json:"lastblock"`
 	RegisterTime   int64          `json:"reg_time"`
-	RegisterHeight int64          `json:"reg_height"`
 	Owner          sdk.AccAddress `json:"owner"`
 }
 
@@ -56,8 +55,21 @@ Name: %s
 GenesisHash: %s
 LastBlock: %d
 RegisterTime: %d
-RegisterHeight: %d
-Owner: %s`, w.WrkChainID, w.Moniker, w.Name, w.GenesisHash, w.LastBlock, w.RegisterTime, w.RegisterHeight, w.Owner))
+Owner: %s`, w.WrkChainID, w.Moniker, w.Name, w.GenesisHash, w.LastBlock, w.RegisterTime, w.Owner))
+}
+
+// WrkChainBlocks is an array of WrkChainBlock
+type WrkChainBlocks []WrkChainBlock
+
+// String implements stringer interface
+func (wcb WrkChainBlocks) String() string {
+	out := "ID - [Height] 'BlockHash' (ParentHash) {Hash1} <Hash2> `Hash3` Owner\n"
+	for _, b := range wcb {
+		out += fmt.Sprintf("%d - [%d] '%s' (%s) {%s} <%s> `%s` %s\n",
+			b.WrkChainID, b.Height, b.BlockHash, b.ParentHash,
+			b.Hash1, b.Hash2, b.Hash3, b.Owner)
+	}
+	return strings.TrimSpace(out)
 }
 
 // WrkChainBlock is a struct that contains a wrkchain's recorded block
@@ -70,7 +82,6 @@ type WrkChainBlock struct {
 	Hash2        string         `json:"hash2"`
 	Hash3        string         `json:"hash3"`
 	SubmitTime   int64          `json:"sub_time"`
-	SubmitHeight int64          `json:"sub_height"`
 	Owner        sdk.AccAddress `json:"owner"`
 }
 
@@ -89,6 +100,5 @@ Hash1: %s
 Hash2: %s
 Hash3: %s
 SubmitTime: %d
-SubmitHeight: %d
-Owner: %s`, w.WrkChainID, w.Height, w.BlockHash, w.ParentHash, w.Hash1, w.Hash2, w.Hash3, w.SubmitTime, w.SubmitHeight, w.Owner))
+Owner: %s`, w.WrkChainID, w.Height, w.BlockHash, w.ParentHash, w.Hash1, w.Hash2, w.Hash3, w.SubmitTime, w.Owner))
 }

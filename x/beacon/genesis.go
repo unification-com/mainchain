@@ -9,7 +9,7 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 	keeper.SetParams(ctx, data.Params)
 	keeper.SetHighestBeaconID(ctx, data.StartingBeaconID)
 
-	logger := ctx.Logger()
+	logger := keeper.Logger(ctx)
 
 	for _, record := range data.Beacons {
 		beacon := record.Beacon

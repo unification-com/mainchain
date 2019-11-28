@@ -9,7 +9,7 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 	keeper.SetParams(ctx, data.Params)
 	keeper.SetHighestWrkChainID(ctx, data.StartingWrkChainID)
 
-	logger := ctx.Logger()
+	logger := keeper.Logger(ctx)
 
 	for _, record := range data.WrkChains {
 		wrkChain := record.WrkChain

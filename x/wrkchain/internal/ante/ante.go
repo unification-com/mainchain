@@ -151,7 +151,6 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek types.Ente
 	if hasNeg {
 		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", coins, potentialCoins, fees)
-		ctx.Logger().Info("NOT ENOUGH UND", "isCheckTx", ctx.IsCheckTx(), "err", err)
 		return err
 	}
 
@@ -167,7 +166,6 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek types.Ente
 	if _, hasNeg := potentialSpendableCoins.SafeSub(fees); hasNeg {
 		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"insufficient spendable und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", spendableCoins, potentialSpendableCoins, fees)
-		ctx.Logger().Info("NOT ENOUGH SPENDABLE UND", "isCheckTx", ctx.IsCheckTx(), "err", err)
 		return err
 	}
 

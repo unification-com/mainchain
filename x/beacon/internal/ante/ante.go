@@ -65,12 +65,6 @@ func (wfd CorrectBeaconFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simu
 		if err != nil {
 			return ctx, err
 		}
-
-		// check fee payer is BEACON Owner
-		err = checkBeaconOwnerFeePayer(feeTx)
-		if err != nil {
-			return ctx, err
-		}
 	}
 
 	// check sender has sufficient funds
@@ -123,26 +117,6 @@ func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk keeper.Keeper) error {
 		return types.ErrTooMuchBeaconFee(types.DefaultCodespace, errMsg)
 	}
 
-	return nil
-}
-
-func checkBeaconOwnerFeePayer(tx FeeTx) error {
-	msgs := tx.GetMsgs()
-	feePayer := tx.FeePayer()
-	for _, msg := range msgs {
-		switch m := msg.(type) {
-		case types.MsgRegisterBeacon:
-			if !feePayer.Equals(m.Owner) {
-				errMsg := fmt.Sprintf("fee payer is not beacon owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return types.ErrFeePayerNotOwner(types.DefaultCodespace, errMsg)
-			}
-		case types.MsgRecordBeaconTimestamp:
-			if !feePayer.Equals(m.Owner) {
-				errMsg := fmt.Sprintf("fee payer is not beacon owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return types.ErrFeePayerNotOwner(types.DefaultCodespace, errMsg)
-			}
-		}
-	}
 	return nil
 }
 

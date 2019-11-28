@@ -65,12 +65,6 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 		if err != nil {
 			return ctx, err
 		}
-
-		// check fee payer is WRKChain Owner
-		err = checkWrkChainOwnerFeePayer(feeTx)
-		if err != nil {
-			return ctx, err
-		}
 	}
 
 	// check sender has sufficient funds
@@ -123,26 +117,6 @@ func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck keeper.Keeper) error {
 		return types.ErrTooMuchWrkChainFee(types.DefaultCodespace, errMsg)
 	}
 
-	return nil
-}
-
-func checkWrkChainOwnerFeePayer(tx FeeTx) error {
-	msgs := tx.GetMsgs()
-	feePayer := tx.FeePayer()
-	for _, msg := range msgs {
-		switch m := msg.(type) {
-		case types.MsgRegisterWrkChain:
-			if !feePayer.Equals(m.Owner) {
-				errMsg := fmt.Sprintf("fee payer is not WRKChain owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return types.ErrFeePayerNotOwner(types.DefaultCodespace, errMsg)
-			}
-		case types.MsgRecordWrkChainBlock:
-			if !feePayer.Equals(m.Owner) {
-				errMsg := fmt.Sprintf("fee payer is not WRKChain owner: Owner: %s, Fee Payer: %s", m.Owner, feePayer)
-				return types.ErrFeePayerNotOwner(types.DefaultCodespace, errMsg)
-			}
-		}
-	}
 	return nil
 }
 

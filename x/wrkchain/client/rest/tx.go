@@ -16,6 +16,7 @@ type registerWrkChainReq struct {
 	Moniker      string       `json:"moniker"`
 	WrkChainName string       `json:"name"`
 	GenesisHash  string       `json:"genesis"`
+	BaseType     string       `json:"type"`
 	Owner        string       `json:"owner"`
 }
 
@@ -51,7 +52,7 @@ func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		// create the message
-		msg := types.NewMsgRegisterWrkChain(req.Moniker, req.WrkChainName, req.GenesisHash, addr)
+		msg := types.NewMsgRegisterWrkChain(req.Moniker, req.WrkChainName, req.GenesisHash, req.BaseType, addr)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

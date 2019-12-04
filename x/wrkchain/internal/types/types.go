@@ -33,14 +33,14 @@ func (w WrkChains) String() string {
 
 // Wrkchain is a struct that contains all the metadata of a registered WRKChain
 type WrkChain struct {
-	WrkChainID     uint64         `json:"wrkchain_id"`
-	Moniker        string         `json:"moniker"`
-	Name           string         `json:"name"`
-	GenesisHash    string         `json:"genesis"`
-	BaseType       string         `json:"type"`
-	LastBlock      uint64         `json:"lastblock"`
-	RegisterTime   int64          `json:"reg_time"`
-	Owner          sdk.AccAddress `json:"owner"`
+	WrkChainID   uint64         `json:"wrkchain_id"`
+	Moniker      string         `json:"moniker"`
+	Name         string         `json:"name"`
+	GenesisHash  string         `json:"genesis"`
+	BaseType     string         `json:"type"`
+	LastBlock    uint64         `json:"lastblock"`
+	RegisterTime int64          `json:"reg_time"`
+	Owner        sdk.AccAddress `json:"owner"`
 }
 
 // NewWrkChain returns a new WrkChain struct
@@ -76,15 +76,15 @@ func (wcb WrkChainBlocks) String() string {
 
 // WrkChainBlock is a struct that contains a wrkchain's recorded block
 type WrkChainBlock struct {
-	WrkChainID   uint64         `json:"wrkchain_id"`
-	Height       uint64         `json:"height"`
-	BlockHash    string         `json:"blockhash"`
-	ParentHash   string         `json:"parenthash"`
-	Hash1        string         `json:"hash1"`
-	Hash2        string         `json:"hash2"`
-	Hash3        string         `json:"hash3"`
-	SubmitTime   int64          `json:"sub_time"`
-	Owner        sdk.AccAddress `json:"owner"`
+	WrkChainID uint64         `json:"wrkchain_id"`
+	Height     uint64         `json:"height"`
+	BlockHash  string         `json:"blockhash"`
+	ParentHash string         `json:"parenthash"`
+	Hash1      string         `json:"hash1"`
+	Hash2      string         `json:"hash2"`
+	Hash3      string         `json:"hash3"`
+	SubmitTime int64          `json:"sub_time"`
+	Owner      sdk.AccAddress `json:"owner"`
 }
 
 // NewWrkChainBlock returns a new WrkChainBlock struct

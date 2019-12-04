@@ -204,7 +204,7 @@ $ %s query wrkchain search-blocks 1 --page=2 --limit=100
 				version.ClientName, version.ClientName, version.ClientName,
 			),
 		),
-		Args:  cobra.ExactArgs(1),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			minHeight := viper.GetUint64(FlagMinHeight)
 			maxHeight := viper.GetUint64(FlagMaxHeight)

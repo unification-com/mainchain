@@ -142,6 +142,10 @@ func queryWrkChainHashesFiltered(ctx sdk.Context, path []string, req abci.Reques
 
 	err := k.cdc.UnmarshalJSON(req.Data, &queryParams)
 
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest(sdk.AppendMsgToErr("failed to parse params", err.Error()))
+	}
+
 	wrkchainID, err := strconv.Atoi(path[0])
 
 	if err != nil {

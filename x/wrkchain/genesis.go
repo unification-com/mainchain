@@ -54,15 +54,15 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 
 		for _, value := range blockHashList {
 			hash := WrkChainBlock{
-				WrkChainID:   value.WrkChainID,
-				Height:       value.Height,
-				BlockHash:    value.BlockHash,
-				ParentHash:   value.ParentHash,
-				Hash1:        value.Hash1,
-				Hash2:        value.Hash2,
-				Hash3:        value.Hash3,
-				SubmitTime:   value.SubmitTime,
-				Owner:        value.Owner,
+				WrkChainID: value.WrkChainID,
+				Height:     value.Height,
+				BlockHash:  value.BlockHash,
+				ParentHash: value.ParentHash,
+				Hash1:      value.Hash1,
+				Hash2:      value.Hash2,
+				Hash3:      value.Hash3,
+				SubmitTime: value.SubmitTime,
+				Owner:      value.Owner,
 			}
 			hashes = append(hashes, hash)
 		}

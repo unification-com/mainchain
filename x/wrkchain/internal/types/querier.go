@@ -58,7 +58,7 @@ type QueryWrkChainBlockParams struct {
 }
 
 func NewQueryWrkChainBlockParams(page, limit int, minHeight, maxHeight, minDate, maxDate uint64, hash string) QueryWrkChainBlockParams {
-	return QueryWrkChainBlockParams {
+	return QueryWrkChainBlockParams{
 		Page:      page,
 		Limit:     limit,
 		MinHeight: minHeight,

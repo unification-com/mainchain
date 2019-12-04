@@ -23,8 +23,8 @@ func SimulateMsgRegisterWrkChain(ak auth.AccountKeeper, k keeper.Keeper) simulat
 		simAccount, _ := simulation.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 
-		moniker := simulation.RandStringOfLength(r,16)
-		name := simulation.RandStringOfLength(r,16)
+		moniker := simulation.RandStringOfLength(r, 16)
+		name := simulation.RandStringOfLength(r, 16)
 
 		fees := k.GetRegistrationFeeAsCoins(ctx)
 
@@ -38,8 +38,9 @@ func SimulateMsgRegisterWrkChain(ak auth.AccountKeeper, k keeper.Keeper) simulat
 
 		msg := types.NewMsgRegisterWrkChain(
 			moniker,
-			simulation.RandStringOfLength(r,32),
+			simulation.RandStringOfLength(r, 32),
 			name,
+			"geth",
 			simAccount.Address,
 		)
 
@@ -98,11 +99,11 @@ func SimulateMsgRecordWrkChainBlock(ak auth.AccountKeeper, k keeper.Keeper) simu
 		msg := types.NewMsgRecordWrkChainBlock(
 			wrkChain.WrkChainID,
 			height,
-			simulation.RandStringOfLength(r,32),
-			simulation.RandStringOfLength(r,32),
-			simulation.RandStringOfLength(r,32),
-			simulation.RandStringOfLength(r,32),
-			simulation.RandStringOfLength(r,32),
+			simulation.RandStringOfLength(r, 32),
+			simulation.RandStringOfLength(r, 32),
+			simulation.RandStringOfLength(r, 32),
+			simulation.RandStringOfLength(r, 32),
+			simulation.RandStringOfLength(r, 32),
 			ownerAddr,
 		)
 

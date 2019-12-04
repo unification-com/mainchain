@@ -18,15 +18,17 @@ type MsgRegisterWrkChain struct {
 	Moniker      string         `json:"moniker"`
 	WrkChainName string         `json:"name"`
 	GenesisHash  string         `json:"genesis"`
+	BaseType     string         `json:"type"`
 	Owner        sdk.AccAddress `json:"owner"`
 }
 
 // NewMsgRegisterWrkChain is a constructor function for MsgRegisterWrkChain
-func NewMsgRegisterWrkChain(moniker string, genesisHash string, wrkchainName string, owner sdk.AccAddress) MsgRegisterWrkChain {
+func NewMsgRegisterWrkChain(moniker string, genesisHash string, wrkchainName string, baseType string, owner sdk.AccAddress) MsgRegisterWrkChain {
 	return MsgRegisterWrkChain{
 		Moniker:      moniker,
 		WrkChainName: wrkchainName,
 		GenesisHash:  genesisHash,
+		BaseType:     baseType,
 		Owner:        owner,
 	}
 }
@@ -42,8 +44,8 @@ func (msg MsgRegisterWrkChain) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
 	}
-	if len(msg.Moniker) == 0 || len(msg.GenesisHash) == 0 || len(msg.WrkChainName) == 0 {
-		return sdk.ErrUnknownRequest("Moniker, Genesis Hash and WRKChain Name cannot be empty")
+	if len(msg.Moniker) == 0 {
+		return sdk.ErrUnknownRequest("Moniker cannot be empty")
 	}
 	return nil
 }

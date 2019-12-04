@@ -49,7 +49,7 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fee payer does not exist
-	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, int64(actualFeeAmt)))
 	tx := helpers.GenTx(
 		[]sdk.Msg{msg},
@@ -89,7 +89,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	feeInt := int64(actualRegFeeAmt - 1)
 	feeDenom := actualFeeDenom
 
-	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -150,7 +150,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	feeInt := int64(actualRegFeeAmt + 1)
 	feeDenom := actualFeeDenom
 
-	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -211,7 +211,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	feeInt := int64(actualRegFeeAmt)
 	feeDenom := "rubbish"
 
-	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -278,7 +278,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	feeInt := int64(actualRegFeeAmt)
 	feeDenom := actualFeeDenom
 
-	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -358,7 +358,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	feeInt := int64(actualRegFeeAmt)
 	feeDenom := actualFeeDenom
 
-	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -431,7 +431,7 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	feeInt := int64(actualRegFeeAmt)
 	feeDenom := actualFeeDenom
 
-	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -495,7 +495,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	feeInt := int64(actualRegFeeAmt)
 	feeDenom := actualFeeDenom
 
-	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
 	tx := helpers.GenTx(

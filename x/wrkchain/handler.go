@@ -33,7 +33,7 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 		return ErrWrkChainAlreadyRegistered(keeper.Codespace(), errMsg).Result()
 	}
 
-	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
+	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.BaseType, msg.Owner) // register the WRKChain
 
 	if err != nil {
 		return err.Result()
@@ -46,6 +46,7 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 			sdk.NewAttribute(AttributeKeyWrkChainMoniker, msg.Moniker),
 			sdk.NewAttribute(AttributeKeyWrkChainName, msg.WrkChainName),
 			sdk.NewAttribute(AttributeKeyWrkChainGenesisHash, msg.GenesisHash),
+			sdk.NewAttribute(AttributeKeyBaseType, msg.BaseType),
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
 	})

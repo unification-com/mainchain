@@ -21,7 +21,7 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 		moniker := GenerateRandomString(12)
 		genesisHash := GenerateRandomString(32)
 
-		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, addr)
+		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
 
 		for h := uint64(1); h <= numToRecord; h++ {
@@ -54,7 +54,7 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 		moniker := GenerateRandomString(12)
 		genesisHash := GenerateRandomString(32)
 
-		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, addr)
+		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
 
 		for h := uint64(1); h <= numToRecord; h++ {
@@ -87,7 +87,7 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 		moniker := GenerateRandomString(12)
 		genesisHash := GenerateRandomString(32)
 
-		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, addr)
+		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
 
 		var testBlocks []types.WrkChainBlock
@@ -131,7 +131,7 @@ func TestIsAuthorisedToRecord(t *testing.T) {
 		moniker := GenerateRandomString(12)
 		genesisHash := GenerateRandomString(32)
 
-		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, addr)
+		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
 
 		isAuthorised := keeper.IsAuthorisedToRecord(ctx, wcID, addr)
@@ -150,7 +150,7 @@ func TestRecordWrkchainHashes(t *testing.T) {
 	moniker := GenerateRandomString(12)
 	genesisHash := GenerateRandomString(32)
 
-	wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, TestAddrs[0])
+	wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", TestAddrs[0])
 	require.NoError(t, err)
 
 	for h := uint64(1); h <= numToRecord; h++ {
@@ -183,7 +183,7 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 	moniker := GenerateRandomString(12)
 	genesisHash := GenerateRandomString(32)
 
-	wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, TestAddrs[0])
+	wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", TestAddrs[0])
 	require.NoError(t, err)
 
 	testCases := []struct {

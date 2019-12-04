@@ -1,20 +1,21 @@
 package types
 
 var (
-	EventTypeRegisterWrkChain    = "register-wrkchain"
-	EventTypeRecordWrkChainBlock = "record-wrkchain-block"
+	EventTypeRegisterWrkChain    = "register_wrkchain"
+	EventTypeRecordWrkChainBlock = "record_wrkchain_block"
 
 	AttributeValueCategory = ModuleName
 
-	AttributeKeyOwner               = "wrkchain-owner"
-	AttributeKeyWrkChainId          = "wrkchain-id"
-	AttributeKeyWrkChainMoniker     = "wrkchain-moniker"
-	AttributeKeyWrkChainName        = "wrkchain-name"
-	AttributeKeyWrkChainGenesisHash = "wrkchain-genesis-hash"
-	AttributeKeyBlockHash           = "wrkchain-block-hash"
-	AttributeKeyBlockHeight         = "wrkchain-block-height"
-	AttributeKeyParentHash          = "wrkchain-parent-hash"
-	AttributeKeyHash1               = "wrkchain-hash1"
-	AttributeKeyHash2               = "wrkchain-hash2"
-	AttributeKeyHash3               = "wrkchain-hash3"
+	AttributeKeyOwner               = "wrkchain_owner"
+	AttributeKeyWrkChainId          = "wrkchain_id"
+	AttributeKeyWrkChainMoniker     = "wrkchain_moniker"
+	AttributeKeyWrkChainName        = "wrkchain_name"
+	AttributeKeyWrkChainGenesisHash = "wrkchain_genesis_hash"
+	AttributeKeyBaseType            = "wrkchain_base_type"
+	AttributeKeyBlockHash           = "wrkchain_block_hash"
+	AttributeKeyBlockHeight         = "wrkchain_block_height"
+	AttributeKeyParentHash          = "wrkchain_parent_hash"
+	AttributeKeyHash1               = "wrkchain_hash1"
+	AttributeKeyHash2               = "wrkchain_hash2"
+	AttributeKeyHash3               = "wrkchain_hash3"
 )

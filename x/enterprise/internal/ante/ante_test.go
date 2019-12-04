@@ -66,7 +66,7 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 	_ = app.EnterpriseKeeper.SetLockedUndForAccount(ctx, lockeUnd)
 
 	feeInt := int64(1)
-	msg := wrkchain.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := wrkchain.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -115,7 +115,7 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 	_ = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, sdk.NewInt64Coin(actualFeeDenom, int64(actualRegFeeAmt)))
 
 	feeInt := int64(1)
-	msg := wrkchain.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := wrkchain.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
 
 	tx := helpers.GenTx(
@@ -154,7 +154,7 @@ func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
 	_, _ = app.BankKeeper.AddCoins(ctx, addr, sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt)))
 
 	feeInt := int64(actualRegFeeAmt)
-	msg := wrkchain.NewMsgRegisterWrkChain("test", "hash", "Test", addr)
+	msg := wrkchain.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
 
 	tx := helpers.GenTx(

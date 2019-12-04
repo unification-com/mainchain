@@ -61,9 +61,6 @@ func ValidateGenesis(data GenesisState) error {
 		if record.WrkChain.WrkChainID == 0 {
 			return fmt.Errorf("invalid WrkChain: Moniker: %d. Error: Missing ID", record.WrkChain.WrkChainID)
 		}
-		if record.WrkChain.GenesisHash == "" {
-			return fmt.Errorf("invalid WrkChain: GenesisHash: %s. Error: Missing Genesis Timestamp", record.WrkChain.GenesisHash)
-		}
 		for _, block := range record.WrkChainBlocks {
 			if block.Owner == nil {
 				return fmt.Errorf("invalid WrkChain block: Owner: %s. Error: Missing Owner", block.Owner)

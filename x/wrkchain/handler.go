@@ -33,7 +33,7 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 		return ErrWrkChainAlreadyRegistered(keeper.Codespace(), errMsg).Result()
 	}
 
-	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.Owner) // register the WRKChain
+	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.BaseType, msg.Owner) // register the WRKChain
 
 	if err != nil {
 		return err.Result()

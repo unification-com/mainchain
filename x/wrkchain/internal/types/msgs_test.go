@@ -14,14 +14,15 @@ func TestMsgRegisterWrkChain(t *testing.T) {
 		moniker    string
 		name       string
 		genesis    string
+		baseType   string
 		owner      sdk.AccAddress
 		expectPass bool
 	}{
-		{"wc1", "WC 1", "genhash1", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{"", "WC 1", "genhash", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{"wc2", "", "genhash2", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{"wc3", "WC 3", "", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{"wc4", "WC 4", "genhash4", sdk.AccAddress{}, false},
+		{"wc1", "WC 1", "genhash1", "geth", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{"", "WC 1", "genhash", "geth", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{"", "", "genhash2", "geth", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{"", "WC 3", "", "geth", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{"", "WC 4", "genhash4", "", sdk.AccAddress{}, false},
 	}
 
 	for i, tc := range tests {
@@ -29,6 +30,7 @@ func TestMsgRegisterWrkChain(t *testing.T) {
 			tc.moniker,
 			tc.genesis,
 			tc.name,
+			tc.baseType,
 			tc.owner,
 		)
 

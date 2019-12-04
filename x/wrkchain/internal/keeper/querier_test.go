@@ -246,7 +246,7 @@ func TestQueryWrkChainsFiltered(t *testing.T) {
 			moniker := GenerateRandomString(12)
 			name := GenerateRandomString(20)
 			genesisHash := GenerateRandomString(32)
-			wcID, _ := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, addr)
+			wcID, _ := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 
 			wc := keeper.GetWrkChain(ctx, wcID)
 

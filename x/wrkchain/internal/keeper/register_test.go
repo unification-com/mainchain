@@ -142,8 +142,9 @@ func TestRegisterWrkChain(t *testing.T) {
 		expectedWc.Moniker = moniker
 		expectedWc.Name = name
 		expectedWc.GenesisHash = genesisHash
+		expectedWc.BaseType = "geth"
 
-		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, addr)
+		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
 		require.True(t, wcID == expectedWc.WrkChainID)
 
@@ -174,14 +175,16 @@ func TestFailRegisterNewWrkChain(t *testing.T) {
 		expectedErr  sdk.Error
 		expectedWcID uint64
 	}{
-		{"moniker", "", "", sdk.AccAddress{}, sdk.ErrInternal("unable to set WRKChain - must have an owner"), 0},
-		{"", "", "", TestAddrs[0], sdk.ErrInternal("unable to set WRKChain - must have a moniker"), 0},
+		{"moniker", "name", "genhash", sdk.AccAddress{}, sdk.ErrInternal("unable to set WRKChain - must have an owner"), 0},
+		{"", "name", "genhash", TestAddrs[0], sdk.ErrInternal("unable to set WRKChain - must have a moniker"), 0},
+		{"", "", "genhash", TestAddrs[0], sdk.ErrInternal("unable to set WRKChain - must have a moniker"), 0},
+		{"", "name", "", TestAddrs[0], sdk.ErrInternal("unable to set WRKChain - must have a moniker"), 0},
 		{"testmoniker", "", "", TestAddrs[0], nil, 1},
 		{"testmoniker", "", "", TestAddrs[0], types.ErrWrkChainAlreadyRegistered(keeper.codespace, fmt.Sprintf("wrkchain already registered with moniker 'testmoniker' - id: 1, owner: %s", TestAddrs[0])), 0},
 	}
 
 	for _, tc := range testCases {
-		wcID, err := keeper.RegisterWrkChain(ctx, tc.moniker, tc.name, tc.genHash, tc.owner)
+		wcID, err := keeper.RegisterWrkChain(ctx, tc.moniker, tc.name, tc.genHash, "geth", tc.owner)
 		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
 		require.True(t, wcID == tc.expectedWcID)
 	}
@@ -196,7 +199,7 @@ func TestHighestWrkChainIdAfterRegister(t *testing.T) {
 		genesisHash := GenerateRandomString(32)
 		owner := TestAddrs[1]
 
-		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, owner)
+		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", owner)
 		require.NoError(t, err)
 
 		nextID, _ := keeper.GetHighestWrkChainID(ctx)
@@ -214,7 +217,7 @@ func TestWrkChainIsRegisteredAfterRegister(t *testing.T) {
 		genesisHash := GenerateRandomString(32)
 		owner := TestAddrs[1]
 
-		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, owner)
+		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", owner)
 		require.NoError(t, err)
 
 		isRegistered := keeper.IsWrkChainRegistered(ctx, wcID)
@@ -233,7 +236,7 @@ func TestGetWrkChainFilter(t *testing.T) {
 		genesisHash := GenerateRandomString(32)
 		owner := TestAddrs[1]
 
-		_, _ = keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, owner)
+		_, _ = keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", owner)
 		lastMoniker = moniker
 	}
 

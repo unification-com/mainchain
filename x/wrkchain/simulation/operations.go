@@ -40,6 +40,7 @@ func SimulateMsgRegisterWrkChain(ak auth.AccountKeeper, k keeper.Keeper) simulat
 			moniker,
 			simulation.RandStringOfLength(r,32),
 			name,
+			"geth",
 			simAccount.Address,
 		)
 

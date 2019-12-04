@@ -41,7 +41,7 @@ undcli query account cosmos1ss63vffqmpz68ext374cuxa0v3upavghwzw53p
 ### Interacting with WRKChain module
 
 Register:
-undcli tx wrkchain register wrkchain1 "genesishashkjwnedjknwed" "Wrkchain 1" --from wrktest --gas=auto --gas-adjustment=1.15
+undcli tx wrkchain register --moniker="wrkchain1" --genesis="genesishashkjwnedjknwed" --name="Wrkchain 1" --type="geth" --from wrktest --gas=auto --gas-adjustment=1.15
 
 then run:
 ```

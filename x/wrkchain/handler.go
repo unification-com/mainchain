@@ -46,6 +46,7 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 			sdk.NewAttribute(AttributeKeyWrkChainMoniker, msg.Moniker),
 			sdk.NewAttribute(AttributeKeyWrkChainName, msg.WrkChainName),
 			sdk.NewAttribute(AttributeKeyWrkChainGenesisHash, msg.GenesisHash),
+			sdk.NewAttribute(AttributeKeyBaseType, msg.BaseType),
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
 	})

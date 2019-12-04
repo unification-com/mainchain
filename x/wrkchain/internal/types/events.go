@@ -11,6 +11,7 @@ var (
 	AttributeKeyWrkChainMoniker     = "wrkchain_moniker"
 	AttributeKeyWrkChainName        = "wrkchain_name"
 	AttributeKeyWrkChainGenesisHash = "wrkchain_genesis_hash"
+	AttributeKeyBaseType            = "wrkchain_base_type"
 	AttributeKeyBlockHash           = "wrkchain_block_hash"
 	AttributeKeyBlockHeight         = "wrkchain_block_height"
 	AttributeKeyParentHash          = "wrkchain_parent_hash"

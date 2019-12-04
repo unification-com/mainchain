@@ -16,7 +16,7 @@ const (
 
 	DefaultCodespace = types.DefaultCodespace
 
-	QueryParameters          = keeper.QueryParameters
+	QueryParameters = keeper.QueryParameters
 )
 
 var (
@@ -35,6 +35,7 @@ var (
 	AttributeKeyWrkChainMoniker     = types.AttributeKeyWrkChainMoniker
 	AttributeKeyWrkChainName        = types.AttributeKeyWrkChainName
 	AttributeKeyWrkChainGenesisHash = types.AttributeKeyWrkChainGenesisHash
+	AttributeKeyBaseType            = types.AttributeKeyBaseType
 	AttributeKeyOwner               = types.AttributeKeyOwner
 	AttributeKeyBlockHash           = types.AttributeKeyBlockHash
 	AttributeKeyBlockHeight         = types.AttributeKeyBlockHeight

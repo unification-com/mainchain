@@ -37,6 +37,7 @@ type WrkChain struct {
 	Moniker        string         `json:"moniker"`
 	Name           string         `json:"name"`
 	GenesisHash    string         `json:"genesis"`
+	BaseType       string         `json:"type"`
 	LastBlock      uint64         `json:"lastblock"`
 	RegisterTime   int64          `json:"reg_time"`
 	Owner          sdk.AccAddress `json:"owner"`
@@ -53,9 +54,10 @@ func (w WrkChain) String() string {
 Moniker: %s
 Name: %s
 GenesisHash: %s
+BaseType: %s
 LastBlock: %d
 RegisterTime: %d
-Owner: %s`, w.WrkChainID, w.Moniker, w.Name, w.GenesisHash, w.LastBlock, w.RegisterTime, w.Owner))
+Owner: %s`, w.WrkChainID, w.Moniker, w.Name, w.GenesisHash, w.BaseType, w.LastBlock, w.RegisterTime, w.Owner))
 }
 
 // WrkChainBlocks is an array of WrkChainBlock

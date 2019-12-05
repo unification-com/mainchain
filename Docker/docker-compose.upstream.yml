@@ -39,6 +39,26 @@ services:
     ports:
       - "26663:26663"
 
+  rest-server:
+    hostname: rest-server
+    build:
+      context: ..
+      dockerfile: ./Docker/validator.local/Dockerfile
+      args:
+        WITH_DELVE: "no"
+    container_name: rest-server
+    command: >
+      /bin/sh -c "
+        until nc -z 172.25.0.3 26661; do sleep 1; echo 'wait for node1'; done
+        echo 'wait for first block'
+        sleep 10
+        /root/.go/bin/undcli rest-server --laddr=tcp://0.0.0.0:1317 --node tcp://172.25.0.3:26661 --chain-id=UND-Mainchain-DevNet --trust-node=false
+      "
+    networks:
+      mainchain_devnet:
+        ipv4_address: 172.25.0.6
+    ports:
+      - "1317:1317"
 
 networks:
   mainchain_devnet:

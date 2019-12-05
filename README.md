@@ -86,6 +86,15 @@ undcli query wrkchain search-blocks 1 --min 123 --max 456
 undcli query wrkchain search-blocks 1 --page=2 --limit=100
 ```
 
+#### WRKChain REST
+
+http://localhost:1317/wrkchain/wrkchains  
+http://localhost:1317/wrkchain/wrkchains?moniker=wrkchain1  
+http://localhost:1317/wrkchain/wrkchains?owner=[bech32address]  
+http://localhost:1317/wrkchain/1  
+http://localhost:1317/wrkchain/1/blocks  
+http://localhost:1317/wrkchain/1/block/1  
+http://localhost:1317/wrkchain/1/blocks?min=2&max=4
 
 ### Interacting with BEACON module
 

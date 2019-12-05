@@ -3,7 +3,6 @@ package keeper
 import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
 )
@@ -176,6 +175,7 @@ func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress,
 	purchaseOrder.Purchaser = purchaser
 	purchaseOrder.Amount = amount
 	purchaseOrder.Status = types.StatusRaised
+	purchaseOrder.RaisedTime = ctx.BlockHeader().Time.Unix()
 
 	err = k.SetPurchaseOrder(ctx, purchaseOrder)
 	if err != nil {
@@ -215,6 +215,7 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 	}
 
 	purchaseOrder.Status = decision
+	purchaseOrder.DecisionTime = ctx.BlockHeader().Time.Unix()
 
 	// update the status
 	err := k.SetPurchaseOrder(ctx, purchaseOrder)

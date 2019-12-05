@@ -2,11 +2,10 @@ package keeper
 
 import (
 	"fmt"
-	"testing"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"testing"
 )
 
 // Tests for Highest Purchase Order ID
@@ -35,6 +34,7 @@ func TestSetGetPurchaseOrder(t *testing.T) {
 		po.Amount = sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
 		po.Purchaser = TestAddrs[1]
 		po.Status = status
+		po.RaisedTime = ctx.BlockHeader().Time.Unix()
 
 		err := keeper.SetPurchaseOrder(ctx, po)
 		require.NoError(t, err)
@@ -124,6 +124,7 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 		expectedPo.Amount = amount
 		expectedPo.Purchaser = from
 		expectedPo.Status = types.StatusRaised
+		expectedPo.RaisedTime = ctx.BlockHeader().Time.Unix()
 
 		poID, err := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
 		require.NoError(t, err)
@@ -133,6 +134,7 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 		require.True(t, poExists)
 
 		poDb := keeper.GetPurchaseOrder(ctx, poID)
+
 		require.True(t, poDb.PurchaseOrderID == expectedPo.PurchaseOrderID)
 		require.True(t, poDb.Status == types.StatusRaised)
 		require.True(t, poDb.Purchaser.String() == from.String())

@@ -137,11 +137,11 @@ type PurchaseOrders []EnterpriseUndPurchaseOrder
 
 // String implements stringer interface
 func (p PurchaseOrders) String() string {
-	out := "ID - [Purchaser] Amount (Status)\n"
+	out := "ID - [Purchaser] Amount (Status) {Raised Time} <Decision Time>\n"
 	for _, po := range p {
-		out += fmt.Sprintf("%d - (%s) [%s] %s\n",
+		out += fmt.Sprintf("%d - [%s] %s (%s) {%d} <%d>\n",
 			po.PurchaseOrderID, po.Amount,
-			po.Purchaser, po.Status)
+			po.Purchaser, po.Status, po.RaisedTime, po.DecisionTime)
 	}
 	return strings.TrimSpace(out)
 }
@@ -152,12 +152,16 @@ type EnterpriseUndPurchaseOrder struct {
 	Purchaser       sdk.AccAddress      `json:"purchaser"`
 	Amount          sdk.Coin            `json:"amount"`
 	Status          PurchaseOrderStatus `json:"status"`
+	RaisedTime      int64               `json:"raise_time"`
+	DecisionTime    int64               `json:"decision_time"`
 }
 
 // NewEnterpriseUndPurchaseOrder returns a new EnterpriseUndPurchaseOrder struct
 func NewEnterpriseUndPurchaseOrder() EnterpriseUndPurchaseOrder {
 	return EnterpriseUndPurchaseOrder{
-		Status: StatusNil,
+		Status:       StatusNil,
+		RaisedTime:   0,
+		DecisionTime: 0,
 	}
 }
 
@@ -166,8 +170,10 @@ func (po EnterpriseUndPurchaseOrder) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`ID: %d
 Purchaser: %s
 Amount: %s
+RaisedTime: %d
+DecisionTime: %d
 Decision: %b
-`, po.PurchaseOrderID, po.Purchaser, po.Amount, po.Status))
+`, po.PurchaseOrderID, po.Purchaser, po.Amount, po.RaisedTime, po.DecisionTime, po.Status))
 }
 
 // LockedUnds is an array of locked UND

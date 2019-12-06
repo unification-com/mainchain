@@ -36,9 +36,9 @@ type recordWrkChainBlockReq struct {
 
 // registerTxRoutes - define REST Tx routes
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/wrkchain"), registerWrkChainHandler(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/wrkchain/reg"), registerWrkChainHandler(cliCtx)).Methods("POST")
 
-	r.HandleFunc(fmt.Sprintf("/wrkchain"), recordWrkChainBlockHandler(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/wrkchain/rec"), recordWrkChainBlockHandler(cliCtx)).Methods("POST")
 }
 
 func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {

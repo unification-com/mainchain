@@ -94,7 +94,7 @@ func NewWrkChainBlock() WrkChainBlock {
 
 // implement fmt.Stringer
 func (w WrkChainBlock) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`Moniker: %d
+	return strings.TrimSpace(fmt.Sprintf(`WrkChainID: %d
 Height: %d
 BlockHash: %s
 ParentHash: %s

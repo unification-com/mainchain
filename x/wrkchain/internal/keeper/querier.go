@@ -149,10 +149,6 @@ func queryWrkChainHashesFiltered(ctx sdk.Context, path []string, req abci.Reques
 	wrkchainID, err := strconv.Atoi(path[0])
 
 	if err != nil {
-		wrkchainID = 0
-	}
-
-	if err != nil {
 		return nil, sdk.ErrUnknownRequest(sdk.AppendMsgToErr("failed to parse params", err.Error()))
 	}
 

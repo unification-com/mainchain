@@ -1,5 +1,33 @@
 # Unification Mainchain
 
+## Build
+
+Compile `und` and `undcli` binaries and output to ./build
+
+```bash
+make build
+```
+
+With Ledger support enabled
+
+```bash
+export LEDGER_ENABLED=true && make build
+```
+
+## Install
+
+Install `und` and `undcli` binaries into Go path
+
+```bash
+make install
+```
+
+With Ledger support enabled
+
+```bash
+export LEDGER_ENABLED=true && make install
+```
+
 ## Interacting with the Docker Enviroment
 
 ### Compositions

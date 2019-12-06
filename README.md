@@ -166,6 +166,15 @@ Query locked enterprise UND for an account
 undcli query enterprise locked [address]
 ```
 
+#### Enterprise REST
+
+http://localhost:1317/enterprise/params  
+http://localhost:1317/enterprise/locked  
+http://localhost:1317/enterprise/unlocked  
+http://localhost:1317/enterprise/pos  
+http://localhost:1317/enterprise/po/1  
+http://localhost:1317/enterprise/[bech32addr]/locked
+
 ## Invariance checking
 
 Start a full node with the `--inv-check-period` flag. Value of 1 will

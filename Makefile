@@ -12,13 +12,14 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags)"
 
+include Makefile.ledger
+
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
 ifeq ($(WITH_DELVE),yes)
   BUILD_FLAGS += -gcflags 'all=-N -l'
 endif
 
-include Makefile.ledger
 all: lint install
 
 install: go.sum

@@ -128,6 +128,16 @@ Query all tmestamps
 undcli query beacon timestamps 1
 ```
 
+#### BEACON REST
+
+http://localhost:1317/beacon/beacons  
+http://localhost:1317/beacon/beacons?moniker=beacon1  
+http://localhost:1317/beacon/beacons?owner=[bech32address]  
+http://localhost:1317/beacon/1  
+http://localhost:1317/beacon/1/timestamps  
+http://localhost:1317/beacon/1/timestamp/1  
+http://localhost:1317/beacon/1/timestamps?subtime=1234567  
+http://localhost:1317/beacon/1/timestamps?hash=thehash  
 
 ### Purchase Enterprise UND
 

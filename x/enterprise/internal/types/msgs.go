@@ -62,7 +62,7 @@ func (msg MsgUndPurchaseOrder) GetSigners() []sdk.AccAddress {
 // MsgProcessUndPurchaseOrder defines a ProcessUndPurchaseOrder message - used to accept/reject a PO
 type MsgProcessUndPurchaseOrder struct {
 	PurchaseOrderID uint64              `json:"id"`
-	Decision        PurchaseOrderStatus `json:"status"`
+	Decision        PurchaseOrderStatus `json:"decision"`
 	Signer          sdk.AccAddress      `json:"signer"`
 }
 

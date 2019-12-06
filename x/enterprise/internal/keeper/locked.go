@@ -129,6 +129,14 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 			return err
 		}
 
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				types.EventTypeUndUnlocked,
+				sdk.NewAttribute(types.AttributeKeyPurchaser, feePayer.String()),
+				sdk.NewAttribute(types.AttributeKeyAmount, feeNundCoin.String()),
+			),
+		)
+
 		logger.Debug("enterprise unlocking und", "for", feePayer.String(), "amt", feeNundCoin.Amount)
 
 	} else {
@@ -158,6 +166,14 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 			if err != nil {
 				return err
 			}
+
+			ctx.EventManager().EmitEvent(
+				sdk.NewEvent(
+					types.EventTypeUndUnlocked,
+					sdk.NewAttribute(types.AttributeKeyPurchaser, feePayer.String()),
+					sdk.NewAttribute(types.AttributeKeyAmount, lockedUnd.String()),
+				),
+			)
 
 			logger.Debug("enterprise unlocking und", "for", feePayer.String(), "amt", lockedUnd.Amount)
 

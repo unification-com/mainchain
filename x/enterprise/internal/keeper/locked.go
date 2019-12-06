@@ -108,6 +108,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 	lockedUnd := k.GetLockedUndForAccount(ctx, feePayer).Amount
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
 	blockTime := ctx.BlockHeader().Time
+	var amtUnlocked sdk.Coin
 
 	// calculate how much Locked UND would be left over after deducting Tx fees
 	_, hasNeg := lockedUndCoins.SafeSub(feesToPay)
@@ -128,6 +129,8 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		if err != nil {
 			return err
 		}
+
+		amtUnlocked = feeNundCoin
 
 		logger.Debug("enterprise unlocking und", "for", feePayer.String(), "amt", feeNundCoin.Amount)
 
@@ -159,10 +162,20 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 				return err
 			}
 
+			amtUnlocked = lockedUnd
+
 			logger.Debug("enterprise unlocking und", "for", feePayer.String(), "amt", lockedUnd.Amount)
 
 		}
 	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeUndUnlocked,
+			sdk.NewAttribute(types.AttributeKeyPurchaser, feePayer.String()),
+			sdk.NewAttribute(types.AttributeKeyAmount, amtUnlocked.String()),
+		),
+	)
 
 	return nil
 }

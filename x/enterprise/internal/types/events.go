@@ -1,9 +1,10 @@
 package types
 
 var (
-	EventTypeRaisePurchaseOrder   = "raise-purchase-order"
-	EventTypeProcessPurchaseOrder = "process-purchase-order"
-	EventTypeUndPurchaseComplete  = "und-purchase-complete"
+	EventTypeRaisePurchaseOrder   = "raise_purchase_order"
+	EventTypeProcessPurchaseOrder = "process_purchase_order"
+	EventTypeUndPurchaseComplete  = "und_purchase_complete"
+	EventTypeUndUnlocked          = "und_unlocked"
 
 	AttributeValueCategory = ModuleName
 

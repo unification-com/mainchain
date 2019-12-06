@@ -1,4 +1,11 @@
-# Unification Mainchain
+![Unification](https://raw.githubusercontent.com/unification-com/mainchain/master/unification_logoblack.png "Unification")
+
+## UND Mainchain
+
+Official golang implementation of Unification Mainchain. Built using [Cosmos SDK](https://github.com/cosmos/cosmos-sdk)
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain-cosmos)](https://goreportcard.com/report/github.com/unification-com/mainchain-cosmos)
+[![Join the chat at https://gitter.im/unification-com/mainchain](https://badges.gitter.im/unification-com/mainchain.svg)](https://gitter.im/unification-com/mainchain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Interacting with the Docker Enviroment
 

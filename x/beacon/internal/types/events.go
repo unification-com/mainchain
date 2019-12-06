@@ -1,16 +1,16 @@
 package types
 
 var (
-	EventTypeRegisterBeacon        = "register-beacon"
-	EventTypeRecordBeaconTimestamp = "record-beacon-timestamp"
+	EventTypeRegisterBeacon        = "register_beacon"
+	EventTypeRecordBeaconTimestamp = "record_beacon_timestamp"
 
 	AttributeValueCategory = ModuleName
 
-	AttributeKeyOwner               = "beacon-owner"
-	AttributeKeyBeaconId            = "beacon-id"
-	AttributeKeyBeaconMoniker       = "beacon-moniker"
-	AttributeKeyBeaconName          = "beacon-name"
-	AttributeKeyTimestampID         = "beacon-timestamp-id"
-	AttributeKeyTimestampHash       = "beacon-timestamp-hash"
-	AttributeKeyTimestampSubmitTime = "beacon-timestamp-submit-time"
+	AttributeKeyOwner               = "beacon_owner"
+	AttributeKeyBeaconId            = "beacon_id"
+	AttributeKeyBeaconMoniker       = "beacon_moniker"
+	AttributeKeyBeaconName          = "beacon_name"
+	AttributeKeyTimestampID         = "beacon_timestamp_id"
+	AttributeKeyTimestampHash       = "beacon_timestamp_hash"
+	AttributeKeyTimestampSubmitTime = "beacon_timestamp_submit_time"
 )

@@ -13,10 +13,10 @@ import (
 )
 
 type registerBeaconReq struct {
-	BaseReq     rest.BaseReq `json:"base_req"`
-	Moniker     string       `json:"moniker"`
-	BeaconName  string       `json:"name"`
-	Owner       string       `json:"owner"`
+	BaseReq    rest.BaseReq `json:"base_req"`
+	Moniker    string       `json:"moniker"`
+	BeaconName string       `json:"name"`
+	Owner      string       `json:"owner"`
 }
 
 type recordBeaconTimestampReq struct {

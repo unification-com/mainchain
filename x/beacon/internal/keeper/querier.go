@@ -92,24 +92,6 @@ func queryBeaconTimestamp(ctx sdk.Context, path []string, req abci.RequestQuery,
 	return res, nil
 }
 
-func queryBeaconTmiestamps(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-
-	beaconID, err := strconv.Atoi(path[0])
-
-	if err != nil {
-		beaconID = 0
-	}
-
-	timestamps := keeper.GetAllBeaconTimestamps(ctx, uint64(beaconID))
-
-	res, err := codec.MarshalJSONIndent(keeper.cdc, timestamps)
-	if err != nil {
-		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
-	}
-
-	return res, nil
-}
-
 func queryBeaconsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k Keeper) ([]byte, sdk.Error) {
 
 	var queryParams types.QueryBeaconParams

@@ -18,6 +18,17 @@ import (
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
 )
 
+const (
+	FlagNumLimit      = "limit"
+	FlagPage          = "page"
+	FlagMoniker       = "moniker"
+	FlagOwner         = "owner"
+	FlagTimestampHash = "hash"
+	FlagBeaconID      = "id"
+	FlagName          = "name"
+	FlagSubmitTime    = "subtime"
+)
+
 func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	beaconTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,

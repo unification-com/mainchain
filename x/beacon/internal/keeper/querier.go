@@ -31,7 +31,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		case QueryBeaconTimestamp:
 			return queryBeaconTimestamp(ctx, path[1:], req, keeper)
 		case QueryBeaconTimestamps:
-			return queryBeaconTmiestamps(ctx, path[1:], req, keeper)
+			return queryBeaconTmiestampsFiltered(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown beacon query endpoint")
 		}
@@ -62,7 +62,7 @@ func queryBeacon(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, beacon)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil
@@ -86,7 +86,7 @@ func queryBeaconTimestamp(ctx sdk.Context, path []string, req abci.RequestQuery,
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, timestamp)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil
@@ -104,7 +104,7 @@ func queryBeaconTmiestamps(ctx sdk.Context, path []string, req abci.RequestQuery
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, timestamps)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}
 
 	return res, nil
@@ -127,6 +127,30 @@ func queryBeaconsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k 
 	}
 
 	res, err := codec.MarshalJSONIndent(k.cdc, filteredBeacons)
+	if err != nil {
+		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
+	}
+
+	return res, nil
+}
+
+func queryBeaconTmiestampsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+
+	var queryParams types.QueryBeaconTimestampParams
+
+	err := keeper.cdc.UnmarshalJSON(req.Data, &queryParams)
+
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest(sdk.AppendMsgToErr("failed to parse params", err.Error()))
+	}
+
+	timestampsFiltered := keeper.GetBeaconTimestampsFiltered(ctx, queryParams)
+
+	if timestampsFiltered == nil {
+		timestampsFiltered = types.BeaconTimestamps{}
+	}
+
+	res, err := codec.MarshalJSONIndent(keeper.cdc, timestampsFiltered)
 	if err != nil {
 		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
 	}

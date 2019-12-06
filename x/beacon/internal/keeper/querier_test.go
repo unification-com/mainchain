@@ -65,13 +65,13 @@ func getQueriedBeaconTimestamp(t *testing.T, ctx sdk.Context, cdc *codec.Codec, 
 	return bts
 }
 
-func getQueriedBeaconTimestamps(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, bID uint64) types.QueryResBeaconTimestampHashes {
+func getQueriedBeaconTimestamps(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, params types.QueryBeaconTimestampParams) types.QueryResBeaconTimestampHashes {
 	query := abci.RequestQuery{
-		Path: strings.Join([]string{custom, types.QuerierRoute, QueryBeaconTimestamps, strconv.FormatUint(bID, 10)}, "/"),
-		Data: nil,
+		Path: strings.Join([]string{custom, types.QuerierRoute, QueryBeaconTimestamps}, "/"),
+		Data: cdc.MustMarshalJSON(params),
 	}
 
-	bz, err := querier(ctx, []string{QueryBeaconTimestamps, strconv.FormatUint(bID, 10)}, query)
+	bz, err := querier(ctx, []string{QueryBeaconTimestamps}, query)
 	require.NoError(t, err)
 	require.NotNil(t, bz)
 
@@ -205,7 +205,8 @@ func TestQueryBeaconTimestamps(t *testing.T) {
 		testBeaconTs = append(testBeaconTs, ts)
 	}
 
-	allBlocks := getQueriedBeaconTimestamps(t, ctx, keeper.cdc, querier, bID)
+	params := types.NewQueryBeaconTimestampParams(1, 100, bID, "", 0)
+	allBlocks := getQueriedBeaconTimestamps(t, ctx, keeper.cdc, querier, params)
 
 	require.True(t, len(allBlocks) == int(numTimestamps) && len(allBlocks) == len(testBeaconTs))
 

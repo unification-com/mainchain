@@ -59,7 +59,7 @@ func GetCmdRegisterWrkChain(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Register a new WRKChain, to enable WRKChain hash submissions
 Example:
-$ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa" --name="My WRKChain" --type="geth" --from mykey
+$ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa" --name="My WRKChain" --base="geth" --from mykey
 `,
 				version.ClientName, types.ModuleName,
 			),

@@ -108,7 +108,7 @@ undcli query wrkchain search --page=2 --limit=100
 
 Record block hash(es)
 ```
-undcli tx wrkchain record 1 1 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from wrktest --gas=auto --gas-adjustment=1.15
+undcli tx wrkchain record 1 --wc_height=1 --block_hash="d04b98f48e8" --parent_hash="f8bcc15c6ae" --hash1="5ac050801cd6" --hash2="dcfd428fb5f9e" --hash3="65c4e16e7807340fa" --from wrktest --gas=auto --gas-adjustment=1.15
 ```
 
 Query a block

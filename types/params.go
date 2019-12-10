@@ -19,7 +19,10 @@ const (
 	Bech32MainPrefix = "und"
 
 	// Atom in https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-	CoinType = 50005
+	CoinType = 5555
+
+	// Implementations of HD wallets for UND Mainchain should use the wallet path 44'/5555'/0'/0
+	HdWalletPath = "44'/5555'/0'/0/0"
 
 	// PrefixAccount is the prefix for account keys
 	PrefixAccount = "acc"

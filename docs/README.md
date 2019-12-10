@@ -8,6 +8,10 @@ how to run a node on Mainnet and Testnet, and how to interact with Mainchain.
 
 - [Mainchain](about-mainchain.md)
 
+## Install the software
+
+- [Installation](installation.md)
+
 ## Join Mainchain Mainnet
 
 ## Join the Mainchain Public Testnet

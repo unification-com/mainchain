@@ -38,3 +38,6 @@ Unification have also developed the following modules for Mainchain:
 - `x/enterprise`: Handles purchasing, locking and unlocking of Enterprise UND
 - `x/wrkchain`: WRKChain block hash submission handling
  
+## Next
+
+[Installing](installation.md) the Mainchain binaries

@@ -7,6 +7,14 @@ Official golang implementation of Unification Mainchain. Built using [Cosmos SDK
 [![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain-cosmos)](https://goreportcard.com/report/github.com/unification-com/mainchain-cosmos)
 [![Join the chat at https://gitter.im/unification-com/mainchain](https://badges.gitter.im/unification-com/mainchain.svg)](https://gitter.im/unification-com/mainchain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+## HD Wallet Path
+
+BIP-0044 Path for our HD Wallets is as follows:
+
+`44'/5555'/0'/0`   
+
+SLIP-0044 Coin ID is `5555`
+
 ## Build
 
 Compile `und` and `undcli` binaries and output to ./build

@@ -3,8 +3,8 @@
 
 - name: node1
   type: local
-  address: und1cvrv3atsm26t4qhssfzj4cs8u7rvsuv908fl4u
-  pubkey: undpub1addwnpepqvemkahsq2ngfx6enasj63qchc585dq3rpa7xznwsrt04n9llvf06tpew83
+  address: und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed
+  pubkey: undpub1addwnpepqddghc9qsxyxs2cn70vz9dfd5nwnc8cs80u55ljrk7sa6u6mp82gxzxfxjw
   mnemonic: ""
   threshold: 0
   pubkeys: []
@@ -18,8 +18,8 @@ wish glad forget ski rhythm mouse omit gun fatal whale switch gift nephew cactus
 
 - name: node2
   type: local
-  address: und1ss63vffqmpz68ext374cuxa0v3upavghf8fah8
-  pubkey: undpub1addwnpepqfr5s72gcj6sww72eav63809nx4nmd7jdrxu5e3dgqyq4gsuka7r7c0v8uw
+  address: und13lyhcfekkdczaugqaexya60ckn23l5waflr4pq
+  pubkey: undpub1addwnpepq23dfae8x35hkmgeqcegps0p2l4ugx3w3072plxzgfe932s3729vxl5jje9
   mnemonic: ""
   threshold: 0
   pubkeys: []
@@ -33,8 +33,8 @@ snap bitter fix funny maximum drift outdoor artwork ill candy garden rule front 
 
 - name: node3
   type: local
-  address: und19ckcwz6v6xaxgjz6ee2dzp79c59h2p6x26t2ue
-  pubkey: undpub1addwnpepqd09vnqyd8r740wyx8jqp0jjvtyeck9yeqq4524x9sskdrthdtvkq8vupas
+  address: und104ha8uwqlwyazv8r2zy8h76pcv6mypm3met3ah
+  pubkey: undpub1addwnpepqt8juns8k7fglh6ck4tyfarll84x8e5snd8nkcjljp38anwpg9mzytw4fdw
   mnemonic: ""
   threshold: 0
   pubkeys: []
@@ -48,8 +48,8 @@ input hurdle increase palm busy report echo hurry solar hockey around noodle equ
 
 - name: wrktest
   type: local
-  address: und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
-  pubkey: undpub1addwnpepqwn8p7fsjd2g5ft8hla0gs5epj6mwwywlhrxdf59hdnp3gsmn7uqkx2ay7h
+  address: und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy
+  pubkey: undpub1addwnpepqt28l8cu5esy3rxknecclws706k8r230wmlzdnl0zr064zfwqlqsvctm7dx
   mnemonic: ""
   threshold: 0
   pubkeys: []
@@ -61,8 +61,9 @@ It is the only way to recover your account if you ever forget your password.
 chalk critic click web shove almost day oven awkward husband evoke switch margin judge bread notice envelope remove multiply employ december fatal wisdom rain
 
 Enterprise UND account
+
   "name": "ent",
   "type": "local",
-  "address": "und1v9hrlr95xclj8ehr4na5wrmpqc75sfyw6e0hsj",
-  "pubkey": "undpub1addwnpepq2wfzyg58vg8fwp94365gadmkwdvkxp7e72mv266cak0tdmgnl8zg3gkz26",
+  "address": "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6",
+  "pubkey": "undpub1addwnpepqwjdkc53d3xstts27nyhyhxef5fn2nwfxfjqdywu2dyjfsxgwszdu565z23",
   "mnemonic": "rival tiger struggle forget skull tilt chef tattoo stereo flush order define tell early chase impose harbor divert update apology rib fringe offer napkin"

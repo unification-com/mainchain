@@ -67,3 +67,4 @@ Enterprise UND account
   "address": "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6",
   "pubkey": "undpub1addwnpepqwjdkc53d3xstts27nyhyhxef5fn2nwfxfjqdywu2dyjfsxgwszdu565z23",
   "mnemonic": "rival tiger struggle forget skull tilt chef tattoo stereo flush order define tell early chase impose harbor divert update apology rib fringe offer napkin"
+ 

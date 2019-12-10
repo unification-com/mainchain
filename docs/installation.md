@@ -27,6 +27,14 @@ make install
 
 This will install the two binaries `und` and `undcli` into your `$HOME/go/bin`
 
+### Install with Ledger support
+
+To install with Ledger support, run the following:
+
+```bash
+export LEDGER_ENABLED=true && make install
+```
+
 ## Verify the installation
 
 Run the following commands:
@@ -45,7 +53,7 @@ If they have installed correctly, you should see output similar to the following
   "client_name":"undcli",
   "version":"1.0.0",
   "commit":"5797b5061b4035ec9d6818fef6a1a7967b4e2fba",
-  "build_tags":"netgo, ledger",
+  "build_tags":"netgo ledger",
   "go":"go version go1.13.3 linux/amd64"
 }
 ```
@@ -67,6 +75,14 @@ and testing of new features and bug fixes. For local binaries, use:
 
 ```bash
 make clean && make build
+```
+
+### Build with Ledger support
+
+To build with Ledger support, run the following:
+
+```bash
+export LEDGER_ENABLED=true && make clean && make build
 ```
 
 This will output the binaries to the `./build` directory located in the repository 

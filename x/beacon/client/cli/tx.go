@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"strconv"
 	"strings"
 	"time"
@@ -48,24 +49,27 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 
 // GetCmdRegisterBeacon is the CLI command for sending a RegisterBeacon transaction
 func GetCmdRegisterBeacon(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "register [beacon moniker] [name]",
+	cmd := &cobra.Command{
+		Use:   "register",
 		Short: "register a new BEACON",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Register a new BEACON, to enable timestamp hash submissions
 Example:
-$ %s tx %s register MyBeacon "My WRKChain" --from mykey
+$ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 `,
 				version.ClientName, types.ModuleName,
 			),
 		),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
+			moniker := viper.GetString(FlagMoniker)
+			beaconName := viper.GetString(FlagName)
+
 			// first check if a BEACON exists with the same moniker.
 			// The moniker should be a unique string identifier for the BEACON
-			params := types.NewQueryBeaconParams(1, 1, args[0], sdk.AccAddress{})
+			params := types.NewQueryBeaconParams(1, 1, moniker, sdk.AccAddress{})
 			bz, err := cdc.MarshalJSON(params)
 			if err != nil {
 				return err
@@ -84,7 +88,7 @@ $ %s tx %s register MyBeacon "My WRKChain" --from mykey
 			// BEACON already registered with same moniker - output an error instead of broadcasting
 			// the Tx and therefore charging reg fees
 			if (len(matchingBeacons)) > 0 {
-				errMsg := fmt.Sprintf("beacon already registered with moniker '%s' - beacon id: %d, owner: %s", args[0], matchingBeacons[0].BeaconID, matchingBeacons[0].Owner)
+				errMsg := fmt.Sprintf("beacon already registered with moniker '%s' - beacon id: %d, owner: %s", moniker, matchingBeacons[0].BeaconID, matchingBeacons[0].Owner)
 				return types.ErrBeaconAlreadyRegistered(types.DefaultCodespace, errMsg)
 			}
 
@@ -99,7 +103,7 @@ $ %s tx %s register MyBeacon "My WRKChain" --from mykey
 
 			txBldr = txBldr.WithFees(strconv.Itoa(int(beaconParams.FeeRegister)) + beaconParams.Denom)
 
-			msg := types.NewMsgRegisterBeacon(args[0], args[1], cliCtx.GetFromAddress())
+			msg := types.NewMsgRegisterBeacon(moniker, beaconName, cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -108,24 +112,34 @@ $ %s tx %s register MyBeacon "My WRKChain" --from mykey
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
+	cmd.Flags().String(FlagMoniker, "", "BEACON's moniker")
+	cmd.Flags().String(FlagName, "", "(optional) BEACON's name")
+	return cmd
 }
 
 // GetCmdRecordBeaconTimestamp is the CLI command for sending a RecordBeaconTimestamp transaction
 func GetCmdRecordBeaconTimestamp(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "record [beacon id] [hash] [submit time]",
-		Short: "record a WRKChain's block hashes",
+	cmd := &cobra.Command{
+		Use:   "record [beacon id]",
+		Short: "record a BEACON's timestamp hash",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Record a BEACON's' timestamp hash'
 Example:
-$ %s tx %s record 1 d04b98f48e8 1234356 --from mykey
+$ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 `,
 				version.ClientName, types.ModuleName,
 			),
 		),
-		Args: cobra.ExactArgs(3),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			hash := viper.GetString(FlagTimestampHash)
+			submitTime := viper.GetUint64(FlagSubmitTime)
+
+			if len(hash) == 0 {
+				return sdk.ErrInternal("BEACON timestamp must have a Hash submitted")
+			}
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
@@ -135,19 +149,18 @@ $ %s tx %s record 1 d04b98f48e8 1234356 --from mykey
 			beaconID, err := strconv.Atoi(args[0])
 
 			if err != nil {
-				beaconID = 0
+				return err
 			}
 
-			submitTime, err := strconv.Atoi(args[2])
-			if err != nil {
-				submitTime = 0
+			if beaconID == 0 {
+				return sdk.ErrInternal("BEACON id must be > 0")
 			}
 
 			if submitTime == 0 {
-				submitTime = int(time.Now().Unix())
+				submitTime = uint64(time.Now().Unix())
 			}
 
-			msg := types.NewMsgRecordBeaconTimestamp(uint64(beaconID), args[1], uint64(submitTime), cliCtx.GetFromAddress())
+			msg := types.NewMsgRecordBeaconTimestamp(uint64(beaconID), hash, submitTime, cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -156,4 +169,9 @@ $ %s tx %s record 1 d04b98f48e8 1234356 --from mykey
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
+
+	cmd.Flags().String(FlagTimestampHash, "", "BEACON's timestamp hash")
+	cmd.Flags().Uint64(FlagSubmitTime, 0, "BEACON's timestamp submission time")
+	return cmd
+
 }

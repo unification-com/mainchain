@@ -142,7 +142,7 @@ http://localhost:1317/wrkchain/1/blocks?min=2&max=4
 ### Interacting with BEACON module
 
 Register:
-undcli tx beacon register beacon1 "Beacon 1" --from wrktest
+undcli tx beacon register --moniker=beacon1 --name="Beacon 1" --from wrktest
 
 then run:
 ```
@@ -158,7 +158,7 @@ undcli query beacon beacon 1
 
 Record Timestamp hash
 ```
-undcli tx beacon record 1 d04b98f48e8 $(date +%s) --from wrktest --gas=auto --gas-adjustment=1.15
+undcli tx beacon record 1 --hash=d04b98f48e8 --subtime=$(date +%s) --from wrktest --gas=auto --gas-adjustment=1.15
 ```
 
 Query a Timestamp

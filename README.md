@@ -108,7 +108,7 @@ undcli query wrkchain search --page=2 --limit=100
 
 Record block hash(es)
 ```
-undcli tx wrkchain record 1 1 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from wrktest --gas=auto --gas-adjustment=1.15
+undcli tx wrkchain record 1 --wc_height=1 --block_hash="d04b98f48e8" --parent_hash="f8bcc15c6ae" --hash1="5ac050801cd6" --hash2="dcfd428fb5f9e" --hash3="65c4e16e7807340fa" --from wrktest --gas=auto --gas-adjustment=1.15
 ```
 
 Query a block
@@ -142,7 +142,7 @@ http://localhost:1317/wrkchain/1/blocks?min=2&max=4
 ### Interacting with BEACON module
 
 Register:
-undcli tx beacon register beacon1 "Beacon 1" --from wrktest
+undcli tx beacon register --moniker=beacon1 --name="Beacon 1" --from wrktest
 
 then run:
 ```
@@ -158,7 +158,7 @@ undcli query beacon beacon 1
 
 Record Timestamp hash
 ```
-undcli tx beacon record 1 d04b98f48e8 $(date +%s) --from wrktest --gas=auto --gas-adjustment=1.15
+undcli tx beacon record 1 --hash=d04b98f48e8 --subtime=$(date +%s) --from wrktest --gas=auto --gas-adjustment=1.15
 ```
 
 Query a Timestamp

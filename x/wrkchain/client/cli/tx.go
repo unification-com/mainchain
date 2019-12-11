@@ -27,7 +27,12 @@ const (
 	FlagMaxHeight   = "max"
 	FlagMinDate     = "after"
 	FlagMaxDate     = "before"
-	FlagBlockHash   = "hash"
+	FlagBlockHash   = "block_hash"
+	FlagParentHash  = "parent_hash"
+	FlagHash1       = "hash1"
+	FlagHash2       = "hash2"
+	FlagHash3       = "hash3"
+	FlagHeight      = "wc_height"
 	FlagWrkChainID  = "id"
 	FlagName        = "name"
 	FlagBaseChain   = "base"
@@ -131,40 +136,56 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 
 // GetCmdRecordWrkChainBlock is the CLI command for sending a RecordWrkChainBlock transaction
 func GetCmdRecordWrkChainBlock(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "record [wrkchain id] [height] [block hash] [parent hash] [hash 1] [hash 2] [hash 3] --fees 1und",
+	cmd := &cobra.Command{
+		Use:   "record [wrkchain id]",
 		Short: "record a WRKChain's block hashes",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Record a new WRKChain block's hashes'
+			fmt.Sprintf(`Record a new WRKChain block's hash(es)'
 Example:
-$ %s tx %s record 1 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e16e7807340fa --from mykey
+$ %s tx %s record 1 --wc_height=24 --block_hash="d04b98f48e8" --parent_hash="f8bcc15c6ae" --hash1="5ac050801cd6" --hash2="dcfd428fb5f9e" --hash3="65c4e16e7807340fa" --from mykey
+$ %s tx %s record 1 --wc_height=25 --block_hash="d04b98f48e8" --from mykey
+$ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8bcc15c6ae" --from mykey
 `,
+				version.ClientName, types.ModuleName,
+				version.ClientName, types.ModuleName,
 				version.ClientName, types.ModuleName,
 			),
 		),
-		// todo - make parent hash, and hashes 1 - 3 optional
-		Args: cobra.ExactArgs(7),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			height := viper.GetUint64(FlagHeight)
+			blockHash := viper.GetString(FlagBlockHash)
+			parentHash := viper.GetString(FlagParentHash)
+			hash1 := viper.GetString(FlagHash1)
+			hash2 := viper.GetString(FlagHash2)
+			hash3 := viper.GetString(FlagHash3)
+
+			if len(blockHash) == 0 {
+				return sdk.ErrInternal("WRKChain block must have a Hash submitted")
+			}
+
+			if height == 0 {
+				return sdk.ErrInternal("WRKChain block hash submission must be for height > 0")
+			}
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
 			txBldr = txBldr.WithFees(strconv.Itoa(types.RecordFee) + types.FeeDenom)
 
-			height, err := strconv.Atoi(args[1])
-
-			if err != nil {
-				height = 0
-			}
-
 			wrkchainID, err := strconv.Atoi(args[0])
 
 			if err != nil {
-				wrkchainID = 0
+				return err
 			}
 
-			msg := types.NewMsgRecordWrkChainBlock(uint64(wrkchainID), uint64(height), args[2], args[3], args[4], args[5], args[6], cliCtx.GetFromAddress())
+			if wrkchainID == 0 {
+				return sdk.ErrInternal("WRKChain id must be > 0")
+			}
+
+			msg := types.NewMsgRecordWrkChainBlock(uint64(wrkchainID), height, blockHash, parentHash, hash1, hash2, hash3, cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -173,4 +194,13 @@ $ %s tx %s record 1 24 d04b98f48e8 f8bcc15c6ae 5ac050801cd6 dcfd428fb5f9e 65c4e1
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
+
+	cmd.Flags().Uint64(FlagHeight, 0, "WRKChain block's height/block number")
+	cmd.Flags().String(FlagBlockHash, "", "WRKChain block's header (main) hash")
+	cmd.Flags().String(FlagParentHash, "", "(optional) WRKChain block's parent hash")
+	cmd.Flags().String(FlagHash1, "", "(optional) Additional WRKChain hash - e.g. State Merkle Root")
+	cmd.Flags().String(FlagHash2, "", "(optional) Additional WRKChain hash - e.g. Tx Merkle Root")
+	cmd.Flags().String(FlagHash3, "", "(optional) Additional WRKChain hash")
+
+	return cmd
 }

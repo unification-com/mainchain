@@ -50,9 +50,9 @@ func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSuppl
 	unlocked := total.Sub(locked)
 
 	totalSupply := types.NewUndSupply(k.GetParamDenom(ctx))
-	totalSupply.Locked = locked
-	totalSupply.Unlocked = unlocked
-	totalSupply.Total = total
+	totalSupply.Locked = locked.Amount.Int64()
+	totalSupply.Amount = unlocked.Amount.Int64() // current "liquid" UND
+	totalSupply.Total = total.Amount.Int64()
 
 	return totalSupply
 }

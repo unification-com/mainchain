@@ -208,23 +208,28 @@ Amount: %s
 `, l.Owner, l.Amount))
 }
 
+type UndSupplies []UndSupply
+
 type UndSupply struct {
-	Locked   sdk.Coin `json:"locked"`
-	Unlocked sdk.Coin `json:"unlocked"`
-	Total    sdk.Coin `json:"total_supply"`
+	Denom    string `json:"denom"`
+	Amount   int64 `json:"amount"`
+	Locked   int64 `json:"locked"`
+	Total    int64 `json:"total"`
 }
 
 func NewUndSupply(denom string) UndSupply {
 	return UndSupply{
-		Locked:   sdk.NewInt64Coin(denom, 0),
-		Unlocked: sdk.NewInt64Coin(denom, 0),
-		Total:    sdk.NewInt64Coin(denom, 0),
+		Denom:  denom,
+		Amount: 0, // current unlocked, liquid UND
+		Locked: 0,
+		Total:  0,
 	}
 }
 
 func (u UndSupply) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`Locked: %s
-Unlocked: %s
-Total: %s
-`, u.Locked, u.Unlocked, u.Total))
+	return strings.TrimSpace(fmt.Sprintf(`Denom: %s
+Amount: %d
+Locked: %d
+Total: %d
+`, u.Denom, u.Amount, u.Locked, u.Total))
 }

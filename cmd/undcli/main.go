@@ -227,9 +227,6 @@ func GetAccountWithLockedCmd(cdc *codec.Codec) *cobra.Command {
 			accountWithLocked.Enterprise = entUnd
 
 			return cliCtx.PrintOutput(accountWithLocked)
-
-			return cliCtx.PrintOutput(acc)
-
 		},
 	}
 

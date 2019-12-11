@@ -211,10 +211,10 @@ Amount: %s
 type UndSupplies []UndSupply
 
 type UndSupply struct {
-	Denom    string `json:"denom"`
-	Amount   int64 `json:"amount"`
-	Locked   int64 `json:"locked"`
-	Total    int64 `json:"total"`
+	Denom  string `json:"denom"`
+	Amount int64  `json:"amount"`
+	Locked int64  `json:"locked"`
+	Total  int64  `json:"total"`
 }
 
 func NewUndSupply(denom string) UndSupply {

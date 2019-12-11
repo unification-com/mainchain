@@ -18,8 +18,6 @@ func queryRestApiEndpoints(rtr *mux.Router) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		err := rtr.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
-			pathTemplate, err := route.GetPathTemplate()
-
 			outp := ""
 
 			methods, err := route.GetMethods()
@@ -27,6 +25,7 @@ func queryRestApiEndpoints(rtr *mux.Router) http.HandlerFunc {
 				outp = strings.Join(methods, ",") + ": "
 			}
 
+			pathTemplate, err := route.GetPathTemplate()
 			if err == nil {
 				outp = outp + pathTemplate + "\n"
 			}
@@ -36,7 +35,7 @@ func queryRestApiEndpoints(rtr *mux.Router) http.HandlerFunc {
 		})
 
 		if err != nil {
-			fmt.Println(err)
+			_, _ = w.Write([]byte(err.Error()))
 		}
 	}
 }

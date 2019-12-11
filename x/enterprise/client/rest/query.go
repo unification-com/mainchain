@@ -280,7 +280,7 @@ func EnterpriseSupplyByDenomOverride(cliCtx context.CLIContext) http.HandlerFunc
 
 		// todo - get from params
 		if denom != types.DefaultDenomination {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, "unknown denomination " + denom)
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, "unknown denomination "+denom)
 			return
 		}
 

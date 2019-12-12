@@ -11,6 +11,7 @@ require (
 	github.com/keybase/go-keychain v0.0.0-20191114153608-ccd67945d59e // indirect
 	github.com/prometheus/client_golang v1.2.1 // indirect
 	github.com/prometheus/procfs v0.0.6 // indirect
+	github.com/rakyll/statik v0.1.6
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.5

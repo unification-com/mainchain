@@ -3,20 +3,13 @@ package simapp
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"math/rand"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	entsim "github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
 )
 
@@ -27,12 +20,6 @@ func AppStateFn(cdc *codec.Codec, simManager *module.SimulationManager) simulati
 	return func(r *rand.Rand, accs []simulation.Account, config simulation.Config,
 	) (appState json.RawMessage, simAccs []simulation.Account, chainID string, genesisTimestamp time.Time) {
 
-		cfg := sdk.GetConfig()
-		cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
-		cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
-		cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
-		cfg.Seal()
-
 		if FlagGenesisTimeValue == 0 {
 			genesisTimestamp = simulation.RandTimestamp(r)
 		} else {
@@ -40,22 +27,6 @@ func AppStateFn(cdc *codec.Codec, simManager *module.SimulationManager) simulati
 		}
 
 		switch {
-		case config.ParamsFile != "" && config.GenesisFile != "":
-			panic("cannot provide both a genesis file and a params file")
-
-		case config.GenesisFile != "":
-			// override the default chain-id from simapp to set it later to the config
-			genesisDoc, accounts := AppStateFromGenesisFileFn(r, cdc, config.GenesisFile)
-
-			if FlagGenesisTimeValue == 0 {
-				// use genesis timestamp if no custom timestamp is provided (i.e no random timestamp)
-				genesisTimestamp = genesisDoc.GenesisTime
-			}
-
-			appState = genesisDoc.AppState
-			chainID = genesisDoc.ChainID
-			simAccs = accounts
-
 		case config.ParamsFile != "":
 			appParams := make(simulation.AppParams)
 			bz, err := ioutil.ReadFile(config.ParamsFile)
@@ -71,7 +42,6 @@ func AppStateFn(cdc *codec.Codec, simManager *module.SimulationManager) simulati
 			appState, simAccs = AppStateRandomizedFn(simManager, r, cdc, accs, genesisTimestamp, appParams)
 		}
 
-		//fmt.Printf("appState: %s", appState)
 		return appState, simAccs, chainID, genesisTimestamp
 	}
 }
@@ -134,43 +104,4 @@ func AppStateRandomizedFn(
 	}
 
 	return appState, accs
-}
-
-// AppStateFromGenesisFileFn util function to generate the genesis AppState
-// from a genesis.json file.
-func AppStateFromGenesisFileFn(r io.Reader, cdc *codec.Codec, genesisFile string) (tmtypes.GenesisDoc, []simulation.Account) {
-	bytes, err := ioutil.ReadFile(genesisFile)
-	if err != nil {
-		panic(err)
-	}
-
-	var genesis tmtypes.GenesisDoc
-	cdc.MustUnmarshalJSON(bytes, &genesis)
-
-	var appState GenesisState
-	cdc.MustUnmarshalJSON(genesis.AppState, &appState)
-
-	var authGenesis auth.GenesisState
-	if appState[auth.ModuleName] != nil {
-		cdc.MustUnmarshalJSON(appState[auth.ModuleName], &authGenesis)
-	}
-
-	newAccs := make([]simulation.Account, len(authGenesis.Accounts))
-	for i, acc := range authGenesis.Accounts {
-		// Pick a random private key, since we don't know the actual key
-		// This should be fine as it's only used for mock Tendermint validators
-		// and these keys are never actually used to sign by mock Tendermint.
-		privkeySeed := make([]byte, 15)
-		if _, err := r.Read(privkeySeed); err != nil {
-			panic(err)
-		}
-
-		privKey := secp256k1.GenPrivKeySecp256k1(privkeySeed)
-
-		// create simulator accounts
-		simAcc := simulation.Account{PrivKey: privKey, PubKey: privKey.PubKey(), Address: acc.GetAddress()}
-		newAccs[i] = simAcc
-	}
-
-	return genesis, newAccs
 }

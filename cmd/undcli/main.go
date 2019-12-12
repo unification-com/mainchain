@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,6 +22,7 @@ import (
 	"github.com/spf13/viper"
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
+	"github.com/unification-com/mainchain-cosmos/client/lcd"
 	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	entrest "github.com/unification-com/mainchain-cosmos/x/enterprise/client/rest"
 

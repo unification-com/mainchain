@@ -57,6 +57,9 @@ Composition with local changes:
 docker-compose -f Docker/docker-compose.local.yml up --build
 ```
 
+#### REST API Endpoints
+
+With DevNet up, the REST API endpoints can be seen via http://localhost:1317/swagger-ui/
 
 ### Importing docker composition keys
 ```

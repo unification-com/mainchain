@@ -2,15 +2,15 @@ package rest
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
-	"net/http"
-
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type registerWrkChainReq struct {
@@ -50,6 +50,18 @@ func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		baseReq := req.BaseReq.Sanitize()
+
+		// automatically apply fees
+		paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+		wrkchainParams, err := paramsRetriever.GetParams()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		fees := sdk.NewCoins(sdk.NewInt64Coin(wrkchainParams.Denom, int64(wrkchainParams.FeeRegister)))
+
+		baseReq.Fees = fees
+
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
@@ -81,6 +93,18 @@ func recordWrkChainBlockHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		baseReq := req.BaseReq.Sanitize()
+
+		// automatically apply fees
+		paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+		wrkchainParams, err := paramsRetriever.GetParams()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		fees := sdk.NewCoins(sdk.NewInt64Coin(wrkchainParams.Denom, int64(wrkchainParams.FeeRecord)))
+
+		baseReq.Fees = fees
+
 		if !baseReq.ValidateBasic(w) {
 			return
 		}

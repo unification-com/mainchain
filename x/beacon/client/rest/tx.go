@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
+	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
 	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
 )
 
@@ -43,6 +44,18 @@ func registerBeaconHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		baseReq := req.BaseReq.Sanitize()
+
+		// automatically apply fees
+		paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+		beaconParams, err := paramsRetriever.GetParams()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		fees := sdk.NewCoins(sdk.NewInt64Coin(beaconParams.Denom, int64(beaconParams.FeeRegister)))
+
+		baseReq.Fees = fees
+
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
@@ -74,6 +87,18 @@ func recordBeaconTimestampHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		baseReq := req.BaseReq.Sanitize()
+
+		// automatically apply fees
+		paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+		beaconParams, err := paramsRetriever.GetParams()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		fees := sdk.NewCoins(sdk.NewInt64Coin(beaconParams.Denom, int64(beaconParams.FeeRecord)))
+
+		baseReq.Fees = fees
+
 		if !baseReq.ValidateBasic(w) {
 			return
 		}

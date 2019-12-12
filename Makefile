@@ -72,6 +72,8 @@ devnet-systemtest-down:
 
 # Used during active development
 
+include Makefile.sims
+
 deps:
 	go get -u ./...
 

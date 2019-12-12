@@ -18,7 +18,7 @@ type registerWrkChainReq struct {
 	Moniker      string       `json:"moniker"`
 	WrkChainName string       `json:"name"`
 	GenesisHash  string       `json:"genesis"`
-	BaseType     string       `json:"type"`
+	BaseType     string       `json:"base"`
 	Owner        string       `json:"owner"`
 }
 

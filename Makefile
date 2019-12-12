@@ -2,6 +2,7 @@ PACKAGES=$(shell go list ./... )
 
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
+BINDIR ?= $(GOPATH)/bin
 
 export GO111MODULE = on
 
@@ -12,6 +13,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags)"
 
+include Makefile.devtools
 include Makefile.ledger
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
@@ -48,6 +50,18 @@ test-no-cache:
 
 clean:
 	rm -rf build/
+
+update-swagger-docs: statik
+	$(BINDIR)/statik -src=client/lcd/swagger-ui -dest=client/lcd -f -m
+	@if [ -n "$(git status --porcelain)" ]; then \
+        echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
+        exit 1;\
+    else \
+    	echo "\033[92mSwagger docs are in sync\033[0m";\
+    fi
+.PHONY: update-swagger-docs
+
+# Docker compositions
 
 devnet:
 	docker-compose -f Docker/docker-compose.local.yml down --remove-orphans

@@ -10,7 +10,8 @@ ENV GO111MODULE="on"
 ENV PATH="/usr/local/go/bin:/root/.go/bin:${PATH}"
 ENV LEDGER_ENABLED="false"
 
-RUN mkdir -p $GOPATH/src/github.com/unification-com
+RUN mkdir -p $GOPATH/src/github.com/unification-com && \
+    rm -rf $GOPATH/src/github.com/unification-com/mainchain-cosmos
 RUN go get -u github.com/go-delve/delve/cmd/dlv
 
 COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos

@@ -114,7 +114,7 @@ func TestMintCoinsAndLock(t *testing.T) {
 	require.True(t, totalLockedDb.IsEqual(totalLocked))
 
 	totalSupplyDb := keeper.GetTotalSupplyIncludingLockedUnd(ctx)
-	require.True(t, totalSupplyDb.Locked.IsEqual(totalLocked))
+	require.True(t, totalSupplyDb.Locked == totalLocked.Amount.Int64())
 
 	entAccount := keeper.GetEnterpriseAccount(ctx)
 	entAccountCoins := entAccount.GetCoins()
@@ -160,7 +160,7 @@ func TestUnlockCoinsForFees(t *testing.T) {
 	require.True(t, totalLockedDb.IsEqual(totalLocked))
 
 	totalSupplyDb := keeper.GetTotalSupplyIncludingLockedUnd(ctx)
-	require.True(t, totalSupplyDb.Locked.IsEqual(totalLocked))
+	require.True(t, totalSupplyDb.Locked == totalLocked.Amount.Int64())
 
 	entAccount := keeper.GetEnterpriseAccount(ctx)
 	entAccountCoins := entAccount.GetCoins()

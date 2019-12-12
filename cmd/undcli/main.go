@@ -2,21 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
@@ -24,6 +23,8 @@ import (
 	"github.com/spf13/viper"
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
+	undtypes "github.com/unification-com/mainchain-cosmos/types"
+	entrest "github.com/unification-com/mainchain-cosmos/x/enterprise/client/rest"
 
 	"github.com/unification-com/mainchain-cosmos/app"
 
@@ -80,8 +81,11 @@ func main() {
 
 func registerRoutes(rs *lcd.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
+	entrest.RegisterAuthAccountOverride(rs.CliCtx, rs.Mux)
+	entrest.RegisterTotalSupplyOverride(rs.CliCtx, rs.Mux)
 	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
 	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
+	RegisterQueryRestApiEndpoints(rs.CliCtx, rs.Mux)
 }
 
 func queryCmd(cdc *amino.Codec) *cobra.Command {
@@ -212,22 +216,17 @@ func GetAccountWithLockedCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			if lockedUnd.Amount.IsPositive() {
-				// todo - this is a bit hackey
-				accountWithLocked := undtypes.NewAccountWithLocked()
-				entUnd := undtypes.NewEnterpriseUnd()
+			// todo - this is a bit hackey
+			accountWithLocked := undtypes.NewAccountWithLocked()
+			entUnd := undtypes.NewEnterpriseUnd()
 
-				entUnd.Locked = lockedUnd.Amount
-				entUnd.Available = acc.GetCoins().Add(sdk.NewCoins(lockedUnd.Amount))
+			entUnd.Locked = lockedUnd.Amount
+			entUnd.Available = acc.GetCoins().Add(sdk.NewCoins(lockedUnd.Amount))
 
-				accountWithLocked.Account = acc
-				accountWithLocked.Enterprise = entUnd
+			accountWithLocked.Account = acc
+			accountWithLocked.Enterprise = entUnd
 
-				return cliCtx.PrintOutput(accountWithLocked)
-			}
-
-			return cliCtx.PrintOutput(acc)
-
+			return cliCtx.PrintOutput(accountWithLocked)
 		},
 	}
 
@@ -249,9 +248,9 @@ total UND locked through Enterprise purchases.
 This UND is only available to pay WRKChain/BEACON fees
 and cannot be used for transfers or staking/delegation
 
-unlocked
+amount
 --------
-UND in active circulation, which can be used for 
+Liquid UND in active circulation, which can be used for 
 transfers, staking etc. It is the
 LOCKED amount subtracted from TOTAL_SUPPLY
 

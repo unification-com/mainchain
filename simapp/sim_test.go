@@ -3,8 +3,7 @@ package simapp
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
+	"github.com/unification-com/mainchain-cosmos/x/beacon"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -30,9 +29,12 @@ import (
 	stakingsim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
+	undtypes "github.com/unification-com/mainchain-cosmos/types"
 	beaconsim "github.com/unification-com/mainchain-cosmos/x/beacon/simulation"
+	"github.com/unification-com/mainchain-cosmos/x/enterprise"
 	entsim "github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
 	"github.com/unification-com/mainchain-cosmos/x/mint"
+	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
 	wrkchainsim "github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
 )
 
@@ -345,6 +347,14 @@ func TestFullAppSimulation(t *testing.T) {
 		t.Skip("skipping application simulation")
 	}
 
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	cfg.SetCoinType(undtypes.CoinType)
+	cfg.SetFullFundraiserPath(undtypes.HdWalletPath)
+	cfg.Seal()
+
 	var logger log.Logger
 	config := NewConfigFromFlags()
 	config.ChainID = helpers.SimAppChainID
@@ -398,6 +408,14 @@ func TestUndSpecificAppSimulation(t *testing.T) {
 		t.Skip("skipping und specific tx application simulation")
 	}
 
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	cfg.SetCoinType(undtypes.CoinType)
+	cfg.SetFullFundraiserPath(undtypes.HdWalletPath)
+	cfg.Seal()
+
 	var logger log.Logger
 	config := NewConfigFromFlags()
 	config.ChainID = helpers.SimAppChainID
@@ -450,6 +468,14 @@ func TestAppImportExport(t *testing.T) {
 	if !FlagEnabledValue {
 		t.Skip("skipping application import/export simulation")
 	}
+
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	cfg.SetCoinType(undtypes.CoinType)
+	cfg.SetFullFundraiserPath(undtypes.HdWalletPath)
+	cfg.Seal()
 
 	var logger log.Logger
 	config := NewConfigFromFlags()
@@ -547,6 +573,7 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[params.StoreKey], newApp.keys[params.StoreKey], [][]byte{}},
 		{app.keys[enterprise.StoreKey], newApp.keys[enterprise.StoreKey], [][]byte{}},
 		{app.keys[wrkchain.StoreKey], newApp.keys[wrkchain.StoreKey], [][]byte{}},
+		{app.keys[beacon.StoreKey], newApp.keys[beacon.StoreKey], [][]byte{}},
 	}
 
 	for _, storeKeysPrefix := range storeKeysPrefixes {
@@ -570,6 +597,14 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	if !FlagEnabledValue {
 		t.Skip("skipping application simulation after import")
 	}
+
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	cfg.SetCoinType(undtypes.CoinType)
+	cfg.SetFullFundraiserPath(undtypes.HdWalletPath)
+	cfg.Seal()
 
 	var logger log.Logger
 	config := NewConfigFromFlags()
@@ -662,6 +697,14 @@ func TestAppStateDeterminism(t *testing.T) {
 	if !FlagEnabledValue {
 		t.Skip("skipping application simulation")
 	}
+
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	cfg.SetCoinType(undtypes.CoinType)
+	cfg.SetFullFundraiserPath(undtypes.HdWalletPath)
+	cfg.Seal()
 
 	config := NewConfigFromFlags()
 	config.InitialBlockHeight = 1

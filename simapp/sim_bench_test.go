@@ -13,6 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
+	undtypes "github.com/unification-com/mainchain-cosmos/types"
 )
 
 // Profile with:
@@ -21,6 +22,14 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	logger := log.NewNopLogger()
 	config := NewConfigFromFlags()
 	config.ChainID = helpers.SimAppChainID
+
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	cfg.SetCoinType(undtypes.CoinType)
+	cfg.SetFullFundraiserPath(undtypes.HdWalletPath)
+	cfg.Seal()
 
 	var db dbm.DB
 	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
@@ -72,6 +81,14 @@ func BenchmarkInvariants(b *testing.B) {
 	config := NewConfigFromFlags()
 	config.AllInvariants = false
 	config.ChainID = helpers.SimAppChainID
+
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	cfg.SetCoinType(undtypes.CoinType)
+	cfg.SetFullFundraiserPath(undtypes.HdWalletPath)
+	cfg.Seal()
 
 	dir, _ := ioutil.TempDir("", "goleveldb-app-invariant-bench")
 	db, _ := sdk.NewLevelDB("simulation", dir)
@@ -130,6 +147,14 @@ func BenchmarkUndSpecificAppSimulation(b *testing.B) {
 	logger := log.NewNopLogger()
 	config := NewConfigFromFlags()
 	config.ChainID = helpers.SimAppChainID
+
+	cfg := sdk.GetConfig()
+	cfg.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	cfg.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	cfg.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	cfg.SetCoinType(undtypes.CoinType)
+	cfg.SetFullFundraiserPath(undtypes.HdWalletPath)
+	cfg.Seal()
 
 	var db dbm.DB
 	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")

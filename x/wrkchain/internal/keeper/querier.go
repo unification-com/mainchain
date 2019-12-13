@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

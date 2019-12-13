@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	undtypes "github.com/unification-com/mainchain/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 // NodeQuerier is an interface that is satisfied by types that provide the QueryWithData method

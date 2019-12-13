@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"testing"
 
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 // Tests for Highest Purchase Order ID

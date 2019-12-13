@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 //__PURCHASE_ORDER_ID___________________________________________________

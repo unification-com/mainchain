@@ -22,13 +22,13 @@ import (
 	"github.com/spf13/viper"
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-	"github.com/unification-com/mainchain-cosmos/client/lcd"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
-	entrest "github.com/unification-com/mainchain-cosmos/x/enterprise/client/rest"
+	"github.com/unification-com/mainchain/client/lcd"
+	undtypes "github.com/unification-com/mainchain/types"
+	entrest "github.com/unification-com/mainchain/x/enterprise/client/rest"
 
-	"github.com/unification-com/mainchain-cosmos/app"
+	"github.com/unification-com/mainchain/app"
 
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
+	"github.com/unification-com/mainchain/x/enterprise"
 )
 
 func main() {

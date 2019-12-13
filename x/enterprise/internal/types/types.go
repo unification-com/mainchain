@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
+	undtypes "github.com/unification-com/mainchain/types"
 	"strings"
 )
 

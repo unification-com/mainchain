@@ -5,9 +5,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain/exported"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/keeper"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 var (

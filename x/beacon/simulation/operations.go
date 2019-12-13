@@ -9,9 +9,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/simapp/helpers"
+	"github.com/unification-com/mainchain/x/beacon/internal/keeper"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 // SimulateMsgRegisterBeacon generates a MsgRegisterBeacon with random values

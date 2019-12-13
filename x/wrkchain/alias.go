@@ -1,10 +1,10 @@
 package wrkchain
 
 import (
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/ante"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain/exported"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/ante"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/keeper"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 const (

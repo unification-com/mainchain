@@ -4,9 +4,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	beacon "github.com/unification-com/mainchain-cosmos/x/beacon/exported"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/keeper"
-	wrkchain "github.com/unification-com/mainchain-cosmos/x/wrkchain/exported"
+	beacon "github.com/unification-com/mainchain/x/beacon/exported"
+	"github.com/unification-com/mainchain/x/enterprise/internal/keeper"
+	wrkchain "github.com/unification-com/mainchain/x/wrkchain/exported"
 )
 
 var (

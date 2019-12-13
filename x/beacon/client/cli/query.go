@@ -11,8 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/internal/keeper"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {

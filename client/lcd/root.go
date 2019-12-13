@@ -20,7 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/unification-com/mainchain-cosmos/client/lcd/statik"
+	_ "github.com/unification-com/mainchain/client/lcd/statik"
 )
 
 // RestServer represents the Light Client Rest server

@@ -15,8 +15,8 @@ ENV LEDGER_ENABLED="false"
 RUN mkdir -p $GOPATH/src/github.com/unification-com
 WORKDIR $GOPATH/src/github.com/unification-com
 
-RUN git clone https://github.com/unification-com/mainchain-cosmos.git
-WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
+RUN git clone https://github.com/unification-com/mainchain.git
+WORKDIR $GOPATH/src/github.com/unification-com/mainchain
 
 RUN make install
 

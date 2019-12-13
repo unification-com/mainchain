@@ -2,7 +2,7 @@ package beacon
 
 import (
 	"encoding/json"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/simulation"
+	"github.com/unification-com/mainchain/x/beacon/simulation"
 	"math/rand"
 
 	"github.com/gorilla/mux"
@@ -10,8 +10,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/client/cli"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/client/rest"
+	"github.com/unification-com/mainchain/x/beacon/client/cli"
+	"github.com/unification-com/mainchain/x/beacon/client/rest"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"

@@ -12,8 +12,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
+	"github.com/unification-com/mainchain/simapp/helpers"
+	undtypes "github.com/unification-com/mainchain/types"
 )
 
 // Profile with:

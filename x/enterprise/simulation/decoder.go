@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	cmn "github.com/tendermint/tendermint/libs/common"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding enterprise type

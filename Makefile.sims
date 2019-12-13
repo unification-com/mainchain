@@ -4,7 +4,7 @@
 ### Simulations
 
 BINDIR ?= $(GOPATH)/bin
-SIMAPP = github.com/unification-com/mainchain-cosmos/simapp
+SIMAPP = github.com/unification-com/mainchain/simapp
 
 test-sim-import-export: runsim
 	@echo "Running UND import/export simulation. This may take several minutes..."

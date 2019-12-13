@@ -14,10 +14,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
-	"github.com/unification-com/mainchain-cosmos/x/mint/client/cli"
-	"github.com/unification-com/mainchain-cosmos/x/mint/client/rest"
-	"github.com/unification-com/mainchain-cosmos/x/mint/simulation"
+	"github.com/unification-com/mainchain/x/enterprise"
+	"github.com/unification-com/mainchain/x/mint/client/cli"
+	"github.com/unification-com/mainchain/x/mint/client/rest"
+	"github.com/unification-com/mainchain/x/mint/simulation"
 )
 
 var (

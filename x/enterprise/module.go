@@ -2,7 +2,7 @@ package enterprise
 
 import (
 	"encoding/json"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
+	"github.com/unification-com/mainchain/x/enterprise/simulation"
 	"math/rand"
 
 	"github.com/gorilla/mux"
@@ -10,8 +10,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/client/cli"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/client/rest"
+	"github.com/unification-com/mainchain/x/enterprise/client/cli"
+	"github.com/unification-com/mainchain/x/enterprise/client/rest"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"

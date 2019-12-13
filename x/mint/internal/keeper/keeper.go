@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/unification-com/mainchain-cosmos/x/mint/internal/types"
+	"github.com/unification-com/mainchain/x/mint/internal/types"
 )
 
 // Keeper of the mint store

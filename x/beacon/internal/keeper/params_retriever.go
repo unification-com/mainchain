@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 // NodeQuerier is an interface that is satisfied by types that provide the QueryWithData method

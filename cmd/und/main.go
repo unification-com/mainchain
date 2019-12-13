@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/spf13/viper"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
+	undtypes "github.com/unification-com/mainchain/types"
 	"io"
 
 	"github.com/cosmos/cosmos-sdk/server"
@@ -22,7 +22,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/unification-com/mainchain-cosmos/app"
+	"github.com/unification-com/mainchain/app"
 )
 
 const flagInvCheckPeriod = "inv-check-period"

@@ -11,9 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	entutils "github.com/unification-com/mainchain-cosmos/x/enterprise/client/utils"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	entutils "github.com/unification-com/mainchain/x/enterprise/client/utils"
+	"github.com/unification-com/mainchain/x/enterprise/internal/keeper"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {

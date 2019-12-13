@@ -1,9 +1,9 @@
 package enterprise
 
 import (
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/ante"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/ante"
+	"github.com/unification-com/mainchain/x/enterprise/internal/keeper"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 const (

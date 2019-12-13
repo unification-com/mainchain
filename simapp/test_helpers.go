@@ -17,7 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
+	"github.com/unification-com/mainchain/simapp/helpers"
 )
 
 type TestAccount struct {

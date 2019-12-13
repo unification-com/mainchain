@@ -1,10 +1,12 @@
 package types
 
 var (
-	EventTypeRaisePurchaseOrder   = "raise_purchase_order"
-	EventTypeProcessPurchaseOrder = "process_purchase_order"
-	EventTypeUndPurchaseComplete  = "und_purchase_complete"
-	EventTypeUndUnlocked          = "und_unlocked"
+	EventTypeRaisePurchaseOrder           = "raise_purchase_order"
+	EventTypeProcessPurchaseOrderDecision = "process_purchase_order_decision"
+	EventTypeAutoRejectStalePurchaseOrder = "auto_reject_stale_purchase_order"
+	EventTypeTallyPurchaseOrderDecisions  = "tally_purchase_order_decisions"
+	EventTypeUndPurchaseComplete          = "und_purchase_complete"
+	EventTypeUndUnlocked                  = "und_unlocked"
 
 	AttributeValueCategory = ModuleName
 
@@ -12,4 +14,7 @@ var (
 	AttributeKeyPurchaser       = "purchaser"
 	AttributeKeyAmount          = "amount"
 	AttributeKeyDecision        = "decision"
+	AttributeKeySigner          = "signer"
+	AttributeKeyNumAccepts      = "accepts"
+	AttributeKeyNumRejects      = "rejects"
 )

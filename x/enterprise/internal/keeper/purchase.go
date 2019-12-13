@@ -189,7 +189,18 @@ func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress,
 	return purchaseOrderID, nil
 }
 
-func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, decision types.PurchaseOrderStatus) sdk.Error {
+func (k Keeper) IsAuthorisedToDecide(ctx sdk.Context, signer sdk.AccAddress) bool {
+	params := k.GetParams(ctx)
+	isAuthorised := false
+	for _, authAddr := range params.EntSigners {
+		if signer.Equals(authAddr) {
+			isAuthorised = true
+		}
+	}
+	return isAuthorised
+}
+
+func (k Keeper) ProcessPurchaseOrderDecision(ctx sdk.Context, purchaseOrderID uint64, decision types.PurchaseOrderStatus, signer sdk.AccAddress) sdk.Error {
 
 	logger := k.Logger(ctx)
 
@@ -200,6 +211,10 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 
 	if !types.ValidPurchaseOrderAcceptRejectStatus(decision) {
 		return types.ErrInvalidDecision(k.Codespace(), "decision should be accept or reject")
+	}
+
+	if !k.IsAuthorisedToDecide(ctx, signer) {
+		return sdk.ErrUnauthorized("unauthorised signer processing purchase order")
 	}
 
 	purchaseOrder := k.GetPurchaseOrder(ctx, purchaseOrderID)
@@ -214,8 +229,17 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 		return types.ErrPurchaseOrderAlreadyProcessed(k.codespace, errMsg)
 	}
 
-	purchaseOrder.Status = decision
-	purchaseOrder.DecisionTime = ctx.BlockHeader().Time.Unix()
+	currentDecisions := purchaseOrder.Decisions
+	for _, d := range currentDecisions {
+		if d.Signer.Equals(signer) {
+            errMsg := fmt.Sprintf("signer %s already decided: %s", signer.String(), d.Decision.String())
+            return types.ErrSignerAlreadyMadeDecision(k.codespace, errMsg)
+		}
+	}
+
+	poDecision := types.NewPurchaseOrderDecision(signer, decision)
+	poDecision.DecisionTime = ctx.BlockHeader().Time.Unix()
+	purchaseOrder.Decisions = append(purchaseOrder.Decisions, poDecision)
 
 	// update the status
 	err := k.SetPurchaseOrder(ctx, purchaseOrder)
@@ -224,7 +248,7 @@ func (k Keeper) ProcessPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64, de
 		return err
 	}
 
-	logger.Info("enterprise und purchase order processed", "id", purchaseOrderID, "decision", decision)
+	logger.Info("enterprise und purchase order decision made", "id", purchaseOrderID, "signer", signer, "decision", decision)
 
 	return nil
 }

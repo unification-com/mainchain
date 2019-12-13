@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain-cosmos/types"
+	"github.com/unification-com/mainchain/types"
 )
 
 // GenesisState - enterprise state

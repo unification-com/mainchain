@@ -1,4 +1,4 @@
-module github.com/unification-com/mainchain-cosmos
+module github.com/unification-com/mainchain
 
 go 1.13
 

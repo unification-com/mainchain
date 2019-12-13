@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 // RegisterInvariants registers all enterprise invariants

@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 func TestSetGetBeaconTimestamp(t *testing.T) {

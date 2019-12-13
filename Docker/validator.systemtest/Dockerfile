@@ -26,8 +26,8 @@ ENV PATH="/usr/local/go/bin:/root/.go/bin:${PATH}"
 RUN mkdir -p $GOPATH/src/github.com/unification-com
 WORKDIR $GOPATH/src/github.com/unification-com
 
-RUN git clone https://github.com/unification-com/mainchain-cosmos.git
-WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
+RUN git clone https://github.com/unification-com/mainchain.git
+WORKDIR $GOPATH/src/github.com/unification-com/mainchain
 RUN make install
 
 COPY Docker/assets /root/.und_mainchain
@@ -47,9 +47,9 @@ RUN pip install -r requirements.txt
 COPY ev-provision /ev-provision
 
 WORKDIR $GOPATH/src/github.com/unification-com
-RUN rm -rf mainchain-cosmos
-COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos
-WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
+RUN rm -rf mainchain
+COPY . $GOPATH/src/github.com/unification-com/mainchain
+WORKDIR $GOPATH/src/github.com/unification-com/mainchain
 RUN make install
 
 WORKDIR /ev-provision/src

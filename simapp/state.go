@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	entsim "github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
+	entsim "github.com/unification-com/mainchain/x/enterprise/simulation"
 )
 
 // AppStateFn returns the initial application state using a genesis or the simulation parameters.

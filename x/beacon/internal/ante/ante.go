@@ -5,9 +5,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/exported"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/exported"
+	"github.com/unification-com/mainchain/x/beacon/internal/keeper"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 var (

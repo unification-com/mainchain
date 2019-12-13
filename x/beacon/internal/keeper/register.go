@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 //__BEACON_ID___________________________________________________________

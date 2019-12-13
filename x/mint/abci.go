@@ -2,8 +2,8 @@ package mint
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
-	"github.com/unification-com/mainchain-cosmos/x/mint/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise"
+	"github.com/unification-com/mainchain/x/mint/internal/types"
 )
 
 // BeginBlocker mints new tokens for the previous block.

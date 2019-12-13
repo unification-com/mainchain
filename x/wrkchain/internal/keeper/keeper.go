@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/tendermint/tendermint/libs/log"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine

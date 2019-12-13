@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 type raisePurchaseOrderReq struct {

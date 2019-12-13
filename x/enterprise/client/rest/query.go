@@ -10,9 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/gorilla/mux"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
+	undtypes "github.com/unification-com/mainchain/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/keeper"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 // registerQueryRoutes - define REST query routes

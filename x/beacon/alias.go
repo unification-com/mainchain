@@ -1,10 +1,10 @@
 package beacon
 
 import (
-	"github.com/unification-com/mainchain-cosmos/x/beacon/exported"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/ante"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/exported"
+	"github.com/unification-com/mainchain/x/beacon/internal/ante"
+	"github.com/unification-com/mainchain/x/beacon/internal/keeper"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	cmn "github.com/tendermint/tendermint/libs/common"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding wrkchain type

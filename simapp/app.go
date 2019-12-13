@@ -24,11 +24,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-	"github.com/unification-com/mainchain-cosmos/ante"
-	"github.com/unification-com/mainchain-cosmos/x/beacon"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
-	"github.com/unification-com/mainchain-cosmos/x/mint"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
+	"github.com/unification-com/mainchain/ante"
+	"github.com/unification-com/mainchain/x/beacon"
+	"github.com/unification-com/mainchain/x/enterprise"
+	"github.com/unification-com/mainchain/x/mint"
+	"github.com/unification-com/mainchain/x/wrkchain"
 )
 
 const appName = "UndSimApp"

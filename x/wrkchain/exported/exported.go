@@ -2,7 +2,7 @@ package exported
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 // FeeTx defines the interface to be implemented by Tx to use the FeeDecorators

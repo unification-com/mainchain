@@ -5,20 +5,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
-	"github.com/unification-com/mainchain-cosmos/x/beacon"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/ante"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise/internal/types"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
+	"github.com/unification-com/mainchain/simapp/helpers"
+	"github.com/unification-com/mainchain/x/beacon"
+	"github.com/unification-com/mainchain/x/enterprise/internal/ante"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
+	"github.com/unification-com/mainchain/x/enterprise"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/unification-com/mainchain-cosmos/simapp"
+	"github.com/unification-com/mainchain/simapp"
 )
 
 const TestChainID = "und-unit-test-chain"

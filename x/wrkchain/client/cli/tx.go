@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/keeper"
 	"strconv"
 	"strings"
 
@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 const (

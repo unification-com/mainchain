@@ -4,8 +4,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain-cosmos/simapp"
-	"github.com/unification-com/mainchain-cosmos/x/mint/internal/types"
+	"github.com/unification-com/mainchain/simapp"
+	"github.com/unification-com/mainchain/x/mint/internal/types"
 )
 
 // returns context and an app with updated mint keeper

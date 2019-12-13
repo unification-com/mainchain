@@ -4,7 +4,7 @@
 
 Official golang implementation of Unification Mainchain. Built using [Cosmos SDK](https://github.com/cosmos/cosmos-sdk)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain-cosmos)](https://goreportcard.com/report/github.com/unification-com/mainchain-cosmos)
+[![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain)](https://goreportcard.com/report/github.com/unification-com/mainchain)
 [![Join the chat at https://gitter.im/unification-com/mainchain](https://badges.gitter.im/unification-com/mainchain.svg)](https://gitter.im/unification-com/mainchain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## HD Wallet Path
@@ -271,7 +271,7 @@ go test -mod=readonly ./simapp \
 ### benchmark test
 
 ```
-go test -mod=readonly -benchmem -run=^$ github.com/unification-com/mainchain-cosmos/simapp -bench ^BenchmarkFullAppSimulation -Commit=true -cpuprofile /path/to/.simapp/cpu.out -v -timeout 24h
+go test -mod=readonly -benchmem -run=^$ github.com/unification-com/mainchain/simapp -bench ^BenchmarkFullAppSimulation -Commit=true -cpuprofile /path/to/.simapp/cpu.out -v -timeout 24h
 ```
 
 #### pprof tools

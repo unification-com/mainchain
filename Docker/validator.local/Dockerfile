@@ -11,12 +11,12 @@ ENV PATH="/usr/local/go/bin:/root/.go/bin:${PATH}"
 ENV LEDGER_ENABLED="false"
 
 RUN mkdir -p $GOPATH/src/github.com/unification-com && \
-    rm -rf $GOPATH/src/github.com/unification-com/mainchain-cosmos
+    rm -rf $GOPATH/src/github.com/unification-com/mainchain
 RUN go get -u github.com/go-delve/delve/cmd/dlv
 
-COPY . $GOPATH/src/github.com/unification-com/mainchain-cosmos
+COPY . $GOPATH/src/github.com/unification-com/mainchain
 
-WORKDIR $GOPATH/src/github.com/unification-com/mainchain-cosmos
+WORKDIR $GOPATH/src/github.com/unification-com/mainchain
 
 ARG WITH_DELVE="no"
 ENV WITH_DELVE=$WITH_DELVE

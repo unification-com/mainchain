@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/unification-com/mainchain-cosmos/simapp"
+	"github.com/unification-com/mainchain/simapp"
 
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto"

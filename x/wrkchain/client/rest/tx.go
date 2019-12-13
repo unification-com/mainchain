@@ -9,8 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/keeper"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/keeper"
+	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 type registerWrkChainReq struct {

@@ -3,7 +3,7 @@ package simapp
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/unification-com/mainchain-cosmos/x/beacon"
+	"github.com/unification-com/mainchain/x/beacon"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -28,14 +28,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingsim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-	"github.com/unification-com/mainchain-cosmos/simapp/helpers"
-	undtypes "github.com/unification-com/mainchain-cosmos/types"
-	beaconsim "github.com/unification-com/mainchain-cosmos/x/beacon/simulation"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
-	entsim "github.com/unification-com/mainchain-cosmos/x/enterprise/simulation"
-	"github.com/unification-com/mainchain-cosmos/x/mint"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
-	wrkchainsim "github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
+	"github.com/unification-com/mainchain/simapp/helpers"
+	undtypes "github.com/unification-com/mainchain/types"
+	beaconsim "github.com/unification-com/mainchain/x/beacon/simulation"
+	"github.com/unification-com/mainchain/x/enterprise"
+	entsim "github.com/unification-com/mainchain/x/enterprise/simulation"
+	"github.com/unification-com/mainchain/x/mint"
+	"github.com/unification-com/mainchain/x/wrkchain"
+	wrkchainsim "github.com/unification-com/mainchain/x/wrkchain/simulation"
 )
 
 // Get flags every time the simulator is run

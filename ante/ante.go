@@ -5,9 +5,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-	"github.com/unification-com/mainchain-cosmos/x/beacon"
-	"github.com/unification-com/mainchain-cosmos/x/enterprise"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain"
+	"github.com/unification-com/mainchain/x/beacon"
+	"github.com/unification-com/mainchain/x/enterprise"
+	"github.com/unification-com/mainchain/x/wrkchain"
 )
 
 func NewAnteHandler(ak auth.AccountKeeper, supplyKeeper supply.Keeper, wrkchainKeeper wrkchain.Keeper, beaconKeeper beacon.Keeper, enterpriseKeeper enterprise.Keeper, sigGasConsumer auth.SignatureVerificationGasConsumer) sdk.AnteHandler {

@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/unification-com/mainchain-cosmos/simapp"
+	"github.com/unification-com/mainchain/simapp"
 	"testing"
 
 	"github.com/stretchr/testify/require"

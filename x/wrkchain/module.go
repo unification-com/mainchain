@@ -2,7 +2,7 @@ package wrkchain
 
 import (
 	"encoding/json"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/simulation"
+	"github.com/unification-com/mainchain/x/wrkchain/simulation"
 	"math/rand"
 
 	"github.com/gorilla/mux"
@@ -10,8 +10,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/client/cli"
-	"github.com/unification-com/mainchain-cosmos/x/wrkchain/client/rest"
+	"github.com/unification-com/mainchain/x/wrkchain/client/cli"
+	"github.com/unification-com/mainchain/x/wrkchain/client/rest"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"

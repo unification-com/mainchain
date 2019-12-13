@@ -30,18 +30,18 @@ const TestDenomination = "testc"
 
 // dummy addresses used for testing
 var (
-	entSrcPk   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB53")
-	entPk1     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51")
-	entPk2     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
-	entPk3     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB52")
-	entPk4     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB54")
-	entPk5     = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB55")
-	EntSrcAddr = sdk.AccAddress(entSrcPk.Address())
-	entAddr1   = sdk.AccAddress(entPk1.Address())
-	entAddr2   = sdk.AccAddress(entPk2.Address())
-	entAddr3   = sdk.AccAddress(entPk3.Address())
-	entAddr4   = sdk.AccAddress(entPk4.Address())
-	entAddr5   = sdk.AccAddress(entPk5.Address())
+	entSignerPk   = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB53")
+	entPk1        = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51")
+	entPk2        = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
+	entPk3        = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB52")
+	entPk4        = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB54")
+	entPk5        = newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB55")
+	EntSignerAddr = sdk.AccAddress(entSignerPk.Address())
+	entAddr1      = sdk.AccAddress(entPk1.Address())
+	entAddr2      = sdk.AccAddress(entPk2.Address())
+	entAddr3      = sdk.AccAddress(entPk3.Address())
+	entAddr4      = sdk.AccAddress(entPk4.Address())
+	entAddr5      = sdk.AccAddress(entPk5.Address())
 
 	TestAddrs = []sdk.AccAddress{
 		entAddr1, entAddr2, entAddr3, entAddr4, entAddr5,
@@ -147,7 +147,9 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 
 	keeper.SetHighestPurchaseOrderID(ctx, types.DefaultStartingPurchaseOrderID)
 	entParams := types.DefaultParams()
-	entParams.EntSource = EntSrcAddr
+	var entSigners []sdk.AccAddress
+	entSigners = append(entSigners, EntSignerAddr)
+	entParams.EntSigners = entSigners
 	entParams.Denom = stakingKeeper.BondDenom(ctx)
 	keeper.SetParams(ctx, entParams)
 
@@ -160,7 +162,7 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 		require.Nil(t, err)
 	}
 
-	_, err := bankKeeper.AddCoins(ctx, EntSrcAddr, initCoins)
+	_, err := bankKeeper.AddCoins(ctx, EntSignerAddr, initCoins)
 	require.Nil(t, err)
 
 	keeper.supplyKeeper.SetModuleAccount(ctx, feeCollectorAcc)
@@ -213,4 +215,13 @@ func RandomStatus() types.PurchaseOrderStatus {
 
 func RandInBetween(min, max int) int {
 	return rand.Intn(max-min) + min
+}
+
+func AddressInDecisions(addr sdk.AccAddress, decisions []types.PurchaseOrderDecision) bool {
+	for _, d := range decisions {
+		if d.Signer.Equals(addr) {
+			return true
+		}
+	}
+	return false
 }

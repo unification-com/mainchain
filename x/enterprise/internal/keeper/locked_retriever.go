@@ -60,12 +60,12 @@ func (ar LockedUndRetriever) GetLockedUndHeight(addr sdk.AccAddress) (types.Lock
 func (ar LockedUndRetriever) getParams() (types.Params, int64, error) {
 	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryParameters), nil)
 	if err != nil {
-		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+		return types.DefaultParams(), 0, err
 	}
 
 	var params types.Params
 	if err := types.ModuleCdc.UnmarshalJSON(res, &params); err != nil {
-		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+		return types.DefaultParams(), 0, err
 	}
 	return params, height, nil
 }
@@ -114,12 +114,12 @@ func (ar TotalSupplyRetriever) GetTotalSupplyHeight() (types.UndSupply, int64, e
 func (ar TotalSupplyRetriever) getParams() (types.Params, int64, error) {
 	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryParameters), nil)
 	if err != nil {
-		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+		return types.DefaultParams(), 0, err
 	}
 
 	var params types.Params
 	if err := types.ModuleCdc.UnmarshalJSON(res, &params); err != nil {
-		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+		return types.DefaultParams(), 0, err
 	}
 	return params, height, nil
 }
@@ -149,12 +149,12 @@ func (ar ParamsRetriever) GetParamsHeight() (types.Params, int64, error) {
 
 	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryParameters), nil)
 	if err != nil {
-		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+		return types.DefaultParams(), 0, err
 	}
 
 	var params types.Params
 	if err := types.ModuleCdc.UnmarshalJSON(res, &params); err != nil {
-		return types.NewParams(sdk.AccAddress{}, undtypes.DefaultDenomination), 0, err
+		return types.DefaultParams(), 0, err
 	}
 
 	return params, height, nil

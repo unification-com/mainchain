@@ -77,6 +77,13 @@ func SimulateMsgProcessUndPurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) 
 
 		po := raisedPos[rndPo]
 
+		for _, d := range po.Decisions {
+			if d.Signer.Equals(entAcc.Address) {
+				// decision already made
+				return simulation.NoOpMsg(types.ModuleName), nil, nil
+			}
+		}
+
 		coins := account.SpendableCoins(ctx.BlockTime())
 
 		fees, err := simulation.RandomFees(r, ctx, coins)

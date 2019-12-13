@@ -70,8 +70,11 @@ func getQueriedPurchaseOrders(t *testing.T, ctx sdk.Context, cdc *codec.Codec, q
 func TestQueryParams(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 	querier := NewQuerier(keeper)
-	addresses := GenerateRandomAddresses(1)
-	paramsNew := types.NewParams(addresses[0], "something")
+	addresses := GenerateRandomAddresses(3)
+	var entSignerss []sdk.AccAddress
+	entSignerss = append(entSignerss, addresses[1])
+	entSignerss = append(entSignerss, addresses[2])
+	paramsNew := types.NewParams(entSignerss, "something", 1, 3600)
 
 	keeper.SetParams(ctx, paramsNew)
 	params := getQueriedParams(t, ctx, keeper.cdc, querier)

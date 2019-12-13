@@ -202,8 +202,10 @@
     },
     "enterprise": {
       "params": {
-        "ent_source": "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6",
-        "denom": "nund"
+        "ent_signers": ["und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6", "und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed"],
+        "denom": "nund",
+        "min_Accepts": "2",
+        "decision_time_limit": "120"
       },
       "starting_purchase_order_id": "1",
       "purchase_orders": null,

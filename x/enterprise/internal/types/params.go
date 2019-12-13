@@ -19,7 +19,7 @@ var (
 type Params struct {
 	EntSigners    []sdk.AccAddress `json:"ent_signers" yaml:"ent_signers"` // Accounts allowed to sign decisions on UND purchase orders
 	Denom         string           `json:"denom" yaml:"denom"`
-	MinAccepts    uint64           `json:"min_Accepts" yaml:"min_Accepts"` // must be <= len(EntSigners)
+	MinAccepts    uint64           `json:"min_Accepts" yaml:"min_Accepts"`                 // must be <= len(EntSigners)
 	DecisionLimit uint64           `json:"decision_time_limit" yaml:"decision_time_limit"` // num seconds elapsed before auto-reject
 }
 

@@ -232,8 +232,8 @@ func (k Keeper) ProcessPurchaseOrderDecision(ctx sdk.Context, purchaseOrderID ui
 	currentDecisions := purchaseOrder.Decisions
 	for _, d := range currentDecisions {
 		if d.Signer.Equals(signer) {
-            errMsg := fmt.Sprintf("signer %s already decided: %s", signer.String(), d.Decision.String())
-            return types.ErrSignerAlreadyMadeDecision(k.codespace, errMsg)
+			errMsg := fmt.Sprintf("signer %s already decided: %s", signer.String(), d.Decision.String())
+			return types.ErrSignerAlreadyMadeDecision(k.codespace, errMsg)
 		}
 	}
 

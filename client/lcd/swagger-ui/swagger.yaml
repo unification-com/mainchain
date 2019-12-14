@@ -1423,12 +1423,20 @@ paths:
           description: OK
           schema:
             properties:
-              ent_source:
-                type: string
-                example: und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6
+              ent_signers:
+                type: array
+                items:
+                  type: string
+                  example: und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6
               denom:
                 type: string
                 example: nund
+              min_Accepts:
+                type: integer
+                example: 1
+              decision_time_limit:
+                type: integer
+                example: 84600
         500:
           description: Internal Server Error
   /enterprise/locked:
@@ -2679,6 +2687,18 @@ definitions:
       total:
         type: integer
         example: 11000000
+  EntPurchaseOrderDecision:
+    type: object
+    properties:
+      signer:
+        type: string
+        example: und1g9ahr6xhht5rmqven628nklxluzyv8z9jqjcmc
+      decision:
+        type: string
+        example: accept
+      decision_time:
+        type: integer
+        example: 1576074258
   EntPurchaseOrder:
     type: object
     properties:
@@ -2696,7 +2716,11 @@ definitions:
       raise_time:
         type: integer
         example: 1576074258
-      decision_time:
+      decisions:
+        type: array
+        items:
+          $ref: "#/definitions/EntPurchaseOrderDecision"
+      completion_time:
         type: integer
         example: 1576098321
   LockedUnd:

@@ -50,10 +50,8 @@ func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) sdk.Res
 
 func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPurchaseOrder) sdk.Result {
 
-	params := k.GetParams(ctx)
-
-	// check only the Enterprise account is signing
-	if !msg.Signer.Equals(params.EntSource) {
+	// check only authorised Enterprise account is signing
+	if !k.IsAuthorisedToDecide(ctx, msg.Signer) {
 		return sdk.ErrUnauthorized("unauthorised signer processing purchase order").Result()
 	}
 
@@ -61,7 +59,7 @@ func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPur
 		return ErrInvalidDecision(k.Codespace(), "decision should be accept or reject").Result()
 	}
 
-	err := k.ProcessPurchaseOrder(ctx, msg.PurchaseOrderID, msg.Decision)
+	err := k.ProcessPurchaseOrderDecision(ctx, msg.PurchaseOrderID, msg.Decision, msg.Signer)
 
 	if err != nil {
 		return err.Result()
@@ -69,8 +67,9 @@ func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPur
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			EventTypeProcessPurchaseOrder,
+			EventTypeProcessPurchaseOrderDecision,
 			sdk.NewAttribute(AttributeKeyPurchaseOrderID, strconv.FormatUint(msg.PurchaseOrderID, 10)),
+			sdk.NewAttribute(AttributeKeySigner, msg.Signer.String()),
 			sdk.NewAttribute(AttributeKeyDecision, msg.Decision.String()),
 		),
 	})

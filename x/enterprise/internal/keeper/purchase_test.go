@@ -227,18 +227,25 @@ func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
 		poExists := keeper.PurchaseOrderExists(ctx, poID)
 		require.True(t, poExists)
 
-		err := keeper.ProcessPurchaseOrder(ctx, poID, decision)
+		err := keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
 		require.NoError(t, err)
 
 		po := keeper.GetPurchaseOrder(ctx, poID)
-		require.True(t, po.Status == decision)
+
+		require.True(t, AddressInDecisions(EntSignerAddr, po.Decisions))
+
+		for _, d := range po.Decisions {
+			if d.Signer.Equals(EntSignerAddr) {
+				require.True(t, d.Decision == decision)
+			}
+		}
 	}
 }
 
 func TestProcessNotExistPurchaseOrder(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 	for i := uint64(1); i < 1000; i++ {
-		err := keeper.ProcessPurchaseOrder(ctx, i, RandomDecision())
+		err := keeper.ProcessPurchaseOrderDecision(ctx, i, RandomDecision(), EntSignerAddr)
 		errMsg := fmt.Sprintf("purchase order id does not exist: %d", i)
 		expectedErr := types.ErrPurchaseOrderDoesNotExist(keeper.codespace, errMsg)
 		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -254,14 +261,19 @@ func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
 		from := TestAddrs[1]
 		poID, _ := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
 		decision := RandomDecision()
-		err := keeper.ProcessPurchaseOrder(ctx, poID, decision)
+		err := keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
 		require.NoError(t, err)
 
 		// reprocess
 		errMsg := fmt.Sprintf("purchase order %d already processed: %s", poID, decision)
 		expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
 
-		err = keeper.ProcessPurchaseOrder(ctx, poID, decision)
+		// mock blocker processing
+		po := keeper.GetPurchaseOrder(ctx, poID)
+		po.Status = decision
+		_ = keeper.SetPurchaseOrder(ctx, po)
+
+		err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
 		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
 
 		// mock complete
@@ -273,15 +285,36 @@ func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
 			errMsg := fmt.Sprintf("purchase order %d already processed: complete", poID)
 			expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
 
-			err = keeper.ProcessPurchaseOrder(ctx, poID, decision)
+			err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
 			require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
 		} else {
 			errMsg := fmt.Sprintf("purchase order %d already processed: reject", poID)
 			expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
 
-			err = keeper.ProcessPurchaseOrder(ctx, poID, decision)
+			err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
 			require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
 		}
+	}
+}
+
+func TestProcessingDuplicateDecisions(t *testing.T) {
+
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+
+	for i := uint64(1); i < 1000; i++ {
+		amount := sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
+		from := TestAddrs[1]
+		poID, _ := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
+		decision := RandomDecision()
+		err := keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
+		require.NoError(t, err)
+
+		// reprocess
+		errMsg := fmt.Sprintf("signer %s already decided: %s", EntSignerAddr, decision)
+		expectedErr := types.ErrSignerAlreadyMadeDecision(keeper.codespace, errMsg)
+
+		err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
+		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
 	}
 }
 
@@ -315,7 +348,48 @@ func TestProcessPurchaseOrderInvalidDecision(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := keeper.ProcessPurchaseOrder(ctx, tc.poId, tc.decision)
+		err := keeper.ProcessPurchaseOrderDecision(ctx, tc.poId, tc.decision, EntSignerAddr)
+		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+	}
+}
+
+func TestUnauthorisedDecisionMaker(t *testing.T) {
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+
+	po := types.NewEnterpriseUndPurchaseOrder()
+	po.Status = types.StatusRaised
+	po.PurchaseOrderID = 1
+	po.Amount = sdk.NewInt64Coin(TestDenomination, 10000)
+	po.Purchaser = TestAddrs[0]
+
+	_ = keeper.SetPurchaseOrder(ctx, po)
+
+	po.PurchaseOrderID = 2
+	po.Purchaser = TestAddrs[1]
+	_ = keeper.SetPurchaseOrder(ctx, po)
+
+	testCases := []struct {
+		poId        uint64
+		decision    types.PurchaseOrderStatus
+		signer      sdk.AccAddress
+		expectedErr sdk.Error
+	}{
+		{1, types.StatusAccepted, TestAddrs[0], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{1, types.StatusAccepted, TestAddrs[1], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{1, types.StatusAccepted, TestAddrs[2], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{1, types.StatusRejected, TestAddrs[3], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{1, types.StatusRejected, TestAddrs[4], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{2, types.StatusAccepted, TestAddrs[0], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{2, types.StatusAccepted, TestAddrs[1], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{2, types.StatusAccepted, TestAddrs[2], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{2, types.StatusRejected, TestAddrs[3], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{2, types.StatusRejected, TestAddrs[4], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{1, types.StatusAccepted, EntSignerAddr, nil},
+		{2, types.StatusRejected, EntSignerAddr, nil},
+	}
+
+	for _, tc := range testCases {
+		err := keeper.ProcessPurchaseOrderDecision(ctx, tc.poId, tc.decision, tc.signer)
 		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
 	}
 }

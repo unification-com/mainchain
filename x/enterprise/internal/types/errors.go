@@ -14,6 +14,7 @@ const (
 	CodeInvalidDenomination           = 105
 	CodeInvalidStatus                 = 106
 	CodePurchaseOrderNotRaised        = 107
+	CodeSignerAlreadyMadeDecision     = 108
 )
 
 // ErrInvalidGenesis error for an invalid enterprise GenesisState
@@ -39,4 +40,8 @@ func ErrInvalidDenomination(codespace sdk.CodespaceType, msg string) sdk.Error {
 
 func ErrPurchaseOrderNotRaised(codespace sdk.CodespaceType, msg string) sdk.Error {
 	return sdk.NewError(codespace, CodePurchaseOrderNotRaised, msg)
+}
+
+func ErrSignerAlreadyMadeDecision(codespace sdk.CodespaceType, msg string) sdk.Error {
+	return sdk.NewError(codespace, CodeSignerAlreadyMadeDecision, msg)
 }

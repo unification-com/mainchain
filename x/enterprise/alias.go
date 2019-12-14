@@ -36,14 +36,19 @@ var (
 	ModuleCdc           = types.ModuleCdc
 
 	// Events
-	EventTypeRaisePurchaseOrder   = types.EventTypeRaisePurchaseOrder
-	EventTypeProcessPurchaseOrder = types.EventTypeProcessPurchaseOrder
-	EventTypeUndPurchaseComplete  = types.EventTypeUndPurchaseComplete
-	AttributeValueCategory        = types.AttributeValueCategory
-	AttributeKeyPurchaseOrderID   = types.AttributeKeyPurchaseOrderID
-	AttributeKeyPurchaser         = types.AttributeKeyPurchaser
-	AttributeKeyAmount            = types.AttributeKeyAmount
-	AttributeKeyDecision          = types.AttributeKeyDecision
+	EventTypeRaisePurchaseOrder           = types.EventTypeRaisePurchaseOrder
+	EventTypeProcessPurchaseOrderDecision = types.EventTypeProcessPurchaseOrderDecision
+	EventTypeTallyPurchaseOrderDecisions  = types.EventTypeTallyPurchaseOrderDecisions
+	EventTypeAutoRejectStalePurchaseOrder = types.EventTypeAutoRejectStalePurchaseOrder
+	EventTypeUndPurchaseComplete          = types.EventTypeUndPurchaseComplete
+	AttributeValueCategory                = types.AttributeValueCategory
+	AttributeKeyPurchaseOrderID           = types.AttributeKeyPurchaseOrderID
+	AttributeKeyPurchaser                 = types.AttributeKeyPurchaser
+	AttributeKeyAmount                    = types.AttributeKeyAmount
+	AttributeKeyDecision                  = types.AttributeKeyDecision
+	AttributeKeySigner                    = types.AttributeKeySigner
+	AttributeKeyNumAccepts                = types.AttributeKeyNumAccepts
+	AttributeKeyNumRejects                = types.AttributeKeyNumRejects
 
 	// Key functions
 	GetPurchaseOrderIDBytes = types.GetPurchaseOrderIDBytes

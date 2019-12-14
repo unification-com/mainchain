@@ -139,29 +139,43 @@ type PurchaseOrders []EnterpriseUndPurchaseOrder
 func (p PurchaseOrders) String() string {
 	out := "ID - [Purchaser] Amount (Status) {Raised Time} <Decision Time>\n"
 	for _, po := range p {
-		out += fmt.Sprintf("%d - [%s] %s (%s) {%d} <%d>\n",
+		out += fmt.Sprintf("%d - [%s] %s (%s) {%d} <%v>\n",
 			po.PurchaseOrderID, po.Amount,
-			po.Purchaser, po.Status, po.RaisedTime, po.DecisionTime)
+			po.Purchaser, po.Status, po.RaisedTime, po.Decisions)
 	}
 	return strings.TrimSpace(out)
 }
 
+type PurchaseOrderDecision struct {
+	Signer       sdk.AccAddress      `json:"signer"`
+	Decision     PurchaseOrderStatus `json:"decision"`
+	DecisionTime int64               `json:"decision_time"`
+}
+
+func NewPurchaseOrderDecision(signer sdk.AccAddress, decision PurchaseOrderStatus) PurchaseOrderDecision {
+	return PurchaseOrderDecision{
+		Signer:   signer,
+		Decision: decision,
+	}
+}
+
 // EnterpriseUndPurchaseOrder is a struct that contains information on Enterprise UND purchase orders and their status
 type EnterpriseUndPurchaseOrder struct {
-	PurchaseOrderID uint64              `json:"id"`
-	Purchaser       sdk.AccAddress      `json:"purchaser"`
-	Amount          sdk.Coin            `json:"amount"`
-	Status          PurchaseOrderStatus `json:"status"`
-	RaisedTime      int64               `json:"raise_time"`
-	DecisionTime    int64               `json:"decision_time"`
+	PurchaseOrderID uint64                  `json:"id"`
+	Purchaser       sdk.AccAddress          `json:"purchaser"`
+	Amount          sdk.Coin                `json:"amount"`
+	Status          PurchaseOrderStatus     `json:"status"`
+	RaisedTime      int64                   `json:"raise_time"`
+	Decisions       []PurchaseOrderDecision `json:"decisions"`
+	CompletionTime  int64                   `json:"completion_time"`
 }
 
 // NewEnterpriseUndPurchaseOrder returns a new EnterpriseUndPurchaseOrder struct
 func NewEnterpriseUndPurchaseOrder() EnterpriseUndPurchaseOrder {
 	return EnterpriseUndPurchaseOrder{
-		Status:       StatusNil,
-		RaisedTime:   0,
-		DecisionTime: 0,
+		Status:         StatusNil,
+		RaisedTime:     0,
+		CompletionTime: 0,
 	}
 }
 
@@ -171,9 +185,9 @@ func (po EnterpriseUndPurchaseOrder) String() string {
 Purchaser: %s
 Amount: %s
 RaisedTime: %d
-DecisionTime: %d
-Decision: %b
-`, po.PurchaseOrderID, po.Purchaser, po.Amount, po.RaisedTime, po.DecisionTime, po.Status))
+Decisions: %v
+Status: %b
+`, po.PurchaseOrderID, po.Purchaser, po.Amount, po.RaisedTime, po.Decisions, po.Status))
 }
 
 // LockedUnds is an array of locked UND

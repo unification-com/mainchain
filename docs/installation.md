@@ -18,9 +18,11 @@ source ~/.bash_profile
 
 ## Install the binaries
 
-Once Go is installed, download the latest Mainchain release, and run:
+Once Go is installed, download the **latest** tagged Mainchain release from
+https://github.com/unification-com/mainchain/releases
 
 ```bash
+git clone -b [latest-release-tag] https://github.com/unification-com/mainchain
 cd mainchain
 make install
 ```
@@ -34,6 +36,8 @@ To install with Ledger support, run the following:
 ```bash
 export LEDGER_ENABLED=true && make install
 ```
+
+**NOTE**: Client-side Ledger support and Ledger App is coming in a future release of our wallet
 
 ## Verify the installation
 
@@ -90,4 +94,4 @@ root.
 
 ## Next
 
-Running [Devnet](local-devnet.md), joining Testnet or Mainnet
+Running [Devnet](local-devnet.md), joining [Testnet](join-testnet.md) or Mainnet

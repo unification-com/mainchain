@@ -50,3 +50,7 @@ Then, for each account run the following command:
 
 You will be asked for a password, and to enter the mnemonic phrase itself.
 Change `node1` to an appropriate moniker for each imported account.
+
+## Next
+
+Creating and importing [accounts and wallets](accounts-wallets.md), [sending transactions](transactions.md)

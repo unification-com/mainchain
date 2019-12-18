@@ -4,6 +4,8 @@
 
 Official golang implementation of Unification Mainchain. Built using [Cosmos SDK](https://github.com/cosmos/cosmos-sdk)
 
+See [Documentation](https://github.com/unification-com/mainchain/docs) for full guides.
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain)](https://goreportcard.com/report/github.com/unification-com/mainchain)
 [![Join the chat at https://gitter.im/unification-com/mainchain](https://badges.gitter.im/unification-com/mainchain.svg)](https://gitter.im/unification-com/mainchain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 

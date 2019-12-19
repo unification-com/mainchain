@@ -87,7 +87,7 @@
             "coins": [
               {
                 "denom": "nund",
-                "amount": "10000000000000"
+                "amount": "100000000000000000"
               }
             ],
             "public_key": null,
@@ -102,7 +102,7 @@
             "coins": [
               {
                 "denom": "nund",
-                "amount": "10000000000000000"
+                "amount": "100000000000000000"
               }
             ],
             "public_key": null,
@@ -117,7 +117,7 @@
             "coins": [
               {
                 "denom": "nund",
-                "amount": "10000000000000000"
+                "amount": "100000000000000000"
               }
             ],
             "public_key": null,
@@ -132,7 +132,7 @@
             "coins": [
               {
                 "denom": "nund",
-                "amount": "10000000000000000"
+                "amount": "100000000000000000"
               }
             ],
             "public_key": null,
@@ -147,7 +147,82 @@
             "coins": [
               {
                 "denom": "nund",
-                "amount": "10000000000000000"
+                "amount": "100000000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "und100aex49fh53r7mpeghdq6e645epp6r9qyqk5jq",
+            "coins": [
+              {
+                "denom": "nund",
+                "amount": "100000000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy",
+            "coins": [
+              {
+                "denom": "nund",
+                "amount": "100000000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "und1hp2km26czxlvesn8nmwswdd90umvcm5gxwpk98",
+            "coins": [
+              {
+                "denom": "nund",
+                "amount": "100000000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "und10kx65ezcenza0n5ex7r7pgltdnv2932rwhsmfw",
+            "coins": [
+              {
+                "denom": "nund",
+                "amount": "100000000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "und10wl769hge8nhszv70uxc9zu0lgrc2lggkhst8v",
+            "coins": [
+              {
+                "denom": "nund",
+                "amount": "100000000000000000"
               }
             ],
             "public_key": null,

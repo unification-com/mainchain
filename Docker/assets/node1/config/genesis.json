@@ -147,7 +147,7 @@
             "coins": [
               {
                 "denom": "nund",
-                "amount": "1"
+                "amount": "10000000000000000"
               }
             ],
             "public_key": null,

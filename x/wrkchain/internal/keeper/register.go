@@ -200,7 +200,9 @@ func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName s
 
 	k.SetHighestWrkChainID(ctx, wrkChainId+1)
 
-	logger.Info("wrkchain registered", "id", wrkChainId, "moniker", moniker, "type", baseType, "owner", owner.String())
+	if !ctx.IsCheckTx() {
+		logger.Info("wrkchain registered", "id", wrkChainId, "moniker", moniker, "type", baseType, "owner", owner.String())
+	}
 
 	return wrkChainId, nil
 }

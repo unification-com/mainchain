@@ -164,7 +164,9 @@ func (k Keeper) RecordBeaconTimestamp(
 		return 0, err
 	}
 
-	logger.Debug("beacon timestamp recorded", "bid", beacon.BeaconID, "tid", timestampID, "hash", hash, "owner", owner.String())
+	if !ctx.IsCheckTx() {
+		logger.Debug("beacon timestamp recorded", "bid", beacon.BeaconID, "tid", timestampID, "hash", hash, "owner", owner.String())
+	}
 
 	return timestampID, nil
 }

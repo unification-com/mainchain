@@ -179,8 +179,8 @@ func (k Keeper) RecordWrkchainHashes(
 	if err != nil {
 		return err
 	}
-
-	logger.Debug("wrkchain hashes recorded", "wcid", wrkchain.WrkChainID, "height", height, "hash", blockHash, "owner", owner.String())
-
+	if !ctx.IsCheckTx() {
+		logger.Debug("wrkchain hashes recorded", "wcid", wrkchain.WrkChainID, "height", height, "hash", blockHash, "owner", owner.String())
+	}
 	return nil
 }

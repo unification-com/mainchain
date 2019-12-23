@@ -23,7 +23,7 @@ To spin up your new Testnet node, download the latest `genesis.json`:
 
 ```bash
 mkdir -p ~/.und_mainchain/config
-curl https://raw.githubusercontent.com/unification-com/testnet/master/genesis.json > ~/.und_mainchain/config/genesis.json
+curl https://raw.githubusercontent.com/unification-com/testnet/master/latest/genesis.json > ~/.und_mainchain/config/genesis.json
 ```
 
 ### Validate Genesis
@@ -77,6 +77,11 @@ undcli status
 
 should output show that the node is running and connected.
 
+By default, any transactions you send via the `undcli` command will be
+sent via your local node (which was started using the `und start` command).
+You can use the `--node` flag with the `undcli` command to have it send
+to a public node instead.
+
 ## TestNet Faucet
 
 Our public TestNet has a faucet which can be used to obtain Test UND for
@@ -84,6 +89,9 @@ use on the TestNet network. You will need an [account](accounts-wallets.md) and 
 address in order to be able to claim Test UND.
 
 See https://faucet-testnet.unification.io
+
+**Note**: You will need an account setting up before requesting Test UND.
+See [accounts and wallets](accounts-wallets.md) for more details
 
 ## Next
 

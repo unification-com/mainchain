@@ -22,6 +22,14 @@ undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id]
 - `[amount]` - the amount, in `nund`
 - `[chain_id]` - the ID of the chain to run the transaction on
 
+If you do not have a local full node running, the `--node` flag can also
+be passed to the `undcli` command to use a public node. For example, on
+testnet, `--node tcp://3.136.43.0:26660` can be passed to send Txs
+to our public TestNet node.
+
+**Note**: For [TestNet](join-testnet.md), use `UND-Mainchain-TestNet` as the Chain ID.  
+For [DevNet](local-devnet.md), use `UND-Mainchain-DevNet` as the Chain ID.
+
 For example, we are running on TestNet, and would like to send 1 UND from
 our account `und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed`, to our friend's
 account `und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy`. We would
@@ -235,3 +243,7 @@ Which will output a result similar to:
   }
 }
 ```
+
+## Next
+
+Example transactions for [registering a WRKChain and submitting hashes](wrkchain.md)

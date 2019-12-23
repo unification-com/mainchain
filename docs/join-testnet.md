@@ -93,6 +93,10 @@ See https://faucet-testnet.unification.io
 **Note**: You will need an account setting up before requesting Test UND.
 See [accounts and wallets](accounts-wallets.md) for more details
 
+## TestNet Explorer
+
+Our public TestNet explorer can be found at https://explorer-testnet.unification.io
+
 ## Next
 
 Creating and importing [accounts and wallets](accounts-wallets.md), [sending transactions](transactions.md)

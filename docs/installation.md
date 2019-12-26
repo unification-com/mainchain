@@ -92,6 +92,23 @@ export LEDGER_ENABLED=true && make clean && make build
 This will output the binaries to the `./build` directory located in the repository 
 root.
 
+## CLI Help
+
+Both the `und` and `undcli` commands can have the `--help` flag passed
+to output details on what commands are available, and flags enabled for that
+command:
+
+```bash
+und --help
+undcli --help
+```
+
+Likewise, the `--help` flag can be passed to subcommands, for example:
+
+```bash
+undcli query wrkchain --help
+```
+
 ## Next
 
 Running [Devnet](local-devnet.md), joining [Testnet](join-testnet.md) or Mainnet

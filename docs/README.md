@@ -17,6 +17,7 @@ how to run a node on Mainnet and Testnet, and how to interact with Mainchain.
 
 - [Accounts and Wallets](accounts-wallets.md)
 - [Sending Simple Transactions](transactions.md)
+- [Example WRKChain Transactions and Queries](wrkchain.md)
 
 ## Join Mainchain Mainnet
 

@@ -15,7 +15,6 @@ const (
 	QueryBeacon           = "beacon"
 	QueryBeacons          = "beacons"
 	QueryBeaconTimestamp  = "timestamp"
-	QueryBeaconTimestamps = "timestamps"
 )
 
 // NewQuerier is the module level router for state queries
@@ -30,8 +29,6 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryBeaconsFiltered(ctx, path[1:], req, keeper)
 		case QueryBeaconTimestamp:
 			return queryBeaconTimestamp(ctx, path[1:], req, keeper)
-		case QueryBeaconTimestamps:
-			return queryBeaconTmiestampsFiltered(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown beacon query endpoint")
 		}

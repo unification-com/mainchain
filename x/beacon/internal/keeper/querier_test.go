@@ -65,22 +65,6 @@ func getQueriedBeaconTimestamp(t *testing.T, ctx sdk.Context, cdc *codec.Codec, 
 	return bts
 }
 
-func getQueriedBeaconTimestamps(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, params types.QueryBeaconTimestampParams) types.QueryResBeaconTimestampHashes {
-	query := abci.RequestQuery{
-		Path: strings.Join([]string{custom, types.QuerierRoute, QueryBeaconTimestamps}, "/"),
-		Data: cdc.MustMarshalJSON(params),
-	}
-
-	bz, err := querier(ctx, []string{QueryBeaconTimestamps}, query)
-	require.NoError(t, err)
-	require.NotNil(t, bz)
-
-	var bts types.QueryResBeaconTimestampHashes
-	require.NoError(t, cdc.UnmarshalJSON(bz, &bts))
-
-	return bts
-}
-
 func getQueriedBeaconsFiltered(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, page, limit int, moniker string, owner sdk.AccAddress) types.QueryResBeacons {
 
 	params := types.NewQueryBeaconParams(page, limit, moniker, owner)
@@ -172,52 +156,6 @@ func TestQueryBeaconTimestampByID(t *testing.T) {
 		block := getQueriedBeaconTimestamp(t, ctx, keeper.cdc, querier, bID, tsID)
 		require.True(t, BeaconTimestampEqual(tBts, block))
 	}
-}
-
-func TestQueryBeaconTimestamps(t *testing.T) {
-	ctx, _, keeper := createTestInput(t, false, 100, 100)
-	querier := NewQuerier(keeper)
-	var testBeaconTs []types.BeaconTimestamp
-	numTimestamps := uint64(100)
-	bID := uint64(1)
-	addr := TestAddrs[0]
-
-	b := types.NewBeacon()
-	b.Owner = addr
-	b.BeaconID = bID
-	b.LastTimestampID = 0
-	b.Moniker = GenerateRandomString(12)
-	b.Name = GenerateRandomString(20)
-
-	err := keeper.SetBeacon(ctx, b)
-	require.NoError(t, err)
-
-	for tsID := uint64(1); tsID <= numTimestamps; tsID++ {
-		ts := types.NewBeaconTimestamp()
-		ts.BeaconID = bID
-		ts.Owner = addr
-		ts.TimestampID = tsID
-		ts.Hash = GenerateRandomString(32)
-		ts.SubmitTime = uint64(time.Now().Unix())
-
-		err := keeper.SetBeaconTimestamp(ctx, ts)
-		require.NoError(t, err)
-		testBeaconTs = append(testBeaconTs, ts)
-	}
-
-	params := types.NewQueryBeaconTimestampParams(1, 100, bID, "", 0)
-	allBlocks := getQueriedBeaconTimestamps(t, ctx, keeper.cdc, querier, params)
-
-	require.True(t, len(allBlocks) == int(numTimestamps) && len(allBlocks) == len(testBeaconTs))
-
-	for _, tBts := range testBeaconTs {
-		for _, b := range allBlocks {
-			if b.TimestampID == tBts.TimestampID {
-				require.True(t, BeaconTimestampEqual(tBts, b))
-			}
-		}
-	}
-
 }
 
 func TestQueryBeaconsFiltered(t *testing.T) {

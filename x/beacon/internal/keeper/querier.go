@@ -11,10 +11,10 @@ import (
 
 // query endpoints supported by the beacon Querier
 const (
-	QueryParameters       = "params"
-	QueryBeacon           = "beacon"
-	QueryBeacons          = "beacons"
-	QueryBeaconTimestamp  = "timestamp"
+	QueryParameters      = "params"
+	QueryBeacon          = "beacon"
+	QueryBeacons         = "beacons"
+	QueryBeaconTimestamp = "timestamp"
 )
 
 // NewQuerier is the module level router for state queries

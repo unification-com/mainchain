@@ -11,10 +11,10 @@ import (
 
 // query endpoints supported by the wrkchain Querier
 const (
-	QueryParameters             = "params"
-	QueryWrkChain               = "wrkchain"
-	QueryWrkChainsFiltered      = "wrkchains-filtered"
-	QueryWrkChainBlock          = "block"
+	QueryParameters        = "params"
+	QueryWrkChain          = "wrkchain"
+	QueryWrkChainsFiltered = "wrkchains-filtered"
+	QueryWrkChainBlock     = "block"
 )
 
 // NewQuerier is the module level router for state queries

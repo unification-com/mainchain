@@ -15,8 +15,6 @@ const (
 	QueryWrkChain               = "wrkchain"
 	QueryWrkChainsFiltered      = "wrkchains-filtered"
 	QueryWrkChainBlock          = "block"
-	QueryWrkChainBlockHashes    = "blocks"
-	QueryWrkChainHashesFiltered = "blocks-filtered"
 )
 
 // NewQuerier is the module level router for state queries
@@ -31,10 +29,6 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryWrkChainsFiltered(ctx, path[1:], req, keeper)
 		case QueryWrkChainBlock:
 			return queryWrkChainBlock(ctx, path[1:], req, keeper)
-		case QueryWrkChainBlockHashes:
-			return queryWrkChainBlockHashes(ctx, path[1:], req, keeper)
-		case QueryWrkChainHashesFiltered:
-			return queryWrkChainHashesFiltered(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown wrkchain query endpoint")
 		}

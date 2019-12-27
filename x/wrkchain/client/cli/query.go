@@ -27,10 +27,8 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	wrkchainQueryCmd.AddCommand(client.GetCommands(
 		GetCmdQueryParams(cdc),
 		GetCmdWrkChain(storeKey, cdc),
-		GetCmdWrkChains(storeKey, cdc),
+		GetCmdSearchWrkChains(storeKey, cdc),
 		GetCmdWrkChainBlock(storeKey, cdc),
-		GetCmdWrkChainBlockHashes(storeKey, cdc),
-		GetCmdSearchWrkChainBlockHashes(storeKey, cdc),
 	)...)
 	return wrkchainQueryCmd
 }
@@ -83,8 +81,8 @@ func GetCmdWrkChain(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetCmdWrkChain queries information about a wrkchain
-func GetCmdWrkChains(queryRoute string, cdc *codec.Codec) *cobra.Command {
+// GetCmdSearchWrkChains runs a WRKChain search query with parameters
+func GetCmdSearchWrkChains(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "search",
 		Short: "Query all WRKChains with optional filters",
@@ -134,8 +132,8 @@ $ %s query wrkchain search --page=2 --limit=100
 			return cliCtx.PrintOutput(out)
 		},
 	}
-	cmd.Flags().Int(FlagPage, 1, "pagination page of wrkchain hashes to to query for")
-	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of wrkchain hashes to query for")
+	cmd.Flags().Int(FlagPage, 1, "pagination page of wrkchains to to query for")
+	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of wrkchains to query for")
 	cmd.Flags().String(FlagMoniker, "", "(optional) filter wrkchains by name")
 	cmd.Flags().String(FlagOwner, "", "(optional) filter wrkchains by owner address")
 	return cmd
@@ -163,83 +161,4 @@ func GetCmdWrkChainBlock(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			return cliCtx.PrintOutput(out)
 		},
 	}
-}
-
-// GetCmdWrkChainBlockHashes queries a list of all recorded block hashes for a WRKChain
-func GetCmdWrkChainBlockHashes(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "blocks [wrkchain id]",
-		Short: "Query a WRKChain for all hashes recorded to date",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			wrkchainId := args[0]
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryWrkChainBlockHashes, wrkchainId), nil)
-			if err != nil {
-				fmt.Printf("could not get query block hashes\n")
-				return nil
-			}
-
-			var out types.QueryResWrkChainBlockHashes
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
-		},
-	}
-}
-
-// GetCmdWrkChainBlockHashes queries a list of all recorded block hashes for a WRKChain
-func GetCmdSearchWrkChainBlockHashes(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "search-blocks [wrkchain id]",
-		Short: "Query a WRKChain for all hashes recorded to date",
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query for all paginated hashes for a WRKChain that match optional filters:
-
-Example:
-$ %s query wrkchain search-blocks 1 --before 1574871069 --after 1573481124
-$ %s query wrkchain search-blocks 1 --min 123 --max 456
-$ %s query wrkchain search-blocks 1 --page=2 --limit=100
-`,
-				version.ClientName, version.ClientName, version.ClientName,
-			),
-		),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			minHeight := viper.GetUint64(FlagMinHeight)
-			maxHeight := viper.GetUint64(FlagMaxHeight)
-			minDate := viper.GetUint64(FlagMinDate)
-			maxDate := viper.GetUint64(FlagMaxDate)
-			page := viper.GetInt(FlagPage)
-			limit := viper.GetInt(FlagNumLimit)
-
-			params := types.NewQueryWrkChainBlockParams(page, limit, minHeight, maxHeight, minDate, maxDate, "")
-
-			bz, err := cdc.MarshalJSON(params)
-			if err != nil {
-				return err
-			}
-
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			wrkchainId := args[0]
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryWrkChainHashesFiltered, wrkchainId), bz)
-			if err != nil {
-				fmt.Printf("could not get query block hashes\n")
-				return nil
-			}
-
-			var out types.QueryResWrkChainBlockHashes
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
-		},
-	}
-	cmd.Flags().Int(FlagPage, 1, "pagination page of wrkchain hashes to to query for")
-	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of wrkchain hashes to query for")
-	cmd.Flags().Uint64(FlagMinHeight, 0, "(optional) filter blocks by minimum height")
-	cmd.Flags().Uint64(FlagMaxHeight, 0, "(optional) filter blocks by maximum height")
-	cmd.Flags().Uint64(FlagMinDate, 0, "(optional) filter blocks submitted after this date")
-	cmd.Flags().Uint64(FlagMaxDate, 0, "(optional) filter blocks submitted before this date")
-	return cmd
 }

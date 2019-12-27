@@ -65,22 +65,6 @@ func getQueriedWrkChainBlock(t *testing.T, ctx sdk.Context, cdc *codec.Codec, qu
 	return wcb
 }
 
-func getQueriedWrkChainBlockHashes(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, wcID uint64) types.QueryResWrkChainBlockHashes {
-	query := abci.RequestQuery{
-		Path: strings.Join([]string{custom, types.QuerierRoute, QueryWrkChainBlockHashes, strconv.FormatUint(wcID, 10)}, "/"),
-		Data: nil,
-	}
-
-	bz, err := querier(ctx, []string{QueryWrkChainBlockHashes, strconv.FormatUint(wcID, 10)}, query)
-	require.NoError(t, err)
-	require.NotNil(t, bz)
-
-	var wcb types.QueryResWrkChainBlockHashes
-	require.NoError(t, cdc.UnmarshalJSON(bz, &wcb))
-
-	return wcb
-}
-
 func getQueriedWrkChainsFiltered(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, page, limit int, moniker string, owner sdk.AccAddress) types.QueryResWrkChains {
 
 	params := types.NewQueryWrkChainParams(page, limit, moniker, owner)
@@ -180,57 +164,6 @@ func TestQueryWrkChainBlockByHeight(t *testing.T) {
 		block := getQueriedWrkChainBlock(t, ctx, keeper.cdc, querier, wcID, height)
 		require.True(t, WRKChainBlockEqual(tWcb, block))
 	}
-}
-
-func TestQueryWrkChainBlockHashes(t *testing.T) {
-	ctx, _, keeper := createTestInput(t, false, 100, 100)
-	querier := NewQuerier(keeper)
-	var testWcBlocks []types.WrkChainBlock
-	numBlocks := uint64(100)
-	wcID := uint64(1)
-	addr := TestAddrs[0]
-
-	wc := types.NewWrkChain()
-	wc.Owner = addr
-	wc.WrkChainID = wcID
-	wc.LastBlock = 0
-	wc.RegisterTime = time.Now().Unix()
-	wc.Moniker = GenerateRandomString(12)
-	wc.Name = GenerateRandomString(20)
-	wc.GenesisHash = GenerateRandomString(32)
-
-	err := keeper.SetWrkChain(ctx, wc)
-	require.NoError(t, err)
-
-	for h := uint64(1); h <= numBlocks; h++ {
-		block := types.NewWrkChainBlock()
-		block.WrkChainID = wcID
-		block.Owner = addr
-		block.Height = h
-		block.BlockHash = GenerateRandomString(32)
-		block.ParentHash = GenerateRandomString(32)
-		block.Hash1 = GenerateRandomString(32)
-		block.Hash2 = GenerateRandomString(32)
-		block.Hash3 = GenerateRandomString(32)
-		block.SubmitTime = time.Now().Unix()
-
-		err := keeper.SetWrkChainBlock(ctx, block)
-		require.NoError(t, err)
-		testWcBlocks = append(testWcBlocks, block)
-	}
-
-	allBlocks := getQueriedWrkChainBlockHashes(t, ctx, keeper.cdc, querier, wcID)
-
-	require.True(t, len(allBlocks) == int(numBlocks) && len(allBlocks) == len(testWcBlocks))
-
-	for _, tWcb := range testWcBlocks {
-		for _, b := range allBlocks {
-			if b.Height == tWcb.Height {
-				require.True(t, WRKChainBlockEqual(tWcb, b))
-			}
-		}
-	}
-
 }
 
 func TestQueryWrkChainsFiltered(t *testing.T) {

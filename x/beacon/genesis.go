@@ -18,10 +18,17 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 			panic(err)
 		}
 
-		logger.Info("setting beacon", beacon.BeaconID)
+		if beacon.LastTimestampID > 0 {
+			err = keeper.SetLastTimestampID(ctx, beacon.BeaconID, beacon.LastTimestampID)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		logger.Info("setting beacon", "bid", beacon.BeaconID)
 
 		for _, timestamp := range record.BeaconTimestamps {
-			logger.Info("setting timestamp for beacon", timestamp.BeaconID, timestamp.TimestampID)
+			logger.Info("setting timestamp for beacon", "bid", timestamp.BeaconID, "tid", timestamp.TimestampID)
 			err = keeper.SetBeaconTimestamp(ctx, timestamp)
 			if err != nil {
 				panic(err)

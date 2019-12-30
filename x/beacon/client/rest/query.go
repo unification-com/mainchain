@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,9 +20,8 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/beacon/beacons"), beaconsWithParametersHandler(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/beacon/{%s}", RestBeaconId), beaconHandler(cliCtx)).Methods("GET")
 
-	// Block hashes
+	// Timestamps
 	r.HandleFunc(fmt.Sprintf("/beacon/{%s}/timestamp/{%s}", RestBeaconId, RestBeaconTimestampId), beaconTimestampHandler(cliCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/beacon/{%s}/timestamps", RestBeaconId), beaconTimestampsHandler(cliCtx)).Methods("GET")
 }
 
 func beaconParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
@@ -156,69 +154,6 @@ func beaconTimestampHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%d/%d", types.ModuleName, keeper.QueryBeaconTimestamp, beaconID, beaconTimestampID), nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
-			return
-		}
-
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
-	}
-}
-
-func beaconTimestampsHandler(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 0)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		vars := mux.Vars(r)
-		strBeaconID := vars[RestBeaconId]
-
-		if len(strBeaconID) == 0 {
-			err := errors.New("beaconID required but not given")
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		beaconID, ok := rest.ParseUint64OrReturnBadRequest(w, strBeaconID)
-		if !ok {
-			return
-		}
-
-		var (
-			submitTime uint64
-			hash       string
-		)
-
-		if v := r.URL.Query().Get(RestSubmitTime); len(v) != 0 {
-			h, err := strconv.Atoi(v)
-			if err != nil {
-				return
-			}
-			submitTime = uint64(h)
-		}
-
-		if v := r.URL.Query().Get(RestHash); len(v) != 0 {
-			hash = v
-		}
-
-		cliCtx, ok = rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		if !ok {
-			return
-		}
-
-		params := types.NewQueryBeaconTimestampParams(page, limit, beaconID, hash, submitTime)
-
-		bz, err := cliCtx.Codec.MarshalJSON(params)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%d", types.ModuleName, keeper.QueryBeaconTimestamps, beaconID), bz)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return

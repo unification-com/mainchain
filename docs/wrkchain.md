@@ -67,6 +67,9 @@ will return a result similar to:
 
 The `wrkchain_id` value is what is required to submit hashes, and find your WRKChain's submitted block hashes.
 
+The `lastblock` tells us which block number was last submitted for the
+WRKChain.
+
 ## Recording Hashes
 
 Once successfully registered, you will be able to submit block hashes however
@@ -94,11 +97,16 @@ undcli tx wrkchain record 1 --wc_height=123 --block_hash=1BB457C575E72D7401C809B
 
 ## Querying a WRKChain on Mainchain
 
-We have already seen a search query in the previous sections. It is also possible
-to list the WRKChain's submitted hashes:
+To retrieve a particular hash submitted for a WRKChain, we can run:
 
 ```bash
-undcli query wrkchain blocks [WRKCHAIN_ID]
+undcli query wrkchain block [WRKCHAIN_ID] [HEIGHT]
 ```
 
 - `[WRKCHAIN_ID]` - the numeric ID for the WRKChain
+- `[HEIGHT]` - the block number we wish to retrieve
+
+If `[HEIGHT]` has been submitted for `[WRKCHAIN_ID]`, the data will be
+returned in a JSON object, If not, the returned object will contain empty 
+values, meaning the WRKChain has not submitted a value for this block
+height.

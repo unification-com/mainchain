@@ -121,28 +121,13 @@ Query a block
 undcli query wrkchain get-block 1 1
 ```
 
-Query all blocks
-```
-undcli query wrkchain blocks 1
-```
-
-Filter Blocks
-
-```
-undcli query wrkchain search-blocks 1 --before 1574871069 --after 1573481124
-undcli query wrkchain search-blocks 1 --min 123 --max 456
-undcli query wrkchain search-blocks 1 --page=2 --limit=100
-```
-
 #### WRKChain REST
 
 http://localhost:1317/wrkchain/wrkchains  
 http://localhost:1317/wrkchain/wrkchains?moniker=wrkchain1  
 http://localhost:1317/wrkchain/wrkchains?owner=[bech32address]  
 http://localhost:1317/wrkchain/1  
-http://localhost:1317/wrkchain/1/blocks  
 http://localhost:1317/wrkchain/1/block/1  
-http://localhost:1317/wrkchain/1/blocks?min=2&max=4
 
 ### Interacting with BEACON module
 
@@ -171,21 +156,13 @@ Query a Timestamp
 undcli query beacon timestamp 1 1
 ```
 
-Query all tmestamps
-```
-undcli query beacon timestamps 1
-```
-
 #### BEACON REST
 
 http://localhost:1317/beacon/beacons  
 http://localhost:1317/beacon/beacons?moniker=beacon1  
 http://localhost:1317/beacon/beacons?owner=[bech32address]  
-http://localhost:1317/beacon/1  
-http://localhost:1317/beacon/1/timestamps  
+http://localhost:1317/beacon/1   
 http://localhost:1317/beacon/1/timestamp/1  
-http://localhost:1317/beacon/1/timestamps?subtime=1234567  
-http://localhost:1317/beacon/1/timestamps?hash=thehash  
 
 ### Purchase Enterprise UND
 

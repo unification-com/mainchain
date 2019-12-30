@@ -199,6 +199,6 @@ func (k Keeper) RegisterBeacon(ctx sdk.Context, moniker string, beaconName strin
 	if !ctx.IsCheckTx() {
 		logger.Info("beacon registered", "id", beaconID, "moniker", moniker, "owner", owner.String())
 	}
-	
+
 	return beaconID, nil
 }

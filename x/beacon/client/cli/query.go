@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/viper"
-	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/unification-com/mainchain/x/beacon/internal/keeper"
 	"github.com/unification-com/mainchain/x/beacon/internal/types"
@@ -27,7 +27,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdQueryParams(cdc),
 		GetCmdBeacon(storeKey, cdc),
 		GetCmdBeaconTimestamp(storeKey, cdc),
-		GetCmdBeaconTimestamps(storeKey, cdc),
+		GetCmdSearchBeacons(storeKey, cdc),
 	)...)
 	return beaconQueryCmd
 }
@@ -80,6 +80,64 @@ func GetCmdBeacon(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
+// GetCmdSearchBeacons runs a BEACON search query with parameters
+func GetCmdSearchBeacons(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "search",
+		Short: "Query all BEACONs with optional filters",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query for all paginated BEACONs that match optional filters:
+
+Example:
+$ %s query beacon search --moniker beacon1
+$ %s query beacon search --owner und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
+$ %s query beacon search --page=2 --limit=100
+`,
+				version.ClientName, version.ClientName, version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			moniker := viper.GetString(FlagMoniker)
+			bechOwnerAddr := viper.GetString(FlagOwner)
+			page := viper.GetInt(FlagPage)
+			limit := viper.GetInt(FlagNumLimit)
+
+			var ownerAddr sdk.AccAddress
+
+			params := types.NewQueryBeaconParams(page, limit, moniker, ownerAddr)
+			if len(bechOwnerAddr) != 0 {
+				ownerAddr, err := sdk.AccAddressFromBech32(bechOwnerAddr)
+				if err != nil {
+					return err
+				}
+				params.Owner = ownerAddr
+			}
+
+			bz, err := cdc.MarshalJSON(params)
+			if err != nil {
+				return err
+			}
+
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryBeacons), bz)
+			if err != nil {
+				return err
+			}
+
+			var out types.QueryResBeacons
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+	cmd.Flags().Int(FlagPage, 1, "pagination page of beacons to to query for")
+	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of beacons to query for")
+	cmd.Flags().String(FlagMoniker, "", "(optional) filter beacons by name")
+	cmd.Flags().String(FlagOwner, "", "(optional) filter beacons by owner address")
+	return cmd
+}
+
 // GetCmdBeaconTimestamp queries information about a beacon's recorded timestamp
 func GetCmdBeaconTimestamp(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
@@ -103,61 +161,3 @@ func GetCmdBeaconTimestamp(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
-
-// GetCmdBeaconTimestamps queries information about a beacon's recorded timestamps
-func GetCmdBeaconTimestamps(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "timestamps [beacon id]",
-		Short: "Query a BEACON for given ID to retrieve recorded timestamps",
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query for all paginated hashes for a WRKChain that match optional filters:
-
-Example:
-$ %s query beacon timestamps 1 --before 1574871069 --after 1573481124
-$ %s query beacon timestamps 1 --min 123 --max 456
-$ %s query beacon timestamps 1 --page=2 --limit=100
-`,
-				version.ClientName, version.ClientName, version.ClientName,
-			),
-		),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			page := viper.GetInt(FlagPage)
-			limit := viper.GetInt(FlagNumLimit)
-			subTime := viper.GetUint64(FlagSubmitTime)
-			hash := viper.GetString(FlagTimestampHash)
-
-			beaconID, err := strconv.Atoi(args[0])
-			if err != nil {
-				return err
-			}
-
-			params := types.NewQueryBeaconTimestampParams(page, limit, uint64(beaconID), hash, subTime)
-
-			bz, err := cdc.MarshalJSON(params)
-			if err != nil {
-				return err
-			}
-
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/timestamps", queryRoute), bz)
-			if err != nil {
-				fmt.Printf("could not find beacon %d timestamps \n", beaconID)
-				return nil
-			}
-
-			var out types.QueryResBeaconTimestampHashes
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
-		},
-	}
-	cmd.Flags().Int(FlagPage, 1, "pagination page of beacon timestamps to to query for")
-	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of beacon timestamps to query for")
-	cmd.Flags().Uint64(FlagSubmitTime, 0, "(optional) search by submit time")
-	cmd.Flags().String(FlagTimestampHash, "", "(optional) search for a particular hash")
-	return cmd
-}
-
-// Todo - query by params - sub time, hash & get all with pagination

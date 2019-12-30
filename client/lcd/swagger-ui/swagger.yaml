@@ -1708,66 +1708,6 @@ paths:
           description: Bad Request
         500:
           description: Internal Server Error
-  /wrkchain/{wrkchainid}/blocks:
-    get:
-      summary: Returns a paginated array of submitted block hashes for a given WRKChain ID
-      description: returns a paginated array of submitted block hashes for a given WRKChain ID. Can be filtered by height, submission time etc.
-      tags:
-        - WRKChain
-      parameters:
-        - in: path
-          name: wrkchainid
-          description: WRKChain ID
-          type: integer
-          required: true
-          x-example: 1
-        - in: query
-          name: page
-          description: Page number
-          type: integer
-          required: false
-          x-example: 1
-        - in: query
-          name: limit
-          description: Maximum number of items per page
-          type: integer
-          required: false
-          x-example: 5
-        - in: query
-          name: min
-          description: minimum block height
-          type: integer
-          required: false
-          x-example: 1
-        - in: query
-          name: max
-          description: maximum block height
-          type: integer
-          required: false
-          x-example: 24
-        - in: query
-          name: before
-          description: hashes submitted on or before this time
-          type: integer
-          x-example: 1576152516
-        - in: query
-          name: after
-          description: hashes submitted on or after this time
-          type: integer
-          x-example: 1576122516
-      produces:
-        - application/json
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/WRKChainBlockHash"
-        400:
-          description: Bad Request
-        500:
-          description: Internal Server Error
   /wrkchain/{wrkchainid}/block/{height}:
     get:
       summary: Returns submitted block hashes for a given WRKChain ID at a given height
@@ -1973,56 +1913,6 @@ paths:
           description: OK
           schema:
             $ref: "#/definitions/BeaconMetadata"
-        400:
-          description: Bad Request
-        500:
-          description: Internal Server Error
-  /beacon/{beaconid}/timestamps:
-    get:
-      summary: Returns a paginated array of submitted timestamp hashes for a given BEACON ID
-      description: returns a paginated array of submitted timestamp hashes for a given BEACON ID. Can be filtered by submission time etc.
-      tags:
-        - BEACON
-      parameters:
-        - in: path
-          name: beaconid
-          description: BEACON ID
-          type: integer
-          required: true
-          x-example: 1
-        - in: query
-          name: page
-          description: Page number
-          type: integer
-          required: false
-          x-example: 1
-        - in: query
-          name: limit
-          description: Maximum number of items per page
-          type: integer
-          required: false
-          x-example: 5
-        - in: query
-          name: subtime
-          description: submission time
-          type: integer
-          required: false
-          x-example: 1576152516
-        - in: query
-          name: hash
-          description: submitted timestamp hash
-          type: string
-          required: false
-          x-example: EC420E98A3BCE88EB60C067FCCB3DE77188C9ACBD1940E2605A79DD3E63B5DCE
-      produces:
-        - application/json
-      responses:
-        200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/BeaconTimestampHash"
         400:
           description: Bad Request
         500:

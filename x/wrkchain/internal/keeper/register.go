@@ -55,6 +55,18 @@ func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) sdk.Error 
 	return nil
 }
 
+func (k Keeper) SetNumBlocks(ctx sdk.Context, wrkchainId uint64) sdk.Error {
+	wrkchain := k.GetWrkChain(ctx, wrkchainId)
+	if wrkchain.Owner.Empty() {
+		// doesn't exist. Don't update
+		return types.ErrWrkChainDoesNotExist(k.codespace, "WRKChain does not exist")
+	}
+
+	wrkchain.NumberBlocks = wrkchain.NumberBlocks + 1
+
+	return k.SetWrkChain(ctx, wrkchain)
+}
+
 // SetLastBlock - sets the last block number submitted
 func (k Keeper) SetLastBlock(ctx sdk.Context, wrkchainId uint64, blockNum uint64) sdk.Error {
 	wrkchain := k.GetWrkChain(ctx, wrkchainId)
@@ -62,10 +74,12 @@ func (k Keeper) SetLastBlock(ctx sdk.Context, wrkchainId uint64, blockNum uint64
 		// doesn't exist. Don't update
 		return types.ErrWrkChainDoesNotExist(k.codespace, "WRKChain does not exist")
 	}
+
 	if blockNum > wrkchain.LastBlock {
 		wrkchain.LastBlock = blockNum
 		return k.SetWrkChain(ctx, wrkchain)
 	}
+
 	return nil
 }
 
@@ -187,6 +201,7 @@ func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName s
 	wrkchain.WrkChainID = wrkChainId
 	wrkchain.Moniker = moniker
 	wrkchain.LastBlock = 0
+	wrkchain.NumberBlocks = 0
 	wrkchain.Owner = owner
 	wrkchain.Name = wrkchainName
 	wrkchain.GenesisHash = genesisHash

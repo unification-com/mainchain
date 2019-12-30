@@ -18,10 +18,10 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 			panic(err)
 		}
 
-		logger.Info("Registering WRKChain", wrkChain.WrkChainID)
+		logger.Info("Registering WRKChain", "wc_id", wrkChain.WrkChainID)
 
 		for _, block := range record.WrkChainBlocks {
-			logger.Info("Registering Block for WRKChain", wrkChain.WrkChainID, block.Height)
+			logger.Info("Registering Block for WRKChain", "wc_id", wrkChain.WrkChainID, "h", block.Height)
 			err = keeper.SetWrkChainBlock(ctx, block)
 			if err != nil {
 				panic(err)

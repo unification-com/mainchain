@@ -39,6 +39,7 @@ type WrkChain struct {
 	GenesisHash  string         `json:"genesis"`
 	BaseType     string         `json:"type"`
 	LastBlock    uint64         `json:"lastblock"`
+	NumberBlocks uint64         `json:"num_blocks"`
 	RegisterTime int64          `json:"reg_time"`
 	Owner        sdk.AccAddress `json:"owner"`
 }
@@ -56,8 +57,9 @@ Name: %s
 GenesisHash: %s
 BaseType: %s
 LastBlock: %d
+NumberBlocks: %d
 RegisterTime: %d
-Owner: %s`, w.WrkChainID, w.Moniker, w.Name, w.GenesisHash, w.BaseType, w.LastBlock, w.RegisterTime, w.Owner))
+Owner: %s`, w.WrkChainID, w.Moniker, w.Name, w.GenesisHash, w.BaseType, w.LastBlock, w.NumberBlocks, w.RegisterTime, w.Owner))
 }
 
 // WrkChainBlocks is an array of WrkChainBlock

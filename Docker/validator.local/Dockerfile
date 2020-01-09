@@ -23,7 +23,6 @@ ENV WITH_DELVE=$WITH_DELVE
 RUN export WITH_DELVE=$WITH_DELVE && make install
 
 COPY Docker/assets /root/.und_mainchain
-RUN /root/.go/bin/und validate-genesis /root/.und_mainchain/node1/config/genesis.json
 
 RUN echo "/root/.go/bin/und" >> /root/.bash_history && \
     echo "alias ll='ls -la'" >> /root/.bashrc

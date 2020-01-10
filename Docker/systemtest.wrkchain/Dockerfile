@@ -31,7 +31,6 @@ WORKDIR $GOPATH/src/github.com/unification-com/mainchain
 RUN make install
 
 COPY Docker/assets /root/.und_mainchain
-RUN /root/.go/bin/und validate-genesis /root/.und_mainchain/node1/config/genesis.json
 
 ENV PATH="/root/.pyenv/versions/3.7.2/bin:${PATH}"
 ENV LC_ALL C.UTF-8

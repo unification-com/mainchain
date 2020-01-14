@@ -1,34 +1,5 @@
 {
   "genesis_time": "2019-10-29T12:18:20.022963809Z",
-  "validators": [
-    {
-      "address": "",
-      "name": "node3",
-      "power": "500000000",
-      "pub_key": {
-        "type": "tendermint/PubKeyEd25519",
-        "value": "a4x3/9Qh2gDhWqOnkshFlJlOilTavXC4uOW0gWd+hL0="
-      }
-    },
-    {
-      "address": "",
-      "name": "node2",
-      "power": "1000000000",
-      "pub_key": {
-        "type": "tendermint/PubKeyEd25519",
-        "value": "O/TPRtudbDJbKXsFHWn9/lmmHBDYGTWZSaVGvYvjDiQ="
-      }
-    },
-    {
-      "address": "",
-      "name": "node1",
-      "power": "2000000000",
-      "pub_key": {
-        "type": "tendermint/PubKeyEd25519",
-        "value": "AEs4VnmCsuvtqVMPs6otpGEwDwPtp8ZuN5zShTAIGv0="
-      }
-    }
-  ],
   "chain_id": "UND-Mainchain-DevNet",
   "consensus_params": {
     "block": {
@@ -54,45 +25,16 @@
       }
     },
     "slashing": {
-      "missed_blocks": {
-        "undvalcons14lkttt3f3sfhv4fatssrgr8mhp62a0scu5lz2q": [],
-        "undvalcons15pm3fjp3nf7760hlyweelst89g5rfd6fmtezrf": [],
-        "undvalcons1jl4mcwfa2rd2n0p5y30jz02sgk0g6fnfnt2gd4": []
-      },
       "params": {
-        "downtime_jail_duration": "600000000000",
         "max_evidence_age": "120000000000",
-        "min_signed_per_window": "0.500000000000000000",
         "signed_blocks_window": "100",
+        "min_signed_per_window": "0.500000000000000000",
+        "downtime_jail_duration": "600000000000",
         "slash_fraction_double_sign": "0.050000000000000000",
         "slash_fraction_downtime": "0.010000000000000000"
       },
-      "signing_infos": {
-        "undvalcons14lkttt3f3sfhv4fatssrgr8mhp62a0scu5lz2q": {
-          "address": "undvalcons14lkttt3f3sfhv4fatssrgr8mhp62a0scu5lz2q",
-          "index_offset": "0",
-          "jailed_until": "1970-01-01T00:00:00Z",
-          "missed_blocks_counter": "0",
-          "start_height": "0",
-          "tombstoned": false
-        },
-        "undvalcons15pm3fjp3nf7760hlyweelst89g5rfd6fmtezrf": {
-          "address": "undvalcons15pm3fjp3nf7760hlyweelst89g5rfd6fmtezrf",
-          "index_offset": "0",
-          "jailed_until": "1970-01-01T00:00:00Z",
-          "missed_blocks_counter": "0",
-          "start_height": "0",
-          "tombstoned": false
-        },
-        "undvalcons1jl4mcwfa2rd2n0p5y30jz02sgk0g6fnfnt2gd4": {
-          "address": "undvalcons1jl4mcwfa2rd2n0p5y30jz02sgk0g6fnfnt2gd4",
-          "index_offset": "0",
-          "jailed_until": "1970-01-01T00:00:00Z",
-          "missed_blocks_counter": "0",
-          "start_height": "0",
-          "tombstoned": false
-        }
-      }
+      "signing_infos": {},
+      "missed_blocks": {}
     },
     "wrkchain": {
       "params": {
@@ -294,292 +236,44 @@
       "supply": []
     },
     "staking": {
-      "delegations": [
-        {
-          "delegator_address": "und104ha8uwqlwyazv8r2zy8h76pcv6mypm3met3ah",
-          "shares": "500000000000000.000000000000000000",
-          "validator_address": "undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3"
-        },
-        {
-          "delegator_address": "und13lyhcfekkdczaugqaexya60ckn23l5waflr4pq",
-          "shares": "1000000000000000.000000000000000000",
-          "validator_address": "undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px"
-        },
-        {
-          "delegator_address": "und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
-          "shares": "2000000000000000.000000000000000000",
-          "validator_address": "undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet"
-        }
-      ],
-      "exported": true,
-      "last_total_power": "3500000000",
-      "last_validator_powers": [
-        {
-          "Address": "undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3",
-          "Power": "500000000"
-        },
-        {
-          "Address": "undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px",
-          "Power": "1000000000"
-        },
-        {
-          "Address": "undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet",
-          "Power": "2000000000"
-        }
-      ],
       "params": {
-        "bond_denom": "nund",
-        "max_entries": 7,
+        "unbonding_time": "1814400000000000",
         "max_validators": 96,
-        "unbonding_time": "1814400000000000"
+        "max_entries": 7,
+        "bond_denom": "nund"
       },
-      "redelegations": null,
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
       "unbonding_delegations": null,
-      "validators": [
-        {
-          "commission": {
-            "commission_rates": {
-              "max_change_rate": "0.010000000000000000",
-              "max_rate": "0.200000000000000000",
-              "rate": "0.100000000000000000"
-            },
-            "update_time": "2019-10-29T12:18:20.022963809Z"
-          },
-          "consensus_pubkey": "undvalconspub1zcjduepqdwx80l75y8dqpc265wne9jz9jjv5azj5m27hpw9cuk6gzem7sj7sapclvu",
-          "delegator_shares": "500000000000000.000000000000000000",
-          "description": {
-            "details": "",
-            "identity": "",
-            "moniker": "node3",
-            "security_contact": "",
-            "website": ""
-          },
-          "jailed": false,
-          "min_self_delegation": "1",
-          "operator_address": "undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3",
-          "status": 2,
-          "tokens": "500000000000000",
-          "unbonding_height": "0",
-          "unbonding_time": "1970-01-01T00:00:00Z"
-        },
-        {
-          "commission": {
-            "commission_rates": {
-              "max_change_rate": "0.010000000000000000",
-              "max_rate": "0.200000000000000000",
-              "rate": "0.100000000000000000"
-            },
-            "update_time": "2019-10-29T12:18:20.022963809Z"
-          },
-          "consensus_pubkey": "undvalconspub1zcjduepq806v73kmn4krykef0vz3660alev6v8qsmqvntx2f54rtmzlrpcjqd2ehv7",
-          "delegator_shares": "1000000000000000.000000000000000000",
-          "description": {
-            "details": "",
-            "identity": "",
-            "moniker": "node2",
-            "security_contact": "",
-            "website": ""
-          },
-          "jailed": false,
-          "min_self_delegation": "1",
-          "operator_address": "undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px",
-          "status": 2,
-          "tokens": "1000000000000000",
-          "unbonding_height": "0",
-          "unbonding_time": "1970-01-01T00:00:00Z"
-        },
-        {
-          "commission": {
-            "commission_rates": {
-              "max_change_rate": "0.010000000000000000",
-              "max_rate": "0.200000000000000000",
-              "rate": "0.100000000000000000"
-            },
-            "update_time": "2019-10-29T12:18:20.022963809Z"
-          },
-          "consensus_pubkey": "undvalconspub1zcjduepqqp9ns4nes2ewhmdf2v8m823d53snqrcraknuvm3hnnfg2vqgrt7s6schye",
-          "delegator_shares": "2000000000000000.000000000000000000",
-          "description": {
-            "details": "",
-            "identity": "",
-            "moniker": "node1",
-            "security_contact": "",
-            "website": ""
-          },
-          "jailed": false,
-          "min_self_delegation": "1",
-          "operator_address": "undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet",
-          "status": 2,
-          "tokens": "2000000000000000",
-          "unbonding_height": "0",
-          "unbonding_time": "1970-01-01T00:00:00Z"
-        }
-      ]
+      "redelegations": null,
+      "exported": false
     },
     "params": null,
-    "genutil": null,
+    "genutil": {
+      "gentxs": [
+        {"type":"cosmos-sdk/StdTx","value":{"msg":[{"type":"cosmos-sdk/MsgCreateValidator","value":{"description":{"moniker":"node1","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed","validator_address":"undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet","pubkey":"undvalconspub1zcjduepqqp9ns4nes2ewhmdf2v8m823d53snqrcraknuvm3hnnfg2vqgrt7s6schye","value":{"denom":"nund","amount":"2000000000000000"}}}],"fee":{"amount":[],"gas":"200000"},"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A1qL4KCBiGgrE/PYIrUtpN08HxA7+Up+Q7eh3XNbCdSD"},"signature":"zAbMnJAJUHqhkOaLyV8ZQ+mxa9Bef41sWy9cBnX1gvc0tUQdaIc8IXmOJLE0k6iqCi+kDFiQ6ruxLelASewu1g=="}],"memo":"3da95f113600fc324ecf759915993c13d701ed80@172.25.0.3:26656"}},
+        {"type":"cosmos-sdk/StdTx","value":{"msg":[{"type":"cosmos-sdk/MsgCreateValidator","value":{"description":{"moniker":"node2","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und13lyhcfekkdczaugqaexya60ckn23l5waflr4pq","validator_address":"undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px","pubkey":"undvalconspub1zcjduepq806v73kmn4krykef0vz3660alev6v8qsmqvntx2f54rtmzlrpcjqd2ehv7","value":{"denom":"nund","amount":"1000000000000000"}}}],"fee":{"amount":[],"gas":"200000"},"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AqLU9yc0aXttGQYygMHhV+vEGi6L/KD8wkJyWKoR8orD"},"signature":"+jp3b6c3NtOlY8e22pnTdLbrPo6rSpp2dG+AARWQtm97dDF6UMTrUwJOn4WeAAqLT0yxhKGKjp09OS7Nu57iSw=="}],"memo":"53e857acc2df7127d5ef33b0dd98c55e7068ae06@172.25.0.4:26656"}},
+        {"type":"cosmos-sdk/StdTx","value":{"msg":[{"type":"cosmos-sdk/MsgCreateValidator","value":{"description":{"moniker":"node3","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und104ha8uwqlwyazv8r2zy8h76pcv6mypm3met3ah","validator_address":"undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3","pubkey":"undvalconspub1zcjduepqdwx80l75y8dqpc265wne9jz9jjv5azj5m27hpw9cuk6gzem7sj7sapclvu","value":{"denom":"nund","amount":"500000000000000"}}}],"fee":{"amount":[],"gas":"200000"},"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"As8uTge3ko/fWLVWRPR/+epj5pCbTztiX5Bifs3BQXYi"},"signature":"Jr3DtMFV2qzHG+tL8y4sj+zBlVQmGTDARJTllTkpYHFqkY3W8msjgbYayXO8ovb0NwZmiiAgh3YH9+2zBGODZw=="}],"memo":"33a49c1eae31ce82ffab25ed821e8cec7f8bbd00@172.25.0.5:26656"}}
+       ]
+    },
     "distribution": {
-      "base_proposer_reward": "0.010000000000000000",
-      "bonus_proposer_reward": "0.040000000000000000",
-      "community_tax": "0.020000000000000000",
-      "delegator_starting_infos": [
-        {
-          "delegator_address": "und104ha8uwqlwyazv8r2zy8h76pcv6mypm3met3ah",
-          "starting_info": {
-            "creation_height": "0",
-            "previous_period": "1",
-            "stake": "500000000000000.000000000000000000"
-          },
-          "validator_address": "undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3"
-        },
-        {
-          "delegator_address": "und13lyhcfekkdczaugqaexya60ckn23l5waflr4pq",
-          "starting_info": {
-            "creation_height": "0",
-            "previous_period": "1",
-            "stake": "1000000000000000.000000000000000000"
-          },
-          "validator_address": "undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px"
-        },
-        {
-          "delegator_address": "und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
-          "starting_info": {
-            "creation_height": "0",
-            "previous_period": "1",
-            "stake": "2000000000000000.000000000000000000"
-          },
-          "validator_address": "undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet"
-        }
-      ],
-      "delegator_withdraw_infos": [],
       "fee_pool": {
         "community_pool": []
       },
-      "outstanding_rewards": [
-        {
-          "outstanding_rewards": [
-            {
-              "amount": "0.0",
-              "denom": "nund"
-            }
-          ],
-          "validator_address": "undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3"
-        },
-        {
-          "outstanding_rewards": [
-            {
-              "amount": "0.0",
-              "denom": "nund"
-            }
-          ],
-          "validator_address": "undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px"
-        },
-        {
-          "outstanding_rewards": [
-            {
-              "amount": "0.0",
-              "denom": "nund"
-            }
-          ],
-          "validator_address": "undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet"
-        }
-      ],
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true,
+      "delegator_withdraw_infos": [],
       "previous_proposer": "",
-      "validator_accumulated_commissions": [
-        {
-          "accumulated": [
-            {
-              "amount": "0.0",
-              "denom": "nund"
-            }
-          ],
-          "validator_address": "undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3"
-        },
-        {
-          "accumulated": [
-            {
-              "amount": "0.0",
-              "denom": "nund"
-            }
-          ],
-          "validator_address": "undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px"
-        },
-        {
-          "accumulated": [
-            {
-              "amount": "0.0",
-              "denom": "nund"
-            }
-          ],
-          "validator_address": "undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet"
-        }
-      ],
-      "validator_current_rewards": [
-        {
-          "rewards": {
-            "period": "2",
-            "rewards": [
-              {
-                "amount": "0.0",
-                "denom": "nund"
-              }
-            ]
-          },
-          "validator_address": "undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3"
-        },
-        {
-          "rewards": {
-            "period": "2",
-            "rewards": [
-              {
-                "amount": "0.0",
-                "denom": "nund"
-              }
-            ]
-          },
-          "validator_address": "undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px"
-        },
-        {
-          "rewards": {
-            "period": "2",
-            "rewards": [
-              {
-                "amount": "0.0",
-                "denom": "nund"
-              }
-            ]
-          },
-          "validator_address": "undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet"
-        }
-      ],
-      "validator_historical_rewards": [
-        {
-          "period": "1",
-          "rewards": {
-            "cumulative_reward_ratio": null,
-            "reference_count": 2
-          },
-          "validator_address": "undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3"
-        },
-        {
-          "period": "1",
-          "rewards": {
-            "cumulative_reward_ratio": null,
-            "reference_count": 2
-          },
-          "validator_address": "undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px"
-        },
-        {
-          "period": "1",
-          "rewards": {
-            "cumulative_reward_ratio": null,
-            "reference_count": 2
-          },
-          "validator_address": "undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet"
-        }
-      ],
-      "validator_slash_events": [],
-      "withdraw_addr_enabled": true
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
     },
     "enterprise": {
       "params": {

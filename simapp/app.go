@@ -19,6 +19,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -57,6 +58,7 @@ var (
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
 		beacon.AppModule{},
+		evidence.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -77,6 +79,7 @@ func MakeCodec() *codec.Codec {
 	vesting.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
+	codec.RegisterEvidences(cdc)
 	return cdc
 }
 
@@ -109,6 +112,7 @@ type UndSimApp struct {
 	WrkChainKeeper   wrkchain.Keeper
 	EnterpriseKeeper enterprise.Keeper
 	BeaconKeeper     beacon.Keeper
+	EvidenceKeeper   evidence.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -131,7 +135,7 @@ func NewUndSimApp(
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		params.StoreKey, wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey)
+		params.StoreKey, wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey, evidence.StoreKey,)
 	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey)
 
 	app := &UndSimApp{
@@ -155,6 +159,7 @@ func NewUndSimApp(
 	app.subspaces[enterprise.ModuleName] = app.ParamsKeeper.Subspace(enterprise.DefaultParamspace)
 	app.subspaces[wrkchain.ModuleName] = app.ParamsKeeper.Subspace(wrkchain.DefaultParamspace)
 	app.subspaces[beacon.ModuleName] = app.ParamsKeeper.Subspace(beacon.DefaultParamspace)
+	app.subspaces[evidence.ModuleName] = app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
 
 	// add keepers
 	app.AccountKeeper = auth.NewAccountKeeper(
@@ -215,6 +220,17 @@ func NewUndSimApp(
 		auth.FeeCollectorName,
 	)
 
+	// create evidence keeper with evidence router
+	evidenceKeeper := evidence.NewKeeper(
+		app.cdc, keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.SlashingKeeper,
+	)
+	evidenceRouter := evidence.NewRouter()
+
+	// TODO: register evidence routes
+	evidenceKeeper.SetRouter(evidenceRouter)
+
+	app.EvidenceKeeper = *evidenceKeeper
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper = *stakingKeeper.SetHooks(
@@ -259,6 +275,7 @@ func NewUndSimApp(
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
 		beacon.NewAppModule(app.BeaconKeeper),
+		evidence.NewAppModule(app.EvidenceKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -274,7 +291,7 @@ func NewUndSimApp(
 		auth.ModuleName, distr.ModuleName, staking.ModuleName,
 		bank.ModuleName, slashing.ModuleName, wrkchain.ModuleName, beacon.ModuleName,
 		enterprise.ModuleName, mint.ModuleName, supply.ModuleName,
-		crisis.ModuleName, genutil.ModuleName,
+		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)

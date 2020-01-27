@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -56,6 +57,7 @@ var (
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
 		beacon.AppModule{},
+		evidence.AppModuleBasic{},
 	)
 	// account permissions
 	maccPerms = map[string][]string{
@@ -74,6 +76,7 @@ func MakeCodec() *codec.Codec {
 	ModuleBasics.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
+	codec.RegisterEvidences(cdc)
 	return cdc
 }
 
@@ -103,6 +106,7 @@ type mainchainApp struct {
 	wrkChainKeeper   wrkchain.Keeper
 	enterpriseKeeper enterprise.Keeper
 	beaconKeeper     beacon.Keeper
+	evidenceKeeper   evidence.Keeper
 
 	// Module Manager
 	mm *module.Manager
@@ -124,7 +128,7 @@ func NewMainchainApp(
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey,
-		wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey)
+		wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey, evidence.StoreKey,)
 
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -151,6 +155,7 @@ func NewMainchainApp(
 	app.subspaces[enterprise.ModuleName] = app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
 	app.subspaces[wrkchain.ModuleName] = app.paramsKeeper.Subspace(wrkchain.DefaultParamspace)
 	app.subspaces[beacon.ModuleName] = app.paramsKeeper.Subspace(beacon.DefaultParamspace)
+	app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -214,6 +219,17 @@ func NewMainchainApp(
 		auth.FeeCollectorName,
 	)
 
+	// create evidence keeper with evidence router
+	evidenceKeeper := evidence.NewKeeper(
+		app.cdc, keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.slashingKeeper,
+	)
+	evidenceRouter := evidence.NewRouter()
+
+	// TODO: register evidence routes
+	evidenceKeeper.SetRouter(evidenceRouter)
+
+	app.evidenceKeeper = *evidenceKeeper
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
@@ -258,6 +274,7 @@ func NewMainchainApp(
 		enterprise.NewAppModule(app.enterpriseKeeper),
 		wrkchain.NewAppModule(app.wrkChainKeeper),
 		beacon.NewAppModule(app.beaconKeeper),
+		evidence.NewAppModule(app.evidenceKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(enterprise.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName)
@@ -279,6 +296,7 @@ func NewMainchainApp(
 		supply.ModuleName,
 		crisis.ModuleName,
 		genutil.ModuleName,
+		evidence.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)

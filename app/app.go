@@ -85,7 +85,10 @@ type mainchainApp struct {
 
 	// keys to access the substores
 	keys  map[string]*sdk.KVStoreKey
-	tkeys map[string]*sdk.TransientStoreKey
+	tKeys map[string]*sdk.TransientStoreKey
+
+	// subspaces
+	subspaces map[string]params.Subspace
 
 	// Keepers
 	accountKeeper    auth.AccountKeeper
@@ -123,7 +126,7 @@ func NewMainchainApp(
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey,
 		wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey)
 
-	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
+	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
 	// Here you initialize your application with the store keys it requires
 	var app = &mainchainApp{
@@ -131,36 +134,36 @@ func NewMainchainApp(
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
-		tkeys:          tkeys,
+		tKeys:          tKeys,
+		subspaces:      make(map[string]params.Subspace),
 	}
 
 	// The ParamsKeeper handles parameter storage for the application
-	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
+	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
 	// Set specific subspaces
-	authSubspace := app.paramsKeeper.Subspace(auth.DefaultParamspace)
-	bankSupspace := app.paramsKeeper.Subspace(bank.DefaultParamspace)
-	stakingSubspace := app.paramsKeeper.Subspace(staking.DefaultParamspace)
-	mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
-	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
-	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
-	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
-	enterpriseSubspace := app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
-	wrkchainSubspace := app.paramsKeeper.Subspace(wrkchain.DefaultParamspace)
-	beaconSubspace := app.paramsKeeper.Subspace(beacon.DefaultParamspace)
+	app.subspaces[auth.ModuleName] = app.paramsKeeper.Subspace(auth.DefaultParamspace)
+	app.subspaces[bank.ModuleName] = app.paramsKeeper.Subspace(bank.DefaultParamspace)
+	app.subspaces[staking.ModuleName] = app.paramsKeeper.Subspace(staking.DefaultParamspace)
+	app.subspaces[mint.ModuleName] = app.paramsKeeper.Subspace(mint.DefaultParamspace)
+	app.subspaces[distr.ModuleName] = app.paramsKeeper.Subspace(distr.DefaultParamspace)
+	app.subspaces[slashing.ModuleName] = app.paramsKeeper.Subspace(slashing.DefaultParamspace)
+	app.subspaces[crisis.ModuleName] = app.paramsKeeper.Subspace(crisis.DefaultParamspace)
+	app.subspaces[enterprise.ModuleName] = app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
+	app.subspaces[wrkchain.ModuleName] = app.paramsKeeper.Subspace(wrkchain.DefaultParamspace)
+	app.subspaces[beacon.ModuleName] = app.paramsKeeper.Subspace(beacon.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
 		app.cdc,
 		keys[auth.StoreKey],
-		authSubspace,
+		app.subspaces[auth.ModuleName],
 		auth.ProtoBaseAccount,
 	)
 
 	// The BankKeeper allows you perform sdk.Coins interactions
 	app.bankKeeper = bank.NewBaseKeeper(
 		app.accountKeeper,
-		bankSupspace,
-		bank.DefaultCodespace,
+		app.subspaces[bank.ModuleName],
 		app.ModuleAccountAddrs(),
 	)
 
@@ -175,13 +178,13 @@ func NewMainchainApp(
 
 	// The staking keeper
 	stakingKeeper := staking.NewKeeper(
-		app.cdc, keys[staking.StoreKey], app.supplyKeeper, stakingSubspace, staking.DefaultCodespace,
+		app.cdc, keys[staking.StoreKey], app.supplyKeeper, app.subspaces[staking.ModuleName],
 	)
 
 	app.mintKeeper = mint.NewKeeper(
 		app.cdc,
 		keys[mint.StoreKey],
-		mintSubspace,
+		app.subspaces[mint.ModuleName],
 		&stakingKeeper,
 		app.supplyKeeper,
 		auth.FeeCollectorName,
@@ -190,10 +193,9 @@ func NewMainchainApp(
 	app.distrKeeper = distr.NewKeeper(
 		app.cdc,
 		keys[distr.StoreKey],
-		distrSubspace,
+		app.subspaces[distr.ModuleName],
 		&stakingKeeper,
 		app.supplyKeeper,
-		distr.DefaultCodespace,
 		auth.FeeCollectorName,
 		app.ModuleAccountAddrs(),
 	)
@@ -202,12 +204,11 @@ func NewMainchainApp(
 		app.cdc,
 		keys[slashing.StoreKey],
 		&stakingKeeper,
-		slashingSubspace,
-		slashing.DefaultCodespace,
+		app.subspaces[slashing.ModuleName],
 	)
 
 	app.crisisKeeper = crisis.NewKeeper(
-		crisisSubspace,
+		app.subspaces[crisis.ModuleName],
 		invCheckPeriod,
 		app.supplyKeeper,
 		auth.FeeCollectorName,
@@ -223,7 +224,7 @@ func NewMainchainApp(
 
 	app.wrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
-		wrkchainSubspace,
+		app.subspaces[wrkchain.ModuleName],
 		wrkchain.DefaultCodespace,
 		app.cdc,
 	)
@@ -232,14 +233,14 @@ func NewMainchainApp(
 		keys[enterprise.StoreKey],
 		app.supplyKeeper,
 		app.accountKeeper,
-		enterpriseSubspace,
+		app.subspaces[enterprise.ModuleName],
 		enterprise.DefaultCodespace,
 		app.cdc,
 	)
 
 	app.beaconKeeper = beacon.NewKeeper(
 		keys[beacon.StoreKey],
-		beaconSubspace,
+		app.subspaces[beacon.ModuleName],
 		beacon.DefaultCodespace,
 		app.cdc,
 	)
@@ -304,7 +305,7 @@ func NewMainchainApp(
 
 	// initialize stores
 	app.MountKVStores(keys)
-	app.MountTransientStores(tkeys)
+	app.MountTransientStores(tKeys)
 
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])

@@ -26,7 +26,6 @@
     },
     "slashing": {
       "params": {
-        "max_evidence_age": "120000000000",
         "signed_blocks_window": "100",
         "min_signed_per_window": "0.500000000000000000",
         "downtime_jail_duration": "600000000000",
@@ -35,6 +34,12 @@
       },
       "signing_infos": {},
       "missed_blocks": {}
+    },
+    "evidence": {
+      "params": {
+        "max_evidence_age": "120000000000"
+      },
+      "evidence": []
     },
     "wrkchain": {
       "params": {

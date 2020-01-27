@@ -91,7 +91,7 @@ func (msg MsgRecordBeaconTimestamp) Type() string { return RecordAction }
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 	if msg.Owner.Empty() {
-		sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
 	}
 	if msg.BeaconID == 0 {
 		return sdkerrors.Wrap(ErrMissingData,"id must be greater than zero")

@@ -1,7 +1,9 @@
 package types
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -50,25 +52,30 @@ func DefaultParams() Params {
 }
 
 // validate params
-func ValidateParams(params Params) error {
-	if len(params.EntSigners) == 0 {
-		return fmt.Errorf("enterprise und source parameter is empty")
-	}
-	if len(params.Denom) == 0 {
-		return fmt.Errorf("enterprise denomination parameter is empty")
-	}
-	if params.MinAccepts == 0 {
-		return fmt.Errorf("enterprise minimum number of accets parameter must be > 0")
-	}
-	if params.DecisionLimit == 0 {
-		return fmt.Errorf("enterprise decision time limit parameter must be > 0")
+func (p Params) Validate() error {
+	if err := validateDenom(p.Denom); err != nil {
+		return err
 	}
 
-	if len(params.EntSigners) < int(params.MinAccepts) {
+	if err := validateMinAccepts(p.MinAccepts); err != nil {
+		return err
+	}
+
+	if err := validateDecisionLimit(p.DecisionLimit); err != nil {
+		return err
+	}
+
+	if err := validateEntSigners(p.EntSigners); err != nil {
+		return err
+	}
+
+	if len(p.EntSigners) < int(p.MinAccepts) {
 		return fmt.Errorf("number of authorised accounts must be >= number of minimum accepts")
 	}
+
 	return nil
 }
+
 
 func (p Params) String() string {
 	return fmt.Sprintf(`Enterprise UND Params:
@@ -84,9 +91,56 @@ func (p Params) String() string {
 // Implements params.ParamSet
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
-		{Key: KeyEntSigners, Value: &p.EntSigners},
-		{Key: KeyDenom, Value: &p.Denom},
-		{Key: KeyMinAccepts, Value: &p.MinAccepts},
-		{Key: KeyDecisionLimit, Value: &p.DecisionLimit},
+		params.NewParamSetPair(KeyEntSigners, &p.EntSigners, validateEntSigners),
+		params.NewParamSetPair(KeyDenom, &p.Denom, validateDenom),
+		params.NewParamSetPair(KeyMinAccepts, &p.MinAccepts, validateMinAccepts),
+		params.NewParamSetPair(KeyDecisionLimit, &p.DecisionLimit, validateDecisionLimit),
 	}
+}
+
+func validateDenom(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("denom cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func validateMinAccepts(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("min accepts must be positive: %d", v)
+	}
+
+	return nil
+}
+
+func validateDecisionLimit(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("decision limit must be positive: %d", v)
+	}
+
+	return nil
+}
+
+func validateEntSigners(i interface{}) error {
+	// Todo - validate []sdk.AccAddress and contents
+	return nil
 }

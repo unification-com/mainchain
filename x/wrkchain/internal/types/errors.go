@@ -12,7 +12,7 @@ const (
 	CodeWrkChainBlockAlreadyRecorded = 203
 	CodeNotWrkChainOwner             = 204
 	CodeMissingData                  = 205
-	CodeInvalidData                  = 205
+	CodeInvalidData                  = 206
 
 	CodeWrkChainInsufficientFee   = 301
 	CodeWrkChainTooMuchFee        = 302
@@ -27,7 +27,7 @@ var (
 	ErrNotWrkChainOwner = sdkerrors.Register(ModuleName, CodeNotWrkChainOwner, "not wrkchain owner")
 	ErrWrkChainAlreadyRegistered = sdkerrors.Register(ModuleName, CodeWrkChainAlreadyRegistered, "wrkchain already registered")
 	ErrMissingData = sdkerrors.Register(ModuleName, CodeMissingData, "missing data")
-	ErrInvalidData = sdkerrors.Register(ModuleName, CodeMissingData, "invalid data")
+	ErrInvalidData = sdkerrors.Register(ModuleName, CodeInvalidData, "invalid data")
 	ErrWrkChainBlockAlreadyRecorded = sdkerrors.Register(ModuleName, CodeWrkChainBlockAlreadyRecorded, "wrkchain hashes already recorded")
 	ErrInsufficientWrkChainFee = sdkerrors.Register(ModuleName, CodeWrkChainInsufficientFee, "insufficient wrkchain fee")
 	ErrTooMuchWrkChainFee = sdkerrors.Register(ModuleName, CodeWrkChainTooMuchFee, "too much wrkchain fee")

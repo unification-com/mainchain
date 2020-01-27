@@ -84,7 +84,7 @@ $ %s tx %s purchase 1%s --from wrktest
 			}
 
 			if amount.Denom != undtypes.DefaultDenomination {
-				return sdk.ErrInvalidCoins(fmt.Sprintf("denomination should be %s", undtypes.DefaultDenomination))
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("denomination should be %s", undtypes.DefaultDenomination))
 			}
 
 			msg := types.NewMsgUndPurchaseOrder(cliCtx.GetFromAddress(), amount)

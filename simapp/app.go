@@ -269,8 +269,8 @@ func NewUndSimApp(
 		crisis.NewAppModule(&app.CrisisKeeper),
 		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
 		mint.NewAppModule(app.MintKeeper, app.EnterpriseKeeper),
-		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
-		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
+		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper, app.StakingKeeper),
+		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.StakingKeeper),
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
@@ -306,12 +306,13 @@ func NewUndSimApp(
 		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
 		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
 		mint.NewAppModule(app.MintKeeper, app.EnterpriseKeeper),
-		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
+		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper, app.StakingKeeper),
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
-		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
+		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.StakingKeeper),
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
 		beacon.NewAppModule(app.BeaconKeeper),
+		evidence.NewAppModule(app.EvidenceKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()

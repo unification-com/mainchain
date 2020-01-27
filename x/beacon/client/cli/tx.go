@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/viper"
@@ -63,6 +64,8 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 		),
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			moniker := viper.GetString(FlagMoniker)
@@ -93,7 +96,7 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 				return types.ErrBeaconAlreadyRegistered(types.DefaultCodespace, errMsg)
 			}
 
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
 			paramsRetriever := keeper.NewParamsRetriever(cliCtx)
@@ -133,6 +136,7 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			hash := viper.GetString(FlagTimestampHash)
@@ -142,7 +146,7 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 				return sdk.ErrInternal("BEACON timestamp must have a Hash submitted")
 			}
 
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
 			txBldr = txBldr.WithFees(strconv.Itoa(types.RecordFee) + types.FeeDenom)

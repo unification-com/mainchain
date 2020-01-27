@@ -5,6 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
@@ -195,16 +196,16 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 		hash2       string
 		hash3       string
 		owner       sdk.AccAddress
-		expectedErr sdk.Error
+		expectedErr error
 	}{
-		{0, 0, "", "", "", "", "", sdk.AccAddress{}, types.ErrWrkChainDoesNotExist(keeper.codespace, "WRKChain does not exist")},
-		{99, 0, "", "", "", "", "", sdk.AccAddress{}, types.ErrWrkChainDoesNotExist(keeper.codespace, "WRKChain does not exist")},
-		{wcID, 0, "", "", "", "", "", TestAddrs[1], types.ErrNotWrkChainOwner(keeper.codespace, "not authorised to record hashes for this wrkchain")},
-		{wcID, 0, "", "", "", "", "", sdk.AccAddress{}, types.ErrNotWrkChainOwner(keeper.codespace, "not authorised to record hashes for this wrkchain")},
-		{wcID, 1, "", "", "", "", "", TestAddrs[0], sdk.ErrInternal("must include owner, id, height and hash")},
-		{wcID, 0, "blockhash", "", "", "", "", TestAddrs[0], sdk.ErrInternal("must include owner, id, height and hash")},
+		{0, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "WRKChain 0 does not exist")},
+		{99, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "WRKChain 99 does not exist")},
+		{wcID, 0, "", "", "", "", "", TestAddrs[1], sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
+		{wcID, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
+		{wcID, 1, "", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData,"must include owner, id, height and hash")},
+		{wcID, 0, "blockhash", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData,"must include owner, id, height and hash")},
 		{wcID, 1, "blockhash", "", "", "", "", TestAddrs[0], nil},
-		{wcID, 1, "blockhash", "", "", "", "", TestAddrs[0], types.ErrWrkChainBlockAlreadyRecorded(keeper.codespace, "Block hashes already recorded for this height")},
+		{wcID, 1, "blockhash", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "Block hashes already recorded for this height")},
 	}
 
 	for _, tc := range testCases {

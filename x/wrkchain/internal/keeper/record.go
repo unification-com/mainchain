@@ -1,16 +1,18 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 // SetWrkChainBlock Sets the WrkChain Block struct for a wrkchainId & height
-func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlock types.WrkChainBlock) sdk.Error {
+func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlock types.WrkChainBlock) error {
 	// must have an owner, WRKChain ID, Height and BlockHash
 	if wrkchainBlock.Owner.Empty() || wrkchainBlock.WrkChainID == 0 || wrkchainBlock.Height == 0 || len(wrkchainBlock.BlockHash) == 0 {
-		return sdk.ErrInternal("must include owner, id, height and hash")
+		return sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, height and hash")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -127,7 +129,7 @@ func (k Keeper) GetWrkChainBlockHashesFiltered(ctx sdk.Context, wrkchainID uint6
 	return filteredWrkChainHashes
 }
 
-// RecordWrkchainHashes records a WRKChain block has for a registered wRKchain
+// RecordWrkchainHashes records a WRKChain block has for a registered WRKChain
 func (k Keeper) RecordWrkchainHashes(
 	ctx sdk.Context,
 	wrkchainId uint64,
@@ -137,23 +139,23 @@ func (k Keeper) RecordWrkchainHashes(
 	hash1 string,
 	hash2 string,
 	hash3 string,
-	owner sdk.AccAddress) sdk.Error {
+	owner sdk.AccAddress) error {
 
 	logger := k.Logger(ctx)
 
 	if !k.IsWrkChainRegistered(ctx, wrkchainId) {
 		// can't record hashes if WRKChain isn't registered
-		return types.ErrWrkChainDoesNotExist(k.codespace, "WRKChain does not exist")
+		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))
 	}
 
 	wrkchain := k.GetWrkChain(ctx, wrkchainId)
 
 	if !k.IsAuthorisedToRecord(ctx, wrkchain.WrkChainID, owner) {
-		return types.ErrNotWrkChainOwner(k.codespace, "not authorised to record hashes for this wrkchain")
+		return sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")
 	}
 
 	if k.IsWrkChainBlockRecorded(ctx, wrkchain.WrkChainID, height) {
-		return types.ErrWrkChainBlockAlreadyRecorded(k.codespace, "Block hashes already recorded for this height")
+		return sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "Block hashes already recorded for this height")
 	}
 
 	wrkchainBlock := k.GetWrkChainBlock(ctx, wrkchain.WrkChainID, height)

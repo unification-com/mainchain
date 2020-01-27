@@ -240,7 +240,6 @@ func NewUndSimApp(
 	app.WrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
 		app.subspaces[wrkchain.ModuleName],
-		wrkchain.DefaultCodespace,
 		app.cdc,
 	)
 

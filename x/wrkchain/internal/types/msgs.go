@@ -2,6 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
@@ -40,12 +41,12 @@ func (msg MsgRegisterWrkChain) Route() string { return RouterKey }
 func (msg MsgRegisterWrkChain) Type() string { return RegisterAction }
 
 // ValidateBasic runs stateless checks on the message
-func (msg MsgRegisterWrkChain) ValidateBasic() sdk.Error {
+func (msg MsgRegisterWrkChain) ValidateBasic() error {
 	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
 	}
 	if len(msg.Moniker) == 0 {
-		return sdk.ErrUnknownRequest("Moniker cannot be empty")
+		return sdkerrors.Wrap(ErrMissingData,"Moniker cannot be empty")
 	}
 	return nil
 }
@@ -104,18 +105,18 @@ func (msg MsgRecordWrkChainBlock) Route() string { return RouterKey }
 func (msg MsgRecordWrkChainBlock) Type() string { return RecordAction }
 
 // ValidateBasic runs stateless checks on the message
-func (msg MsgRecordWrkChainBlock) ValidateBasic() sdk.Error {
+func (msg MsgRecordWrkChainBlock) ValidateBasic() error {
 	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
 	}
 	if msg.WrkChainID == 0 {
-		return sdk.ErrUnknownRequest("ID must be greater than zero")
+		return sdkerrors.Wrap(ErrInvalidData, "ID must be greater than zero")
 	}
 	if len(msg.BlockHash) == 0 {
-		return sdk.ErrUnknownRequest("BlockHash cannot be empty")
+		return sdkerrors.Wrap(ErrMissingData, "BlockHash cannot be empty")
 	}
 	if msg.Height == 0 {
-		return sdk.ErrUnknownRequest("Height cannot be zero")
+		return sdkerrors.Wrap(ErrMissingData, "Height cannot be zero")
 	}
 
 	return nil

@@ -91,7 +91,7 @@ func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck keeper.Keeper) error {
 
 	if !hasFeeDenom {
 		errMsg := fmt.Sprintf("incorrect fee denomination. expected %s", expectedFeeDenom)
-		return types.ErrIncorrectFeeDenomination(types.DefaultCodespace, errMsg)
+		return sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
 	}
 
 	// go through Msgs wrapped in the Tx, and check for WRKChain messages
@@ -109,12 +109,12 @@ func checkWrkchainFees(ctx sdk.Context, tx FeeTx, wck keeper.Keeper) error {
 	totalFees := sdk.Coins{expectedFees}
 	if tx.GetFee().IsAllLT(totalFees) {
 		errMsg := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return types.ErrInsufficientWrkChainFee(types.DefaultCodespace, errMsg)
+		return sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg)
 	}
 
 	if tx.GetFee().IsAllGT(totalFees) {
 		errMsg := fmt.Sprintf("too much fee sent to pay for WrkChain tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return types.ErrTooMuchWrkChainFee(types.DefaultCodespace, errMsg)
+		return sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg)
 	}
 
 	return nil

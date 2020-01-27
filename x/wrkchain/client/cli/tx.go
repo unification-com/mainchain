@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
@@ -82,7 +83,7 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 			wrkchainGenesisHash := viper.GetString(FlagGenesisHash)
 
 			if len(moniker) == 0 {
-				return sdk.ErrInternal("WRKChain must have a moniker")
+				return sdkerrors.Wrap(types.ErrMissingData,"WRKChain must have a moniker")
 			}
 
 			// first check if a WRKChain exists with the same moniker.
@@ -107,7 +108,7 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 			// the Tx and therefore charging reg fees
 			if (len(matchingWrkChains)) > 0 {
 				errMsg := fmt.Sprintf("wrkchain already registered with moniker '%s' - wrkchain id: %d, owner: %s", moniker, matchingWrkChains[0].WrkChainID, matchingWrkChains[0].Owner)
-				return types.ErrWrkChainAlreadyRegistered(types.DefaultCodespace, errMsg)
+				return sdkerrors.Wrap(types.ErrWrkChainAlreadyRegistered, errMsg)
 			}
 
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -167,11 +168,11 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 			hash3 := viper.GetString(FlagHash3)
 
 			if len(blockHash) == 0 {
-				return sdk.ErrInternal("WRKChain block must have a Hash submitted")
+				return sdkerrors.Wrap(types.ErrMissingData,"WRKChain block must have a Hash submitted")
 			}
 
 			if height == 0 {
-				return sdk.ErrInternal("WRKChain block hash submission must be for height > 0")
+				return sdkerrors.Wrap(types.ErrMissingData,"WRKChain block hash submission must be for height > 0")
 			}
 
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -186,7 +187,7 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 			}
 
 			if wrkchainID == 0 {
-				return sdk.ErrInternal("WRKChain id must be > 0")
+				return sdkerrors.Wrap(types.ErrMissingData,"WRKChain id must be > 0")
 			}
 
 			msg := types.NewMsgRecordWrkChainBlock(uint64(wrkchainID), height, blockHash, parentHash, hash1, hash2, hash3, cliCtx.GetFromAddress())

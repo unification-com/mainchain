@@ -5,38 +5,38 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // NewHandler returns a handler for "wrkchain" type messages.
 func NewHandler(keeper Keeper) sdk.Handler {
-	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
+	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
 		case MsgRegisterWrkChain:
 			return handleMsgRegisterWrkChain(ctx, keeper, msg)
 		case MsgRecordWrkChainBlock:
 			return handleMsgRecordWrkChainBlock(ctx, keeper, msg)
 		default:
-			errMsg := fmt.Sprintf("Unrecognized WRKChain Msg type: %v", msg.Type())
-			return sdk.ErrUnknownRequest(errMsg).Result()
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
 	}
 }
 
 // Handle a message to register a new WRKChain
-func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWrkChain) sdk.Result {
+func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWrkChain) (*sdk.Result, error) {
 
 	params := NewQueryWrkChainParams(1, 1, msg.Moniker, sdk.AccAddress{})
 	wrkChains := keeper.GetWrkChainsFiltered(ctx, params)
 
 	if (len(wrkChains)) > 0 {
 		errMsg := fmt.Sprintf("wrkchain already registered with moniker '%s' - id: %d, owner: %s", msg.Moniker, wrkChains[0].WrkChainID, wrkChains[0].Owner)
-		return ErrWrkChainAlreadyRegistered(keeper.Codespace(), errMsg).Result()
+		return nil, sdkerrors.Wrap(ErrWrkChainAlreadyRegistered, errMsg)
 	}
 
 	wrkChainID, err := keeper.RegisterWrkChain(ctx, msg.Moniker, msg.WrkChainName, msg.GenesisHash, msg.BaseType, msg.Owner) // register the WRKChain
 
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -51,29 +51,29 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 		),
 	})
 
-	return sdk.Result{
+	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
 		Data:   GetWrkChainIDBytes(wrkChainID),
-	}
+	}, nil
 }
 
-func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordWrkChainBlock) sdk.Result {
+func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordWrkChainBlock) (*sdk.Result, error) {
 	if !keeper.IsWrkChainRegistered(ctx, msg.WrkChainID) { // Checks if the WrkChain is already registered
-		return ErrWrkChainDoesNotExist(keeper.Codespace(), "WRKChain has not been registered yet").Result() // If not, throw an error
+		return nil, sdkerrors.Wrap(ErrWrkChainDoesNotExist, "WRKChain has not been registered yet") // If not, throw an error
 	}
 
 	if !keeper.IsAuthorisedToRecord(ctx, msg.WrkChainID, msg.Owner) {
-		return ErrNotWrkChainOwner(keeper.Codespace(), "you are not the owner of this WRKChain").Result()
+		return nil, sdkerrors.Wrap(ErrNotWrkChainOwner, "you are not the owner of this WRKChain")
 	}
 
 	if keeper.IsWrkChainBlockRecorded(ctx, msg.WrkChainID, msg.Height) {
-		return ErrWrkChainBlockAlreadyRecorded(keeper.Codespace(), "WRKChain block hashes have already been recorded for this height").Result()
+		return nil, sdkerrors.Wrap(ErrWrkChainBlockAlreadyRecorded, "WRKChain block hashes have already been recorded for this height")
 	}
 
 	err := keeper.RecordWrkchainHashes(ctx, msg.WrkChainID, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3, msg.Owner)
 
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -89,5 +89,5 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }

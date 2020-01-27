@@ -14,8 +14,6 @@ const (
 
 	DefaultParamspace = types.DefaultParamspace
 
-	DefaultCodespace = types.DefaultCodespace
-
 	QueryParameters = keeper.QueryParameters
 )
 
@@ -56,6 +54,7 @@ var (
 	ErrFeePayerNotOwner             = types.ErrFeePayerNotOwner
 	ErrNotWrkChainOwner             = types.ErrNotWrkChainOwner
 	ErrWrkChainBlockAlreadyRecorded = types.ErrWrkChainBlockAlreadyRecorded
+	ErrMissingData                  = types.ErrMissingData
 
 	NewGenesisState     = types.NewGenesisState
 	DefaultGenesisState = types.DefaultGenesisState

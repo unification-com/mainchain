@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/tendermint/tendermint/crypto/ed25519"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmkv "github.com/tendermint/tendermint/libs/kv"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -51,10 +51,10 @@ func TestDecodeStore(t *testing.T) {
 	wrkChainBlock.Hash3 = "hash3"
 	wrkChainBlock.SubmitTime = time.Now().Unix()
 
-	kvPairs := cmn.KVPairs{
-		cmn.KVPair{Key: types.WrkChainKey(1), Value: cdc.MustMarshalBinaryLengthPrefixed(wrkChain)},
-		cmn.KVPair{Key: types.WrkChainBlockKey(1, 1), Value: cdc.MustMarshalBinaryLengthPrefixed(wrkChainBlock)},
-		cmn.KVPair{Key: []byte{0x99}, Value: []byte{0x99}},
+	kvPairs := tmkv.Pairs{
+		tmkv.Pair{Key: types.WrkChainKey(1), Value: cdc.MustMarshalBinaryLengthPrefixed(wrkChain)},
+		tmkv.Pair{Key: types.WrkChainBlockKey(1, 1), Value: cdc.MustMarshalBinaryLengthPrefixed(wrkChainBlock)},
+		tmkv.Pair{Key: []byte{0x99}, Value: []byte{0x99}},
 	}
 
 	tests := []struct {

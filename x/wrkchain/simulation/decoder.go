@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmkv "github.com/tendermint/tendermint/libs/kv"
 	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding wrkchain type
-func DecodeStore(cdc *codec.Codec, kvA, kvB cmn.KVPair) string {
+func DecodeStore(cdc *codec.Codec, kvA, kvB tmkv.Pair) string {
 	switch {
 	case bytes.Equal(kvA.Key[:1], types.RegisteredWrkChainPrefix):
 		var wcA, wcB types.WrkChain

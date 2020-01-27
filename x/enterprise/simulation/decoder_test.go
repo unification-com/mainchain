@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/tendermint/tendermint/crypto/ed25519"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmkv "github.com/tendermint/tendermint/libs/kv"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -41,11 +41,11 @@ func TestDecodeStore(t *testing.T) {
 
 	totalLocked := sdk.NewInt64Coin(types.DefaultDenomination, 100000000)
 
-	kvPairs := cmn.KVPairs{
-		cmn.KVPair{Key: types.PurchaseOrderKey(1), Value: cdc.MustMarshalBinaryLengthPrefixed(purchaseOrder)},
-		cmn.KVPair{Key: types.AddressStoreKey(delAddr1), Value: cdc.MustMarshalBinaryLengthPrefixed(lockedUnd)},
-		cmn.KVPair{Key: types.TotalLockedUndKey, Value: cdc.MustMarshalBinaryLengthPrefixed(totalLocked)},
-		cmn.KVPair{Key: []byte{0x99}, Value: []byte{0x99}},
+	kvPairs := tmkv.Pairs{
+		tmkv.Pair{Key: types.PurchaseOrderKey(1), Value: cdc.MustMarshalBinaryLengthPrefixed(purchaseOrder)},
+		tmkv.Pair{Key: types.AddressStoreKey(delAddr1), Value: cdc.MustMarshalBinaryLengthPrefixed(lockedUnd)},
+		tmkv.Pair{Key: types.TotalLockedUndKey, Value: cdc.MustMarshalBinaryLengthPrefixed(totalLocked)},
+		tmkv.Pair{Key: []byte{0x99}, Value: []byte{0x99}},
 	}
 
 	tests := []struct {

@@ -353,7 +353,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	}
 	_ = app.EnterpriseKeeper.SetLockedUndForAccount(ctx, lockedUnd)
 
-	withLocked := initCoins.Add(sdk.NewCoins(lockedUnd.Amount))
+	withLocked := initCoins.Add(lockedUnd.Amount)
 
 	feeInt := int64(actualRegFeeAmt)
 	feeDenom := actualFeeDenom

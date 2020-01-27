@@ -221,7 +221,7 @@ func GetAccountWithLockedCmd(cdc *codec.Codec) *cobra.Command {
 			entUnd := undtypes.NewEnterpriseUnd()
 
 			entUnd.Locked = lockedUnd.Amount
-			entUnd.Available = acc.GetCoins().Add(sdk.NewCoins(lockedUnd.Amount))
+			entUnd.Available = acc.GetCoins().Add(lockedUnd.Amount)
 
 			accountWithLocked.Account = acc
 			accountWithLocked.Enterprise = entUnd

@@ -249,7 +249,7 @@ func EnterpriseAuthAccountOverride(cliCtx context.CLIContext) http.HandlerFunc {
 		entUnd := undtypes.NewEnterpriseUnd()
 
 		entUnd.Locked = lockedUnd.Amount
-		entUnd.Available = account.GetCoins().Add(sdk.NewCoins(lockedUnd.Amount))
+		entUnd.Available = account.GetCoins().Add(lockedUnd.Amount)
 
 		accountWithLocked.Account = account
 		accountWithLocked.Enterprise = entUnd

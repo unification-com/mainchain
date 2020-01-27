@@ -144,7 +144,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek types.Ente
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
 	// include any locked UND in potential coins. We need to do this because if these checks pass,
 	// the locked UND will be unlocked in the next decorator
-	potentialCoins = potentialCoins.Add(lockedUndCoins)
+	potentialCoins = potentialCoins.Add(lockedUndCoins...)
 
 	// verify the account has enough funds to pay for fees, including any locked enterprise UND
 	_, hasNeg := potentialCoins.SafeSub(fees)
@@ -161,7 +161,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek types.Ente
 
 	// include any locked UND in potential coins. We need to do this because if these checks pass,
 	// the locked UND will be unlocked in the next decorator
-	potentialSpendableCoins = potentialSpendableCoins.Add(lockedUndCoins)
+	potentialSpendableCoins = potentialSpendableCoins.Add(lockedUndCoins...)
 
 	if _, hasNeg := potentialSpendableCoins.SafeSub(fees); hasNeg {
 		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,

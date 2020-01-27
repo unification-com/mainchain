@@ -148,7 +148,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		spendableCoins := feePayerAcc.SpendableCoins(blockTime)
 
 		// calculate how much would be available if UND were unlocked
-		potentiallyAvailable := spendableCoins.Add(lockedUndCoins)
+		potentiallyAvailable := spendableCoins.Add(lockedUndCoins...)
 
 		// is this enough to pay for the fees
 		_, hasNeg := potentiallyAvailable.SafeSub(feesToPay)

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
@@ -58,7 +59,7 @@ func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSuppl
 }
 
 // SetTotalLockedUnd sets the total locked UND
-func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) sdk.Error {
+func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) error {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.TotalLockedUndKey, k.cdc.MustMarshalBinaryLengthPrefixed(totalLocked))
 	return nil
@@ -68,7 +69,7 @@ func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) sdk.Err
 
 // MintCoinsAndLock implements an alias call to the underlying supply keeper's
 // MintCoinsAndLock to be used in BeginBlocker.
-func (k Keeper) MintCoinsAndLock(ctx sdk.Context, recipient sdk.AccAddress, amount sdk.Coin) sdk.Error {
+func (k Keeper) MintCoinsAndLock(ctx sdk.Context, recipient sdk.AccAddress, amount sdk.Coin) error {
 	if amount.Amount.IsZero() {
 		// skip as no coins need to be minted
 		return nil
@@ -102,7 +103,7 @@ func (k Keeper) MintCoinsAndLock(ctx sdk.Context, recipient sdk.AccAddress, amou
 	return nil
 }
 
-func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, feesToPay sdk.Coins) sdk.Error {
+func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, feesToPay sdk.Coins) error {
 
 	logger := k.Logger(ctx)
 	lockedUnd := k.GetLockedUndForAccount(ctx, feePayer).Amount
@@ -185,7 +186,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 
 // sendCoinsFromModuleToAccount implements an alias call to the underlying supply keeper's SendCoinsFromModuleToAccount
 // Used in MintCoinsAndLock to send newly minted coins from enterprise module to recipient account
-func (k Keeper) sendCoinsFromModuleToAccount(ctx sdk.Context, recipientAddr sdk.AccAddress, newCoins sdk.Coins) sdk.Error {
+func (k Keeper) sendCoinsFromModuleToAccount(ctx sdk.Context, recipientAddr sdk.AccAddress, newCoins sdk.Coins) error {
 	if newCoins.Empty() {
 		// skip as no coins need to be minted
 		return nil
@@ -251,15 +252,15 @@ func (k Keeper) DeleteLockedUndForAccount(ctx sdk.Context, address sdk.AccAddres
 }
 
 // Sets the Locked UND data
-func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUnd) sdk.Error {
+func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUnd) error {
 	// must have an owner
 	if lockedUnd.Owner.Empty() {
-		return sdk.ErrInternal("unable to set locked und - owner cannot be empty")
+		return sdkerrors.Wrap(types.ErrMissingData, "unable to set locked und - owner cannot be empty")
 	}
 
 	// must be a positive amount, or zero
 	if lockedUnd.Amount.IsNegative() {
-		return sdk.ErrInternal("unable to set locked und - amount must be positive")
+		return sdkerrors.Wrap(types.ErrMissingData, "unable to set locked und - amount must be positive")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -269,7 +270,7 @@ func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUn
 }
 
 // incrementLockedUnd increments the amount of locked UND - used when purchase order is accepted
-func (k Keeper) incrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) sdk.Error {
+func (k Keeper) incrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
 
 	lockedUnd := k.GetLockedUndForAccount(ctx, address)
 	lockedUnd.Amount = lockedUnd.Amount.Add(amount)
@@ -291,7 +292,7 @@ func (k Keeper) incrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 }
 
 // DecrementLockedUnd decrements the amount of locked UND - used when purchase order is accepted
-func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) sdk.Error {
+func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
 
 	lockedUnd := k.GetLockedUndForAccount(ctx, address)
 	lockedCoins := sdk.NewCoins(lockedUnd.Amount)

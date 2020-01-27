@@ -2,6 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
@@ -34,15 +35,15 @@ func (msg MsgUndPurchaseOrder) Route() string { return RouterKey }
 func (msg MsgUndPurchaseOrder) Type() string { return PurchaseAction }
 
 // ValidateBasic runs stateless checks on the message
-func (msg MsgUndPurchaseOrder) ValidateBasic() sdk.Error {
+func (msg MsgUndPurchaseOrder) ValidateBasic() error {
 	if msg.Purchaser.Empty() {
-		return sdk.ErrInvalidAddress(msg.Purchaser.String())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Purchaser.String())
 	}
 	if msg.Amount.IsZero() {
-		return sdk.ErrInvalidCoins("amount must be greater than zero")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "amount must be greater than zero")
 	}
 	if msg.Amount.IsNegative() {
-		return sdk.ErrInvalidCoins("amount must be a positive value")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "amount must be a positive value")
 	}
 	return nil
 }
@@ -82,15 +83,15 @@ func (msg MsgProcessUndPurchaseOrder) Route() string { return RouterKey }
 func (msg MsgProcessUndPurchaseOrder) Type() string { return ProcessAction }
 
 // ValidateBasic runs stateless checks on the message
-func (msg MsgProcessUndPurchaseOrder) ValidateBasic() sdk.Error {
+func (msg MsgProcessUndPurchaseOrder) ValidateBasic() error {
 	if msg.Signer.Empty() {
-		return sdk.ErrInvalidAddress(msg.Signer.String())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer.String())
 	}
 	if msg.PurchaseOrderID == 0 {
-		return sdk.ErrUnknownRequest("purchase order id must be greater than zero")
+		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,"purchase order id must be greater than zero")
 	}
 	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
-		return sdk.ErrUnknownRequest("status must be accept or reject")
+		return sdkerrors.Wrap(ErrInvalidStatus, "status must be accept or reject")
 	}
 	return nil
 }

@@ -250,7 +250,6 @@ func NewMainchainApp(
 		app.supplyKeeper,
 		app.accountKeeper,
 		app.subspaces[enterprise.ModuleName],
-		enterprise.DefaultCodespace,
 		app.cdc,
 	)
 

@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"math/rand"
 
@@ -44,9 +43,9 @@ func SimulateMsgRaisePurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) simul
 			simAccount.PrivKey,
 		)
 
-		res := app.Deliver(tx)
-		if !res.IsOK() {
-			return simulation.NoOpMsg(types.ModuleName), nil, errors.New(res.Log)
+		_, _, err = app.Deliver(tx)
+		if err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
 		return simulation.NewOperationMsg(msg, true, ""), nil, nil
@@ -102,9 +101,9 @@ func SimulateMsgProcessUndPurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) 
 			entAcc.PrivKey,
 		)
 
-		res := app.Deliver(tx)
-		if !res.IsOK() {
-			return simulation.NoOpMsg(types.ModuleName), nil, errors.New(res.Log)
+		_, _, err = app.Deliver(tx)
+		if err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
 		return simulation.NewOperationMsg(msg, true, ""), nil, nil

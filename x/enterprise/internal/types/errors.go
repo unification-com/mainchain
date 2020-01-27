@@ -1,12 +1,10 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
-	DefaultCodespace sdk.CodespaceType = ModuleName
-
 	CodeInvalidGenesis                = 101
 	CodePurchaseOrderDoesNotExist     = 102
 	CodePurchaseOrderAlreadyProcessed = 103
@@ -15,33 +13,19 @@ const (
 	CodeInvalidStatus                 = 106
 	CodePurchaseOrderNotRaised        = 107
 	CodeSignerAlreadyMadeDecision     = 108
+	CodeMissingData                   = 109
+	CodeDataInvalid                   = 110
 )
 
-// ErrInvalidGenesis error for an invalid enterprise GenesisState
-func ErrInvalidGenesis(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidGenesis, msg)
-}
-
-func ErrPurchaseOrderDoesNotExist(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodePurchaseOrderDoesNotExist, msg)
-}
-
-func ErrPurchaseOrderAlreadyProcessed(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodePurchaseOrderAlreadyProcessed, msg)
-}
-
-func ErrInvalidDecision(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidDecision, msg)
-}
-
-func ErrInvalidDenomination(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidDenomination, msg)
-}
-
-func ErrPurchaseOrderNotRaised(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodePurchaseOrderNotRaised, msg)
-}
-
-func ErrSignerAlreadyMadeDecision(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeSignerAlreadyMadeDecision, msg)
-}
+var (
+	ErrInvalidGenesis                = sdkerrors.Register(ModuleName, CodeInvalidGenesis, "invalid genesis")
+	ErrPurchaseOrderDoesNotExist     = sdkerrors.Register(ModuleName, CodePurchaseOrderDoesNotExist, "purchase order does not exist")
+	ErrPurchaseOrderAlreadyProcessed = sdkerrors.Register(ModuleName, CodePurchaseOrderAlreadyProcessed, "purchase order already processed")
+	ErrInvalidDecision               = sdkerrors.Register(ModuleName, CodeInvalidDecision, "invalid decision")
+	ErrInvalidDenomination           = sdkerrors.Register(ModuleName, CodeInvalidDenomination, "invalid denomination")
+	ErrInvalidStatus                 = sdkerrors.Register(ModuleName, CodeInvalidStatus, "invalid status")
+	ErrPurchaseOrderNotRaised        = sdkerrors.Register(ModuleName, CodePurchaseOrderNotRaised, "purchase order not raised")
+	ErrSignerAlreadyMadeDecision     = sdkerrors.Register(ModuleName, CodeSignerAlreadyMadeDecision, "signer already made decision")
+	ErrMissingData                   = sdkerrors.Register(ModuleName, CodeMissingData, "missing data")
+	ErrInvalidData                   = sdkerrors.Register(ModuleName, CodeDataInvalid, "invalid data")
+)

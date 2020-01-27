@@ -12,8 +12,6 @@ const (
 	StoreKey          = types.StoreKey
 	DefaultParamspace = types.DefaultParamspace
 
-	DefaultCodespace = types.DefaultCodespace
-
 	QuerierRoute          = types.QuerierRoute
 	QueryParameters       = keeper.QueryParameters
 	QueryPurchaseOrders   = keeper.QueryPurchaseOrders

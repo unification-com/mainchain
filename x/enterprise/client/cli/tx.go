@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
@@ -129,7 +130,7 @@ $ %s tx %s process 24 reject --from ent
 			}
 
 			if !types.ValidPurchaseOrderAcceptRejectStatus(decision) {
-				return types.ErrInvalidDecision(types.DefaultCodespace, "decision should be accept or reject")
+				return sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")
 			}
 
 			msg := types.NewMsgProcessUndPurchaseOrder(uint64(purchaseOrderId), decision, cliCtx.GetFromAddress())

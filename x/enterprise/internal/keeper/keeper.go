@@ -15,14 +15,13 @@ import (
 type Keeper struct {
 	storeKey     sdk.StoreKey // Unexposed key to access store from sdk.Context
 	paramSpace   params.Subspace
-	codespace    sdk.CodespaceType
 	supplyKeeper types.SupplyKeeper
 	accKeeper    auth.AccountKeeper
 	cdc          *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
 // NewKeeper creates new instances of the enterprise Keeper
-func NewKeeper(storeKey sdk.StoreKey, supplyKeeper types.SupplyKeeper, accKeeper auth.AccountKeeper, paramSpace params.Subspace, codespace sdk.CodespaceType, cdc *codec.Codec) Keeper {
+func NewKeeper(storeKey sdk.StoreKey, supplyKeeper types.SupplyKeeper, accKeeper auth.AccountKeeper, paramSpace params.Subspace, cdc *codec.Codec) Keeper {
 
 	// ensure module account is set in SupplyKeeper
 	if addr := supplyKeeper.GetModuleAddress(types.ModuleName); addr == nil {
@@ -32,7 +31,6 @@ func NewKeeper(storeKey sdk.StoreKey, supplyKeeper types.SupplyKeeper, accKeeper
 	return Keeper{
 		storeKey:     storeKey,
 		paramSpace:   paramSpace.WithKeyTable(types.ParamKeyTable()),
-		codespace:    codespace,
 		supplyKeeper: supplyKeeper,
 		accKeeper:    accKeeper,
 		cdc:          cdc,
@@ -42,10 +40,6 @@ func NewKeeper(storeKey sdk.StoreKey, supplyKeeper types.SupplyKeeper, accKeeper
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
-}
-
-func (k Keeper) Codespace() sdk.CodespaceType {
-	return k.codespace
 }
 
 func (k Keeper) Cdc() *codec.Codec {

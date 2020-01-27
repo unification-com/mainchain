@@ -249,7 +249,6 @@ func NewUndSimApp(
 		app.SupplyKeeper,
 		app.AccountKeeper,
 		app.subspaces[enterprise.ModuleName],
-		enterprise.DefaultCodespace,
 		app.cdc,
 	)
 

@@ -88,6 +88,16 @@ func (AppModuleSimulation) RandomizedParams(r *rand.Rand) []sim.ParamChange {
 	return simulation.ParamChanges(r)
 }
 
+// ProposalContents doesn't return any content functions for proposals.
+func (AppModuleSimulation) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
+	return nil
+}
+
+// WeightedOperations doesn't return any mint module operation.
+func (AppModuleSimulation) WeightedOperations(_ module.SimulationState) []sim.WeightedOperation {
+	return nil
+}
+
 //____________________________________________________________________________
 
 // AppModule implements an application module for the mint module.

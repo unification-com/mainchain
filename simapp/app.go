@@ -312,7 +312,6 @@ func NewUndSimApp(
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
 		beacon.NewAppModule(app.BeaconKeeper),
-		evidence.NewAppModule(app.EvidenceKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()

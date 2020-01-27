@@ -6,8 +6,8 @@ import (
 	"os"
 
 	abci "github.com/tendermint/tendermint/abci/types"
-	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
@@ -328,7 +328,7 @@ func NewMainchainApp(
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
 		if err != nil {
-			cmn.Exit(err.Error())
+			tmos.Exit(err.Error())
 		}
 	}
 

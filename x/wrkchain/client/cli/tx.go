@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -48,7 +49,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	wrkchainTxCmd.AddCommand(client.PostCommands(
+	wrkchainTxCmd.AddCommand(flags.PostCommands(
 		GetCmdRegisterWrkChain(cdc),
 		GetCmdRecordWrkChainBlock(cdc),
 	)...)

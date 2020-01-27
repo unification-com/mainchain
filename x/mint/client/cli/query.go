@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/spf13/cobra"
 
@@ -23,7 +24,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	mintingQueryCmd.AddCommand(
-		client.GetCommands(
+		flags.GetCommands(
 			GetCmdQueryParams(cdc),
 			GetCmdQueryInflation(cdc),
 			GetCmdQueryAnnualProvisions(cdc),

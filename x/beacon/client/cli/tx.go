@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/viper"
 	"strconv"
 	"strings"
@@ -39,7 +40,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	beaconTxCmd.AddCommand(client.PostCommands(
+	beaconTxCmd.AddCommand(flags.PostCommands(
 		GetCmdRegisterBeacon(cdc),
 		GetCmdRecordBeaconTimestamp(cdc),
 	)...)

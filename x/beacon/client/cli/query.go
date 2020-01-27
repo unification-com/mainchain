@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/viper"
 	"strings"
@@ -23,7 +24,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	beaconQueryCmd.AddCommand(client.GetCommands(
+	beaconQueryCmd.AddCommand(flags.GetCommands(
 		GetCmdQueryParams(cdc),
 		GetCmdBeacon(storeKey, cdc),
 		GetCmdBeaconTimestamp(storeKey, cdc),

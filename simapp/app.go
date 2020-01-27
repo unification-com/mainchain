@@ -256,7 +256,6 @@ func NewUndSimApp(
 	app.BeaconKeeper = beacon.NewKeeper(
 		keys[beacon.StoreKey],
 		app.subspaces[beacon.ModuleName],
-		beacon.DefaultCodespace,
 		app.cdc,
 	)
 

@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
@@ -93,7 +94,7 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 			// the Tx and therefore charging reg fees
 			if (len(matchingBeacons)) > 0 {
 				errMsg := fmt.Sprintf("beacon already registered with moniker '%s' - beacon id: %d, owner: %s", moniker, matchingBeacons[0].BeaconID, matchingBeacons[0].Owner)
-				return types.ErrBeaconAlreadyRegistered(types.DefaultCodespace, errMsg)
+				return sdkerrors.Wrap(types.ErrBeaconAlreadyRegistered, errMsg)
 			}
 
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -143,7 +144,7 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 			submitTime := viper.GetUint64(FlagSubmitTime)
 
 			if len(hash) == 0 {
-				return sdk.ErrInternal("BEACON timestamp must have a Hash submitted")
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BEACON timestamp must have a Hash submitted")
 			}
 
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -158,7 +159,7 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 			}
 
 			if beaconID == 0 {
-				return sdk.ErrInternal("BEACON id must be > 0")
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BEACON id must be > 0")
 			}
 
 			if submitTime == 0 {

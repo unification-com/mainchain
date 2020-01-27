@@ -5,6 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/unification-com/mainchain/x/beacon/internal/types"
@@ -180,17 +181,17 @@ func TestRecordBeaconTimestampsFail(t *testing.T) {
 		subTime     uint64
 		hash        string
 		owner       sdk.AccAddress
-		expectedErr sdk.Error
+		expectedErr error
 		expectedID  uint64
 	}{
-		{0, 0, "", sdk.AccAddress{}, types.ErrBeaconDoesNotExist(keeper.codespace, "beacon does not exist"), 0},
-		{99, 0, "", sdk.AccAddress{}, types.ErrBeaconDoesNotExist(keeper.codespace, "beacon does not exist"), 0},
-		{bID, 1, "hash", TestAddrs[1], types.ErrNotBeaconOwner(keeper.codespace, "not authorised to record hashes for this beacon"), 0},
-		{bID, 1, "hash", sdk.AccAddress{}, types.ErrNotBeaconOwner(keeper.codespace, "not authorised to record hashes for this beacon"), 0},
-		{bID, 1, "", TestAddrs[0], sdk.ErrInternal("must include owner, id, submit time and hash"), 0},
-		{bID, 0, "timstamphash", TestAddrs[0], sdk.ErrInternal("must include owner, id, submit time and hash"), 0},
+		{0, 0, "", sdk.AccAddress{}, types.ErrBeaconDoesNotExist, 0},
+		{99, 0, "", sdk.AccAddress{}, types.ErrBeaconDoesNotExist, 0},
+		{bID, 1, "hash", TestAddrs[1], sdkerrors.Wrap(types.ErrNotBeaconOwner, "not authorised to record hashes for this beacon"), 0},
+		{bID, 1, "hash", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrNotBeaconOwner, "not authorised to record hashes for this beacon"), 0},
+		{bID, 1, "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, submit time and hash"), 0},
+		{bID, 0, "timstamphash", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, submit time and hash"), 0},
 		{bID, 1, "timstamphash", TestAddrs[0], nil, 1},
-		{bID, 1, "timstamphash", TestAddrs[0], types.ErrBeaconTimestampAlreadyRecorded(keeper.codespace, "timestamp hash timstamphash already recorded at time 1"), 0},
+		{bID, 1, "timstamphash", TestAddrs[0], sdkerrors.Wrap(types.ErrBeaconTimestampAlreadyRecorded, "timestamp hash timstamphash already recorded at time 1"), 0},
 	}
 
 	for _, tc := range testCases {

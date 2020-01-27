@@ -1,18 +1,17 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
-	DefaultCodespace sdk.CodespaceType = ModuleName
-
 	CodeInvalidGenesis = 101
 
-	CodeBeaconDoesNotExist         = 201
-	CodeBeaconAlreadyRegistered    = 202
-	CodeBeaconBlockAlreadyRecorded = 203
-	CodeNotBeaconOwner             = 204
+	CodeBeaconDoesNotExist             = 201
+	CodeBeaconAlreadyRegistered        = 202
+	CodeBeaconTimestampAlreadyRecorded = 203
+	CodeNotBeaconOwner                 = 204
+	CodeMissingData                    = 205
 
 	CodeBeaconInsufficientFee   = 301
 	CodeBeaconTooMuchFee        = 302
@@ -21,39 +20,16 @@ const (
 	CodeBeaconFeePayerNotOwner = 401
 )
 
-// ErrInvalidGenesis error for an invalid beacon GenesisState
-func ErrInvalidGenesis(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidGenesis, msg)
-}
-
-func ErrBeaconDoesNotExist(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeBeaconDoesNotExist, msg)
-}
-
-func ErrNotBeaconOwner(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeNotBeaconOwner, msg)
-}
-
-func ErrBeaconAlreadyRegistered(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeBeaconAlreadyRegistered, msg)
-}
-
-func ErrBeaconTimestampAlreadyRecorded(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeBeaconBlockAlreadyRecorded, msg)
-}
-
-func ErrInsufficientBeaconFee(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeBeaconInsufficientFee, msg)
-}
-
-func ErrTooMuchBeaconFee(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeBeaconTooMuchFee, msg)
-}
-
-func ErrFeePayerNotOwner(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeBeaconFeePayerNotOwner, msg)
-}
-
-func ErrIncorrectFeeDenomination(codespace sdk.CodespaceType, msg string) sdk.Error {
-	return sdk.NewError(codespace, CodeBeaconIncorrectFeeDenom, msg)
-}
+var (
+	// ErrInvalidGenesis error for an invalid beacon GenesisState
+	ErrInvalidGenesis                 = sdkerrors.Register(ModuleName, CodeInvalidGenesis, "invalid genesis")
+	ErrBeaconDoesNotExist             = sdkerrors.Register(ModuleName, CodeBeaconDoesNotExist, "beacon does not exist")
+	ErrNotBeaconOwner                 = sdkerrors.Register(ModuleName, CodeNotBeaconOwner, "not beacon owner")
+	ErrBeaconAlreadyRegistered        = sdkerrors.Register(ModuleName, CodeBeaconAlreadyRegistered, "beacon already registered")
+	ErrBeaconTimestampAlreadyRecorded = sdkerrors.Register(ModuleName, CodeBeaconTimestampAlreadyRecorded, "beacon timestamp already recorded")
+	ErrMissingData                    = sdkerrors.Register(ModuleName, CodeMissingData, "missing data")
+	ErrInsufficientBeaconFee          = sdkerrors.Register(ModuleName, CodeBeaconInsufficientFee, "insufficient beacon fee")
+	ErrTooMuchBeaconFee               = sdkerrors.Register(ModuleName, CodeBeaconTooMuchFee, "too much beacon fee")
+	ErrFeePayerNotOwner               = sdkerrors.Register(ModuleName, CodeBeaconFeePayerNotOwner, "fee payer is not beacon owner")
+	ErrIncorrectFeeDenomination       = sdkerrors.Register(ModuleName, CodeBeaconIncorrectFeeDenom, "incorrect beacon fee denomination")
+)

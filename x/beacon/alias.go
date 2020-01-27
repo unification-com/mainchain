@@ -14,8 +14,6 @@ const (
 
 	DefaultParamspace = types.DefaultParamspace
 
-	DefaultCodespace = types.DefaultCodespace
-
 	QueryParameters = keeper.QueryParameters
 	QuerierRoute    = types.QuerierRoute
 	QueryBeacons    = keeper.QueryBeacons
@@ -42,14 +40,10 @@ var (
 	NewParamsRetriever = keeper.NewParamsRetriever
 
 	// Errors
-	ErrInvalidGenesis                 = types.ErrInvalidGenesis
 	ErrBeaconAlreadyRegistered        = types.ErrBeaconAlreadyRegistered
 	ErrBeaconDoesNotExist             = types.ErrBeaconDoesNotExist
 	ErrNotBeaconOwner                 = types.ErrNotBeaconOwner
 	ErrBeaconTimestampAlreadyRecorded = types.ErrBeaconTimestampAlreadyRecorded
-	ErrInsufficientBeaconFee          = types.ErrInsufficientBeaconFee
-	ErrTooMuchBeaconFee               = types.ErrTooMuchBeaconFee
-	ErrFeePayerNotOwner               = types.ErrFeePayerNotOwner
 
 	// Events
 	EventTypeRegisterBeacon         = types.EventTypeRegisterBeacon

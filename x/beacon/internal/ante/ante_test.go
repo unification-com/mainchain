@@ -103,7 +103,8 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 
 	_, err := antehandler(ctx, tx, false)
 
-	errMsg := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
+	errMsg := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 1, expected fees: %v%v, sent fees: %v%v", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
+
 	expectedErr := sdkerrors.Wrap(types.ErrInsufficientBeaconFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")

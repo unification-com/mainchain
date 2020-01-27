@@ -133,7 +133,7 @@ func (k Keeper) RecordBeaconTimestamp(
 	beacon := k.GetBeacon(ctx, beaconID)
 
 	if !k.IsAuthorisedToRecord(ctx, beacon.BeaconID, owner) {
-		return 0, sdkerrors.Wrap(types.ErrNotBeaconOwner, "not authorised to record hashes for this beacon")
+		return 0, sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", owner)
 	}
 
 	params := types.NewQueryBeaconTimestampParams(1, 1, beaconID, hash, submitTime)

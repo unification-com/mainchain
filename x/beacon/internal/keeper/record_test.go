@@ -186,8 +186,8 @@ func TestRecordBeaconTimestampsFail(t *testing.T) {
 	}{
 		{0, 0, "", sdk.AccAddress{}, types.ErrBeaconDoesNotExist, 0},
 		{99, 0, "", sdk.AccAddress{}, types.ErrBeaconDoesNotExist, 0},
-		{bID, 1, "hash", TestAddrs[1], sdkerrors.Wrap(types.ErrNotBeaconOwner, "not authorised to record hashes for this beacon"), 0},
-		{bID, 1, "hash", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrNotBeaconOwner, "not authorised to record hashes for this beacon"), 0},
+		{bID, 1, "hash", TestAddrs[1], sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", TestAddrs[1]), 0},
+		{bID, 1, "hash", sdk.AccAddress{}, sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", sdk.AccAddress{}), 0},
 		{bID, 1, "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, submit time and hash"), 0},
 		{bID, 0, "timstamphash", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, submit time and hash"), 0},
 		{bID, 1, "timstamphash", TestAddrs[0], nil, 1},

@@ -47,7 +47,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:   "undcli",
-		Short: "Unification Mainchain CLI",
+		Short: "Unification Mainchain CLI for interacting with Mainchain",
 	}
 
 	// Add --chain-id to persistent flags and mark it required
@@ -75,7 +75,8 @@ func main() {
 	executor := cli.PrepareMainCmd(rootCmd, "UND", app.DefaultCLIHome)
 	err := executor.Execute()
 	if err != nil {
-		panic(err)
+		fmt.Printf("Failed executing CLI command: %s, exiting...\n", err)
+		os.Exit(1)
 	}
 }
 
@@ -127,6 +128,7 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 		flags.LineBreak,
 		authcmd.GetBroadcastCommand(cdc),
 		authcmd.GetEncodeCommand(cdc),
+		authcmd.GetDecodeCommand(cdc),
 		flags.LineBreak,
 	)
 

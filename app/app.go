@@ -77,10 +77,10 @@ func MakeCodec() *codec.Codec {
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	codec.RegisterEvidences(cdc)
-	return cdc
+	return cdc.Seal()
 }
 
-type mainchainApp struct {
+type MainchainApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
@@ -112,11 +112,11 @@ type mainchainApp struct {
 	mm *module.Manager
 }
 
-// NewMainchainApp is a constructor function for mainchainApp
+// NewMainchainApp is a constructor function for MainchainApp
 func NewMainchainApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
-) *mainchainApp {
+) *MainchainApp {
 
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
@@ -132,8 +132,8 @@ func NewMainchainApp(
 
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
-	// Here you initialize your application with the store keys it requires
-	var app = &mainchainApp{
+	// Initialize application with the store keys it requires
+	var app = &MainchainApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
@@ -264,9 +264,9 @@ func NewMainchainApp(
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
 		crisis.NewAppModule(&app.crisisKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		mint.NewAppModule(app.mintKeeper, app.enterpriseKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
+		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		enterprise.NewAppModule(app.enterpriseKeeper),
 		wrkchain.NewAppModule(app.wrkChainKeeper),
@@ -301,11 +301,13 @@ func NewMainchainApp(
 	// register all module routes and module queriers
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
 
+	// initialize stores
+	app.MountKVStores(keys)
+	app.MountTransientStores(tKeys)
+
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetEndBlocker(app.EndBlocker)
-
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
 		ante.NewAnteHandler(
@@ -317,10 +319,7 @@ func NewMainchainApp(
 			auth.DefaultSigVerificationGasConsumer,
 		),
 	)
-
-	// initialize stores
-	app.MountKVStores(keys)
-	app.MountTransientStores(tKeys)
+	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
@@ -332,10 +331,21 @@ func NewMainchainApp(
 	return app
 }
 
+// Name returns the name of the App
+func (app *MainchainApp) Name() string { return app.BaseApp.Name() }
+
 // GenesisState represents chain state at the start of the chain. Any initial state (account balances) are stored here.
 type GenesisState map[string]json.RawMessage
 
-func (app *mainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *MainchainApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	return app.mm.BeginBlock(ctx, req)
+}
+
+func (app *MainchainApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+	return app.mm.EndBlock(ctx, req)
+}
+
+func (app *MainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
@@ -343,18 +353,12 @@ func (app *mainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain)
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 
-func (app *mainchainApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return app.mm.BeginBlock(ctx, req)
-}
-func (app *mainchainApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.mm.EndBlock(ctx, req)
-}
-func (app *mainchainApp) LoadHeight(height int64) error {
+func (app *MainchainApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *mainchainApp) ModuleAccountAddrs() map[string]bool {
+func (app *MainchainApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
@@ -363,9 +367,14 @@ func (app *mainchainApp) ModuleAccountAddrs() map[string]bool {
 	return modAccAddrs
 }
 
+// Codec returns the application's sealed codec.
+func (app *MainchainApp) Codec() *codec.Codec {
+	return app.cdc
+}
+
 //_________________________________________________________
 
-func (app *mainchainApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
+func (app *MainchainApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
 ) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 
 	// as if they could withdraw from the start of the next block

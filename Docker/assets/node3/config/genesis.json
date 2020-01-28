@@ -8,7 +8,8 @@
       "time_iota_ms": "1000"
     },
     "evidence": {
-      "max_age": "100000"
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000"
     },
     "validator": {
       "pub_key_types": [
@@ -37,7 +38,7 @@
     },
     "evidence": {
       "params": {
-        "max_evidence_age": "120000000000"
+        "max_evidence_age": "172800000000000"
       },
       "evidence": []
     },
@@ -96,8 +97,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -111,8 +112,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -126,8 +127,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -141,8 +142,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -156,8 +157,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -171,8 +172,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -186,8 +187,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -201,8 +202,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -216,8 +217,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -231,8 +232,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         }
       ]

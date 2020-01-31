@@ -8,8 +8,8 @@ import (
 const (
 	RouterKey = ModuleName // defined in keys.go file
 
-	RegisterAction = "register"
-	RecordAction   = "record"
+	RegisterAction = "register_beacon"
+	RecordAction   = "record_beacon_timestamp"
 )
 
 // --- Register a BEACON Msg ---

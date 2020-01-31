@@ -8,8 +8,8 @@ import (
 const (
 	RouterKey = ModuleName // defined in keys.go file
 
-	PurchaseAction = "purchase"
-	ProcessAction  = "process"
+	PurchaseAction = "raise_enterprise_purchase_order"
+	ProcessAction  = "process_enterprise_purchase_order"
 )
 
 // __Enterprise_UND_Purchase_Order_Msg__________________________________

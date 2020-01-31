@@ -105,7 +105,7 @@ func SetupUnitTestApp(isCheckTx bool, genAccs int, amt int64, testDenom string) 
 	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt))
 	totalSupply := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt.MulRaw(int64(len(testAccs)))))
 	prevSupply := app.SupplyKeeper.GetSupply(ctx)
-	app.SupplyKeeper.SetSupply(ctx, supply.NewSupply(prevSupply.GetTotal().Add(totalSupply)))
+	app.SupplyKeeper.SetSupply(ctx, supply.NewSupply(prevSupply.GetTotal().Add(totalSupply...)))
 
 	app.BeaconKeeper.SetHighestBeaconID(ctx, 1)
 	beaconParams := app.BeaconKeeper.GetParams(ctx)
@@ -153,7 +153,7 @@ func AddTestAddrs(app *UndSimApp, ctx sdk.Context, accNum int, accAmt sdk.Int) [
 	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt))
 	totalSupply := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt.MulRaw(int64(len(testAddrs)))))
 	prevSupply := app.SupplyKeeper.GetSupply(ctx)
-	app.SupplyKeeper.SetSupply(ctx, supply.NewSupply(prevSupply.GetTotal().Add(totalSupply)))
+	app.SupplyKeeper.SetSupply(ctx, supply.NewSupply(prevSupply.GetTotal().Add(totalSupply...)))
 
 	// fill all the addresses with some coins, set the loose pool tokens simultaneously
 	for _, addr := range testAddrs {
@@ -180,7 +180,7 @@ func CheckBalance(t *testing.T, app *UndSimApp, addr sdk.AccAddress, exp sdk.Coi
 func SignCheckDeliver(
 	t *testing.T, cdc *codec.Codec, app *bam.BaseApp, header abci.Header, msgs []sdk.Msg,
 	accNums, seq []uint64, expSimPass, expPass bool, priv ...crypto.PrivKey,
-) sdk.Result {
+) (sdk.GasInfo, *sdk.Result, error) {
 
 	tx := helpers.GenTx(
 		msgs,
@@ -195,28 +195,32 @@ func SignCheckDeliver(
 	require.Nil(t, err)
 
 	// Must simulate now as CheckTx doesn't run Msgs anymore
-	res := app.Simulate(txBytes, tx)
+	_, res, err := app.Simulate(txBytes, tx)
 
 	if expSimPass {
-		require.Equal(t, sdk.CodeOK, res.Code, res.Log)
+		require.NoError(t, err)
+		require.NotNil(t, res)
 	} else {
-		require.NotEqual(t, sdk.CodeOK, res.Code, res.Log)
+		require.Error(t, err)
+		require.Nil(t, res)
 	}
 
 	// Simulate a sending a transaction and committing a block
 	app.BeginBlock(abci.RequestBeginBlock{Header: header})
-	res = app.Deliver(tx)
+	gInfo, res, err := app.Deliver(tx)
 
 	if expPass {
-		require.Equal(t, sdk.CodeOK, res.Code, res.Log)
+		require.NoError(t, err)
+		require.NotNil(t, res)
 	} else {
-		require.NotEqual(t, sdk.CodeOK, res.Code, res.Log)
+		require.Error(t, err)
+		require.Nil(t, res)
 	}
 
 	app.EndBlock(abci.RequestEndBlock{})
 	app.Commit()
 
-	return res
+	return gInfo, res, err
 }
 
 // GenSequenceOfTxs generates a set of signed transactions of messages, such

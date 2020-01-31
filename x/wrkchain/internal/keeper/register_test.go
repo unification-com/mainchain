@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
@@ -108,11 +109,11 @@ func TestEmptyWrkChainValuesReturnError(t *testing.T) {
 
 	testCases := []struct {
 		wc          types.WrkChain
-		expectedErr sdk.Error
+		expectedErr error
 	}{
-		{wc0, sdk.ErrInternal("unable to set WRKChain - must have an owner")},
-		{wc1, sdk.ErrInternal("unable to set WRKChain - id must be positive non-zero")},
-		{wc2, sdk.ErrInternal("unable to set WRKChain - must have a moniker")},
+		{wc0, sdkerrors.Wrap(types.ErrMissingData,"unable to set WRKChain - must have an owner")},
+		{wc1, sdkerrors.Wrap(types.ErrInvalidData,"unable to set WRKChain - id must be positive non-zero")},
+		{wc2, sdkerrors.Wrap(types.ErrMissingData,"unable to set WRKChain - must have a moniker")},
 		{wc3, nil},
 	}
 
@@ -172,15 +173,15 @@ func TestFailRegisterNewWrkChain(t *testing.T) {
 		name         string
 		genHash      string
 		owner        sdk.AccAddress
-		expectedErr  sdk.Error
+		expectedErr  error
 		expectedWcID uint64
 	}{
-		{"moniker", "name", "genhash", sdk.AccAddress{}, sdk.ErrInternal("unable to set WRKChain - must have an owner"), 0},
-		{"", "name", "genhash", TestAddrs[0], sdk.ErrInternal("unable to set WRKChain - must have a moniker"), 0},
-		{"", "", "genhash", TestAddrs[0], sdk.ErrInternal("unable to set WRKChain - must have a moniker"), 0},
-		{"", "name", "", TestAddrs[0], sdk.ErrInternal("unable to set WRKChain - must have a moniker"), 0},
+		{"moniker", "name", "genhash", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrMissingData,"unable to set WRKChain - must have an owner"), 0},
+		{"", "name", "genhash", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData,"unable to set WRKChain - must have a moniker"), 0},
+		{"", "", "genhash", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData,"unable to set WRKChain - must have a moniker"), 0},
+		{"", "name", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData,"unable to set WRKChain - must have a moniker"), 0},
 		{"testmoniker", "", "", TestAddrs[0], nil, 1},
-		{"testmoniker", "", "", TestAddrs[0], types.ErrWrkChainAlreadyRegistered(keeper.codespace, fmt.Sprintf("wrkchain already registered with moniker 'testmoniker' - id: 1, owner: %s", TestAddrs[0])), 0},
+		{"testmoniker", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrWrkChainAlreadyRegistered, fmt.Sprintf("wrkchain already registered with moniker 'testmoniker' - id: 1, owner: %s", TestAddrs[0])), 0},
 	}
 
 	for _, tc := range testCases {

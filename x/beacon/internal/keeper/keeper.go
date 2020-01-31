@@ -13,16 +13,14 @@ import (
 type Keeper struct {
 	storeKey   sdk.StoreKey // Unexposed key to access store from sdk.Context
 	paramSpace params.Subspace
-	codespace  sdk.CodespaceType
 	cdc        *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
 // NewKeeper creates new instances of the beacon Keeper
-func NewKeeper(storeKey sdk.StoreKey, paramSpace params.Subspace, codespace sdk.CodespaceType, cdc *codec.Codec) Keeper {
+func NewKeeper(storeKey sdk.StoreKey, paramSpace params.Subspace, cdc *codec.Codec) Keeper {
 	return Keeper{
 		storeKey:   storeKey,
 		paramSpace: paramSpace.WithKeyTable(types.ParamKeyTable()),
-		codespace:  codespace,
 		cdc:        cdc,
 	}
 }
@@ -30,10 +28,6 @@ func NewKeeper(storeKey sdk.StoreKey, paramSpace params.Subspace, codespace sdk.
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
-}
-
-func (k Keeper) Codespace() sdk.CodespaceType {
-	return k.codespace
 }
 
 func (k Keeper) Cdc() *codec.Codec {

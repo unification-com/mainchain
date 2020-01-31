@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmkv "github.com/tendermint/tendermint/libs/kv"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -111,7 +111,7 @@ func ExportParamsToJSON(params simulation.Params, path string) error {
 
 // GetSimulationLog unmarshals the KVPair's Value to the corresponding type based on the
 // each's module store key and the prefix bytes of the KVPair's key.
-func GetSimulationLog(storeName string, sdr sdk.StoreDecoderRegistry, cdc *codec.Codec, kvAs, kvBs []cmn.KVPair) (log string) {
+func GetSimulationLog(storeName string, sdr sdk.StoreDecoderRegistry, cdc *codec.Codec, kvAs, kvBs []tmkv.Pair) (log string) {
 	for i := 0; i < len(kvAs); i++ {
 
 		if len(kvAs[i].Value) == 0 && len(kvBs[i].Value) == 0 {

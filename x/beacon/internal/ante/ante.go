@@ -91,7 +91,7 @@ func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk keeper.Keeper) error {
 
 	if !hasFeeDenom {
 		errMsg := fmt.Sprintf("incorrect fee denomination. expected %s", expectedFeeDenom)
-		return types.ErrIncorrectFeeDenomination(types.DefaultCodespace, errMsg)
+		return sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
 	}
 
 	// go through Msgs wrapped in the Tx, and check for BEACON messages
@@ -109,12 +109,12 @@ func checkBeaconFees(ctx sdk.Context, tx FeeTx, bk keeper.Keeper) error {
 	totalFees := sdk.Coins{expectedFees}
 	if tx.GetFee().IsAllLT(totalFees) {
 		errMsg := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return types.ErrInsufficientBeaconFee(types.DefaultCodespace, errMsg)
+		return sdkerrors.Wrap(types.ErrInsufficientBeaconFee, errMsg)
 	}
 
 	if tx.GetFee().IsAllGT(totalFees) {
 		errMsg := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return types.ErrTooMuchBeaconFee(types.DefaultCodespace, errMsg)
+		return sdkerrors.Wrap(types.ErrTooMuchBeaconFee, errMsg)
 	}
 
 	return nil
@@ -144,7 +144,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek types.Ente
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
 	// include any locked UND in potential coins. We need to do this because if these checks pass,
 	// the locked UND will be unlocked in the next decorator
-	potentialCoins = potentialCoins.Add(lockedUndCoins)
+	potentialCoins = potentialCoins.Add(lockedUndCoins...)
 
 	// verify the account has enough funds to pay for fees, including any locked enterprise UND
 	_, hasNeg := potentialCoins.SafeSub(fees)
@@ -161,7 +161,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, ak auth.AccountKeeper, ek types.Ente
 
 	// include any locked UND in potential coins. We need to do this because if these checks pass,
 	// the locked UND will be unlocked in the next decorator
-	potentialSpendableCoins = potentialSpendableCoins.Add(lockedUndCoins)
+	potentialSpendableCoins = potentialSpendableCoins.Add(lockedUndCoins...)
 
 	if _, hasNeg := potentialSpendableCoins.SafeSub(fees); hasNeg {
 		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,

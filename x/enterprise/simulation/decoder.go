@@ -6,12 +6,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmkv "github.com/tendermint/tendermint/libs/kv"
 	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding enterprise type
-func DecodeStore(cdc *codec.Codec, kvA, kvB cmn.KVPair) string {
+func DecodeStore(cdc *codec.Codec, kvA, kvB tmkv.Pair) string {
 	switch {
 	case bytes.Equal(kvA.Key[:1], types.PurchaseOrderIDKeyPrefix):
 		var poA, poB types.EnterpriseUndPurchaseOrder

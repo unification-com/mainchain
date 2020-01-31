@@ -5,8 +5,8 @@ import (
 	"os"
 
 	abci "github.com/tendermint/tendermint/abci/types"
-	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -19,6 +19,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -57,6 +58,7 @@ var (
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
 		beacon.AppModule{},
+		evidence.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -77,6 +79,7 @@ func MakeCodec() *codec.Codec {
 	vesting.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
+	codec.RegisterEvidences(cdc)
 	return cdc
 }
 
@@ -91,7 +94,10 @@ type UndSimApp struct {
 
 	// keys to access the substores
 	keys  map[string]*sdk.KVStoreKey
-	tkeys map[string]*sdk.TransientStoreKey
+	tKeys map[string]*sdk.TransientStoreKey
+
+	// subspaces
+	subspaces map[string]params.Subspace
 
 	// keepers
 	AccountKeeper    auth.AccountKeeper
@@ -106,6 +112,7 @@ type UndSimApp struct {
 	WrkChainKeeper   wrkchain.Keeper
 	EnterpriseKeeper enterprise.Keeper
 	BeaconKeeper     beacon.Keeper
+	EvidenceKeeper   evidence.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -128,42 +135,101 @@ func NewUndSimApp(
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		params.StoreKey, wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey)
-	tkeys := sdk.NewTransientStoreKeys(params.TStoreKey)
+		params.StoreKey, wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey, evidence.StoreKey,)
+	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey)
 
 	app := &UndSimApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
-		tkeys:          tkeys,
+		tKeys:          tKeys,
+		subspaces:      make(map[string]params.Subspace),
 	}
 
 	// init params keeper and subspaces
-	app.ParamsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
-	authSubspace := app.ParamsKeeper.Subspace(auth.DefaultParamspace)
-	bankSubspace := app.ParamsKeeper.Subspace(bank.DefaultParamspace)
-	stakingSubspace := app.ParamsKeeper.Subspace(staking.DefaultParamspace)
-	mintSubspace := app.ParamsKeeper.Subspace(mint.DefaultParamspace)
-	distrSubspace := app.ParamsKeeper.Subspace(distr.DefaultParamspace)
-	slashingSubspace := app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
-	crisisSubspace := app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
-	enterpriseSubspace := app.ParamsKeeper.Subspace(enterprise.DefaultParamspace)
-	wrkchainSubspace := app.ParamsKeeper.Subspace(wrkchain.DefaultParamspace)
-	beaconSubspace := app.ParamsKeeper.Subspace(beacon.DefaultParamspace)
+	app.ParamsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
+	app.subspaces[auth.ModuleName] = app.ParamsKeeper.Subspace(auth.DefaultParamspace)
+	app.subspaces[bank.ModuleName] = app.ParamsKeeper.Subspace(bank.DefaultParamspace)
+	app.subspaces[staking.ModuleName] = app.ParamsKeeper.Subspace(staking.DefaultParamspace)
+	app.subspaces[mint.ModuleName] = app.ParamsKeeper.Subspace(mint.DefaultParamspace)
+	app.subspaces[distr.ModuleName] = app.ParamsKeeper.Subspace(distr.DefaultParamspace)
+	app.subspaces[slashing.ModuleName] = app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
+	app.subspaces[crisis.ModuleName] = app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
+	app.subspaces[enterprise.ModuleName] = app.ParamsKeeper.Subspace(enterprise.DefaultParamspace)
+	app.subspaces[wrkchain.ModuleName] = app.ParamsKeeper.Subspace(wrkchain.DefaultParamspace)
+	app.subspaces[beacon.ModuleName] = app.ParamsKeeper.Subspace(beacon.DefaultParamspace)
+	app.subspaces[evidence.ModuleName] = app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
 
 	// add keepers
-	app.AccountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
-	app.BankKeeper = bank.NewBaseKeeper(app.AccountKeeper, bankSubspace, bank.DefaultCodespace, app.ModuleAccountAddrs())
-	app.SupplyKeeper = supply.NewKeeper(app.cdc, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms)
-	stakingKeeper := staking.NewKeeper(app.cdc, keys[staking.StoreKey],
-		app.SupplyKeeper, stakingSubspace, staking.DefaultCodespace)
-	app.MintKeeper = mint.NewKeeper(app.cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName)
-	app.DistrKeeper = distr.NewKeeper(app.cdc, keys[distr.StoreKey], distrSubspace, &stakingKeeper,
-		app.SupplyKeeper, distr.DefaultCodespace, auth.FeeCollectorName, app.ModuleAccountAddrs())
-	app.SlashingKeeper = slashing.NewKeeper(app.cdc, keys[slashing.StoreKey], &stakingKeeper,
-		slashingSubspace, slashing.DefaultCodespace)
-	app.CrisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
+	app.AccountKeeper = auth.NewAccountKeeper(
+		app.cdc,
+		keys[auth.StoreKey],
+		app.subspaces[auth.ModuleName],
+		auth.ProtoBaseAccount,
+	)
+
+	app.BankKeeper = bank.NewBaseKeeper(
+		app.AccountKeeper,
+		app.subspaces[bank.ModuleName],
+		app.ModuleAccountAddrs(),
+	)
+
+	app.SupplyKeeper = supply.NewKeeper(
+		app.cdc,
+		keys[supply.StoreKey],
+		app.AccountKeeper,
+		app.BankKeeper,
+		maccPerms,
+	)
+
+	stakingKeeper := staking.NewKeeper(
+		app.cdc, keys[staking.StoreKey], app.SupplyKeeper, app.subspaces[staking.ModuleName],
+	)
+
+	app.MintKeeper = mint.NewKeeper(
+		app.cdc,
+		keys[mint.StoreKey],
+		app.subspaces[mint.ModuleName],
+		&stakingKeeper,
+		app.SupplyKeeper,
+		auth.FeeCollectorName,
+	)
+
+	app.DistrKeeper = distr.NewKeeper(
+		app.cdc,
+		keys[distr.StoreKey],
+		app.subspaces[distr.ModuleName],
+		&stakingKeeper,
+		app.SupplyKeeper,
+		auth.FeeCollectorName,
+		app.ModuleAccountAddrs(),
+	)
+
+	app.SlashingKeeper = slashing.NewKeeper(
+		app.cdc,
+		keys[slashing.StoreKey],
+		&stakingKeeper,
+		app.subspaces[slashing.ModuleName],
+	)
+
+	app.CrisisKeeper = crisis.NewKeeper(
+		app.subspaces[crisis.ModuleName],
+		invCheckPeriod,
+		app.SupplyKeeper,
+		auth.FeeCollectorName,
+	)
+
+	// create evidence keeper with evidence router
+	evidenceKeeper := evidence.NewKeeper(
+		app.cdc, keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.SlashingKeeper,
+	)
+	evidenceRouter := evidence.NewRouter()
+
+	// TODO: register evidence routes
+	evidenceKeeper.SetRouter(evidenceRouter)
+
+	app.EvidenceKeeper = *evidenceKeeper
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -173,8 +239,7 @@ func NewUndSimApp(
 
 	app.WrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
-		wrkchainSubspace,
-		wrkchain.DefaultCodespace,
+		app.subspaces[wrkchain.ModuleName],
 		app.cdc,
 	)
 
@@ -182,15 +247,13 @@ func NewUndSimApp(
 		keys[enterprise.StoreKey],
 		app.SupplyKeeper,
 		app.AccountKeeper,
-		enterpriseSubspace,
-		enterprise.DefaultCodespace,
+		app.subspaces[enterprise.ModuleName],
 		app.cdc,
 	)
 
 	app.BeaconKeeper = beacon.NewKeeper(
 		keys[beacon.StoreKey],
-		beaconSubspace,
-		beacon.DefaultCodespace,
+		app.subspaces[beacon.ModuleName],
 		app.cdc,
 	)
 
@@ -203,12 +266,13 @@ func NewUndSimApp(
 		crisis.NewAppModule(&app.CrisisKeeper),
 		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
 		mint.NewAppModule(app.MintKeeper, app.EnterpriseKeeper),
-		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
-		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
+		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper, app.StakingKeeper),
+		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.StakingKeeper),
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
 		beacon.NewAppModule(app.BeaconKeeper),
+		evidence.NewAppModule(app.EvidenceKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -224,7 +288,7 @@ func NewUndSimApp(
 		auth.ModuleName, distr.ModuleName, staking.ModuleName,
 		bank.ModuleName, slashing.ModuleName, wrkchain.ModuleName, beacon.ModuleName,
 		enterprise.ModuleName, mint.ModuleName, supply.ModuleName,
-		crisis.ModuleName, genutil.ModuleName,
+		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -239,9 +303,9 @@ func NewUndSimApp(
 		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
 		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
 		mint.NewAppModule(app.MintKeeper, app.EnterpriseKeeper),
-		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
+		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper, app.StakingKeeper),
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
-		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
+		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.StakingKeeper),
 		enterprise.NewAppModule(app.EnterpriseKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
 		beacon.NewAppModule(app.BeaconKeeper),
@@ -251,7 +315,7 @@ func NewUndSimApp(
 
 	// initialize stores
 	app.MountKVStores(keys)
-	app.MountTransientStores(tkeys)
+	app.MountTransientStores(tKeys)
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
@@ -271,7 +335,7 @@ func NewUndSimApp(
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
 		if err != nil {
-			cmn.Exit(err.Error())
+			tmos.Exit(err.Error())
 		}
 	}
 	return app
@@ -321,7 +385,7 @@ func (app *UndSimApp) GetKey(storeKey string) *sdk.KVStoreKey {
 
 // GetTKey returns the TransientStoreKey for the provided store key
 func (app *UndSimApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
-	return app.tkeys[storeKey]
+	return app.tKeys[storeKey]
 }
 
 // GetMaccPerms returns a copy of the module account permissions

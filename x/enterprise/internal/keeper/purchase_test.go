@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 	"testing"
@@ -88,15 +89,15 @@ func TestSetEmptyPurchaseOrderValues(t *testing.T) {
 
 	testCases := []struct {
 		po          types.EnterpriseUndPurchaseOrder
-		expectedErr sdk.Error
+		expectedErr error
 	}{
-		{po1, sdk.ErrInternal("unable to set purchase order - purchaser cannot be empty")},
-		{po2, sdk.ErrInternal("unable to set purchase order - amount not valid")},
-		{po3, sdk.ErrInternal("unable to set purchase order - amount must be positive")},
-		{po4, sdk.ErrInternal("unable to set purchase order - id must be positive non-zero")},
+		{po1, sdkerrors.Wrap(types.ErrMissingData, "unable to set purchase order - purchaser cannot be empty")},
+		{po2, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - amount not valid")},
+		{po3, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - amount must be positive")},
+		{po4, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - id must be positive non-zero")},
 		{po5, nil},
-		{po6, sdk.ErrInternal("unable to set purchase order - invalid status")},
-		{po7, sdk.ErrInternal("unable to set purchase order - invalid status")},
+		{po6, sdkerrors.Wrap(types.ErrInvalidStatus,"unable to set purchase order - invalid status")},
+		{po7, sdkerrors.Wrap(types.ErrInvalidStatus,"unable to set purchase order - invalid status")},
 	}
 
 	for _, tc := range testCases {
@@ -167,12 +168,12 @@ func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 
 	testCases := []struct {
 		po           types.EnterpriseUndPurchaseOrder
-		expectedErr  sdk.Error
+		expectedErr  error
 		expectedPoID uint64
 	}{
-		{po1, sdk.ErrInternal("unable to set purchase order - purchaser cannot be empty"), 0},
-		{po2, sdk.ErrInternal("unable to set purchase order - amount not valid"), 0},
-		{po3, sdk.ErrInternal("unable to set purchase order - amount must be positive"), 0},
+		{po1, sdkerrors.Wrap(types.ErrMissingData,"unable to set purchase order - purchaser cannot be empty"), 0},
+		{po2, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - amount not valid"), 0},
+		{po3, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - amount must be positive"), 0},
 		{po4, nil, 1},
 	}
 
@@ -246,8 +247,8 @@ func TestProcessNotExistPurchaseOrder(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 	for i := uint64(1); i < 1000; i++ {
 		err := keeper.ProcessPurchaseOrderDecision(ctx, i, RandomDecision(), EntSignerAddr)
-		errMsg := fmt.Sprintf("purchase order id does not exist: %d", i)
-		expectedErr := types.ErrPurchaseOrderDoesNotExist(keeper.codespace, errMsg)
+		errMsg := fmt.Sprintf("id: %d", i)
+		expectedErr := sdkerrors.Wrap(types.ErrPurchaseOrderDoesNotExist, errMsg)
 		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
 	}
 }
@@ -265,8 +266,8 @@ func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
 		require.NoError(t, err)
 
 		// reprocess
-		errMsg := fmt.Sprintf("purchase order %d already processed: %s", poID, decision)
-		expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
+		errMsg := fmt.Sprintf("id %d already processed: %s", poID, decision)
+		expectedErr := sdkerrors.Wrap(types.ErrPurchaseOrderAlreadyProcessed, errMsg)
 
 		// mock blocker processing
 		po := keeper.GetPurchaseOrder(ctx, poID)
@@ -282,14 +283,14 @@ func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
 			po.Status = types.StatusCompleted
 			_ = keeper.SetPurchaseOrder(ctx, po)
 
-			errMsg := fmt.Sprintf("purchase order %d already processed: complete", poID)
-			expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
+			errMsg := fmt.Sprintf("id %d already processed: complete", poID)
+			expectedErr := sdkerrors.Wrap(types.ErrPurchaseOrderAlreadyProcessed, errMsg)
 
 			err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
 			require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
 		} else {
-			errMsg := fmt.Sprintf("purchase order %d already processed: reject", poID)
-			expectedErr := types.ErrPurchaseOrderAlreadyProcessed(keeper.codespace, errMsg)
+			errMsg := fmt.Sprintf("id %d already processed: reject", poID)
+			expectedErr := sdkerrors.Wrap(types.ErrPurchaseOrderAlreadyProcessed, errMsg)
 
 			err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
 			require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -311,7 +312,7 @@ func TestProcessingDuplicateDecisions(t *testing.T) {
 
 		// reprocess
 		errMsg := fmt.Sprintf("signer %s already decided: %s", EntSignerAddr, decision)
-		expectedErr := types.ErrSignerAlreadyMadeDecision(keeper.codespace, errMsg)
+		expectedErr := sdkerrors.Wrap(types.ErrSignerAlreadyMadeDecision, errMsg)
 
 		err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
 		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -335,14 +336,14 @@ func TestProcessPurchaseOrderInvalidDecision(t *testing.T) {
 	testCases := []struct {
 		poId        uint64
 		decision    types.PurchaseOrderStatus
-		expectedErr sdk.Error
+		expectedErr error
 	}{
-		{1, types.StatusRaised, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
-		{1, types.StatusCompleted, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
-		{1, types.StatusNil, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
-		{1, 0x05, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
-		{1, 0x06, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
-		{1, 0x07, types.ErrInvalidDecision(keeper.codespace, "decision should be accept or reject")},
+		{1, types.StatusRaised, sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")},
+		{1, types.StatusCompleted, sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")},
+		{1, types.StatusNil, sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")},
+		{1, 0x05, sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")},
+		{1, 0x06, sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")},
+		{1, 0x07, sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")},
 		{1, types.StatusAccepted, nil},
 		{2, types.StatusRejected, nil},
 	}
@@ -372,18 +373,18 @@ func TestUnauthorisedDecisionMaker(t *testing.T) {
 		poId        uint64
 		decision    types.PurchaseOrderStatus
 		signer      sdk.AccAddress
-		expectedErr sdk.Error
+		expectedErr error
 	}{
-		{1, types.StatusAccepted, TestAddrs[0], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{1, types.StatusAccepted, TestAddrs[1], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{1, types.StatusAccepted, TestAddrs[2], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{1, types.StatusRejected, TestAddrs[3], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{1, types.StatusRejected, TestAddrs[4], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{2, types.StatusAccepted, TestAddrs[0], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{2, types.StatusAccepted, TestAddrs[1], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{2, types.StatusAccepted, TestAddrs[2], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{2, types.StatusRejected, TestAddrs[3], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
-		{2, types.StatusRejected, TestAddrs[4], sdk.ErrUnauthorized("unauthorised signer processing purchase order")},
+		{1, types.StatusAccepted, TestAddrs[0], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{1, types.StatusAccepted, TestAddrs[1], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{1, types.StatusAccepted, TestAddrs[2], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{1, types.StatusRejected, TestAddrs[3], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{1, types.StatusRejected, TestAddrs[4], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{2, types.StatusAccepted, TestAddrs[0], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{2, types.StatusAccepted, TestAddrs[1], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{2, types.StatusAccepted, TestAddrs[2], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{2, types.StatusRejected, TestAddrs[3], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
+		{2, types.StatusRejected, TestAddrs[4], sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")},
 		{1, types.StatusAccepted, EntSignerAddr, nil},
 		{2, types.StatusRejected, EntSignerAddr, nil},
 	}

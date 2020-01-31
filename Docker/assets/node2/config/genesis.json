@@ -8,7 +8,8 @@
       "time_iota_ms": "1000"
     },
     "evidence": {
-      "max_age": "100000"
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000"
     },
     "validator": {
       "pub_key_types": [
@@ -26,7 +27,6 @@
     },
     "slashing": {
       "params": {
-        "max_evidence_age": "120000000000",
         "signed_blocks_window": "100",
         "min_signed_per_window": "0.500000000000000000",
         "downtime_jail_duration": "600000000000",
@@ -35,6 +35,12 @@
       },
       "signing_infos": {},
       "missed_blocks": {}
+    },
+    "evidence": {
+      "params": {
+        "max_evidence_age": "172800000000000"
+      },
+      "evidence": []
     },
     "wrkchain": {
       "params": {
@@ -56,14 +62,14 @@
     },
     "mint": {
       "minter": {
-        "inflation": "0.013000000000000000",
+        "inflation": "0.001000000000000000",
         "annual_provisions": "0.000000000000000000"
       },
       "params": {
         "mint_denom": "nund",
         "inflation_rate_change": "0.130000000000000000",
         "inflation_max": "0.200000000000000000",
-        "inflation_min": "0.010000000000000000",
+        "inflation_min": "0.001000000000000000",
         "goal_bonded": "0.100000000000000000",
         "blocks_per_year": "6311520"
       }
@@ -91,8 +97,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -106,8 +112,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -121,8 +127,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -136,8 +142,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -151,8 +157,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -166,8 +172,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -181,8 +187,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -196,8 +202,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -211,8 +217,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         },
         {
@@ -226,8 +232,8 @@
               }
             ],
             "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
+            "account_number": 0,
+            "sequence": 0
           }
         }
       ]
@@ -262,10 +268,12 @@
       "fee_pool": {
         "community_pool": []
       },
-      "community_tax": "0.000000000000000000",
-      "base_proposer_reward": "0.010000000000000000",
-      "bonus_proposer_reward": "0.040000000000000000",
-      "withdraw_addr_enabled": true,
+      "params": {
+        "community_tax": "0.000000000000000000",
+        "base_proposer_reward": "0.010000000000000000",
+        "bonus_proposer_reward": "0.040000000000000000",
+        "withdraw_addr_enabled": true
+      },
       "delegator_withdraw_infos": [],
       "previous_proposer": "",
       "outstanding_rewards": [],

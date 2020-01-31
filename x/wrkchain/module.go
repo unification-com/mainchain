@@ -138,3 +138,13 @@ func (AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState
 func (AppModuleSimulation) RandomizedParams(r *rand.Rand) []sim.ParamChange {
 	return []sim.ParamChange{}
 }
+
+// ProposalContents doesn't return any content functions for proposals.
+func (AppModuleSimulation) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
+	return nil
+}
+
+// WeightedOperations doesn't return any wrkchain module operation.
+func (AppModuleSimulation) WeightedOperations(_ module.SimulationState) []sim.WeightedOperation {
+	return nil
+}

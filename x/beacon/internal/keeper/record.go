@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 // SetBeaconTimestamp Sets the Beacon timestamp struct for a beaconID + timestampID
-func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconTimestamp types.BeaconTimestamp) sdk.Error {
+func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconTimestamp types.BeaconTimestamp) error {
 	// must have an owner, Beacon ID, TimestampID and Hash
 	if beaconTimestamp.Owner.Empty() || beaconTimestamp.BeaconID == 0 || beaconTimestamp.TimestampID == 0 || len(beaconTimestamp.Hash) == 0 || beaconTimestamp.SubmitTime == 0 {
-		return sdk.ErrInternal("must include owner, id, submit time and hash")
+		return sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, submit time and hash")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -120,26 +121,26 @@ func (k Keeper) RecordBeaconTimestamp(
 	beaconID uint64,
 	hash string,
 	submitTime uint64,
-	owner sdk.AccAddress) (uint64, sdk.Error) {
+	owner sdk.AccAddress) (uint64, error) {
 
 	logger := k.Logger(ctx)
 
 	if !k.IsBeaconRegistered(ctx, beaconID) {
 		// can't record hashes if BEACON isn't registered
-		return 0, types.ErrBeaconDoesNotExist(k.codespace, "beacon does not exist")
+		return 0, types.ErrBeaconDoesNotExist
 	}
 
 	beacon := k.GetBeacon(ctx, beaconID)
 
 	if !k.IsAuthorisedToRecord(ctx, beacon.BeaconID, owner) {
-		return 0, types.ErrNotBeaconOwner(k.codespace, "not authorised to record hashes for this beacon")
+		return 0, sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", owner)
 	}
 
 	params := types.NewQueryBeaconTimestampParams(1, 1, beaconID, hash, submitTime)
 	bts := k.GetBeaconTimestampsFiltered(ctx, params)
 
 	if len(bts) > 0 {
-		return 0, types.ErrBeaconTimestampAlreadyRecorded(k.codespace, fmt.Sprintf("timestamp hash %s already recorded at time %d", hash, submitTime))
+		return 0, sdkerrors.Wrap(types.ErrBeaconTimestampAlreadyRecorded, fmt.Sprintf("timestamp hash %s already recorded at time %d", hash, submitTime))
 	}
 
 	timestampID := beacon.LastTimestampID + 1

@@ -1,7 +1,6 @@
 package ante_test
 
 import (
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/ed25519"
@@ -17,7 +16,6 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/simapp"
 )
 
@@ -78,16 +76,9 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 		privK,
 	)
 
-	expectedErr := sdkerrors.Wrap(sdk.ErrInsufficientCoins(
-		fmt.Sprintf("insufficient account funds;  < %s", fee),
-	), "failed to unlock enterprise und")
-
 	_, err := antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
 }
 
 func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {

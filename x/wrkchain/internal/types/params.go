@@ -1,7 +1,11 @@
 package types
 
 import (
+	"errors"
 	"fmt"
+	"strings"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 )
 
@@ -42,11 +46,19 @@ func DefaultParams() Params {
 }
 
 // validate params
-func ValidateParams(params Params) error {
-
-	if len(params.Denom) == 0 {
-		return fmt.Errorf("wrkchain fee denomination parameter is empty ")
+func (p Params) Validate() error {
+	if err := validateFeeDenom(p.Denom); err != nil {
+		return err
 	}
+
+	if err := validateFeeRegister(p.FeeRegister); err != nil {
+		return err
+	}
+
+	if err := validateFeeRecord(p.FeeRecord); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -63,8 +75,50 @@ func (p Params) String() string {
 // Implements params.ParamSet
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
-		{Key: KeyFeeRegister, Value: &p.FeeRegister},
-		{Key: KeyFeeRecord, Value: &p.FeeRecord},
-		{Key: KeyDenom, Value: &p.Denom},
+		params.NewParamSetPair(KeyFeeRegister, &p.FeeRegister, validateFeeRegister),
+		params.NewParamSetPair(KeyFeeRecord, &p.FeeRecord, validateFeeRecord),
+		params.NewParamSetPair(KeyDenom, &p.Denom, validateFeeDenom),
 	}
+}
+
+func validateFeeDenom(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("fee denom cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func validateFeeRegister(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("registration fee must be positive: %d", v)
+	}
+
+	return nil
+}
+
+func validateFeeRecord(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("record fee must be positive: %d", v)
+	}
+
+	return nil
 }

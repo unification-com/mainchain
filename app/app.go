@@ -6,8 +6,8 @@ import (
 	"os"
 
 	abci "github.com/tendermint/tendermint/abci/types"
-	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -56,6 +57,7 @@ var (
 		enterprise.AppModule{},
 		wrkchain.AppModule{},
 		beacon.AppModule{},
+		evidence.AppModuleBasic{},
 	)
 	// account permissions
 	maccPerms = map[string][]string{
@@ -74,10 +76,11 @@ func MakeCodec() *codec.Codec {
 	ModuleBasics.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
-	return cdc
+	codec.RegisterEvidences(cdc)
+	return cdc.Seal()
 }
 
-type mainchainApp struct {
+type MainchainApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
@@ -85,7 +88,10 @@ type mainchainApp struct {
 
 	// keys to access the substores
 	keys  map[string]*sdk.KVStoreKey
-	tkeys map[string]*sdk.TransientStoreKey
+	tKeys map[string]*sdk.TransientStoreKey
+
+	// subspaces
+	subspaces map[string]params.Subspace
 
 	// Keepers
 	accountKeeper    auth.AccountKeeper
@@ -100,16 +106,17 @@ type mainchainApp struct {
 	wrkChainKeeper   wrkchain.Keeper
 	enterpriseKeeper enterprise.Keeper
 	beaconKeeper     beacon.Keeper
+	evidenceKeeper   evidence.Keeper
 
 	// Module Manager
 	mm *module.Manager
 }
 
-// NewMainchainApp is a constructor function for mainchainApp
+// NewMainchainApp is a constructor function for MainchainApp
 func NewMainchainApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
-) *mainchainApp {
+) *MainchainApp {
 
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
@@ -121,46 +128,47 @@ func NewMainchainApp(
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey,
-		wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey)
+		wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey, evidence.StoreKey,)
 
-	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
+	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
-	// Here you initialize your application with the store keys it requires
-	var app = &mainchainApp{
+	// Initialize application with the store keys it requires
+	var app = &MainchainApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
-		tkeys:          tkeys,
+		tKeys:          tKeys,
+		subspaces:      make(map[string]params.Subspace),
 	}
 
 	// The ParamsKeeper handles parameter storage for the application
-	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
+	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
 	// Set specific subspaces
-	authSubspace := app.paramsKeeper.Subspace(auth.DefaultParamspace)
-	bankSupspace := app.paramsKeeper.Subspace(bank.DefaultParamspace)
-	stakingSubspace := app.paramsKeeper.Subspace(staking.DefaultParamspace)
-	mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
-	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
-	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
-	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
-	enterpriseSubspace := app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
-	wrkchainSubspace := app.paramsKeeper.Subspace(wrkchain.DefaultParamspace)
-	beaconSubspace := app.paramsKeeper.Subspace(beacon.DefaultParamspace)
+	app.subspaces[auth.ModuleName] = app.paramsKeeper.Subspace(auth.DefaultParamspace)
+	app.subspaces[bank.ModuleName] = app.paramsKeeper.Subspace(bank.DefaultParamspace)
+	app.subspaces[staking.ModuleName] = app.paramsKeeper.Subspace(staking.DefaultParamspace)
+	app.subspaces[mint.ModuleName] = app.paramsKeeper.Subspace(mint.DefaultParamspace)
+	app.subspaces[distr.ModuleName] = app.paramsKeeper.Subspace(distr.DefaultParamspace)
+	app.subspaces[slashing.ModuleName] = app.paramsKeeper.Subspace(slashing.DefaultParamspace)
+	app.subspaces[crisis.ModuleName] = app.paramsKeeper.Subspace(crisis.DefaultParamspace)
+	app.subspaces[enterprise.ModuleName] = app.paramsKeeper.Subspace(enterprise.DefaultParamspace)
+	app.subspaces[wrkchain.ModuleName] = app.paramsKeeper.Subspace(wrkchain.DefaultParamspace)
+	app.subspaces[beacon.ModuleName] = app.paramsKeeper.Subspace(beacon.DefaultParamspace)
+	app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
 		app.cdc,
 		keys[auth.StoreKey],
-		authSubspace,
+		app.subspaces[auth.ModuleName],
 		auth.ProtoBaseAccount,
 	)
 
 	// The BankKeeper allows you perform sdk.Coins interactions
 	app.bankKeeper = bank.NewBaseKeeper(
 		app.accountKeeper,
-		bankSupspace,
-		bank.DefaultCodespace,
+		app.subspaces[bank.ModuleName],
 		app.ModuleAccountAddrs(),
 	)
 
@@ -175,13 +183,13 @@ func NewMainchainApp(
 
 	// The staking keeper
 	stakingKeeper := staking.NewKeeper(
-		app.cdc, keys[staking.StoreKey], app.supplyKeeper, stakingSubspace, staking.DefaultCodespace,
+		app.cdc, keys[staking.StoreKey], app.supplyKeeper, app.subspaces[staking.ModuleName],
 	)
 
 	app.mintKeeper = mint.NewKeeper(
 		app.cdc,
 		keys[mint.StoreKey],
-		mintSubspace,
+		app.subspaces[mint.ModuleName],
 		&stakingKeeper,
 		app.supplyKeeper,
 		auth.FeeCollectorName,
@@ -190,10 +198,9 @@ func NewMainchainApp(
 	app.distrKeeper = distr.NewKeeper(
 		app.cdc,
 		keys[distr.StoreKey],
-		distrSubspace,
+		app.subspaces[distr.ModuleName],
 		&stakingKeeper,
 		app.supplyKeeper,
-		distr.DefaultCodespace,
 		auth.FeeCollectorName,
 		app.ModuleAccountAddrs(),
 	)
@@ -202,16 +209,26 @@ func NewMainchainApp(
 		app.cdc,
 		keys[slashing.StoreKey],
 		&stakingKeeper,
-		slashingSubspace,
-		slashing.DefaultCodespace,
+		app.subspaces[slashing.ModuleName],
 	)
 
 	app.crisisKeeper = crisis.NewKeeper(
-		crisisSubspace,
+		app.subspaces[crisis.ModuleName],
 		invCheckPeriod,
 		app.supplyKeeper,
 		auth.FeeCollectorName,
 	)
+
+	// create evidence keeper with evidence router
+	evidenceKeeper := evidence.NewKeeper(
+		app.cdc, keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.slashingKeeper,
+	)
+	evidenceRouter := evidence.NewRouter()
+
+	// TODO: register evidence routes
+	evidenceKeeper.SetRouter(evidenceRouter)
+
+	app.evidenceKeeper = *evidenceKeeper
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -223,8 +240,7 @@ func NewMainchainApp(
 
 	app.wrkChainKeeper = wrkchain.NewKeeper(
 		keys[wrkchain.StoreKey],
-		wrkchainSubspace,
-		wrkchain.DefaultCodespace,
+		app.subspaces[wrkchain.ModuleName],
 		app.cdc,
 	)
 
@@ -232,15 +248,13 @@ func NewMainchainApp(
 		keys[enterprise.StoreKey],
 		app.supplyKeeper,
 		app.accountKeeper,
-		enterpriseSubspace,
-		enterprise.DefaultCodespace,
+		app.subspaces[enterprise.ModuleName],
 		app.cdc,
 	)
 
 	app.beaconKeeper = beacon.NewKeeper(
 		keys[beacon.StoreKey],
-		beaconSubspace,
-		beacon.DefaultCodespace,
+		app.subspaces[beacon.ModuleName],
 		app.cdc,
 	)
 
@@ -250,13 +264,14 @@ func NewMainchainApp(
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
 		crisis.NewAppModule(&app.crisisKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
-		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
 		mint.NewAppModule(app.mintKeeper, app.enterpriseKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
+		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		enterprise.NewAppModule(app.enterpriseKeeper),
 		wrkchain.NewAppModule(app.wrkChainKeeper),
 		beacon.NewAppModule(app.beaconKeeper),
+		evidence.NewAppModule(app.evidenceKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(enterprise.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName)
@@ -278,6 +293,7 @@ func NewMainchainApp(
 		supply.ModuleName,
 		crisis.ModuleName,
 		genutil.ModuleName,
+		evidence.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -285,11 +301,13 @@ func NewMainchainApp(
 	// register all module routes and module queriers
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
 
+	// initialize stores
+	app.MountKVStores(keys)
+	app.MountTransientStores(tKeys)
+
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetEndBlocker(app.EndBlocker)
-
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
 		ante.NewAnteHandler(
@@ -301,25 +319,33 @@ func NewMainchainApp(
 			auth.DefaultSigVerificationGasConsumer,
 		),
 	)
-
-	// initialize stores
-	app.MountKVStores(keys)
-	app.MountTransientStores(tkeys)
+	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
 		if err != nil {
-			cmn.Exit(err.Error())
+			tmos.Exit(err.Error())
 		}
 	}
 
 	return app
 }
 
+// Name returns the name of the App
+func (app *MainchainApp) Name() string { return app.BaseApp.Name() }
+
 // GenesisState represents chain state at the start of the chain. Any initial state (account balances) are stored here.
 type GenesisState map[string]json.RawMessage
 
-func (app *mainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *MainchainApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	return app.mm.BeginBlock(ctx, req)
+}
+
+func (app *MainchainApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+	return app.mm.EndBlock(ctx, req)
+}
+
+func (app *MainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
@@ -327,18 +353,12 @@ func (app *mainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain)
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 
-func (app *mainchainApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return app.mm.BeginBlock(ctx, req)
-}
-func (app *mainchainApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.mm.EndBlock(ctx, req)
-}
-func (app *mainchainApp) LoadHeight(height int64) error {
+func (app *MainchainApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *mainchainApp) ModuleAccountAddrs() map[string]bool {
+func (app *MainchainApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
@@ -347,9 +367,14 @@ func (app *mainchainApp) ModuleAccountAddrs() map[string]bool {
 	return modAccAddrs
 }
 
+// Codec returns the application's sealed codec.
+func (app *MainchainApp) Codec() *codec.Codec {
+	return app.cdc
+}
+
 //_________________________________________________________
 
-func (app *mainchainApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
+func (app *MainchainApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
 ) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 
 	// as if they could withdraw from the start of the next block

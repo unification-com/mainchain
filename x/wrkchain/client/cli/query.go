@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/version"
@@ -24,7 +25,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	wrkchainQueryCmd.AddCommand(client.GetCommands(
+	wrkchainQueryCmd.AddCommand(flags.GetCommands(
 		GetCmdQueryParams(cdc),
 		GetCmdWrkChain(storeKey, cdc),
 		GetCmdSearchWrkChains(storeKey, cdc),

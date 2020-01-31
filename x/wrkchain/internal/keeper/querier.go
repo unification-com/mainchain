@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -19,7 +20,7 @@ const (
 
 // NewQuerier is the module level router for state queries
 func NewQuerier(keeper Keeper) sdk.Querier {
-	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
+	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err error) {
 		switch path[0] {
 		case QueryParameters:
 			return queryParams(ctx, keeper)
@@ -30,24 +31,24 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		case QueryWrkChainBlock:
 			return queryWrkChainBlock(ctx, path[1:], req, keeper)
 		default:
-			return nil, sdk.ErrUnknownRequest("unknown wrkchain query endpoint")
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
 		}
 	}
 }
 
-func queryParams(ctx sdk.Context, k Keeper) ([]byte, sdk.Error) {
+func queryParams(ctx sdk.Context, k Keeper) ([]byte, error) {
 	params := k.GetParams(ctx)
 
 	res, err := codec.MarshalJSONIndent(k.cdc, params)
 	if err != nil {
-		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
 	return res, nil
 }
 
 // nolint: unparam
-func queryWrkChain(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryWrkChain(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 
 	wrkchainID, err := strconv.Atoi(path[0])
 
@@ -65,7 +66,7 @@ func queryWrkChain(ctx sdk.Context, path []string, req abci.RequestQuery, keeper
 	return res, nil
 }
 
-func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 
 	wrkchainID, err := strconv.Atoi(path[0])
 
@@ -89,7 +90,7 @@ func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, k
 	return res, nil
 }
 
-func queryWrkChainBlockHashes(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryWrkChainBlockHashes(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 
 	wrkchainID, err := strconv.Atoi(path[0])
 
@@ -107,14 +108,14 @@ func queryWrkChainBlockHashes(ctx sdk.Context, path []string, req abci.RequestQu
 	return res, nil
 }
 
-func queryWrkChainsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k Keeper) ([]byte, sdk.Error) {
+func queryWrkChainsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k Keeper) ([]byte, error) {
 
 	var queryParams types.QueryWrkChainParams
 
 	err := k.cdc.UnmarshalJSON(req.Data, &queryParams)
 
 	if err != nil {
-		return nil, sdk.ErrUnknownRequest(sdk.AppendMsgToErr("failed to parse params", err.Error()))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
 	filteredWrkChains := k.GetWrkChainsFiltered(ctx, queryParams)
@@ -125,25 +126,25 @@ func queryWrkChainsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, 
 
 	res, err := codec.MarshalJSONIndent(k.cdc, filteredWrkChains)
 	if err != nil {
-		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
 	return res, nil
 }
 
-func queryWrkChainHashesFiltered(ctx sdk.Context, path []string, req abci.RequestQuery, k Keeper) ([]byte, sdk.Error) {
+func queryWrkChainHashesFiltered(ctx sdk.Context, path []string, req abci.RequestQuery, k Keeper) ([]byte, error) {
 	var queryParams types.QueryWrkChainBlockParams
 
 	err := k.cdc.UnmarshalJSON(req.Data, &queryParams)
 
 	if err != nil {
-		return nil, sdk.ErrUnknownRequest(sdk.AppendMsgToErr("failed to parse params", err.Error()))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
 	wrkchainID, err := strconv.Atoi(path[0])
 
 	if err != nil {
-		return nil, sdk.ErrUnknownRequest(sdk.AppendMsgToErr("failed to parse params", err.Error()))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 	}
 
 	filteredWrkchainHashes := k.GetWrkChainBlockHashesFiltered(ctx, uint64(wrkchainID), queryParams)
@@ -154,7 +155,7 @@ func queryWrkChainHashesFiltered(ctx sdk.Context, path []string, req abci.Reques
 
 	res, err := codec.MarshalJSONIndent(k.cdc, filteredWrkchainHashes)
 	if err != nil {
-		return nil, sdk.ErrInternal(sdk.AppendMsgToErr("failed to marshal JSON", err.Error()))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
 	return res, nil

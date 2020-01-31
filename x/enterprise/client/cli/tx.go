@@ -1,11 +1,14 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
@@ -32,7 +35,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	enterpriseTxCmd.AddCommand(client.PostCommands(
+	enterpriseTxCmd.AddCommand(flags.PostCommands(
 		GetCmdRaisePurchaseOrder(cdc),
 		GetCmdProcessPurchaseOrder(cdc),
 	)...)
@@ -57,9 +60,10 @@ $ %s tx %s purchase 1%s --from wrktest
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			amount, err := sdk.ParseCoin(args[0])
 			if err != nil {
@@ -80,7 +84,7 @@ $ %s tx %s purchase 1%s --from wrktest
 			}
 
 			if amount.Denom != undtypes.DefaultDenomination {
-				return sdk.ErrInvalidCoins(fmt.Sprintf("denomination should be %s", undtypes.DefaultDenomination))
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("denomination should be %s", undtypes.DefaultDenomination))
 			}
 
 			msg := types.NewMsgUndPurchaseOrder(cliCtx.GetFromAddress(), amount)
@@ -110,9 +114,10 @@ $ %s tx %s process 24 reject --from ent
 		),
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			purchaseOrderId, err := strconv.Atoi(args[0])
 			if err != nil {
@@ -125,7 +130,7 @@ $ %s tx %s process 24 reject --from ent
 			}
 
 			if !types.ValidPurchaseOrderAcceptRejectStatus(decision) {
-				return types.ErrInvalidDecision(types.DefaultCodespace, "decision should be accept or reject")
+				return sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")
 			}
 
 			msg := types.NewMsgProcessUndPurchaseOrder(uint64(purchaseOrderId), decision, cliCtx.GetFromAddress())

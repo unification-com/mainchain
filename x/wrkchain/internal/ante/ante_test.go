@@ -104,7 +104,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr := types.ErrInsufficientWrkChainFee(types.DefaultCodespace, errMsg)
+	expectedErr := sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -126,7 +126,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRecFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr1 := types.ErrInsufficientWrkChainFee(types.DefaultCodespace, errMsg1)
+	expectedErr1 := sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1, err1, "unexpected type of error: %s", err1)
@@ -165,7 +165,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("too much fee sent to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr := types.ErrTooMuchWrkChainFee(types.DefaultCodespace, errMsg)
+	expectedErr := sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -187,7 +187,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("too much fee sent to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRecFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr1 := types.ErrTooMuchWrkChainFee(types.DefaultCodespace, errMsg1)
+	expectedErr1 := sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1, err1, "unexpected type of error: %s", err1)
@@ -226,7 +226,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr := types.ErrIncorrectFeeDenomination(types.DefaultCodespace, errMsg)
+	expectedErr := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx1")
 	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -353,7 +353,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	}
 	_ = app.EnterpriseKeeper.SetLockedUndForAccount(ctx, lockedUnd)
 
-	withLocked := initCoins.Add(sdk.NewCoins(lockedUnd.Amount))
+	withLocked := initCoins.Add(lockedUnd.Amount)
 
 	feeInt := int64(actualRegFeeAmt)
 	feeDenom := actualFeeDenom

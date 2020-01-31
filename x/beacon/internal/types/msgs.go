@@ -2,6 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
@@ -36,12 +37,12 @@ func (msg MsgRegisterBeacon) Route() string { return RouterKey }
 func (msg MsgRegisterBeacon) Type() string { return RegisterAction }
 
 // ValidateBasic runs stateless checks on the message
-func (msg MsgRegisterBeacon) ValidateBasic() sdk.Error {
+func (msg MsgRegisterBeacon) ValidateBasic() error {
 	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
 	}
 	if len(msg.Moniker) == 0 || len(msg.BeaconName) == 0 {
-		return sdk.ErrUnknownRequest("Moniker BEACON Name cannot be empty")
+		return sdkerrors.Wrap(ErrMissingData,"moniker and name cannot be empty")
 	}
 	return nil
 }
@@ -88,18 +89,18 @@ func (msg MsgRecordBeaconTimestamp) Route() string { return RouterKey }
 func (msg MsgRecordBeaconTimestamp) Type() string { return RecordAction }
 
 // ValidateBasic runs stateless checks on the message
-func (msg MsgRecordBeaconTimestamp) ValidateBasic() sdk.Error {
+func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
 	}
 	if msg.BeaconID == 0 {
-		return sdk.ErrUnknownRequest("ID must be greater than zero")
+		return sdkerrors.Wrap(ErrMissingData,"id must be greater than zero")
 	}
 	if len(msg.Hash) == 0 {
-		return sdk.ErrUnknownRequest("Hash cannot be empty")
+		return sdkerrors.Wrap(ErrMissingData,"hash cannot be empty")
 	}
 	if msg.SubmitTime == 0 {
-		return sdk.ErrUnknownRequest("submit time cannot be zero")
+		return sdkerrors.Wrap(ErrMissingData,"submit time cannot be zero")
 	}
 
 	return nil

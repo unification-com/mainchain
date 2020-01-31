@@ -103,8 +103,9 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 
 	_, err := antehandler(ctx, tx, false)
 
-	errMsg := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr := types.ErrInsufficientBeaconFee(types.DefaultCodespace, errMsg)
+	errMsg := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 1, expected fees: %v%v, sent fees: %v%v", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
+
+	expectedErr := sdkerrors.Wrap(types.ErrInsufficientBeaconFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -126,7 +127,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRecFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr1 := types.ErrInsufficientBeaconFee(types.DefaultCodespace, errMsg1)
+	expectedErr1 := sdkerrors.Wrap(types.ErrInsufficientBeaconFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1, err1, "unexpected type of error: %s", err1)
@@ -165,7 +166,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr := types.ErrTooMuchBeaconFee(types.DefaultCodespace, errMsg)
+	expectedErr := sdkerrors.Wrap(types.ErrTooMuchBeaconFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -187,7 +188,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRecFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr1 := types.ErrTooMuchBeaconFee(types.DefaultCodespace, errMsg1)
+	expectedErr1 := sdkerrors.Wrap(types.ErrTooMuchBeaconFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1, err1, "unexpected type of error: %s", err1)
@@ -226,7 +227,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr := types.ErrIncorrectFeeDenomination(types.DefaultCodespace, errMsg)
+	expectedErr := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx1")
 	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
@@ -353,7 +354,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	}
 	_ = app.EnterpriseKeeper.SetLockedUndForAccount(ctx, lockedUnd)
 
-	withLocked := initCoins.Add(sdk.NewCoins(lockedUnd.Amount))
+	withLocked := initCoins.Add(lockedUnd.Amount)
 
 	feeInt := int64(actualRegFeeAmt)
 	feeDenom := actualFeeDenom

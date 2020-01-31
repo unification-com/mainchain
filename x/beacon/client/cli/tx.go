@@ -1,7 +1,9 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/viper"
 	"strconv"
 	"strings"
@@ -11,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
@@ -39,7 +42,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	beaconTxCmd.AddCommand(client.PostCommands(
+	beaconTxCmd.AddCommand(flags.PostCommands(
 		GetCmdRegisterBeacon(cdc),
 		GetCmdRecordBeaconTimestamp(cdc),
 	)...)
@@ -62,6 +65,8 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 		),
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			moniker := viper.GetString(FlagMoniker)
@@ -89,10 +94,10 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 			// the Tx and therefore charging reg fees
 			if (len(matchingBeacons)) > 0 {
 				errMsg := fmt.Sprintf("beacon already registered with moniker '%s' - beacon id: %d, owner: %s", moniker, matchingBeacons[0].BeaconID, matchingBeacons[0].Owner)
-				return types.ErrBeaconAlreadyRegistered(types.DefaultCodespace, errMsg)
+				return sdkerrors.Wrap(types.ErrBeaconAlreadyRegistered, errMsg)
 			}
 
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
 			paramsRetriever := keeper.NewParamsRetriever(cliCtx)
@@ -132,16 +137,17 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			hash := viper.GetString(FlagTimestampHash)
 			submitTime := viper.GetUint64(FlagSubmitTime)
 
 			if len(hash) == 0 {
-				return sdk.ErrInternal("BEACON timestamp must have a Hash submitted")
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BEACON timestamp must have a Hash submitted")
 			}
 
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
 			txBldr = txBldr.WithFees(strconv.Itoa(types.RecordFee) + types.FeeDenom)
@@ -153,7 +159,7 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 			}
 
 			if beaconID == 0 {
-				return sdk.ErrInternal("BEACON id must be > 0")
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BEACON id must be > 0")
 			}
 
 			if submitTime == 0 {

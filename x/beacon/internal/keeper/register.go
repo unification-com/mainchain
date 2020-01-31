@@ -4,17 +4,18 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 //__BEACON_ID___________________________________________________________
 
 // GetHighestBeaconID gets the highest BEACON ID
-func (k Keeper) GetHighestBeaconID(ctx sdk.Context) (beaconID uint64, err sdk.Error) {
+func (k Keeper) GetHighestBeaconID(ctx sdk.Context) (beaconID uint64, err error) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.HighestBeaconIDKey)
 	if bz == nil {
-		return 0, types.ErrInvalidGenesis(k.codespace, "initial beacon ID hasn't been set")
+		return 0, sdkerrors.Wrapf(types.ErrInvalidGenesis, "initial beacon ID hasn't been set")
 	}
 	// convert from bytes to uint64
 	beaconID = types.GetBeaconIDFromBytes(bz)
@@ -32,20 +33,20 @@ func (k Keeper) SetHighestBeaconID(ctx sdk.Context, beaconID uint64) {
 //__BEACONS_____________________________________________________________
 
 // SetBeacon Sets the BEACON metadata struct for a beaconID
-func (k Keeper) SetBeacon(ctx sdk.Context, beacon types.Beacon) sdk.Error {
+func (k Keeper) SetBeacon(ctx sdk.Context, beacon types.Beacon) error {
 	// must have an owner
 	if beacon.Owner.Empty() {
-		return sdk.ErrInternal("unable to set beacon - must have an owner")
+		return sdkerrors.Wrap(types.ErrMissingData, "unable to set beacon - must have owner")
 	}
 
 	//must have an ID
 	if beacon.BeaconID == 0 {
-		return sdk.ErrInternal("unable to set beacon - id must be positive non-zero")
+		return sdkerrors.Wrap(types.ErrMissingData, "unable to set beacon - id must be positive non-zero")
 	}
 
 	//must have a moniker
 	if len(beacon.Moniker) == 0 {
-		return sdk.ErrInternal("unable to set beacon - must have a moniker")
+		return sdkerrors.Wrap(types.ErrMissingData, "unable to set beacon - must have a moniker")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -55,11 +56,11 @@ func (k Keeper) SetBeacon(ctx sdk.Context, beacon types.Beacon) sdk.Error {
 }
 
 // SetLastTimestampID - sets the last timestamp ID submitted
-func (k Keeper) SetLastTimestampID(ctx sdk.Context, beaconID uint64, timestampID uint64) sdk.Error {
+func (k Keeper) SetLastTimestampID(ctx sdk.Context, beaconID uint64, timestampID uint64) error {
 	beacon := k.GetBeacon(ctx, beaconID)
 	if beacon.Owner.Empty() {
 		// doesn't exist. Don't update
-		return types.ErrBeaconDoesNotExist(k.codespace, "beacon does not exist")
+		return types.ErrBeaconDoesNotExist
 	}
 	if timestampID > beacon.LastTimestampID {
 		beacon.LastTimestampID = timestampID
@@ -159,13 +160,13 @@ func (k Keeper) GetBeaconsFiltered(ctx sdk.Context, params types.QueryBeaconPara
 }
 
 // RegisterBeacon registers a BEACON in the store
-func (k Keeper) RegisterBeacon(ctx sdk.Context, moniker string, beaconName string, owner sdk.AccAddress) (uint64, sdk.Error) {
+func (k Keeper) RegisterBeacon(ctx sdk.Context, moniker string, beaconName string, owner sdk.AccAddress) (uint64, error) {
 
 	logger := k.Logger(ctx)
 
 	//must have a moniker
 	if len(moniker) == 0 {
-		return 0, sdk.ErrInternal("unable to register beacon - must have a moniker")
+		return 0, sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
 	}
 
 	beaconID, err := k.GetHighestBeaconID(ctx)
@@ -178,7 +179,7 @@ func (k Keeper) RegisterBeacon(ctx sdk.Context, moniker string, beaconName strin
 
 	if (len(beacons)) > 0 {
 		errMsg := fmt.Sprintf("beacon already registered with moniker '%s' - id: %d, owner: %s", moniker, beacons[0].BeaconID, beacons[0].Owner)
-		return 0, types.ErrBeaconAlreadyRegistered(k.codespace, errMsg)
+		return 0, sdkerrors.Wrap(types.ErrBeaconAlreadyRegistered, errMsg)
 	}
 
 	beacon := k.GetBeacon(ctx, beaconID)

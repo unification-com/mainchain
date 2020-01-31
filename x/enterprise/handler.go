@@ -3,34 +3,34 @@ package enterprise
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 )
 
 // NewHandler returns a handler for "enterprise" type messages.
 func NewHandler(keeper Keeper) sdk.Handler {
-	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
+	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
 		case MsgPurchaseUnd:
 			return handleMsgPurchaseUnd(ctx, keeper, msg)
 		case MsgProcessUndPurchaseOrder:
 			return handleMsgProcessPurchaseUnd(ctx, keeper, msg)
 		default:
-			errMsg := fmt.Sprintf("Unrecognized enterprise Msg type: %v", msg.Type())
-			return sdk.ErrUnknownRequest(errMsg).Result()
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
 	}
 }
 
-func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) sdk.Result {
+func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) (*sdk.Result, error) {
 
 	if msg.Amount.Denom != k.GetParamDenom(ctx) {
-		return ErrInvalidDenomination(k.Codespace(), fmt.Sprintf("denomination must be %s", k.GetParamDenom(ctx))).Result()
+		return nil, sdkerrors.Wrap(ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", k.GetParamDenom(ctx)))
 	}
 
 	purchaseOrderID, err := k.RaiseNewPurchaseOrder(ctx, msg.Purchaser, msg.Amount)
 
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -42,27 +42,27 @@ func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) sdk.Res
 		),
 	})
 
-	return sdk.Result{
+	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
 		Data:   GetPurchaseOrderIDBytes(purchaseOrderID),
-	}
+	}, nil
 }
 
-func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPurchaseOrder) sdk.Result {
+func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPurchaseOrder) (*sdk.Result, error) {
 
 	// check only authorised Enterprise account is signing
 	if !k.IsAuthorisedToDecide(ctx, msg.Signer) {
-		return sdk.ErrUnauthorized("unauthorised signer processing purchase order").Result()
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized,"unauthorised signer processing purchase order")
 	}
 
 	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
-		return ErrInvalidDecision(k.Codespace(), "decision should be accept or reject").Result()
+		return nil, sdkerrors.Wrap(ErrInvalidDecision, "decision should be accept or reject")
 	}
 
 	err := k.ProcessPurchaseOrderDecision(ctx, msg.PurchaseOrderID, msg.Decision, msg.Signer)
 
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -76,8 +76,8 @@ func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPur
 
 	retData := append(GetPurchaseOrderIDBytes(msg.PurchaseOrderID), []byte{byte(msg.Decision)}...)
 
-	return sdk.Result{
+	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
 		Data:   retData,
-	}
+	}, nil
 }

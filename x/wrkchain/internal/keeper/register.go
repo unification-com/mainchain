@@ -5,17 +5,18 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
 //__WRKCHAIN_ID_________________________________________________________
 
 // GetHighestWrkChainID gets the highest WRKChain ID
-func (k Keeper) GetHighestWrkChainID(ctx sdk.Context) (wrkChainID uint64, err sdk.Error) {
+func (k Keeper) GetHighestWrkChainID(ctx sdk.Context) (wrkChainID uint64, err error) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.HighestWrkChainIDKey)
 	if bz == nil {
-		return 0, types.ErrInvalidGenesis(k.codespace, "initial wrkchain ID hasn't been set")
+		return 0, sdkerrors.Wrap(types.ErrInvalidGenesis, "initial wrkchain ID hasn't been set")
 	}
 	// convert from bytes to uint64
 	wrkChainID = types.GetWrkChainIDFromBytes(bz)
@@ -33,20 +34,20 @@ func (k Keeper) SetHighestWrkChainID(ctx sdk.Context, wrkChainID uint64) {
 //__WRKCHAINS___________________________________________________________
 
 // SetWrkChain Sets the WrkChain metadata struct for a wrkchainId
-func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) sdk.Error {
+func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) error {
 	// must have an owner
 	if wrkchain.Owner.Empty() {
-		return sdk.ErrInternal("unable to set WRKChain - must have an owner")
+		return sdkerrors.Wrap(types.ErrMissingData, "unable to set WRKChain - must have an owner")
 	}
 
 	//must have an ID
 	if wrkchain.WrkChainID == 0 {
-		return sdk.ErrInternal("unable to set WRKChain - id must be positive non-zero")
+		return sdkerrors.Wrap(types.ErrInvalidData,"unable to set WRKChain - id must be positive non-zero")
 	}
 
 	//must have a moniker
 	if len(wrkchain.Moniker) == 0 {
-		return sdk.ErrInternal("unable to set WRKChain - must have a moniker")
+		return sdkerrors.Wrap(types.ErrMissingData,"unable to set WRKChain - must have a moniker")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -55,11 +56,11 @@ func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) sdk.Error 
 	return nil
 }
 
-func (k Keeper) SetNumBlocks(ctx sdk.Context, wrkchainId uint64) sdk.Error {
+func (k Keeper) SetNumBlocks(ctx sdk.Context, wrkchainId uint64) error {
 	wrkchain := k.GetWrkChain(ctx, wrkchainId)
 	if wrkchain.Owner.Empty() {
 		// doesn't exist. Don't update
-		return types.ErrWrkChainDoesNotExist(k.codespace, "WRKChain does not exist")
+		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))
 	}
 
 	wrkchain.NumberBlocks = wrkchain.NumberBlocks + 1
@@ -68,11 +69,11 @@ func (k Keeper) SetNumBlocks(ctx sdk.Context, wrkchainId uint64) sdk.Error {
 }
 
 // SetLastBlock - sets the last block number submitted
-func (k Keeper) SetLastBlock(ctx sdk.Context, wrkchainId uint64, blockNum uint64) sdk.Error {
+func (k Keeper) SetLastBlock(ctx sdk.Context, wrkchainId uint64, blockNum uint64) error {
 	wrkchain := k.GetWrkChain(ctx, wrkchainId)
 	if wrkchain.Owner.Empty() {
 		// doesn't exist. Don't update
-		return types.ErrWrkChainDoesNotExist(k.codespace, "WRKChain does not exist")
+		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))
 	}
 
 	if blockNum > wrkchain.LastBlock {
@@ -174,13 +175,13 @@ func (k Keeper) GetWrkChainsFiltered(ctx sdk.Context, params types.QueryWrkChain
 }
 
 // RegisterWrkChain registers a WRKChain in the store
-func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName string, genesisHash string, baseType string, owner sdk.AccAddress) (uint64, sdk.Error) {
+func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName string, genesisHash string, baseType string, owner sdk.AccAddress) (uint64, error) {
 
 	logger := k.Logger(ctx)
 
 	//must have a moniker
 	if len(moniker) == 0 {
-		return 0, sdk.ErrInternal("unable to set WRKChain - must have a moniker")
+		return 0, sdkerrors.Wrap(types.ErrMissingData, "unable to set WRKChain - must have a moniker")
 	}
 
 	wrkChainId, err := k.GetHighestWrkChainID(ctx)
@@ -193,7 +194,7 @@ func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName s
 
 	if (len(wrkChains)) > 0 {
 		errMsg := fmt.Sprintf("wrkchain already registered with moniker '%s' - id: %d, owner: %s", moniker, wrkChains[0].WrkChainID, wrkChains[0].Owner)
-		return 0, types.ErrWrkChainAlreadyRegistered(k.codespace, errMsg)
+		return 0, sdkerrors.Wrap(types.ErrWrkChainAlreadyRegistered, errMsg)
 	}
 
 	wrkchain := k.GetWrkChain(ctx, wrkChainId)

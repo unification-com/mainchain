@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"errors"
 	"math/rand"
 	"time"
 
@@ -52,9 +51,9 @@ func SimulateMsgRegisterBeacon(ak auth.AccountKeeper, k keeper.Keeper) simulatio
 			simAccount.PrivKey,
 		)
 
-		res := app.Deliver(tx)
-		if !res.IsOK() {
-			return simulation.NoOpMsg(types.ModuleName), nil, errors.New(res.Log)
+		_, _, err := app.Deliver(tx)
+		if err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
 		return simulation.NewOperationMsg(msg, true, ""), nil, nil
@@ -118,9 +117,9 @@ func SimulateMsgRecordBeaconTimestamp(ak auth.AccountKeeper, k keeper.Keeper) si
 			simAccount.PrivKey,
 		)
 
-		res := app.Deliver(tx)
-		if !res.IsOK() {
-			return simulation.NoOpMsg(types.ModuleName), nil, errors.New(res.Log)
+		_, _, err := app.Deliver(tx)
+		if err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
 		return simulation.NewOperationMsg(msg, true, ""), nil, nil

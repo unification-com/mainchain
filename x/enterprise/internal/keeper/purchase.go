@@ -4,17 +4,18 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 //__PURCHASE_ORDER_ID___________________________________________________
 
 // GetHighestPurchaseOrderID gets the highest purchase order ID
-func (k Keeper) GetHighestPurchaseOrderID(ctx sdk.Context) (purchaseOrderID uint64, err sdk.Error) {
+func (k Keeper) GetHighestPurchaseOrderID(ctx sdk.Context) (purchaseOrderID uint64, err error) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.HighestPurchaseOrderIDKey)
 	if bz == nil {
-		return 0, types.ErrInvalidGenesis(k.codespace, "initial proposal ID hasn't been set")
+		return 0, sdkerrors.Wrap(types.ErrInvalidGenesis, "initial proposal ID hasn't been set")
 	}
 	// convert from bytes to uint64
 	purchaseOrderID = types.GetPurchaseOrderIDFromBytes(bz)
@@ -131,28 +132,28 @@ func (k Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPur
 }
 
 // Sets the Purchase Order data
-func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) sdk.Error {
+func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) error {
 	// must have a purchaser
 	if purchaseOrder.Purchaser.Empty() {
-		return sdk.ErrInternal("unable to set purchase order - purchaser cannot be empty")
+		return sdkerrors.Wrap(types.ErrMissingData, "unable to set purchase order - purchaser cannot be empty")
 	}
 
 	if !purchaseOrder.Amount.IsValid() {
-		return sdk.ErrInternal("unable to set purchase order - amount not valid")
+		return sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount not valid")
 	}
 
 	// must be a positive amount
 	if purchaseOrder.Amount.IsZero() || purchaseOrder.Amount.IsNegative() {
-		return sdk.ErrInternal("unable to set purchase order - amount must be positive")
+		return sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount must be positive")
 	}
 
 	//must have an ID
 	if purchaseOrder.PurchaseOrderID == 0 {
-		return sdk.ErrInternal("unable to set purchase order - id must be positive non-zero")
+		return sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - id must be positive non-zero")
 	}
 
 	if !types.ValidPurchaseOrderStatus(purchaseOrder.Status) {
-		return sdk.ErrInternal("unable to set purchase order - invalid status")
+		return sdkerrors.Wrap(types.ErrInvalidStatus, "unable to set purchase order - invalid status")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -161,7 +162,7 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 	return nil
 }
 
-func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress, amount sdk.Coin) (uint64, sdk.Error) {
+func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress, amount sdk.Coin) (uint64, error) {
 
 	logger := k.Logger(ctx)
 
@@ -200,40 +201,40 @@ func (k Keeper) IsAuthorisedToDecide(ctx sdk.Context, signer sdk.AccAddress) boo
 	return isAuthorised
 }
 
-func (k Keeper) ProcessPurchaseOrderDecision(ctx sdk.Context, purchaseOrderID uint64, decision types.PurchaseOrderStatus, signer sdk.AccAddress) sdk.Error {
+func (k Keeper) ProcessPurchaseOrderDecision(ctx sdk.Context, purchaseOrderID uint64, decision types.PurchaseOrderStatus, signer sdk.AccAddress) error {
 
 	logger := k.Logger(ctx)
 
 	if !k.PurchaseOrderExists(ctx, purchaseOrderID) {
-		errMsg := fmt.Sprintf("purchase order id does not exist: %d", purchaseOrderID)
-		return types.ErrPurchaseOrderDoesNotExist(k.codespace, errMsg)
+		errMsg := fmt.Sprintf("id: %d", purchaseOrderID)
+		return sdkerrors.Wrap(types.ErrPurchaseOrderDoesNotExist, errMsg)
 	}
 
 	if !types.ValidPurchaseOrderAcceptRejectStatus(decision) {
-		return types.ErrInvalidDecision(k.Codespace(), "decision should be accept or reject")
+		return sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")
 	}
 
 	if !k.IsAuthorisedToDecide(ctx, signer) {
-		return sdk.ErrUnauthorized("unauthorised signer processing purchase order")
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")
 	}
 
 	purchaseOrder := k.GetPurchaseOrder(ctx, purchaseOrderID)
 
 	if purchaseOrder.Status == types.StatusNil {
 		errMsg := fmt.Sprintf("purchase order %d not raised!", purchaseOrderID)
-		return types.ErrPurchaseOrderNotRaised(k.codespace, errMsg)
+		return sdkerrors.Wrap(types.ErrPurchaseOrderNotRaised, errMsg)
 	}
 
 	if purchaseOrder.Status != types.StatusRaised {
-		errMsg := fmt.Sprintf("purchase order %d already processed: %s", purchaseOrderID, purchaseOrder.Status.String())
-		return types.ErrPurchaseOrderAlreadyProcessed(k.codespace, errMsg)
+		errMsg := fmt.Sprintf("id %d already processed: %s", purchaseOrderID, purchaseOrder.Status.String())
+		return sdkerrors.Wrap(types.ErrPurchaseOrderAlreadyProcessed, errMsg)
 	}
 
 	currentDecisions := purchaseOrder.Decisions
 	for _, d := range currentDecisions {
 		if d.Signer.Equals(signer) {
 			errMsg := fmt.Sprintf("signer %s already decided: %s", signer.String(), d.Decision.String())
-			return types.ErrSignerAlreadyMadeDecision(k.codespace, errMsg)
+			return sdkerrors.Wrap(types.ErrSignerAlreadyMadeDecision, errMsg)
 		}
 	}
 

@@ -136,18 +136,18 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64, genAccs int)
 	blacklistedAddrs[notBondedPool.GetAddress().String()] = true
 	blacklistedAddrs[bondPool.GetAddress().String()] = true
 
-	pk := params.NewKeeper(cdc, keyParams, tkeyParams, params.DefaultCodespace)
+	pk := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAcc, pk.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
-	bankKeeper := bank.NewBaseKeeper(accountKeeper, pk.Subspace(bank.DefaultParamspace), bank.DefaultCodespace, blacklistedAddrs)
+	bankKeeper := bank.NewBaseKeeper(accountKeeper, pk.Subspace(bank.DefaultParamspace), blacklistedAddrs)
 	supplyKeeper := supply.NewKeeper(cdc, keySupply, accountKeeper, bankKeeper, maccPerms)
 
-	stakingKeeper := staking.NewKeeper(cdc, keyStaking, supplyKeeper, pk.Subspace(staking.DefaultParamspace), staking.DefaultCodespace)
+	stakingKeeper := staking.NewKeeper(cdc, keyStaking, supplyKeeper, pk.Subspace(staking.DefaultParamspace))
 	skParams := staking.DefaultParams()
 	skParams.BondDenom = TestDenomination
 	stakingKeeper.SetParams(ctx, skParams)
 
 	keeper := NewKeeper(
-		keyWRKChain, pk.Subspace(types.DefaultParamspace), types.DefaultCodespace, cdc,
+		keyWRKChain, pk.Subspace(types.DefaultParamspace), cdc,
 	)
 
 	keeper.SetHighestWrkChainID(ctx, types.DefaultStartingWrkChainID)

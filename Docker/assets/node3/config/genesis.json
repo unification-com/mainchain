@@ -285,7 +285,7 @@
     },
     "enterprise": {
       "params": {
-        "ent_signers": ["und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6", "und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed"],
+        "ent_signers": "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6,und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
         "denom": "nund",
         "min_Accepts": "2",
         "decision_time_limit": "120"

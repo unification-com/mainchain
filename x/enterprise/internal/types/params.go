@@ -19,10 +19,10 @@ var (
 
 // enterprise UND parameters
 type Params struct {
-	EntSigners    []sdk.AccAddress `json:"ent_signers" yaml:"ent_signers"` // Accounts allowed to sign decisions on UND purchase orders
-	Denom         string           `json:"denom" yaml:"denom"`
-	MinAccepts    uint64           `json:"min_Accepts" yaml:"min_Accepts"`                 // must be <= len(EntSigners)
-	DecisionLimit uint64           `json:"decision_time_limit" yaml:"decision_time_limit"` // num seconds elapsed before auto-reject
+	EntSigners    string `json:"ent_signers" yaml:"ent_signers"` // Accounts allowed to sign decisions on UND purchase orders
+	Denom         string `json:"denom" yaml:"denom"`
+	MinAccepts    uint64 `json:"min_Accepts" yaml:"min_Accepts"`                 // must be <= len(EntSigners)
+	DecisionLimit uint64 `json:"decision_time_limit" yaml:"decision_time_limit"` // num seconds elapsed before auto-reject
 }
 
 // ParamTable for enterprise UND module.
@@ -30,8 +30,7 @@ func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-func NewParams(entSigners []sdk.AccAddress, denom string, minAccepts uint64, decisionLimit uint64) Params {
-
+func NewParams(denom string, minAccepts uint64, decisionLimit uint64, entSigners string) Params {
 	return Params{
 		EntSigners:    entSigners,
 		Denom:         denom,
@@ -42,9 +41,8 @@ func NewParams(entSigners []sdk.AccAddress, denom string, minAccepts uint64, dec
 
 // default enterprise UND module parameters
 func DefaultParams() Params {
-	var entSigners []sdk.AccAddress
 	return Params{
-		EntSigners:    entSigners,
+		EntSigners:    "",
 		Denom:         DefaultDenomination,
 		MinAccepts:    1,
 		DecisionLimit: 84600,
@@ -69,7 +67,9 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	if len(p.EntSigners) < int(p.MinAccepts) {
+	entSigners := strings.Split(p.EntSigners, ",")
+
+	if len(entSigners) < int(p.MinAccepts) {
 		return fmt.Errorf("number of authorised accounts must be >= number of minimum accepts")
 	}
 
@@ -141,6 +141,23 @@ func validateDecisionLimit(i interface{}) error {
 }
 
 func validateEntSigners(i interface{}) error {
-	// Todo - validate []sdk.AccAddress and contents
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	entSigners := strings.Split(v, ",")
+
+	if len(entSigners) == 0 {
+		return fmt.Errorf("must have at least one signer")
+	}
+
+	for _, authAddr := range entSigners {
+		_, err := sdk.AccAddressFromBech32(authAddr)
+		if err != nil {
+			return fmt.Errorf("invalid address %s: %s", authAddr, err)
+		}
+	}
+
 	return nil
 }

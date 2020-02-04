@@ -71,10 +71,8 @@ func TestQueryParams(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 	querier := NewQuerier(keeper)
 	addresses := GenerateRandomAddresses(3)
-	var entSignerss []sdk.AccAddress
-	entSignerss = append(entSignerss, addresses[1])
-	entSignerss = append(entSignerss, addresses[2])
-	paramsNew := types.NewParams(entSignerss, "something", 1, 3600)
+	entSigners := addresses[1].String() + "," + addresses[2].String()
+	paramsNew := types.NewParams("something", 1, 3600, entSigners)
 
 	keeper.SetParams(ctx, paramsNew)
 	params := getQueriedParams(t, ctx, keeper.cdc, querier)

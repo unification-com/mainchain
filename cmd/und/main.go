@@ -86,7 +86,9 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	}
 
 	return app.NewMainchainApp(logger, db, traceStore, true, invCheckPeriod,
-		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+		//baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+		// ToDo temp fix for https://github.com/cosmos/cosmos-sdk/issues/5570
+		baseapp.SetPruning(store.NewPruningOptionsFromString("nothing")),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),

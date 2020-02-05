@@ -147,9 +147,7 @@ func createTestInput(t *testing.T, isCheckTx bool, initPower int64) (sdk.Context
 
 	keeper.SetHighestPurchaseOrderID(ctx, types.DefaultStartingPurchaseOrderID)
 	entParams := types.DefaultParams()
-	var entSigners []sdk.AccAddress
-	entSigners = append(entSigners, EntSignerAddr)
-	entParams.EntSigners = entSigners
+	entParams.EntSigners = EntSignerAddr.String()
 	entParams.Denom = stakingKeeper.BondDenom(ctx)
 	keeper.SetParams(ctx, entParams)
 

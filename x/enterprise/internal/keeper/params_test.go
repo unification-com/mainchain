@@ -3,7 +3,6 @@ package keeper
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
@@ -12,11 +11,9 @@ import (
 
 func TestSetGetParams(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
-	var entSigners []sdk.AccAddress
-	entSigners = append(entSigners, TestAddrs[1])
-	entSigners = append(entSigners, TestAddrs[2])
+	entSigners := TestAddrs[1].String() + "," + TestAddrs[2].String()
 	denom := "testc"
-	params := types.NewParams(entSigners, denom, 1, 3600)
+	params := types.NewParams(denom, 1, 3600, entSigners)
 
 	keeper.SetParams(ctx, params)
 

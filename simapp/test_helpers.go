@@ -125,9 +125,7 @@ func SetupUnitTestApp(isCheckTx bool, genAccs int, amt int64, testDenom string) 
 	app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, 1)
 	entParams := app.EnterpriseKeeper.GetParams(ctx)
 	entParams.Denom = app.StakingKeeper.BondDenom(ctx)
-	var entAddresses []sdk.AccAddress
-	entAddresses = append(entAddresses, entAddr)
-	entParams.EntSigners = entAddresses
+	entParams.EntSigners = entAddr.String()
 	app.EnterpriseKeeper.SetParams(ctx, entParams)
 
 	// fill all the addresses with some coins, set the loose pool tokens simultaneously

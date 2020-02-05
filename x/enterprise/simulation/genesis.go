@@ -25,13 +25,10 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { entAddress = GetEntSourceAddress() },
 	)
 
-	var entAddresses []sdk.AccAddress
-	entAddresses = append(entAddresses, entAddress)
-
 	// NOTE: for simulation, we're using sdk.DefaultBondDenom ("stake"), since "stake" is hard-coded
 	// into the SDK's module simulation functions
 	entGenesis := types.NewGenesisState(
-		types.NewParams(entAddresses, sdk.DefaultBondDenom, 1, 3600),
+		types.NewParams(sdk.DefaultBondDenom, 1, 3600, entAddress.String()),
 		startingPurchaseOrderID,
 		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 	)

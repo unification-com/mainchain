@@ -9,8 +9,11 @@ import (
 
 // GetParams returns the total set of WRKChain parameters.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
-	k.paramSpace.GetParamSet(ctx, &params)
-	return params
+	return types.NewParams(
+		k.GetParamRegistrationFee(ctx),
+		k.GetParamRecordFee(ctx),
+		k.GetParamDenom(ctx),
+	)
 }
 
 // SetParams sets the total set of WRKChain parameters.
@@ -19,15 +22,21 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 }
 
 func (k Keeper) GetParamDenom(ctx sdk.Context) string {
-	return k.GetParams(ctx).Denom
+	var denomParams string
+	k.paramSpace.Get(ctx, types.KeyDenom, &denomParams)
+	return denomParams
 }
 
 func (k Keeper) GetParamRegistrationFee(ctx sdk.Context) uint64 {
-	return k.GetParams(ctx).FeeRegister
+	var feeRegParams uint64
+	k.paramSpace.Get(ctx, types.KeyFeeRegister, &feeRegParams)
+	return feeRegParams
 }
 
 func (k Keeper) GetParamRecordFee(ctx sdk.Context) uint64 {
-	return k.GetParams(ctx).FeeRecord
+	var feeRecordParams uint64
+	k.paramSpace.Get(ctx, types.KeyFeeRecord, &feeRecordParams)
+	return feeRecordParams
 }
 
 func (k Keeper) GetZeroFeeAsCoin(ctx sdk.Context) sdk.Coin {

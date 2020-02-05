@@ -191,9 +191,9 @@ func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress,
 }
 
 func (k Keeper) IsAuthorisedToDecide(ctx sdk.Context, signer sdk.AccAddress) bool {
-	params := k.GetParams(ctx)
+	entSigners := k.GetParamEntSignersAsAddressArray(ctx)
 	isAuthorised := false
-	for _, authAddr := range params.EntSigners {
+	for _, authAddr := range entSigners {
 		if signer.Equals(authAddr) {
 			isAuthorised = true
 		}

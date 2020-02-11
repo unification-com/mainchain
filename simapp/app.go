@@ -269,7 +269,7 @@ func NewUndSimApp(
 		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper, app.StakingKeeper),
 		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.StakingKeeper),
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
-		enterprise.NewAppModule(app.EnterpriseKeeper),
+		enterprise.NewAppModule(app.EnterpriseKeeper, app.SupplyKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
 		beacon.NewAppModule(app.BeaconKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
@@ -306,7 +306,7 @@ func NewUndSimApp(
 		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper, app.StakingKeeper),
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
 		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.StakingKeeper),
-		enterprise.NewAppModule(app.EnterpriseKeeper),
+		enterprise.NewAppModule(app.EnterpriseKeeper, app.SupplyKeeper),
 		wrkchain.NewAppModule(app.WrkChainKeeper),
 		beacon.NewAppModule(app.BeaconKeeper),
 	)

@@ -9,12 +9,12 @@ import (
 type GenesisState struct {
 	Params             Params           `json:"params" yaml:"params"`                             // wrkchain params
 	StartingWrkChainID uint64           `json:"starting_wrkchain_id" yaml:"starting_wrkchain_id"` // should be 1
-	WrkChains          []WrkChainExport `json:"registered_wrkchains"`
+	WrkChains          []WrkChainExport `json:"registered_wrkchains" yaml:"registered_wrkchains"`
 }
 
 type WrkChainExport struct {
-	WrkChain       WrkChain
-	WrkChainBlocks []WrkChainBlock
+	WrkChain       WrkChain        `json:"wrkchain" yaml:"wrkchain"`
+	WrkChainBlocks []WrkChainBlock `json:"blocks" yaml:"blocks"`
 }
 
 // NewGenesisState creates a new GenesisState object

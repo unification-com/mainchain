@@ -5,10 +5,11 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 // InitGenesis new enterprise UND genesis
-func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
+func InitGenesis(ctx sdk.Context, keeper Keeper, supplyKeeper types.SupplyKeeper, data GenesisState) []abci.ValidatorUpdate {
 	keeper.SetParams(ctx, data.Params)
 	keeper.SetHighestPurchaseOrderID(ctx, data.StartingPurchaseOrderID)
 
@@ -34,6 +35,16 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 		if err != nil {
 			panic(err)
 		}
+	}
+
+	// ensure locked UND is registered with supply keeper
+	if moduleAcc.GetCoins().IsZero() {
+		var moduleHoldings sdk.Coins
+		moduleHoldings = moduleHoldings.Add(data.TotalLocked)
+		if err := moduleAcc.SetCoins(moduleHoldings); err != nil {
+			panic(err)
+		}
+		supplyKeeper.SetModuleAccount(ctx, moduleAcc)
 	}
 
 	return []abci.ValidatorUpdate{}

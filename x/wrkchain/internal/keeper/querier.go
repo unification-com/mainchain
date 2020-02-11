@@ -90,24 +90,6 @@ func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, k
 	return res, nil
 }
 
-func queryWrkChainBlockHashes(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
-
-	wrkchainID, err := strconv.Atoi(path[0])
-
-	if err != nil {
-		wrkchainID = 0
-	}
-
-	blockHashList := keeper.GetAllWrkChainBlockHashes(ctx, uint64(wrkchainID))
-
-	res, err := codec.MarshalJSONIndent(keeper.cdc, blockHashList)
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
-
-	return res, nil
-}
-
 func queryWrkChainsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k Keeper) ([]byte, error) {
 
 	var queryParams types.QueryWrkChainParams
@@ -125,35 +107,6 @@ func queryWrkChainsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, 
 	}
 
 	res, err := codec.MarshalJSONIndent(k.cdc, filteredWrkChains)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-
-	return res, nil
-}
-
-func queryWrkChainHashesFiltered(ctx sdk.Context, path []string, req abci.RequestQuery, k Keeper) ([]byte, error) {
-	var queryParams types.QueryWrkChainBlockParams
-
-	err := k.cdc.UnmarshalJSON(req.Data, &queryParams)
-
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
-	}
-
-	wrkchainID, err := strconv.Atoi(path[0])
-
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
-	}
-
-	filteredWrkchainHashes := k.GetWrkChainBlockHashesFiltered(ctx, uint64(wrkchainID), queryParams)
-
-	if filteredWrkchainHashes == nil {
-		filteredWrkchainHashes = types.WrkChainBlocks{}
-	}
-
-	res, err := codec.MarshalJSONIndent(k.cdc, filteredWrkchainHashes)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

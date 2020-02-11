@@ -128,7 +128,7 @@ func NewMainchainApp(
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, params.StoreKey,
-		wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey, evidence.StoreKey,)
+		wrkchain.StoreKey, enterprise.StoreKey, beacon.StoreKey, evidence.StoreKey)
 
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -268,7 +268,7 @@ func NewMainchainApp(
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
 		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
-		enterprise.NewAppModule(app.enterpriseKeeper),
+		enterprise.NewAppModule(app.enterpriseKeeper, app.supplyKeeper),
 		wrkchain.NewAppModule(app.wrkChainKeeper),
 		beacon.NewAppModule(app.beaconKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),

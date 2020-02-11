@@ -42,12 +42,12 @@ func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) error {
 
 	//must have an ID
 	if wrkchain.WrkChainID == 0 {
-		return sdkerrors.Wrap(types.ErrInvalidData,"unable to set WRKChain - id must be positive non-zero")
+		return sdkerrors.Wrap(types.ErrInvalidData, "unable to set WRKChain - id must be positive non-zero")
 	}
 
 	//must have a moniker
 	if len(wrkchain.Moniker) == 0 {
-		return sdkerrors.Wrap(types.ErrMissingData,"unable to set WRKChain - must have a moniker")
+		return sdkerrors.Wrap(types.ErrMissingData, "unable to set WRKChain - must have a moniker")
 	}
 
 	store := ctx.KVStore(k.storeKey)

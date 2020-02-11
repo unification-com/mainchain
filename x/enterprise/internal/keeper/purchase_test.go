@@ -92,12 +92,12 @@ func TestSetEmptyPurchaseOrderValues(t *testing.T) {
 		expectedErr error
 	}{
 		{po1, sdkerrors.Wrap(types.ErrMissingData, "unable to set purchase order - purchaser cannot be empty")},
-		{po2, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - amount not valid")},
-		{po3, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - amount must be positive")},
-		{po4, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - id must be positive non-zero")},
+		{po2, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount not valid")},
+		{po3, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount must be positive")},
+		{po4, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - id must be positive non-zero")},
 		{po5, nil},
-		{po6, sdkerrors.Wrap(types.ErrInvalidStatus,"unable to set purchase order - invalid status")},
-		{po7, sdkerrors.Wrap(types.ErrInvalidStatus,"unable to set purchase order - invalid status")},
+		{po6, sdkerrors.Wrap(types.ErrInvalidStatus, "unable to set purchase order - invalid status")},
+		{po7, sdkerrors.Wrap(types.ErrInvalidStatus, "unable to set purchase order - invalid status")},
 	}
 
 	for _, tc := range testCases {
@@ -171,9 +171,9 @@ func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 		expectedErr  error
 		expectedPoID uint64
 	}{
-		{po1, sdkerrors.Wrap(types.ErrMissingData,"unable to set purchase order - purchaser cannot be empty"), 0},
-		{po2, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - amount not valid"), 0},
-		{po3, sdkerrors.Wrap(types.ErrInvalidData,"unable to set purchase order - amount must be positive"), 0},
+		{po1, sdkerrors.Wrap(types.ErrMissingData, "unable to set purchase order - purchaser cannot be empty"), 0},
+		{po2, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount not valid"), 0},
+		{po3, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount must be positive"), 0},
 		{po4, nil, 1},
 	}
 

@@ -38,7 +38,7 @@ func (k Keeper) GetParamEntSignersAsAddressArray(ctx sdk.Context) []sdk.AccAddre
 	entSigners := strings.Split(paramEntSigners, ",")
 	for _, authAddr := range entSigners {
 		addr, err := sdk.AccAddressFromBech32(authAddr)
-		if err == nil && !addr.Empty(){
+		if err == nil && !addr.Empty() {
 			entSignersArray = append(entSignersArray, addr)
 		}
 	}

@@ -46,7 +46,7 @@ func (msg MsgRegisterWrkChain) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
 	}
 	if len(msg.Moniker) == 0 {
-		return sdkerrors.Wrap(ErrMissingData,"Moniker cannot be empty")
+		return sdkerrors.Wrap(ErrMissingData, "Moniker cannot be empty")
 	}
 	return nil
 }

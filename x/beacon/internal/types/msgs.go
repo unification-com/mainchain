@@ -42,7 +42,7 @@ func (msg MsgRegisterBeacon) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
 	}
 	if len(msg.Moniker) == 0 || len(msg.BeaconName) == 0 {
-		return sdkerrors.Wrap(ErrMissingData,"moniker and name cannot be empty")
+		return sdkerrors.Wrap(ErrMissingData, "moniker and name cannot be empty")
 	}
 	return nil
 }
@@ -94,13 +94,13 @@ func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner.String())
 	}
 	if msg.BeaconID == 0 {
-		return sdkerrors.Wrap(ErrMissingData,"id must be greater than zero")
+		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
 	}
 	if len(msg.Hash) == 0 {
-		return sdkerrors.Wrap(ErrMissingData,"hash cannot be empty")
+		return sdkerrors.Wrap(ErrMissingData, "hash cannot be empty")
 	}
 	if msg.SubmitTime == 0 {
-		return sdkerrors.Wrap(ErrMissingData,"submit time cannot be zero")
+		return sdkerrors.Wrap(ErrMissingData, "submit time cannot be zero")
 	}
 
 	return nil

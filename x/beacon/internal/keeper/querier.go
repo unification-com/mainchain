@@ -113,27 +113,3 @@ func queryBeaconsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k 
 
 	return res, nil
 }
-
-func queryBeaconTimestampsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
-
-	var queryParams types.QueryBeaconTimestampParams
-
-	err := keeper.cdc.UnmarshalJSON(req.Data, &queryParams)
-
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
-	}
-
-	timestampsFiltered := keeper.GetBeaconTimestampsFiltered(ctx, queryParams)
-
-	if timestampsFiltered == nil {
-		timestampsFiltered = types.BeaconTimestamps{}
-	}
-
-	res, err := codec.MarshalJSONIndent(keeper.cdc, timestampsFiltered)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	}
-
-	return res, nil
-}

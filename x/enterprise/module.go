@@ -72,8 +72,8 @@ func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 	AppModuleSimulation
-	keeper Keeper
-	supplyKeeper  types.SupplyKeeper
+	keeper       Keeper
+	supplyKeeper types.SupplyKeeper
 }
 
 // NewAppModule creates a new AppModule Object

@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 	undtypes "github.com/unification-com/mainchain/types"
 
-
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 

@@ -52,7 +52,7 @@ func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPur
 
 	// check only authorised Enterprise account is signing
 	if !k.IsAuthorisedToDecide(ctx, msg.Signer) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized,"unauthorised signer processing purchase order")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")
 	}
 
 	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {

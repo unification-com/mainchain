@@ -88,7 +88,7 @@ func (msg MsgProcessUndPurchaseOrder) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer.String())
 	}
 	if msg.PurchaseOrderID == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,"purchase order id must be greater than zero")
+		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "purchase order id must be greater than zero")
 	}
 	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
 		return sdkerrors.Wrap(ErrInvalidStatus, "status must be accept or reject")

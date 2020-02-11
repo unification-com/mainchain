@@ -76,7 +76,6 @@ func (p Params) Validate() error {
 	return nil
 }
 
-
 func (p Params) String() string {
 	return fmt.Sprintf(`Enterprise UND Params:
   Source Address: %s

@@ -202,8 +202,8 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 		{99, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "WRKChain 99 does not exist")},
 		{wcID, 0, "", "", "", "", "", TestAddrs[1], sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
 		{wcID, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
-		{wcID, 1, "", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData,"must include owner, id, height and hash")},
-		{wcID, 0, "blockhash", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData,"must include owner, id, height and hash")},
+		{wcID, 1, "", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, height and hash")},
+		{wcID, 0, "blockhash", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, height and hash")},
 		{wcID, 1, "blockhash", "", "", "", "", TestAddrs[0], nil},
 		{wcID, 1, "blockhash", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "Block hashes already recorded for this height")},
 	}

@@ -2,6 +2,7 @@ package enterprise
 
 import (
 	"encoding/json"
+	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 	"github.com/unification-com/mainchain/x/enterprise/simulation"
 	"math/rand"
 
@@ -72,13 +73,15 @@ type AppModule struct {
 	AppModuleBasic
 	AppModuleSimulation
 	keeper Keeper
+	supplyKeeper  types.SupplyKeeper
 }
 
 // NewAppModule creates a new AppModule Object
-func NewAppModule(k Keeper) AppModule {
+func NewAppModule(k Keeper, sk types.SupplyKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         k,
+		supplyKeeper:   sk,
 	}
 }
 
@@ -116,7 +119,7 @@ func (am AppModule) EndBlock(sdk.Context, abci.RequestEndBlock) []abci.Validator
 func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
 	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
-	return InitGenesis(ctx, am.keeper, genesisState)
+	return InitGenesis(ctx, am.keeper, am.supplyKeeper, genesisState)
 }
 
 func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {

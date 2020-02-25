@@ -21,7 +21,10 @@ import (
 	banksim "github.com/cosmos/cosmos-sdk/x/bank/simulation"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	distrsim "github.com/cosmos/cosmos-sdk/x/distribution/simulation"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	govsim "github.com/cosmos/cosmos-sdk/x/gov/simulation"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	paramsim "github.com/cosmos/cosmos-sdk/x/params/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingsim "github.com/cosmos/cosmos-sdk/x/slashing/simulation"
@@ -45,6 +48,8 @@ func init() {
 
 func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.WeightedOperation {
 	ap := make(simulation.AppParams)
+
+	paramChanges := app.sm.GenerateParamChanges(config.Seed)
 
 	if config.ParamsFile != "" {
 		bz, err := ioutil.ReadFile(config.ParamsFile)
@@ -111,6 +116,61 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 				return v
 			}(nil),
 			distrsim.SimulateMsgWithdrawValidatorCommission(app.AccountKeeper, app.DistrKeeper, app.StakingKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightSubmitTextProposal, &v, nil,
+					func(_ *rand.Rand) {
+						v = 20
+					})
+				return v
+			}(nil),
+			govsim.SimulateSubmitProposal(app.AccountKeeper, app.GovKeeper, govsim.SimulateTextProposalContent),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightSubmitCommunitySpendProposal, &v, nil,
+					func(_ *rand.Rand) {
+						v = 20
+					})
+				return v
+			}(nil),
+			govsim.SimulateSubmitProposal(app.AccountKeeper, app.GovKeeper, distrsim.SimulateCommunityPoolSpendProposalContent(app.DistrKeeper)),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightSubmitParamChangeProposal, &v, nil,
+					func(_ *rand.Rand) {
+						v = 20
+					})
+				return v
+			}(nil),
+			govsim.SimulateSubmitProposal(app.AccountKeeper, app.GovKeeper, paramsim.SimulateParamChangeProposalContent(paramChanges)),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgDeposit, &v, nil,
+					func(_ *rand.Rand) {
+						v = 100
+					})
+				return v
+			}(nil),
+			govsim.SimulateMsgDeposit(app.AccountKeeper, app.GovKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgVote, &v, nil,
+					func(_ *rand.Rand) {
+						v = 100
+					})
+				return v
+			}(nil),
+			govsim.SimulateMsgVote(app.AccountKeeper, app.GovKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -574,6 +634,7 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[enterprise.StoreKey], newApp.keys[enterprise.StoreKey], [][]byte{}},
 		{app.keys[wrkchain.StoreKey], newApp.keys[wrkchain.StoreKey], [][]byte{}},
 		{app.keys[beacon.StoreKey], newApp.keys[beacon.StoreKey], [][]byte{}},
+		{app.keys[gov.StoreKey], newApp.keys[gov.StoreKey], [][]byte{}},
 	}
 
 	for _, storeKeysPrefix := range storeKeysPrefixes {

@@ -178,7 +178,13 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
-			txBldr = txBldr.WithFees(strconv.Itoa(types.RecordFee) + types.FeeDenom)
+			paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+			wrkchainParams, err := paramsRetriever.GetParams()
+			if err != nil {
+				return err
+			}
+
+			txBldr = txBldr.WithFees(strconv.Itoa(int(wrkchainParams.FeeRecord)) + wrkchainParams.Denom)
 
 			wrkchainID, err := strconv.Atoi(args[0])
 

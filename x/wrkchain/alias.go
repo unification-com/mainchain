@@ -18,12 +18,13 @@ const (
 )
 
 var (
-	NewKeeper              = keeper.NewKeeper
-	NewQuerier             = keeper.NewQuerier
-	NewMsgRegisterWrkChain = types.NewMsgRegisterWrkChain
-	NewWrkChain            = types.NewWrkChain
-	RegisterCodec          = types.RegisterCodec
-	ModuleCdc              = types.ModuleCdc
+	NewKeeper                 = keeper.NewKeeper
+	NewQuerier                = keeper.NewQuerier
+	NewMsgRegisterWrkChain    = types.NewMsgRegisterWrkChain
+	NewMsgRecordWrkChainBlock = types.NewMsgRecordWrkChainBlock
+	NewWrkChain               = types.NewWrkChain
+	RegisterCodec             = types.RegisterCodec
+	ModuleCdc                 = types.ModuleCdc
 
 	// Event tags
 	EventTypeRegisterWrkChain    = types.EventTypeRegisterWrkChain
@@ -62,6 +63,7 @@ var (
 
 	NewQueryWrkChainParams      = types.NewQueryWrkChainParams
 	NewQueryWrkChainBlockParams = types.NewQueryWrkChainBlockParams
+	NewParamsRetriever          = keeper.NewParamsRetriever
 
 	DefaultParams = types.DefaultParams
 

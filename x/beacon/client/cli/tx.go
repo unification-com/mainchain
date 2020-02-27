@@ -150,7 +150,13 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			// automatically apply fees
-			txBldr = txBldr.WithFees(strconv.Itoa(types.RecordFee) + types.FeeDenom)
+			paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+			beaconParams, err := paramsRetriever.GetParams()
+			if err != nil {
+				return err
+			}
+
+			txBldr = txBldr.WithFees(strconv.Itoa(int(beaconParams.FeeRecord)) + beaconParams.Denom)
 
 			beaconID, err := strconv.Atoi(args[0])
 

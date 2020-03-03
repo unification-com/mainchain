@@ -60,6 +60,17 @@ services:
     ports:
       - "1317:1317"
 
+  proxy:
+    hostname: proxy
+    build:
+      context: ..
+      dockerfile: ./Docker/proxy/Dockerfile
+    networks:
+      mainchain_devnet:
+        ipv4_address: 172.25.0.7
+    ports:
+      - "1318:1318"
+
 networks:
   mainchain_devnet:
     ipam:

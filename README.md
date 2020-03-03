@@ -2,7 +2,7 @@
 
 ## UND Mainchain
 
-Official golang implementation of Unification Mainchain. Built using [Cosmos SDK](https://github.com/cosmos/cosmos-sdk)
+Official Golang implementation of Unification Mainchain.
 
 See [Documentation](docs/README.md) for full guides.
 
@@ -25,66 +25,106 @@ Compile `und` and `undcli` binaries and output to ./build
 make build
 ```
 
-With Ledger support enabled
-
-```bash
-export LEDGER_ENABLED=true && make build
-```
-
 ## Install
 
-Install `und` and `undcli` binaries into Go path
+Install `und` and `undcli` binaries into `$GOPATH`
 
 ```bash
 make install
 ```
 
-With Ledger support enabled
+### Dockerised `und` and `undcli`
+
+The Dockerised binaries can be used instead of installing locally. The Docker container
+will use the latest release tag to build the binaries.
+
+Build the container:
 
 ```bash
-export LEDGER_ENABLED=true && make install
+docker build -t undd .
 ```
 
-## Interacting with the Docker Enviroment
+Example commands, with mounted data directories:
 
-### Compositions
-
-Pure upstream:
-```
-docker-compose -f Docker/docker-compose.upstream.yml up --build
+```bash
+$ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und init [node_name]
+$ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und start
 ```
 
-Composition with local changes:
+## DevNet Enviroment
+
+A complete DevNet environment, comprising of 3 EVs, a REST server, a reverse proxy server
+and several test wallets loaded with UND is available via Docker Compose compositions 
+for development and testing purposes.
+
+### Local build
+
+The local build copies the current local codebase to the Docker containers, and is used during
+development to test changes before committing to the repository.
+
 ```
 docker-compose -f Docker/docker-compose.local.yml up --build
+docker-compose -f Docker/docker-compose.local.yml down --remove-orphans
+```
+
+or using the `make` target:
+
+```bash
+make devnet
+make devnet-down
+```
+
+### Pure Upstream build
+
+Pure upstream uses the `master` branch of this repository to build the binaries, and is useful
+for testing the latest master version.
+
+```
+docker-compose -f Docker/docker-compose.upstream.yml up --build
+docker-compose -f Docker/docker-compose.upstream.yml down --remove-orphans
+```
+
+or using the `make` target:
+
+```bash
+make devnet-pristine
+make devnet-pristine-down
 ```
 
 #### REST API Endpoints
 
-With DevNet up, the REST API endpoints can be seen via http://localhost:1317/swagger-ui/
+With DevNet up, the REST API endpoints can be seen via http://localhost:1318/swagger-ui/
 
 ### Importing docker composition keys
+
+The DevNet node keys can be imported locally for ease of testing:
+
 ```
-undcli keys import node0 Docker/assets/keys/node0.key
 undcli keys import node1 Docker/assets/keys/node1.key
 undcli keys import node2 Docker/assets/keys/node2.key
+undcli keys import node3 Docker/assets/keys/node3.key
 ```
 
+A full list of DevNet accounts and keys for importing can be found in 
+[Docker/README.md](https://github.com/unification-com/mainchain/blob/master/Docker/README.md)
 
 ### Useful Defaults
+
+`undcli` defaults for DevNet can be set as follows. This will set the corresponding values in
+`$HOME/.und_cli/config/config.toml`
+
 ```
 undcli config chain-id UND-Mainchain-DevNet
 undcli config node tcp://localhost:26661
 ```
 
+## `undcli` command overview
 
-### Query accounts
-```
-undcli query account cosmos1cxxsr89u77hu7ksz5nw2cu27pfg88g3v92u7dd
-undcli query account cosmos1cvrv3atsm26t4qhssfzj4cs8u7rvsuv9gzwkn6
-undcli query account cosmos1ss63vffqmpz68ext374cuxa0v3upavghwzw53p
-```
+### Query account
 
+```
+undcli query account und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
+```
 
 ### Interacting with WRKChain module
 
@@ -118,16 +158,16 @@ undcli tx wrkchain record 1 --wc_height=1 --block_hash="d04b98f48e8" --parent_ha
 
 Query a block
 ```
-undcli query wrkchain get-block 1 1
+undcli query wrkchain block 1 1
 ```
 
 #### WRKChain REST
 
-http://localhost:1317/wrkchain/wrkchains  
-http://localhost:1317/wrkchain/wrkchains?moniker=wrkchain1  
-http://localhost:1317/wrkchain/wrkchains?owner=[bech32address]  
-http://localhost:1317/wrkchain/1  
-http://localhost:1317/wrkchain/1/block/1  
+http://localhost:1318/wrkchain/wrkchains  
+http://localhost:1318/wrkchain/wrkchains?moniker=wrkchain1  
+http://localhost:1318/wrkchain/wrkchains?owner=[bech32address]  
+http://localhost:1318/wrkchain/1  
+http://localhost:1318/wrkchain/1/block/1  
 
 ### Interacting with BEACON module
 
@@ -158,11 +198,11 @@ undcli query beacon timestamp 1 1
 
 #### BEACON REST
 
-http://localhost:1317/beacon/beacons  
-http://localhost:1317/beacon/beacons?moniker=beacon1  
-http://localhost:1317/beacon/beacons?owner=[bech32address]  
-http://localhost:1317/beacon/1   
-http://localhost:1317/beacon/1/timestamp/1  
+http://localhost:1318/beacon/beacons  
+http://localhost:1318/beacon/beacons?moniker=beacon1  
+http://localhost:1318/beacon/beacons?owner=[bech32address]  
+http://localhost:1318/beacon/1   
+http://localhost:1318/beacon/1/timestamp/1  
 
 ### Purchase Enterprise UND
 

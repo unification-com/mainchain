@@ -26,6 +26,7 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 
 func beaconParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryParameters)
 		res, height, err := cliCtx.QueryWithData(route, nil)
 

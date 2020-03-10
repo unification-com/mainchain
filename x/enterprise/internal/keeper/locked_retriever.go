@@ -88,7 +88,7 @@ func (ar TotalSupplyRetriever) GetTotalSupply() (types.UndSupply, error) {
 	return totalSupply, err
 }
 
-// GetLockedUndHeight queries for locked UND  given an address. Returns the
+// GetLockedUndHeight queries for locked UND given an address. Returns the
 // height of the query with the account. An error is returned if the query
 // or decoding fails.
 func (ar TotalSupplyRetriever) GetTotalSupplyHeight() (types.UndSupply, int64, error) {

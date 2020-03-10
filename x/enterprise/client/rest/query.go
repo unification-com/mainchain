@@ -41,6 +41,7 @@ func registerEnterpriseSupplyByDenomOverride(cliCtx context.CLIContext, r *mux.R
 
 func enterpriseParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryParameters)
 		res, height, err := cliCtx.QueryWithData(route, nil)
 
@@ -56,6 +57,7 @@ func enterpriseParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
 
 func enterpriseTotalLockedHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryTotalLocked)
 		res, height, err := cliCtx.QueryWithData(route, nil)
 
@@ -71,6 +73,7 @@ func enterpriseTotalLockedHandler(cliCtx context.CLIContext) http.HandlerFunc {
 
 func enterpriseTotalUnLockedHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryTotalUnlocked)
 		res, height, err := cliCtx.QueryWithData(route, nil)
 
@@ -261,6 +264,7 @@ func EnterpriseAuthAccountOverride(cliCtx context.CLIContext) http.HandlerFunc {
 
 func EnterpriseSupplyTotalOverride(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		totalSupplyGetter := keeper.NewTotalSupplyRetriever(cliCtx)
 
 		totalSupply, height, err := totalSupplyGetter.GetTotalSupplyHeight()
@@ -275,7 +279,7 @@ func EnterpriseSupplyTotalOverride(cliCtx context.CLIContext) http.HandlerFunc {
 
 func EnterpriseSupplyByDenomOverride(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		denom := mux.Vars(r)["denom"]
 
 		// todo - get from params

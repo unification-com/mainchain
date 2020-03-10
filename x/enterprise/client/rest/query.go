@@ -261,6 +261,7 @@ func EnterpriseAuthAccountOverride(cliCtx context.CLIContext) http.HandlerFunc {
 
 func EnterpriseSupplyTotalOverride(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		totalSupplyGetter := keeper.NewTotalSupplyRetriever(cliCtx)
 
 		totalSupply, height, err := totalSupplyGetter.GetTotalSupplyHeight()
@@ -275,7 +276,7 @@ func EnterpriseSupplyTotalOverride(cliCtx context.CLIContext) http.HandlerFunc {
 
 func EnterpriseSupplyByDenomOverride(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		denom := mux.Vars(r)["denom"]
 
 		// todo - get from params

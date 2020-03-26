@@ -17,6 +17,11 @@ BIP-0044 Path for our HD Wallets is as follows:
 
 SLIP-0044 Coin ID is `5555`
 
+## Pre-compiled binaries
+
+The quickest way to obtain and run the `und` and `undcli` applications is to download
+the pre-compiled binaries from [latest release](https://github.com/unification-com/mainchain/releases)
+
 ## Build
 
 Compile `und` and `undcli` binaries and output to ./build

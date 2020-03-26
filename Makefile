@@ -13,10 +13,12 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 	-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags)"
 
+export UND_LDFLAGS = $(ldflags)
+
 include Makefile.devtools
 include Makefile.ledger
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+BUILD_FLAGS := -tags="$(build_tags)" -ldflags '$(ldflags)'
 
 ifeq ($(WITH_DELVE),yes)
   BUILD_FLAGS += -gcflags 'all=-N -l'
@@ -28,7 +30,7 @@ install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/und
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/undcli
 
-build: go.sum
+build: clean go.sum
 	go build -mod=readonly $(BUILD_FLAGS) -o build/und ./cmd/und
 	go build -mod=readonly $(BUILD_FLAGS) -o build/undcli ./cmd/undcli
 
@@ -97,3 +99,9 @@ update-sdk:
 build-update-sdk:
 	go build $(BUILD_FLAGS) -o build/und ./cmd/und
 	go build $(BUILD_FLAGS) -o build/undcli ./cmd/undcli
+
+snapshot: goreleaser
+	UND_BUILD_TAGS="$(build_tags)" goreleaser --snapshot --skip-publish --rm-dist
+
+release: goreleaser
+	UND_BUILD_TAGS="$(build_tags)" goreleaser --rm-dist

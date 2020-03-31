@@ -196,7 +196,11 @@ func TestRecordBeaconTimestampsFail(t *testing.T) {
 
 	for _, tc := range testCases {
 		tsID, err := keeper.RecordBeaconTimestamp(ctx, tc.beaconID, tc.hash, tc.subTime, tc.owner)
-		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+		if tc.expectedErr != nil {
+			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
+		} else {
+			require.Nil(t, err)
+		}
 		require.True(t, tsID == tc.expectedID)
 	}
 }

@@ -237,7 +237,6 @@ func NewUndSimApp(
 
 	app.EvidenceKeeper = *evidenceKeeper
 
-
 	// register the proposal types
 	govRouter := gov.NewRouter()
 	govRouter.AddRoute(gov.RouterKey, gov.ProposalHandler).

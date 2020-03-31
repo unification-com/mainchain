@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -198,7 +199,7 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 		owner       sdk.AccAddress
 		expectedErr error
 	}{
-		{0, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "WRKChain 0 does not exist")},
+		{0, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", 0))},
 		{99, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "WRKChain 99 does not exist")},
 		{wcID, 0, "", "", "", "", "", TestAddrs[1], sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
 		{wcID, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
@@ -210,6 +211,10 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 
 	for _, tc := range testCases {
 		err := keeper.RecordWrkchainHashes(ctx, tc.wrkchainId, tc.height, tc.blockHash, tc.parentHash, tc.hash1, tc.hash2, tc.hash3, tc.owner)
-		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+		if tc.expectedErr != nil {
+			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err.Error())
+		} else {
+			require.Nil(t, err)
+		}
 	}
 }

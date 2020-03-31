@@ -119,7 +119,11 @@ func TestEmptyWrkChainValuesReturnError(t *testing.T) {
 
 	for _, tc := range testCases {
 		err := keeper.SetWrkChain(ctx, tc.wc)
-		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+		if tc.expectedErr != nil {
+			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err.Error())
+		} else {
+			require.Nil(t, err)
+		}
 	}
 }
 
@@ -186,7 +190,11 @@ func TestFailRegisterNewWrkChain(t *testing.T) {
 
 	for _, tc := range testCases {
 		wcID, err := keeper.RegisterWrkChain(ctx, tc.moniker, tc.name, tc.genHash, "geth", tc.owner)
-		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+		if tc.expectedErr != nil {
+			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err.Error())
+		} else {
+			require.Nil(t, err)
+		}
 		require.True(t, wcID == tc.expectedWcID)
 	}
 }

@@ -107,7 +107,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	expectedErr := sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
-	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt = int64(actualRecFeeAmt - 1)
@@ -129,7 +129,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	expectedErr1 := sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
-	require.Equal(t, expectedErr1, err1, "unexpected type of error: %s", err1)
+	require.Equal(t, expectedErr1.Error(), err1.Error(), "unexpected type of error: %s", err1)
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
@@ -168,7 +168,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	expectedErr := sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
-	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt = int64(actualRecFeeAmt + 1)
@@ -190,7 +190,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	expectedErr1 := sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
-	require.Equal(t, expectedErr1, err1, "unexpected type of error: %s", err1)
+	require.Equal(t, expectedErr1.Error(), err1.Error(), "unexpected type of error: %s", err1)
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
@@ -229,7 +229,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	expectedErr := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx1")
-	require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt = int64(actualRecFeeAmt)
@@ -248,7 +248,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
-	require.Equal(t, expectedErr, err1, "unexpected type of error: %s", err1)
+	require.Equal(t, expectedErr.Error(), err1.Error(), "unexpected type of error: %s", err1)
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {

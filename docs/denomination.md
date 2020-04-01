@@ -1,11 +1,8 @@
-# Native Coin Denomination
+# Native Coin Denomination `nund`
 
-The native coin denomination on Mainchain (Mainnet, Testnet and Devnet) is `nund`, or
-"Nano UND", such that 1,000,000,000 nund == 1 UND.
+The native coin denomination on Mainchain (MainNet, TestNet and DevNet) is **`nund`**, or "Nano UND", such that 1,000,000,000 nund == 1 UND.
 
-All transactions, fees and stakes are paid for in `nund`. For example, if you need to
-send 1 UND to your friend, you will need to set your transaction to send
-`1000000000nund`.
+All transactions, fees and stakes are paid for in `nund`. For example, if you need to send 1 UND to your friend, you will need to set your Tx to send `1000000000nund`.
 
 The `undcli` CMD has a simple conversion utility to help convert any fees
 and UND transactions into `nund`, and vice-versa:
@@ -20,7 +17,7 @@ will result in:
 1000000000nund = 1.000000000und
 ```
 
-Likewise, 
+Likewise,
 
 ```bash
 undcli convert 10 und nund

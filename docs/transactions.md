@@ -1,12 +1,14 @@
 # Sending Simple Transactions
 
 The `undcli` CMD can be used to generate, sign and broadcast new transactions
-to the network. It can also be used to query transactions, accounts and 
+to the network. It can also be used to query transactions, accounts and
 a variety of other network information.
+
+>**IMPORTANT**: Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
 
 ## Sending a Transaction
 
-In this example, we'll generate and sign a simple `send` transaction, which will 
+In this example, we'll generate and sign a simple `send` transaction, which will
 send 1UND. IF you have followed the documentation so far, you should already
 have the software installed, be running a full node, and have an account
 with funds.
@@ -14,29 +16,24 @@ with funds.
 The `send` command is as follows:
 
 ```bash
-undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id] --gas=auto --gas-adjustment=1.5 --gas-prices=0.025nund
+undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id] --node=tcp://[ip]:[port] --gas=auto --gas-adjustment=1.5 --gas-prices=0.025nund --trust-node false
 ```
 
 - `[from_key_or_address]` - this can be either your account identifier, or your `bech32` address
 - `[to_address]` - the `bech32` address of the account you are sending UND to
 - `[amount]` - the amount, in `nund`
 - `[chain_id]` - the ID of the chain to run the transaction on
+- `[ip]:[port]` - the IP and Port of the RPC node to broadcast the Tx
 
-If you do not have a local full node running, the `--node` flag can also
-be passed to the `undcli` command to use a public node. For example, on
-testnet, `--node tcp://3.136.43.0:26660` can be passed to send Txs
-to our public TestNet node.
+>**Tip**: If you are running your own full node, you can set the `--trust-node` flag to `true`, which will tell `undcli` not to verify the proofs form the response.
 
-**Note**: For [TestNet](join-testnet.md), use `UND-Mainchain-TestNet` as the Chain ID.  
-For [DevNet](local-devnet.md), use `UND-Mainchain-DevNet` as the Chain ID.
-
-For example, we are running on TestNet, and would like to send 1 UND from
+For example, we are running on DevNet, and would like to send 1 UND from
 our account `und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed`, to our friend's
 account `und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy`. We would
 therefore run:
 
 ```bash
-undcli tx send und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy 1000000000nund --chain-id UND-Mainchain-TestNet --gas=auto --gas-adjustment=1.5 --gas-prices=0.025nund
+undcli tx send und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy 1000000000nund --chain-id UND-Mainchain-DevNet --node=tcp://172.25.0.3:26661 --gas=auto --gas-adjustment=1.5 --gas-prices=0.025nund --trust-node=false
 ```
 
 You will be prompted for confirmation, along with your password for the account.
@@ -47,12 +44,32 @@ similar to the following:
 ```json
 {
   "height": "0",
-  "txhash": "0E0F6B2EFD2F0DF7593789F506E512B61B052515AEC3E26DD021B6020A8AF562",
-  "raw_log": "[{\"msg_index\":0,\"success\":true,\"log\":\"\",\"events\":[{\"type\":\"message\",\"attributes\":[{\"key\":\"action\",\"value\":\"send\"}]}]}]",
+  "txhash": "6FC93147D467E27C104BD68DADAC0CFD6AA130E37E8B29F6652570A891E38F71",
+  "raw_log": "[]"
+}
+
+```
+
+>**Tip**: you can set the `--broadcast-mode` flag in the command to `block`. This will tell `undcli` to wait for the transaction to be processed in a block before returning the result. This will take up to 5-6 seconds to complete, but the Tx result will be included in the output.
+
+## Query a Transaction
+
+You can then query the transaction's progress and final result by running:
+
+```bash
+undcli query tx 6FC93147D467E27C104BD68DADAC0CFD6AA130E37E8B29F6652570A891E38F71 --chain-id UND-Mainchain-DevNet
+```
+
+The output should be similar to:
+
+```json
+{
+  "height": "7",
+  "txhash": "6FC93147D467E27C104BD68DADAC0CFD6AA130E37E8B29F6652570A891E38F71",
+  "raw_log": "[{\"msg_index\":0,\"log\":\"\",\"events\":[{\"type\":\"message\",\"attributes\":[{\"key\":\"action\",\"value\":\"send\"},{\"key\":\"sender\",\"value\":\"und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed\"},{\"key\":\"module\",\"value\":\"bank\"}]},{\"type\":\"transfer\",\"attributes\":[{\"key\":\"recipient\",\"value\":\"und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy\"},{\"key\":\"amount\",\"value\":\"100000000000nund\"}]}]}]",
   "logs": [
     {
       "msg_index": 0,
-      "success": true,
       "log": "",
       "events": [
         {
@@ -61,39 +78,7 @@ similar to the following:
             {
               "key": "action",
               "value": "send"
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Query a Transaction
-
-You can then query the transaction's progress and final result by running:
-
-```bash
-undcli query tx 0E0F6B2EFD2F0DF7593789F506E512B61B052515AEC3E26DD021B6020A8AF562 --chain-id UND-Mainchain-TestNet
-```
-
-The output should be similar to:
-
-```json
-{
-  "height": "137",
-  "txhash": "0E0F6B2EFD2F0DF7593789F506E512B61B052515AEC3E26DD021B6020A8AF562",
-  "raw_log": "[{\"msg_index\":0,\"success\":true,\"log\":\"\",\"events\":[{\"type\":\"message\",\"attributes\":[{\"key\":\"sender\",\"value\":\"und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed\"},{\"key\":\"module\",\"value\":\"bank\"},{\"key\":\"action\",\"value\":\"send\"}]},{\"type\":\"transfer\",\"attributes\":[{\"key\":\"recipient\",\"value\":\"und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy\"},{\"key\":\"amount\",\"value\":\"1000000000nund\"}]}]}]",
-  "logs": [
-    {
-      "msg_index": 0,
-      "success": true,
-      "log": "",
-      "events": [
-        {
-          "type": "message",
-          "attributes": [
+            },
             {
               "key": "sender",
               "value": "und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed"
@@ -101,10 +86,6 @@ The output should be similar to:
             {
               "key": "module",
               "value": "bank"
-            },
-            {
-              "key": "action",
-              "value": "send"
             }
           ]
         },
@@ -117,15 +98,15 @@ The output should be similar to:
             },
             {
               "key": "amount",
-              "value": "1000000000nund"
+              "value": "100000000000nund"
             }
           ]
         }
       ]
     }
   ],
-  "gas_wanted": "65000",
-  "gas_used": "63607",
+  "gas_wanted": "75420",
+  "gas_used": "63558",
   "tx": {
     "type": "cosmos-sdk/StdTx",
     "value": {
@@ -138,7 +119,7 @@ The output should be similar to:
             "amount": [
               {
                 "denom": "nund",
-                "amount": "1000000000"
+                "amount": "100000000000"
               }
             ]
           }
@@ -148,10 +129,10 @@ The output should be similar to:
         "amount": [
           {
             "denom": "nund",
-            "amount": "1950"
+            "amount": "1886"
           }
         ],
-        "gas": "65000"
+        "gas": "75420"
       },
       "signatures": [
         {
@@ -159,46 +140,15 @@ The output should be similar to:
             "type": "tendermint/PubKeySecp256k1",
             "value": "A1qL4KCBiGgrE/PYIrUtpN08HxA7+Up+Q7eh3XNbCdSD"
           },
-          "signature": "3NLXxU+tf1OkXE6jot70hepWk/DxPCoOMvlXC4BdQ61BG1XTnQho/WLUDURyhQ2IRaRxajMUh1GmZD35IKe7Bw=="
+          "signature": "VLldGBkI0C3xcqwGShR2ImIc76btDGtW7QlEVfeDHuZtONIHDR5Ckf87wROazxqVw3rM35RvPgTyoj8VkVFV4w=="
         }
       ],
       "memo": ""
     }
   },
-  "timestamp": "2019-12-17T12:17:33Z",
-  "events": [
-    {
-      "type": "message",
-      "attributes": [
-        {
-          "key": "sender",
-          "value": "und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed"
-        },
-        {
-          "key": "module",
-          "value": "bank"
-        },
-        {
-          "key": "action",
-          "value": "send"
-        }
-      ]
-    },
-    {
-      "type": "transfer",
-      "attributes": [
-        {
-          "key": "recipient",
-          "value": "und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy"
-        },
-        {
-          "key": "amount",
-          "value": "1000000000nund"
-        }
-      ]
-    }
-  ]
+  "timestamp": "2020-04-01T14:28:51Z"
 }
+
 ```
 
 ## Query an Account
@@ -207,7 +157,7 @@ Finally, to check that the funds have been sent and received, we can query the
 account:
 
 ```bash
-undcli query account und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --chain-id UND-Mainchain-TestNet
+undcli query account und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --chain-id UND-Mainchain-DevNet
 ```
 
 Which will output a result similar to:
@@ -221,12 +171,12 @@ Which will output a result similar to:
       "coins": [
         {
           "denom": "nund",
-          "amount": "1000000000"
+          "amount": "100400000000000"
         }
       ],
-      "public_key": null,
-      "account_number": "3",
-      "sequence": "0"
+      "public_key": "",
+      "account_number": 3,
+      "sequence": 0
     }
   },
   "enterprise": {
@@ -237,7 +187,7 @@ Which will output a result similar to:
     "available_for_wrkchain": [
       {
         "denom": "nund",
-        "amount": "1000000000"
+        "amount": "100400000000000"
       }
     ]
   }

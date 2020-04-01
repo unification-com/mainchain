@@ -1,45 +1,58 @@
-# Deploying a Local Devnet
+# Deploying a Local DevNet
+
+>**IMPORTANT**: Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
 
 The repository contains a ready to deploy Docker composition for local
-development and testing. The devnet can be run with the following command:
+development and testing. DevNet can be run with the following command:
 
 ```bash
 make devnet
 ```
 
-To bring the local devnet down cleanly, use <kbd>Ctrl</kbd>+<kbd>C</kbd>, followed by:
+To bring DevNet down cleanly, use <kbd>Ctrl</kbd>+<kbd>C</kbd>, followed by:
 
 ```bash
 make devnet-down
 ```
 
-## Devnet Chain ID
+## DevNet Chain ID
 
-**Important**: Devnet's Chain ID is `UND-Mainchain-DevNet`. Any `und` or `undcli` commands
-intended for Devnet should use the flag `--chain-id UND-Mainchain-DevNet`
+**Important**: DevNet's Chain ID is `UND-Mainchain-DevNet`. Any `und` or `undcli` commands
+intended for DevNet should use the flag `--chain-id UND-Mainchain-DevNet`
 
-## Devnet Nodes
+## DevNet RPC Nodes
 
-The devnet composition will spin up three full nodes, and one light client in the following
-Docker containers:
+By default `undcli` will attempt to broadcast transactions to tcp://localhost:26656. However, any of the DevNet nodes can be used to send transactions via `undcli` using the `--node=` flag, for example:
 
-- `node1` - Full validation node, on 172.25.0.3:26661
-- `node2` - Full validation node, on 172.25.0.4:26662
-- `node3` - Full validation node, on 172.25.0.5:26663
-- `rest-server` - Light Client for RPC interaction on 172.25.0.4:1317
+```bash
+undcli query tx TX_HASH --chain-id UND-Mainchain-DevNet --node=tcp://172.25.0.3:26661
+```
 
-## Devnet wallets and keys
+See below for each node's RPC IPs and Ports.
 
-See [Docker README](../Docker/README.md) for the mnemonic phrases and keys used
-by the above nodes, and for test accounts included in Devnet's genesis.
+## DevNet Docker containers
 
-### Importing the Devnet keys
+The DevNet composition will spin up three full nodes, one light REST client, and a proxy server in the following Docker containers:
 
-The Devnet accounts can be imported as follows. First, build the `und` and 
+- `node1` - Full validation node, RPC on 172.25.0.3:26661
+- `node2` - Full validation node, RPC on 172.25.0.4:26662
+- `node3` - Full validation node, RPC on 172.25.0.5:26663
+- `rest-server` - Light Client for REST interaction on 172.25.0.6:1317
+- `proxy` - a small proxy server allowing CORS queries to the `rest-server` via 172.25.0.7:1318
+
+## DevNet test accounts, wallets and keys
+
+DevNet is deployed with a pre-defined [genesis.json](../Docker/assets/node1/config/genesis.json), containing several test accounts loaded with UND and pre-defined validators with self delegation.
+
+See [../Docker/README.md](../Docker/README.md) for the mnemonic phrases and keys used by the above nodes, and for test accounts included in DevNet's genesis.
+
+### Importing the DevNet keys
+
+The DevNet accounts can be imported as follows. First, build the `und` and
 `undcli` binaries:
 
 ```bash
-make clean && make build
+make build
 ```
 
 Then, for each account run the following command:
@@ -48,8 +61,7 @@ Then, for each account run the following command:
 ./build/undcli keys add node1 --recover
 ```
 
-You will be asked for a password, and to enter the mnemonic phrase itself.
-Change `node1` to an appropriate moniker for each imported account.
+You will be prompted to enter the mnemonic phrase, and a password for your OS's keyring. Change `node1` to an appropriate moniker for each imported account.
 
 ## Next
 

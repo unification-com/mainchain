@@ -102,7 +102,11 @@ func TestSetEmptyPurchaseOrderValues(t *testing.T) {
 
 	for _, tc := range testCases {
 		err := keeper.SetPurchaseOrder(ctx, tc.po)
-		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+		if tc.expectedErr != nil {
+			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err.Error())
+		} else {
+			require.Nil(t, err)
+		}
 	}
 }
 
@@ -179,7 +183,11 @@ func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 
 	for _, tc := range testCases {
 		poID, err := keeper.RaiseNewPurchaseOrder(ctx, tc.po.Purchaser, tc.po.Amount)
-		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+		if tc.expectedErr != nil {
+			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err.Error())
+		} else {
+			require.Nil(t, err)
+		}
 		require.True(t, poID == tc.expectedPoID)
 	}
 }
@@ -249,7 +257,7 @@ func TestProcessNotExistPurchaseOrder(t *testing.T) {
 		err := keeper.ProcessPurchaseOrderDecision(ctx, i, RandomDecision(), EntSignerAddr)
 		errMsg := fmt.Sprintf("id: %d", i)
 		expectedErr := sdkerrors.Wrap(types.ErrPurchaseOrderDoesNotExist, errMsg)
-		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 	}
 }
 
@@ -275,7 +283,7 @@ func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
 		_ = keeper.SetPurchaseOrder(ctx, po)
 
 		err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
-		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 		// mock complete
 		if decision == types.StatusAccepted {
@@ -287,13 +295,13 @@ func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
 			expectedErr := sdkerrors.Wrap(types.ErrPurchaseOrderAlreadyProcessed, errMsg)
 
 			err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
-			require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+			require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 		} else {
 			errMsg := fmt.Sprintf("id %d already processed: reject", poID)
 			expectedErr := sdkerrors.Wrap(types.ErrPurchaseOrderAlreadyProcessed, errMsg)
 
 			err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
-			require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+			require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 		}
 	}
 }
@@ -315,7 +323,7 @@ func TestProcessingDuplicateDecisions(t *testing.T) {
 		expectedErr := sdkerrors.Wrap(types.ErrSignerAlreadyMadeDecision, errMsg)
 
 		err = keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
-		require.Equal(t, expectedErr, err, "unexpected type of error: %s", err)
+		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 	}
 }
 
@@ -350,7 +358,11 @@ func TestProcessPurchaseOrderInvalidDecision(t *testing.T) {
 
 	for _, tc := range testCases {
 		err := keeper.ProcessPurchaseOrderDecision(ctx, tc.poId, tc.decision, EntSignerAddr)
-		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+		if tc.expectedErr != nil {
+			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err.Error())
+		} else {
+			require.Nil(t, err)
+		}
 	}
 }
 
@@ -391,6 +403,10 @@ func TestUnauthorisedDecisionMaker(t *testing.T) {
 
 	for _, tc := range testCases {
 		err := keeper.ProcessPurchaseOrderDecision(ctx, tc.poId, tc.decision, tc.signer)
-		require.Equal(t, tc.expectedErr, err, "unexpected type of error: %s", err)
+		if tc.expectedErr != nil {
+			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err.Error())
+		} else {
+			require.Nil(t, err)
+		}
 	}
 }

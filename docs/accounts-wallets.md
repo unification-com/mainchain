@@ -3,10 +3,15 @@
 The `undcli` CMD can be used to create new accounts, or import previous accounts
 and keys.
 
-## Create a New Account
+## Prerequisites
 
-**IMPORTANT**: When you create a new account, the CMD will output a mnemonic. KEEP THIS
-SAFE - if you lose it, you will not be able to recover your account!
+Before continuing, ensure you have gone through the following docs:
+
+1. [Installing the software](installation.md)
+
+## Create a new account
+
+>**IMPORTANT**: When you create a new account, the CMD will output a mnemonic. KEEP THIS SAFE - if you lose it, you will not be able to recover your account!
 
 To create a new account, run:
 
@@ -14,15 +19,19 @@ To create a new account, run:
 undcli keys add [account_name]
 ```
 
-`[account_name]` is whatever name you would like to use as an identifier
+`[account_name]` is whatever name you would like to use as an identifier when signing transactions. For example:
 
-You will be prompted to enter a password to secure the account. Once entered,
-the application will output your account details, including your address, public key
-and mnemonic for recovery/future importing.
+```bash
+undcli keys add my_new_wallet
+```
 
-Accounts and keys are stored in `~/.und_cli/keys` by default.
+>**Tip**: stick to alphanumeric characters, hyphens, underscores and full stops.
 
-## Import an Account
+If your OS keyring for `undcli` is not already unlocked/created, you will be prompted for a password. Once entered, the application will output your account details, including your wallet address, public key and mnemonic for recovery/future importing.
+
+Accounts and keys are stored in your OS keyring by default.
+
+## Import an account
 
 The same command can be used to import a previously saved mnemonic by passing
 the `--recover` flag:
@@ -31,15 +40,20 @@ the `--recover` flag:
 undcli keys add [account_name] --recover
 ```
 
-As when creating a new account, you will be prompted to enter a password
-to secure the account, followed by a prompt to enter your mnemonic.
+You will be prompted to enter your mnemonic.
 
-## List accounts
+## List & show accounts
 
 You can list locally stored account with the following command:
 
 ```bash
 undcli keys list
+```
+
+or show the details of a particular account:
+
+```bash
+undcli keys show my_new_wallet
 ```
 
 Run `undcli keys --help` for further details

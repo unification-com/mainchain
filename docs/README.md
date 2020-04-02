@@ -8,6 +8,7 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [Introduction to Mainchain](about-mainchain.md)
 - [Native Coin Denomination: nund](denomination.md)
+- [Fees and Gas](fees-and-gas.md)
 
 ## Install the software
 

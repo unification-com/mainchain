@@ -16,7 +16,7 @@ with funds.
 The `send` command is as follows:
 
 ```bash
-undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id] --node=tcp://[ip]:[port] --gas=auto --gas-adjustment=1.5 --gas-prices=0.025nund --trust-node false
+undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id] --node=tcp://[ip]:[port] --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node false
 ```
 
 - `[from_key_or_address]` - this can be either your account identifier, or your `bech32` address
@@ -33,7 +33,7 @@ account `und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy`. We would
 therefore run:
 
 ```bash
-undcli tx send und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy 1000000000nund --chain-id UND-Mainchain-DevNet --node=tcp://172.25.0.3:26661 --gas=auto --gas-adjustment=1.5 --gas-prices=0.025nund --trust-node=false
+undcli tx send und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy 1000000000nund --chain-id UND-Mainchain-DevNet --node=tcp://172.25.0.3:26661 --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node=false
 ```
 
 You will be prompted for confirmation, along with your password for the account.

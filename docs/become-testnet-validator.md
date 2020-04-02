@@ -53,7 +53,7 @@ undcli tx staking create-validator \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1" \
   --gas="auto" \
-  --gas-prices="0.025nund" \
+  --gas-prices="0.25nund" \
   --gas-adjustment=1.5 \
   --from=SELF_DELEGATOR_ACCOUNT
 ```

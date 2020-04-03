@@ -9,11 +9,12 @@ import (
 
 // GenesisState - enterprise state
 type GenesisState struct {
-	Params                  Params         `json:"params" yaml:"params"`                                         // enterprise params
-	StartingPurchaseOrderID uint64         `json:"starting_purchase_order_id" yaml:"starting_purchase_order_id"` // should be 1
-	PurchaseOrders          PurchaseOrders `json:"purchase_orders" yaml:"purchase_orders"`
-	LockedUnds              LockedUnds     `json:"locked_und" yaml:"locked_und"`
-	TotalLocked             sdk.Coin       `json:"total_locked" yaml:"total_locked"`
+	Params                  Params             `json:"params" yaml:"params"`                                         // enterprise params
+	StartingPurchaseOrderID uint64             `json:"starting_purchase_order_id" yaml:"starting_purchase_order_id"` // should be 1
+	PurchaseOrders          PurchaseOrders     `json:"purchase_orders" yaml:"purchase_orders"`
+	LockedUnds              LockedUnds         `json:"locked_und" yaml:"locked_und"`
+	TotalLocked             sdk.Coin           `json:"total_locked" yaml:"total_locked"`
+	Whitelist               WhitelistAddresses `json:"whitelist" yaml:"whitelist"`
 }
 
 // NewGenesisState creates a new GenesisState object

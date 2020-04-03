@@ -37,6 +37,15 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, supplyKeeper types.SupplyKeeper
 		}
 	}
 
+	if data.Whitelist != nil {
+		for _, wlAddr := range data.Whitelist {
+			err = keeper.AddAddressToWhitelist(ctx, wlAddr)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
 	// ensure locked UND is registered with supply keeper
 	if moduleAcc.GetCoins().IsZero() {
 		var moduleHoldings sdk.Coins
@@ -57,6 +66,7 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) GenesisState {
 	purchaseOrders := keeper.GetAllPurchaseOrders(ctx)
 	lockedUnds := keeper.GetAllLockedUnds(ctx)
 	totalLocked := keeper.GetTotalLockedUnd(ctx)
+	whitelist := keeper.GetAllWhitelistedAddresses(ctx)
 
 	return GenesisState{
 		Params:                  params,
@@ -64,5 +74,6 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) GenesisState {
 		PurchaseOrders:          purchaseOrders,
 		LockedUnds:              lockedUnds,
 		TotalLocked:             totalLocked,
+		Whitelist:               whitelist,
 	}
 }

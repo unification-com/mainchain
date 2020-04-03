@@ -34,8 +34,7 @@ tags:
   - name: version
 schemes:
   - https
-  - http
-host: 172.25.0.6:1317
+host: rest-testnet.unification.io
 securityDefinitions:
   kms:
     type: basic

@@ -166,6 +166,10 @@ func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress,
 
 	logger := k.Logger(ctx)
 
+	if !k.AddressIsWhitelisted(ctx, purchaser) {
+		return 0, sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO,  fmt.Sprintf("%s is not whitelisted", purchaser))
+	}
+
 	purchaseOrderID, err := k.GetHighestPurchaseOrderID(ctx)
 	if err != nil {
 		return 0, err

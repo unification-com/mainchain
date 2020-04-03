@@ -39,6 +39,7 @@ var (
 	EventTypeTallyPurchaseOrderDecisions  = types.EventTypeTallyPurchaseOrderDecisions
 	EventTypeAutoRejectStalePurchaseOrder = types.EventTypeAutoRejectStalePurchaseOrder
 	EventTypeUndPurchaseComplete          = types.EventTypeUndPurchaseComplete
+	EventTypeWhitelistAddress             = types.EventTypeWhitelistAddress
 	AttributeValueCategory                = types.AttributeValueCategory
 	AttributeKeyPurchaseOrderID           = types.AttributeKeyPurchaseOrderID
 	AttributeKeyPurchaser                 = types.AttributeKeyPurchaser
@@ -47,11 +48,14 @@ var (
 	AttributeKeySigner                    = types.AttributeKeySigner
 	AttributeKeyNumAccepts                = types.AttributeKeyNumAccepts
 	AttributeKeyNumRejects                = types.AttributeKeyNumRejects
+	AttributeKeyWhitelistAction           = types.AttributeKeyWhitelistAction
+	AttributeWhitelistAddress             = types.AttributeWhitelistAddress
 
 	// Key functions
 	GetPurchaseOrderIDBytes = types.GetPurchaseOrderIDBytes
 
 	ValidPurchaseOrderAcceptRejectStatus = types.ValidPurchaseOrderAcceptRejectStatus
+	ValidWhitelistAction                 = types.ValidWhitelistAction
 
 	NewLockedUndRetriever   = keeper.NewLockedUndRetriever
 	NewTotalSupplyRetriever = keeper.NewTotalSupplyRetriever
@@ -66,8 +70,9 @@ var (
 	NewMsgProcessUndPurchaseOrder = types.NewMsgProcessUndPurchaseOrder
 
 	// Errors
-	ErrInvalidDecision     = types.ErrInvalidDecision
-	ErrInvalidDenomination = types.ErrInvalidDenomination
+	ErrInvalidDecision        = types.ErrInvalidDecision
+	ErrInvalidDenomination    = types.ErrInvalidDenomination
+	ErrNotAuthorisedToRaisePO = types.ErrNotAuthorisedToRaisePO
 
 	NewCheckLockedUndDecorator = ante.NewCheckLockedUndDecorator
 

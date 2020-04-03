@@ -44,7 +44,7 @@ The DevNet composition will spin up three full nodes, one light REST client, and
 
 DevNet is deployed with a pre-defined [genesis.json](../Docker/assets/node1/config/genesis.json), containing several test accounts loaded with UND and pre-defined validators with self delegation.
 
-See [../Docker/README.md](../Docker/README.md) for the mnemonic phrases and keys used by the above nodes, and for test accounts included in DevNet's genesis.
+See <a href="https://github.com/unification-com/mainchain/blob/master/Docker/README.md" target="_blank">https://github.com/unification-com/mainchain/blob/master/Docker/README.md</a> for the mnemonic phrases and keys used by the above nodes, and for test accounts included in DevNet's genesis.
 
 ### Importing the DevNet keys
 

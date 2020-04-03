@@ -15,6 +15,10 @@ const (
 	CodeSignerAlreadyMadeDecision     = 108
 	CodeMissingData                   = 109
 	CodeDataInvalid                   = 110
+	CodeInvalidWhitelistAction        = 111
+	CodeAlreadyWhitelisted            = 112
+	CodeAddressNotWhitelisted         = 113
+	CodeNotAuthorisedToRaisePO        = 114
 )
 
 var (
@@ -28,4 +32,8 @@ var (
 	ErrSignerAlreadyMadeDecision     = sdkerrors.Register(ModuleName, CodeSignerAlreadyMadeDecision, "signer already made decision")
 	ErrMissingData                   = sdkerrors.Register(ModuleName, CodeMissingData, "missing data")
 	ErrInvalidData                   = sdkerrors.Register(ModuleName, CodeDataInvalid, "invalid data")
+	ErrInvalidWhitelistAction        = sdkerrors.Register(ModuleName, CodeInvalidWhitelistAction, "invalid whitelist action")
+	ErrAlreadyWhitelisted            = sdkerrors.Register(ModuleName, CodeAlreadyWhitelisted, "address already whitelisted")
+	ErrAddressNotWhitelisted         = sdkerrors.Register(ModuleName, CodeAddressNotWhitelisted, "address not whitelisted")
+	ErrNotAuthorisedToRaisePO        = sdkerrors.Register(ModuleName, CodeNotAuthorisedToRaisePO, "address not authorised to raise purchase orders")
 )

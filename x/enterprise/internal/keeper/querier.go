@@ -17,6 +17,7 @@ const (
 	QueryTotalLocked      = "total-locked"
 	QueryTotalUnlocked    = "total-unlocked"
 	QueryTotalSupply      = "total-supply"
+	QueryWhitelist        = "whitelist"
 )
 
 // NewQuerier is the module level router for state queries
@@ -37,6 +38,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryTotalUnlocked(ctx, keeper)
 		case QueryTotalSupply:
 			return queryTotalSupply(ctx, keeper)
+		case QueryWhitelist:
+			return queryWhitelist(ctx, keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
 		}
@@ -139,6 +142,17 @@ func queryTotalSupply(ctx sdk.Context, k Keeper) ([]byte, error) {
 	totalSupply := k.GetTotalSupplyIncludingLockedUnd(ctx)
 
 	res, err := codec.MarshalJSONIndent(k.cdc, totalSupply)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
+}
+
+func queryWhitelist(ctx sdk.Context, k Keeper) ([]byte, error) {
+	whitelist := k.GetAllWhitelistedAddresses(ctx)
+
+	res, err := codec.MarshalJSONIndent(k.cdc, whitelist)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

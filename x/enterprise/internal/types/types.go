@@ -10,6 +10,7 @@ import (
 
 type (
 	PurchaseOrderStatus byte
+	WhitelistAction     byte
 )
 
 const (
@@ -22,6 +23,9 @@ const (
 	StatusAccepted  PurchaseOrderStatus = 0x02
 	StatusRejected  PurchaseOrderStatus = 0x03
 	StatusCompleted PurchaseOrderStatus = 0x04
+
+	WhitelistActionAdd    WhitelistAction = 0x01
+	WhitelistActionRemove WhitelistAction = 0x02
 )
 
 // PurchaseOrderStatusFromString turns a string into a ProposalStatus
@@ -129,6 +133,90 @@ func (status PurchaseOrderStatus) Format(s fmt.State, verb rune) {
 	default:
 		// TODO: Do this conversion more directly
 		s.Write([]byte(fmt.Sprintf("%v", byte(status))))
+	}
+}
+
+// WhitelistActionFromString turns a string into a ProposalStatus
+func WhitelistActionFromString(str string) (WhitelistAction, error) {
+	switch str {
+	case "add":
+		return WhitelistActionAdd, nil
+
+	case "remove":
+		return WhitelistActionRemove, nil
+
+	default:
+		return WhitelistAction(0xff), fmt.Errorf("'%s' is not a valid whitelist action", str)
+	}
+}
+
+// ValidWhitelistAction returns true if the purchase order status is valid and false
+// otherwise.
+func ValidWhitelistAction(action WhitelistAction) bool {
+	if action == WhitelistActionAdd ||
+		action == WhitelistActionRemove {
+		return true
+	}
+	return false
+}
+
+
+// Marshal needed for protobuf compatibility
+func (action WhitelistAction) Marshal() ([]byte, error) {
+	return []byte{byte(action)}, nil
+}
+
+// Unmarshal needed for protobuf compatibility
+func (action *WhitelistAction) Unmarshal(data []byte) error {
+	*action = WhitelistAction(data[0])
+	return nil
+}
+
+// MarshalJSON Marshals to JSON using string representation of the status
+func (action WhitelistAction) MarshalJSON() ([]byte, error) {
+	return json.Marshal(action.String())
+}
+
+// UnmarshalJSON Unmarshals from JSON assuming Bech32 encoding
+func (action *WhitelistAction) UnmarshalJSON(data []byte) error {
+	var s string
+	err := json.Unmarshal(data, &s)
+	if err != nil {
+		return err
+	}
+
+	bz2, err := WhitelistActionFromString(s)
+	if err != nil {
+		return err
+	}
+
+	*action = bz2
+	return nil
+}
+
+// String implements the Stringer interface.
+func (action WhitelistAction) String() string {
+	switch action {
+	case WhitelistActionAdd:
+		return "add"
+
+	case WhitelistActionRemove:
+		return "remove"
+
+	default:
+		return ""
+	}
+}
+
+// Format implements the fmt.Formatter interface.
+// nolint: errcheck
+func (action WhitelistAction) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 's':
+		s.Write([]byte(action.String()))
+	default:
+		// TODO: Do this conversion more directly
+		s.Write([]byte(fmt.Sprintf("%v", byte(action))))
 	}
 }
 
@@ -247,3 +335,5 @@ Locked: %d
 Total: %d
 `, u.Denom, u.Amount, u.Locked, u.Total))
 }
+
+type WhitelistAddresses []sdk.AccAddress

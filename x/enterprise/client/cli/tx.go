@@ -38,6 +38,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	enterpriseTxCmd.AddCommand(flags.PostCommands(
 		GetCmdRaisePurchaseOrder(cdc),
 		GetCmdProcessPurchaseOrder(cdc),
+		GetCmdWhitelistAction(cdc),
 	)...)
 
 	return enterpriseTxCmd
@@ -134,6 +135,52 @@ $ %s tx %s process 24 reject --from ent
 			}
 
 			msg := types.NewMsgProcessUndPurchaseOrder(uint64(purchaseOrderId), decision, cliCtx.GetFromAddress())
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+}
+
+// GetCmdWhitelistAction is the CLI command for adding/removing addresses from the purchase order whitelist
+func GetCmdWhitelistAction(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "whitelist [action] [address]",
+		Short: "Add/Remove an address from the enterprise purchase order whitelist",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Add/Remove an address from the enterprise purchase order whitelist
+Example:
+$ %s tx %s whitelist add und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --from ent
+$ %s tx %s whitelist remove und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --from ent
+`,
+				version.ClientName, types.ModuleName, version.ClientName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			address, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return err
+			}
+
+			action, err := types.WhitelistActionFromString(args[0])
+			if err != nil {
+				return err
+			}
+
+			if !types.ValidWhitelistAction(action) {
+				return sdkerrors.Wrap(types.ErrInvalidWhitelistAction, "action should be add or remove")
+			}
+
+			msg := types.NewMsgWhitelistAddress(address, action, cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

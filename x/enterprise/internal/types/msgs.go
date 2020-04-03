@@ -8,8 +8,9 @@ import (
 const (
 	RouterKey = ModuleName // defined in keys.go file
 
-	PurchaseAction = "raise_enterprise_purchase_order"
-	ProcessAction  = "process_enterprise_purchase_order"
+	PurchaseAction         = "raise_enterprise_purchase_order"
+	ProcessAction          = "process_enterprise_purchase_order"
+	WhitelistAddressAction = "whitelist_enterprise_purchase_order_address"
 )
 
 // __Enterprise_UND_Purchase_Order_Msg__________________________________
@@ -103,5 +104,54 @@ func (msg MsgProcessUndPurchaseOrder) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgProcessUndPurchaseOrder) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Signer}
+}
+
+// __Enterprise_UND_Whitelist_Msg__________________________
+
+// MsgWhitelistAddress defines a WhitelistAddress message - used to add/remove addresses from PO whitelist
+// and determine which addresses are allowed to raise purchase orders
+type MsgWhitelistAddress struct {
+	Address sdk.AccAddress  `json:"address"`
+	Signer  sdk.AccAddress  `json:"signer"`
+	Action  WhitelistAction `json:"action"`
+}
+
+// NewMsgWhitelistAddress is a constructor function for MsgWhitelistAddress
+func NewMsgWhitelistAddress(address sdk.AccAddress, action WhitelistAction, signer sdk.AccAddress) MsgWhitelistAddress {
+	return MsgWhitelistAddress{
+		Address: address,
+		Signer:  signer,
+		Action:  action,
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgWhitelistAddress) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgWhitelistAddress) Type() string { return WhitelistAddressAction }
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgWhitelistAddress) ValidateBasic() error {
+	if msg.Signer.Empty() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer.String())
+	}
+	if msg.Address.Empty() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Address.String())
+	}
+	if !ValidWhitelistAction(msg.Action) {
+		return sdkerrors.Wrap(ErrInvalidWhitelistAction, "action must be add or remove")
+	}
+	return nil
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgWhitelistAddress) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgWhitelistAddress) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Signer}
 }

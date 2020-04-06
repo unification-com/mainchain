@@ -18,6 +18,7 @@ const (
 	QueryTotalUnlocked    = "total-unlocked"
 	QueryTotalSupply      = "total-supply"
 	QueryWhitelist        = "whitelist"
+	QueryWhitelisted      = "whitelisted"
 )
 
 // NewQuerier is the module level router for state queries
@@ -40,6 +41,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryTotalSupply(ctx, keeper)
 		case QueryWhitelist:
 			return queryWhitelist(ctx, keeper)
+		case QueryWhitelisted:
+			return queryQueryWhitelisted(ctx, path[1:], keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
 		}
@@ -153,6 +156,22 @@ func queryWhitelist(ctx sdk.Context, k Keeper) ([]byte, error) {
 	whitelist := k.GetAllWhitelistedAddresses(ctx)
 
 	res, err := codec.MarshalJSONIndent(k.cdc, whitelist)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
+}
+
+func queryQueryWhitelisted(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
+	address, err := sdk.AccAddressFromBech32(path[0])
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+
+	isWhiteListed := k.AddressIsWhitelisted(ctx, address)
+
+	res, err := codec.MarshalJSONIndent(k.cdc, isWhiteListed)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

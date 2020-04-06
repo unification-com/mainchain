@@ -10,6 +10,7 @@ const (
 	RestPurchaseOrderId = "poid"
 	RestPurchaserAddr   = "purchaser"
 	RestStatus          = "status"
+	RestWhitelistAddr   = "address"
 )
 
 // RegisterRoutes - Central function to define routes that get registered by the main application

@@ -67,6 +67,39 @@ func getQueriedPurchaseOrders(t *testing.T, ctx sdk.Context, cdc *codec.Codec, q
 	return matchingOrders
 }
 
+func getQueriedWhitelist(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier) types.WhitelistAddresses {
+	query := abci.RequestQuery{
+		Path: strings.Join([]string{custom, types.QuerierRoute, QueryWhitelist}, "/"),
+		Data: []byte{},
+	}
+
+	bz, err := querier(ctx, []string{QueryWhitelist}, query)
+	require.NoError(t, err)
+	require.NotNil(t, bz)
+
+	var whitelist types.WhitelistAddresses
+	require.NoError(t, cdc.UnmarshalJSON(bz, &whitelist))
+
+	return whitelist
+}
+
+func getQueriedIsAddressWhitelisted(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, addr sdk.AccAddress) bool {
+
+	query := abci.RequestQuery{
+		Path: strings.Join([]string{custom, types.QuerierRoute, QueryWhitelisted, addr.String()}, "/"),
+		Data: nil,
+	}
+
+	bz, err := querier(ctx, []string{QueryWhitelisted, addr.String()}, query)
+	require.NoError(t, err)
+	require.NotNil(t, bz)
+
+	var isWhitelisted bool
+	require.NoError(t, cdc.UnmarshalJSON(bz, &isWhitelisted))
+
+	return isWhitelisted
+}
+
 func TestQueryParams(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 	querier := NewQuerier(keeper)
@@ -183,6 +216,43 @@ func TestQueryPurchaseOrdersFilters(t *testing.T) {
 			if po.PurchaseOrderID == tPo.PurchaseOrderID {
 				require.True(t, PurchaseOrderEqual(tPo, po))
 			}
+		}
+	}
+}
+
+func TestQueryWhitelist(t *testing.T) {
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	querier := NewQuerier(keeper)
+	numTests := 100
+	testAddrs := GenerateRandomAddresses(numTests)
+
+	for _, addr := range testAddrs {
+		_ = keeper.AddAddressToWhitelist(ctx, addr)
+	}
+
+	whitelist := getQueriedWhitelist(t, ctx, keeper.cdc, querier)
+
+	require.True(t, len(whitelist) == len(testAddrs))
+}
+
+func TestQueryAddressIsWhitelisted(t *testing.T) {
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	querier := NewQuerier(keeper)
+	numTests := 100
+	testAddrs := GenerateRandomAddresses(numTests)
+
+	for i, addr := range testAddrs {
+		if i < 50 {
+			_ = keeper.AddAddressToWhitelist(ctx, addr)
+		}
+	}
+
+	for i, addr := range testAddrs {
+		isWhiteListed := getQueriedIsAddressWhitelisted(t, ctx, keeper.cdc, querier, addr)
+		if i < 50 {
+			require.True(t, isWhiteListed)
+		} else {
+			require.False(t, isWhiteListed)
 		}
 	}
 }

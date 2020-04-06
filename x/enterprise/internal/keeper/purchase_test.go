@@ -27,6 +27,8 @@ func TestSetGetHighestPurchaseOrderID(t *testing.T) {
 func TestSetGetPurchaseOrder(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 
+	_ = keeper.AddAddressToWhitelist(ctx, TestAddrs[1])
+
 	status := types.StatusRaised
 
 	for i := uint64(1); i <= 1000; i++ {
@@ -87,6 +89,8 @@ func TestSetEmptyPurchaseOrderValues(t *testing.T) {
 	po7 := po6
 	po7.Status = types.StatusNil
 
+	_ = keeper.AddAddressToWhitelist(ctx, TestAddrs[1])
+
 	testCases := []struct {
 		po          types.EnterpriseUndPurchaseOrder
 		expectedErr error
@@ -124,6 +128,8 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 		amt := int64(RandInBetween(1, 10000))
 		amount := sdk.NewInt64Coin(types.DefaultDenomination, amt)
 
+		_ = keeper.AddAddressToWhitelist(ctx, from)
+
 		expectedPo := types.NewEnterpriseUndPurchaseOrder()
 		expectedPo.PurchaseOrderID = i
 		expectedPo.Amount = amount
@@ -155,6 +161,8 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 
+	_ = keeper.AddAddressToWhitelist(ctx,  TestAddrs[1])
+
 	// Empty
 	po1 := types.NewEnterpriseUndPurchaseOrder()
 
@@ -172,16 +180,21 @@ func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 
 	testCases := []struct {
 		po           types.EnterpriseUndPurchaseOrder
+		remove       bool
 		expectedErr  error
 		expectedPoID uint64
 	}{
-		{po1, sdkerrors.Wrap(types.ErrMissingData, "unable to set purchase order - purchaser cannot be empty"), 0},
-		{po2, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount not valid"), 0},
-		{po3, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount must be positive"), 0},
-		{po4, nil, 1},
+		{po1, false, sdkerrors.Wrap(types.ErrMissingData, "unable to set purchase order - purchaser cannot be empty"), 0},
+		{po2, false, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount not valid"), 0},
+		{po3, false, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount must be positive"), 0},
+		{po4, false, nil, 1},
+		{po4, true, sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO,  fmt.Sprintf("%s is not whitelisted to raise purchase orders", TestAddrs[1])), 0},
 	}
 
 	for _, tc := range testCases {
+		if tc.remove {
+			_ = keeper.RemoveAddressFromWhitelist(ctx, TestAddrs[1])
+		}
 		poID, err := keeper.RaiseNewPurchaseOrder(ctx, tc.po.Purchaser, tc.po.Amount)
 		if tc.expectedErr != nil {
 			require.Equal(t, tc.expectedErr.Error(), err.Error(), "unexpected type of error: %s", err.Error())
@@ -194,10 +207,13 @@ func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 
 func TestHighestPurchaseOrderIdAfterRaise(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	from := TestAddrs[1]
+
+	_ = keeper.AddAddressToWhitelist(ctx, from)
 
 	for i := uint64(1); i < 1000; i++ {
 		amount := sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
-		from := TestAddrs[1]
+
 		_, _ = keeper.RaiseNewPurchaseOrder(ctx, from, amount)
 
 		nextID, _ := keeper.GetHighestPurchaseOrderID(ctx)
@@ -208,10 +224,12 @@ func TestHighestPurchaseOrderIdAfterRaise(t *testing.T) {
 
 func TestPurchaseOrderExistsAfterRaise(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	from := TestAddrs[1]
+	_ = keeper.AddAddressToWhitelist(ctx, from)
 
 	for i := uint64(1); i < 1000; i++ {
 		amount := sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
-		from := TestAddrs[1]
+
 		poID, _ := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
 
 		poExists := keeper.PurchaseOrderExists(ctx, poID)
@@ -226,10 +244,12 @@ func TestPurchaseOrderExistsAfterRaise(t *testing.T) {
 
 func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	from := TestAddrs[1]
+	_ = keeper.AddAddressToWhitelist(ctx, from)
 
 	for i := uint64(1); i < 1000; i++ {
 		amount := sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
-		from := TestAddrs[1]
+
 		poID, _ := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
 		decision := RandomDecision()
 
@@ -264,10 +284,12 @@ func TestProcessNotExistPurchaseOrder(t *testing.T) {
 func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
 
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	from := TestAddrs[1]
+	_ = keeper.AddAddressToWhitelist(ctx, from)
 
 	for i := uint64(1); i < 1000; i++ {
 		amount := sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
-		from := TestAddrs[1]
+
 		poID, _ := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
 		decision := RandomDecision()
 		err := keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
@@ -309,10 +331,12 @@ func TestProcessingDuplicatePurchaseOrders(t *testing.T) {
 func TestProcessingDuplicateDecisions(t *testing.T) {
 
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	from := TestAddrs[1]
+	_ = keeper.AddAddressToWhitelist(ctx, from)
 
 	for i := uint64(1); i < 1000; i++ {
 		amount := sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
-		from := TestAddrs[1]
+
 		poID, _ := keeper.RaiseNewPurchaseOrder(ctx, from, amount)
 		decision := RandomDecision()
 		err := keeper.ProcessPurchaseOrderDecision(ctx, poID, decision, EntSignerAddr)
@@ -329,6 +353,8 @@ func TestProcessingDuplicateDecisions(t *testing.T) {
 
 func TestProcessPurchaseOrderInvalidDecision(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+
+	_ = keeper.AddAddressToWhitelist(ctx, TestAddrs[0])
 
 	po := types.NewEnterpriseUndPurchaseOrder()
 	po.Status = types.StatusRaised
@@ -368,6 +394,8 @@ func TestProcessPurchaseOrderInvalidDecision(t *testing.T) {
 
 func TestUnauthorisedDecisionMaker(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	_ = keeper.AddAddressToWhitelist(ctx, TestAddrs[0])
+	_ = keeper.AddAddressToWhitelist(ctx, TestAddrs[1])
 
 	po := types.NewEnterpriseUndPurchaseOrder()
 	po.Status = types.StatusRaised

@@ -86,6 +86,7 @@ func TestQueryPurchaseOrder(t *testing.T) {
 	var testPos []types.EnterpriseUndPurchaseOrder
 
 	for i, addr := range testAddrs {
+		_ = keeper.AddAddressToWhitelist(ctx, addr)
 		poId := i + 1
 		po := types.NewEnterpriseUndPurchaseOrder()
 		po.Purchaser = addr
@@ -117,6 +118,7 @@ func TestQueryPurchaseOrdersFilters(t *testing.T) {
 	var testPosCompleted []types.EnterpriseUndPurchaseOrder
 
 	for i, addr := range testAddrs {
+		_ = keeper.AddAddressToWhitelist(ctx, addr)
 		status := RandomStatus()
 		poId := i + 1
 		po := types.NewEnterpriseUndPurchaseOrder()

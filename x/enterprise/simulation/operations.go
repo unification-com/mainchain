@@ -19,7 +19,20 @@ func SimulateMsgRaisePurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) simul
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simulation.Account, chainID string,
 	) (simulation.OperationMsg, []simulation.FutureOperation, error) {
 
-		simAccount, _ := simulation.RandomAcc(r, accs)
+		whitelistedAddresses := k.GetAllWhitelistedAddresses(ctx)
+		if len(whitelistedAddresses) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		rndAddr := 0
+		if len(whitelistedAddresses) > 1 {
+			rndAddr = rand.Intn(len(whitelistedAddresses) - 1)
+		}
+
+		addr := whitelistedAddresses[rndAddr]
+
+		simAccount, _ := simulation.FindAccount(accs, addr)
+
 		account := ak.GetAccount(ctx, simAccount.Address)
 
 		coins := account.SpendableCoins(ctx.BlockTime())
@@ -50,6 +63,53 @@ func SimulateMsgRaisePurchaseOrder(ak auth.AccountKeeper, k keeper.Keeper) simul
 
 		return simulation.NewOperationMsg(msg, true, ""), nil, nil
 
+	}
+}
+
+func SimulateMsgMsgWhitelistAddress(ak auth.AccountKeeper, k keeper.Keeper) simulation.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simulation.Account, chainID string,
+	) (simulation.OperationMsg, []simulation.FutureOperation, error) {
+
+		simAccount, _ := simulation.RandomAcc(r, accs)
+
+		// needs to be sent specifically by the designated Ent account
+		entAcc := GenerateEntSourceSimAccount()
+		account := ak.GetAccount(ctx, entAcc.Address)
+
+		coins := account.SpendableCoins(ctx.BlockTime())
+
+		isWhitelisted := k.AddressIsWhitelisted(ctx, simAccount.Address)
+
+		action := types.WhitelistActionAdd
+
+		if isWhitelisted {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		fees, err := simulation.RandomFees(r, ctx, coins)
+
+		if err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, err
+		}
+
+		msg := types.NewMsgWhitelistAddress(simAccount.Address, action, entAcc.Address)
+
+		tx := helpers.GenTx(
+			[]sdk.Msg{msg},
+			fees,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			entAcc.PrivKey,
+		)
+
+		_, _, err = app.Deliver(tx)
+		if err != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, err
+		}
+
+		return simulation.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 

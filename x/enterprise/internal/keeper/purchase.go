@@ -138,6 +138,10 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 		return sdkerrors.Wrap(types.ErrMissingData, "unable to set purchase order - purchaser cannot be empty")
 	}
 
+	if !k.AddressIsWhitelisted(ctx, purchaseOrder.Purchaser) {
+		return sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO,  fmt.Sprintf("%s is not whitelisted to raise purchase orders", purchaseOrder.Purchaser))
+	}
+
 	if !purchaseOrder.Amount.IsValid() {
 		return sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount not valid")
 	}
@@ -165,10 +169,6 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaser sdk.AccAddress, amount sdk.Coin) (uint64, error) {
 
 	logger := k.Logger(ctx)
-
-	if !k.AddressIsWhitelisted(ctx, purchaser) {
-		return 0, sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO,  fmt.Sprintf("%s is not whitelisted", purchaser))
-	}
 
 	purchaseOrderID, err := k.GetHighestPurchaseOrderID(ctx)
 	if err != nil {

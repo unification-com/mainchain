@@ -31,7 +31,7 @@ func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) (*sdk.R
 	}
 
 	if !k.AddressIsWhitelisted(ctx, msg.Purchaser) {
-		return nil, sdkerrors.Wrap(ErrNotAuthorisedToRaisePO,  fmt.Sprintf("%s is not whitelisted to raise purchase orders", msg.Purchaser))
+		return nil, sdkerrors.Wrap(ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", msg.Purchaser))
 	}
 
 	purchaseOrderID, err := k.RaiseNewPurchaseOrder(ctx, msg.Purchaser, msg.Amount)

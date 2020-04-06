@@ -160,7 +160,6 @@ func ValidWhitelistAction(action WhitelistAction) bool {
 	return false
 }
 
-
 // Marshal needed for protobuf compatibility
 func (action WhitelistAction) Marshal() ([]byte, error) {
 	return []byte{byte(action)}, nil

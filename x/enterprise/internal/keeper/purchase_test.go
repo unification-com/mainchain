@@ -161,7 +161,7 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 
-	_ = keeper.AddAddressToWhitelist(ctx,  TestAddrs[1])
+	_ = keeper.AddAddressToWhitelist(ctx, TestAddrs[1])
 
 	// Empty
 	po1 := types.NewEnterpriseUndPurchaseOrder()
@@ -188,7 +188,7 @@ func TestFailRaiseNewPurchaseOrder(t *testing.T) {
 		{po2, false, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount not valid"), 0},
 		{po3, false, sdkerrors.Wrap(types.ErrInvalidData, "unable to set purchase order - amount must be positive"), 0},
 		{po4, false, nil, 1},
-		{po4, true, sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO,  fmt.Sprintf("%s is not whitelisted to raise purchase orders", TestAddrs[1])), 0},
+		{po4, true, sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", TestAddrs[1])), 0},
 	}
 
 	for _, tc := range testCases {

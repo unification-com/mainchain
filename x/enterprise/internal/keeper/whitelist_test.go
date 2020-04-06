@@ -88,7 +88,7 @@ func TestProcessWhitelistAction(t *testing.T) {
 		{sdk.AccAddress{}, types.WhitelistActionRemove, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty"), EntSignerAddr},
 		{TestAddrs[0], types.WhitelistActionRemove, sdkerrors.Wrap(types.ErrAddressNotWhitelisted, fmt.Sprintf("%s not whitelisted", TestAddrs[0])), EntSignerAddr},
 		{TestAddrs[0], types.WhitelistActionAdd, nil, EntSignerAddr},
-		{TestAddrs[0], types.WhitelistActionRemove, nil,EntSignerAddr},
+		{TestAddrs[0], types.WhitelistActionRemove, nil, EntSignerAddr},
 		{TestAddrs[0], 0x03, sdkerrors.Wrap(types.ErrInvalidWhitelistAction, "action should be add or remove"), EntSignerAddr},
 		{TestAddrs[0], 0x04, sdkerrors.Wrap(types.ErrInvalidWhitelistAction, "action should be add or remove"), EntSignerAddr},
 		{TestAddrs[0], types.WhitelistActionAdd, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer modifying whitelist"), TestAddrs[1]},

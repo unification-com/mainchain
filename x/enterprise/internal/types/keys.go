@@ -30,7 +30,7 @@ var (
 	// LockedUndAddressKeyPrefix prefix for address keys - used to store locked UND for an account
 	LockedUndAddressKeyPrefix = []byte{0x02}
 
-	// WhitelistKeyPrefix is the prifix for whitelisted addresses
+	// WhitelistKeyPrefix is the prefix for whitelisted addresses
 	WhitelistKeyPrefix = []byte{0x03}
 
 	TotalLockedUndKey = []byte{0x99}

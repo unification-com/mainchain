@@ -14,4 +14,5 @@ func init() {
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgUndPurchaseOrder{}, "enterprise/PurchaseUnd", nil)
 	cdc.RegisterConcrete(MsgProcessUndPurchaseOrder{}, "enterprise/ProcessUndPurchaseOrder", nil)
+	cdc.RegisterConcrete(MsgWhitelistAddress{}, "enterprise/WhitelistAddress", nil)
 }

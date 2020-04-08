@@ -241,6 +241,17 @@ func testAndRunTxs(app *UndSimApp, config simulation.Config) []simulation.Weight
 		{
 			func(_ *rand.Rand) int {
 				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgMsgWhitelistAddress, &v, nil,
+					func(_ *rand.Rand) {
+						v = 80
+					})
+				return v
+			}(nil),
+			entsim.SimulateMsgMsgWhitelistAddress(app.AccountKeeper, app.EnterpriseKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
 				ap.GetOrGenerate(app.cdc, OpWeightMsgRaisePurchaseOrder, &v, nil,
 					func(_ *rand.Rand) {
 						v = 80

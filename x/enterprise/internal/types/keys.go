@@ -30,6 +30,9 @@ var (
 	// LockedUndAddressKeyPrefix prefix for address keys - used to store locked UND for an account
 	LockedUndAddressKeyPrefix = []byte{0x02}
 
+	// WhitelistKeyPrefix is the prefix for whitelisted addresses
+	WhitelistKeyPrefix = []byte{0x03}
+
 	TotalLockedUndKey = []byte{0x99}
 )
 
@@ -55,4 +58,9 @@ func PurchaseOrderKey(purchaseOrderID uint64) []byte {
 // AddressStoreKey turn an address to key used for enterprise und/locked data to get it from the store
 func AddressStoreKey(acc sdk.AccAddress) []byte {
 	return append(LockedUndAddressKeyPrefix, acc.Bytes()...)
+}
+
+// WhitelistAddressStoreKey turn an address to key used for the whitelist store
+func WhitelistAddressStoreKey(acc sdk.AccAddress) []byte {
+	return append(WhitelistKeyPrefix, acc.Bytes()...)
 }

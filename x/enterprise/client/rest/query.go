@@ -21,6 +21,9 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/enterprise/locked"), enterpriseTotalLockedHandler(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/enterprise/unlocked"), enterpriseTotalUnLockedHandler(cliCtx)).Methods("GET")
 
+	r.HandleFunc(fmt.Sprintf("/enterprise/whitelist"), enterpriseWhitelistHandler(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/enterprise/whitelisted/{%s}", RestWhitelistAddr), enterpriseWhitelistedHandler(cliCtx)).Methods("GET")
+
 	r.HandleFunc(fmt.Sprintf("/enterprise/pos"), enterprisePosWithParametersHandler(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/enterprise/po/{%s}", RestPurchaseOrderId), enterprisePurchaseOrderHandler(cliCtx)).Methods("GET")
 
@@ -198,6 +201,54 @@ func enterpriseLockedForAddressHandler(cliCtx context.CLIContext) http.HandlerFu
 		}
 
 		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", types.ModuleName, keeper.QueryGetLocked, purchaserAddr), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}
+
+func enterpriseWhitelistHandler(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryWhitelist)
+		res, height, err := cliCtx.QueryWithData(route, nil)
+
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}
+
+func enterpriseWhitelistedHandler(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		vars := mux.Vars(r)
+		strAddr := vars[RestWhitelistAddr]
+		if len(strAddr) == 0 {
+			err := errors.New("address required but not given")
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		addr, err := sdk.AccAddressFromBech32(strAddr)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", types.ModuleName, keeper.QueryWhitelisted, addr), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return

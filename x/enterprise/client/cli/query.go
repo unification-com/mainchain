@@ -32,6 +32,8 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdGetLockedUndByAddress(storeKey, cdc),
 		GetCmdQueryTotalLocked(storeKey, cdc),
 		GetCmdQueryTotalUnlocked(storeKey, cdc),
+		GetCmdGetWhitelistedAddresses(storeKey, cdc),
+		GetCmdGetAddresIsWhitelisted(storeKey, cdc),
 	)...)
 	return enterpriseQueryCmd
 }
@@ -222,6 +224,50 @@ func GetCmdQueryTotalUnlocked(queryRoute string, cdc *codec.Codec) *cobra.Comman
 			}
 
 			var out sdk.Coin
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdGetWhitelistedAddresses queries all addresses whitelisted for raising enterprise und purchase orders
+func GetCmdGetWhitelistedAddresses(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "whitelist",
+		Short: "get addresses whitelisted for raising enterprise purchase orders",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryWhitelist), nil)
+			if err != nil {
+				fmt.Printf("could not get query for whitelisted addresses")
+				return err
+			}
+
+			var out types.WhitelistAddresses
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdGetLockedUndByAddress queries locked UND for a given address
+func GetCmdGetAddresIsWhitelisted(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "whitelisted [address]",
+		Short: "check if given address is whitelested for purchase orders",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryWhitelisted, args[0]), nil)
+			if err != nil {
+				fmt.Printf("could not get query whitelisted address %s\n", args[0])
+				return err
+			}
+
+			var out bool
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

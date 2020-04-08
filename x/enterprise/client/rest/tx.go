@@ -25,10 +25,19 @@ type processPurchaseOrderReq struct {
 	Signer          string       `json:"signer"`
 }
 
+type processWhitelistActionReq struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	Address string       `json:"address"`
+	Action  string       `json:"action"`
+	Signer  string       `json:"signer"`
+}
+
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/enterprise/purchase"), raisePurchaseOrderHandler(cliCtx)).Methods("POST")
 
 	r.HandleFunc(fmt.Sprintf("/enterprise/process"), processPurchaseOrderHandler(cliCtx)).Methods("POST")
+
+	r.HandleFunc(fmt.Sprintf("/enterprise/whitelist"), processWhitelistActionHandler(cliCtx)).Methods("POST")
 }
 
 func raisePurchaseOrderHandler(cliCtx context.CLIContext) http.HandlerFunc {
@@ -94,6 +103,54 @@ func processPurchaseOrderHandler(cliCtx context.CLIContext) http.HandlerFunc {
 
 		// create the message
 		msg := types.NewMsgProcessUndPurchaseOrder(req.PurchaseOrderID, decision, addr)
+		err = msg.ValidateBasic()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
+	}
+}
+
+func processWhitelistActionHandler(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req processWhitelistActionReq
+		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		baseReq := req.BaseReq.Sanitize()
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+
+		signer, err := sdk.AccAddressFromBech32(req.Signer)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		addr, err := sdk.AccAddressFromBech32(req.Address)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		action, err := types.WhitelistActionFromString(req.Action)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		if !types.ValidWhitelistAction(action) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "action should be add or remove")
+			return
+		}
+
+		// create the message
+		msg := types.NewMsgWhitelistAddress(addr, action, signer)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

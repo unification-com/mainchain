@@ -7,6 +7,7 @@ var (
 	EventTypeTallyPurchaseOrderDecisions  = "tally_purchase_order_decisions"
 	EventTypeUndPurchaseComplete          = "und_purchase_complete"
 	EventTypeUndUnlocked                  = "und_unlocked"
+	EventTypeWhitelistAddress             = "whitelist_purchase_order_address"
 
 	AttributeValueCategory = ModuleName
 
@@ -17,4 +18,6 @@ var (
 	AttributeKeySigner          = "signer"
 	AttributeKeyNumAccepts      = "accepts"
 	AttributeKeyNumRejects      = "rejects"
+	AttributeKeyWhitelistAction = "action"
+	AttributeWhitelistAddress   = "address"
 )

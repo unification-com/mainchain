@@ -1467,6 +1467,51 @@ paths:
             $ref: "#/definitions/Coin"
         500:
           description: Internal Server Error
+  /enterprise/whitelist:
+    get:
+      summary: Enteprise Addresses Whitelisted
+      description: returns an array of addresses whitelisted to raise Enterpise UND Purchase Orders.
+      tags:
+        - Enterprise
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              type: string
+              example: und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server Error
+  /enterprise/whitelisted/{address}:
+    get:
+      summary: Enteprise Address Is Whitelisted
+      description: returns true/false whether or not a given address is whitelisted for raising Enterprise UND purchase orders
+      tags:
+        - Enterprise
+      parameters:
+        - in: path
+          name: address
+          description: address to check
+          type: string
+          required: true
+          x-example: und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: boolean
+            example: true
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server Error
   /enterprise/pos:
     get:
       summary: Enteprise Purchase Orders

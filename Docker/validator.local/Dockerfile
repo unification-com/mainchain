@@ -12,7 +12,7 @@ ENV LEDGER_ENABLED="false"
 
 RUN mkdir -p $GOPATH/src/github.com/unification-com && \
     rm -rf $GOPATH/src/github.com/unification-com/mainchain
-RUN go get -u github.com/go-delve/delve/cmd/dlv
+RUN RUN export GO111MODULE=off && go get -u github.com/go-delve/delve/cmd/dlv
 
 COPY . $GOPATH/src/github.com/unification-com/mainchain
 

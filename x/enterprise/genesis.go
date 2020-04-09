@@ -18,6 +18,15 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, supplyKeeper types.SupplyKeeper
 		panic(fmt.Sprintf("%s module account has not been set", ModuleName))
 	}
 
+	if data.Whitelist != nil {
+		for _, wlAddr := range data.Whitelist {
+			err := keeper.AddAddressToWhitelist(ctx, wlAddr)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
 	err := keeper.SetTotalLockedUnd(ctx, data.TotalLocked)
 	if err != nil {
 		panic(err)
@@ -34,15 +43,6 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, supplyKeeper types.SupplyKeeper
 		err = keeper.SetLockedUndForAccount(ctx, lund)
 		if err != nil {
 			panic(err)
-		}
-	}
-
-	if data.Whitelist != nil {
-		for _, wlAddr := range data.Whitelist {
-			err = keeper.AddAddressToWhitelist(ctx, wlAddr)
-			if err != nil {
-				panic(err)
-			}
 		}
 	}
 

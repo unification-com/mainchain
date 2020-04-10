@@ -35,7 +35,13 @@ func TestSetGetPurchaseOrder(t *testing.T) {
 		po := types.NewEnterpriseUndPurchaseOrder()
 		po.PurchaseOrderID = i
 		po.Amount = sdk.NewInt64Coin(types.DefaultDenomination, int64(i))
-		po.Purchaser = TestAddrs[1]
+
+		purchaser := TestAddrs[1]
+		// should still be able to SetPurchaseOrder if address is not whitelisted.
+		if i > 500 {
+			purchaser = TestAddrs[2]
+		}
+		po.Purchaser = purchaser
 		po.Status = status
 		po.RaisedTime = ctx.BlockHeader().Time.Unix()
 
@@ -52,7 +58,7 @@ func TestSetGetPurchaseOrder(t *testing.T) {
 		require.True(t, poStatus == status)
 
 		poFrom := keeper.GetPurchaseOrderPurchaser(ctx, i)
-		require.True(t, poFrom.String() == TestAddrs[1].String())
+		require.True(t, poFrom.String() == purchaser.String())
 
 		poAmount := keeper.GetPurchaseOrderAmount(ctx, i)
 		require.True(t, poAmount.Denom == types.DefaultDenomination)
@@ -88,8 +94,6 @@ func TestSetEmptyPurchaseOrderValues(t *testing.T) {
 
 	po7 := po6
 	po7.Status = types.StatusNil
-
-	_ = keeper.AddAddressToWhitelist(ctx, TestAddrs[1])
 
 	testCases := []struct {
 		po          types.EnterpriseUndPurchaseOrder

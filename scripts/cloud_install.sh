@@ -28,19 +28,44 @@ GH_DL_PREFIX="https://github.com/unification-com/mainchain/releases/download"
 LATEST_VERSION="$(curl --silent ${LATEST_RELEASE} | grep -Po '"tag_name": "\K.*?(?=")')"
 DOWNLOAD_DEST="/tmp/mainchain_tmp"
 LOCAL_BIN="/usr/local/bin"
+BACKUP_DIR="${HOME}/UND_BIN_BAK"
 
 BINARIES_TO_INSTALL="und undcli"
 
+INSTALLATION_SUMMARY=""
+
 SKIP_INSTALL=false
+
+bold=$(tput bold)
+normal=$(tput sgr0)
 
 echo "Latest release is v${LATEST_VERSION}"
 
 # check binary
 # check und
 check () {
-  echo "Check ${1}"
   CHECK_LOC="${LOCAL_BIN}/${1}"
+  GO_BIN=""
   VERS=""
+  echo "Check ${1}"
+
+  echo "Checking for manual installation in GOPATH"
+
+  if [ -n "$GOPATH" ]; then
+    echo "Found GOPATH: $GOPATH"
+    GO_BIN="${GOPATH}/bin/${1}"
+    echo "Check for ${GO_BIN}"
+    if [ -f "$GO_BIN" ]; then
+      VERS=$(${GO_BIN} version)
+      MSG="Found ${1} v${VERS} in GOPATH: ${GOPATH} (${GO_BIN}). Please manually uninstall this first."
+      INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${MSG}"
+      echo "WARNING: ${MSG}"
+      SKIP_INSTALL=true
+    else
+      echo "${1} not found in GOPATH. Continue installation."
+    fi
+  fi
+
   echo "Checking for ${CHECK_LOC}"
   if [ ! -f "$CHECK_LOC" ]; then
     echo "${CHECK_LOC} is not currently installed."
@@ -49,8 +74,35 @@ check () {
     VERS=$(${CHECK_LOC} version)
     echo "${1} version ${VERS} currently installed."
     if test "${LATEST_VERSION}" = "${VERS}"; then
-      echo "latest version (${LATEST_VERSION}) already installed. Skipping."
+      MSG="latest version ${1} v${LATEST_VERSION} already installed in ${CHECK_LOC}"
+      INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${MSG}. Nothing to do."
+      echo "${bold}NOTICE:${normal} ${MSG}. Skipping."
       SKIP_INSTALL=true
+    else
+      BACKUP_LOC="${BACKUP_DIR}"
+      if [ ! -d "$BACKUP_LOC" ]; then
+        mkdir -p "${BACKUP_LOC}"
+      fi
+      BACKUP_BIN="${BACKUP_LOC}/${1}-v${VERS}.tar.gz"
+      echo "Backing up ${1} v${VERS} to ${BACKUP_BIN}"
+      tar -czf "${BACKUP_BIN}" -C "${LOCAL_BIN}" "${1}"
+
+      if [ -f "$BACKUP_BIN" ]; then
+        MSG="${1} v${VERS} successfully backed up to: ${BACKUP_BIN}"
+        echo "${MSG}"
+        INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${MSG}\n"
+      else
+        echo "\n${bold}Failed to backup ${1} v${VERS}. Continue installation? (y to continue)${normal}"
+        read -r CONTINUE_INSTALLATION
+        if test "${CONTINUE_INSTALLATION}" = "y"; then
+          echo "Continuing installation without backup..."
+          INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${bold}WARNING:${normal} ${1} v${VERS} was NOT backed up.\n"
+        else
+          echo "Abort ${1} installation."
+          INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\nInstallation of ${1} v${VERS} was aborted by user.\n"
+          SKIP_INSTALL=true
+        fi
+      fi
     fi
   fi
 }
@@ -65,7 +117,7 @@ download () {
   if [ -f "$DEST" ]; then
     echo "download ${DEST} successful"
   else
-    echo "failed to download ${DEST}. Exiting"
+    echo "${bold}ERROR: failed to download ${DEST}. Exiting${normal}"
     exit
   fi
 }
@@ -80,7 +132,7 @@ extract () {
   if [ -f "$BIN_RES" ]; then
     echo "${BIN_RES} extracted successfully"
   else
-    echo "extract failed."
+    echo "${bold}ERROR: extract failed.${normal}"
     exit
   fi
 }
@@ -101,7 +153,7 @@ install () {
     echo "Found ${DOWNLOAD_DEST}/${1}. installing into ${LOCAL_BIN}/${1}"
     sudo cp "${DOWNLOAD_DEST}/${1}" "${LOCAL_BIN}/${1}"
   else
-    echo "could not find ${DOWNLOAD_DEST}/${1}. Exiting"
+    echo "${bold}ERROR: could not find ${DOWNLOAD_DEST}/${1}. Exiting${normal}"
     exit
   fi
 
@@ -111,11 +163,11 @@ install () {
     if [ -x "${LOCAL_BIN}/${1}" ]; then
       echo "Done."
     else
-      echo "failed to make ${LOCAL_BIN}/${1} executable. Exiting"
+      echo "${bold}ERROR: failed to make ${LOCAL_BIN}/${1} executable. Exiting${normal}"
       exit
     fi
   else
-    echo "could not find ${LOCAL_BIN}/${1}. Exiting"
+    echo "${bold}ERROR: could not find ${LOCAL_BIN}/${1}. Exiting${normal}"
     exit
   fi
 }
@@ -132,6 +184,10 @@ for i in ${BINARIES_TO_INSTALL}; do
   SKIP_INSTALL=false
   INSTALL_LOCATION=""
   INSTALLED_VERSION=""
+
+  echo ""
+  echo "${bold}--Attempting to install/update ${i}--${normal}"
+
   check "${i}"
   echo ""
   if [ "$SKIP_INSTALL" = true ] ; then
@@ -165,15 +221,37 @@ for i in ${BINARIES_TO_INSTALL}; do
   echo "installed version: ${INSTALLED_VERSION}"
 
   if test "${LATEST_VERSION}" = "${INSTALLED_VERSION}"; then
-    echo "Latest version successfully installed!"
+    INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${bold}Latest ${i} v${INSTALLED_VERSION} successfully installed!${normal}\nLocation: ${INSTALL_LOCATION}"
+    INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\nRun:\n\n${INSTALL_LOCATION} version --long\n\nto verify. Version should be ${LATEST_VERSION}.\n"
   else
-    echo "Something went wrong..."
+    INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${bold}Something went wrong installing ${i} v${LATEST_VERSION}. See previous output.${normal}"
   fi
-
-  echo ""
-  echo "----------------------"
-  echo ""
 done
 
+if [ -z "$HOME" ]; then
+  echo "${bold}WARNING: NO HOME ENVIRONMENT VARIABLE DETECTED! ABORTING.${normal}"
+  exit
+fi
 # remove the tmp files
 clean
+
+echo ""
+echo "----------------------"
+echo ""
+
+# output installation summary
+if [ -n "$INSTALLATION_SUMMARY" ]; then
+  echo "${bold}Installation/Upgrade summary${normal}"
+  echo "----------------------------"
+  echo "${INSTALLATION_SUMMARY}"
+fi
+
+INSTALLED_UND_VERSION=$("/usr/local/bin/und" version)
+INSTALLED_UNDCLI_VERSION=$("/usr/local/bin/undcli" version)
+
+if test "${INSTALLED_UND_VERSION}" != "${INSTALLED_UNDCLI_VERSION}"; then
+  echo "${bold}WARNING:${normal} und and undcli version mismatch."
+  echo "und: v${INSTALLED_UND_VERSION}"
+  echo "undcli: v${INSTALLED_UNDCLI_VERSION}"
+  echo "Versions should match. Check for errors."
+fi

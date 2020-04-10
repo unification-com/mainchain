@@ -8,7 +8,6 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -388,23 +387,4 @@ func (app *MainchainApp) ModuleAccountAddrs() map[string]bool {
 // Codec returns the application's sealed codec.
 func (app *MainchainApp) Codec() *codec.Codec {
 	return app.cdc
-}
-
-//_________________________________________________________
-
-func (app *MainchainApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
-) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
-
-	// as if they could withdraw from the start of the next block
-	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
-
-	genState := app.mm.ExportGenesis(ctx)
-	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	validators = staking.WriteValidators(ctx, app.stakingKeeper)
-
-	return appState, validators, nil
 }

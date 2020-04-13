@@ -9,9 +9,9 @@ Official Golang implementation of Unification Mainchain.
 
 Mainchain is the backbone of the Unification Network. It is a Tendermint based chain, and is where WRKChains and BEACONs submit their hashes, and UND transactions take place.
 
-See [Documentation](docs/README.md) for full guides. The latest documentation is also mirrored on https://unification-com.github.io/mainchain
+## Quick start installation
 
-## Installation
+See [Documentation](docs/README.md) for full guides. The latest documentation is also mirrored on https://unification-com.github.io/mainchain
 
 There are several options for installing the binaries
 

@@ -115,7 +115,8 @@ go test -mod=readonly \
     -run=^$ github.com/unification-com/mainchain/simapp \
     -bench ^BenchmarkFullAppSimulation \
     -Commit=true \
-    -cpuprofile /path/to/.simapp/cpu.out \
+    -cpuprofile cpuprofile.out \
+    -memprofile memprofile.out \
     -v \
     -timeout 24h
 ```
@@ -125,7 +126,7 @@ go test -mod=readonly \
 The profile output can then be analysed using the `pprof` tool:
 
 ```
-go tool pprof /path/to/.simapp/cpu.out
+go tool pprof cpuprofile.out
 ```
 
 using, for example, the following `pprof` commands:

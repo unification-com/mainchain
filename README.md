@@ -2,46 +2,47 @@
 
 ## UND Mainchain
 
-Official Golang implementation of Unification Mainchain.
-
-See [Documentation](docs/README.md) for full guides.
-
 [![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain)](https://goreportcard.com/report/github.com/unification-com/mainchain)
 [![Join the chat at https://gitter.im/unification-com/mainchain](https://badges.gitter.im/unification-com/mainchain.svg)](https://gitter.im/unification-com/mainchain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## HD Wallet Path
+Official Golang implementation of Unification Mainchain.
 
-BIP-0044 Path for our HD Wallets is as follows:
+Mainchain is the backbone of the Unification Network. It is a Tendermint based chain, and is where WRKChains and BEACONs submit their hashes, and UND transactions take place.
 
-`44'/5555'/0'/0`   
+## Quick start installation
 
-SLIP-0044 Coin ID is `5555`
+See [Documentation](docs/README.md) for full guides. The latest documentation is also mirrored on https://unification-com.github.io/mainchain
 
-## Pre-compiled binaries
+There are several options for installing the binaries
+
+### Pre-compiled binaries
 
 The quickest way to obtain and run the `und` and `undcli` applications is to download
 the pre-compiled binaries from [latest release](https://github.com/unification-com/mainchain/releases)
 
-## Build
+### Install from source
 
-Compile `und` and `undcli` binaries and output to ./build
+Clone the repo and install `und` and `undcli` binaries into `$GOPATH`
 
 ```bash
-make build
+$ git clone https://github.com/unification-com/mainchain
+$ cd mainchain
+$ make install
 ```
 
-## Install
+### Build from source
 
-Install `und` and `undcli` binaries into `$GOPATH`
+Clone the repo, and compile `und` and `undcli` binaries and output to `./build`. This is useful for development and testing.
 
 ```bash
-make install
+$ git clone https://github.com/unification-com/mainchain
+$ cd mainchain
+$ make build
 ```
 
 ### Dockerised `und` and `undcli`
 
-The Dockerised binaries can be used instead of installing locally. The Docker container
-will use the latest release tag to build the binaries.
+The Dockerised binaries can be used instead of installing locally. The Docker container will use the latest release tag to build the binaries.
 
 Build the container:
 
@@ -56,230 +57,42 @@ $ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_ma
 $ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und start
 ```
 
-## DevNet Enviroment
+## DevNet Development Enviroment
 
-A complete DevNet environment, comprising of 3 EVs, a REST server, a reverse proxy server
-and several test wallets loaded with UND is available via Docker Compose compositions 
-for development and testing purposes.
+A complete DevNet environment, comprising of 3 EVs, a REST server, a reverse proxy server and several test wallets loaded with UND is available via Docker Compose compositions  for development and testing purposes. See [DevNet documentation](docs/local-devnet.md) for more detailed information.
 
-### Local build
+## Unit Tests & Chain Simulation
 
-The local build copies the current local codebase to the Docker containers, and is used during
-development to test changes before committing to the repository.
+>**Important**: New modules and features should be committed with corresponding unit tests and simulation operations.
 
-```
-docker-compose -f Docker/docker-compose.local.yml up --build
-docker-compose -f Docker/docker-compose.local.yml down --remove-orphans
-```
+### Unit Tests
 
-or using the `make` target:
+Unit tests can be run via `go`:
 
 ```bash
-make devnet
-make devnet-down
+go test -v ./...
 ```
 
-### Pure Upstream build
-
-Pure upstream uses the `master` branch of this repository to build the binaries, and is useful
-for testing the latest master version.
-
-```
-docker-compose -f Docker/docker-compose.upstream.yml up --build
-docker-compose -f Docker/docker-compose.upstream.yml down --remove-orphans
-```
-
-or using the `make` target:
+or the `make` target:
 
 ```bash
-make devnet-pristine
-make devnet-pristine-down
+make test
 ```
 
-#### REST API Endpoints
+### Chain Simulation
 
-With DevNet up, the REST API endpoints can be seen via http://localhost:1318/swagger-ui/
+The `simapp` can be used to simulate a running chain, which is particularly useful during development and testing to check that new features are working as expected in a simulated live chain environment (i.e. many different transactions being executed against the chain). The simulation will produce the specified number of blocks, using the specified number of operations (transactions) per block to simulate a full running chain environment.
 
-### Importing docker composition keys
+For example, the following command will simulate 500 blocks, each with 200 randomly generated transaction operations, checking for invariants every block.
 
-The DevNet node keys can be imported locally for ease of testing:
-
-```
-undcli keys import node1 Docker/assets/keys/node1.key
-undcli keys import node2 Docker/assets/keys/node2.key
-undcli keys import node3 Docker/assets/keys/node3.key
-```
-
-A full list of DevNet accounts and keys for importing can be found in 
-[Docker/README.md](https://github.com/unification-com/mainchain/blob/master/Docker/README.md)
-
-### Useful Defaults
-
-`undcli` defaults for DevNet can be set as follows. This will set the corresponding values in
-`$HOME/.und_cli/config/config.toml`
-
-```
-undcli config chain-id UND-Mainchain-DevNet
-undcli config node tcp://localhost:26661
-```
-
-## `undcli` command overview
-
-### Query account
-
-```
-undcli query account und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
-```
-
-### Interacting with WRKChain module
-
-Register:
-undcli tx wrkchain register --moniker="wrkchain1" --genesis="genesishashkjwnedjknwed" --name="Wrkchain 1" --base="geth" --from wrktest --gas=auto --gas-adjustment=1.15
-
-then run:
-```
-undcli query tx [TX HASH]
-```
-
-this will return the generated WRKChain ID integer
-
-Query metadata
-```
-undcli query wrkchain get 1
-```
-
-Filter WRKChain metadata
-
-```
-undcli query wrkchain search --moniker wrkchain1
-undcli query wrkchain search --owner und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
-undcli query wrkchain search --page=2 --limit=100
-```
-
-Record block hash(es)
-```
-undcli tx wrkchain record 1 --wc_height=1 --block_hash="d04b98f48e8" --parent_hash="f8bcc15c6ae" --hash1="5ac050801cd6" --hash2="dcfd428fb5f9e" --hash3="65c4e16e7807340fa" --from wrktest --gas=auto --gas-adjustment=1.15
-```
-
-Query a block
-```
-undcli query wrkchain block 1 1
-```
-
-#### WRKChain REST
-
-http://localhost:1318/wrkchain/wrkchains  
-http://localhost:1318/wrkchain/wrkchains?moniker=wrkchain1  
-http://localhost:1318/wrkchain/wrkchains?owner=[bech32address]  
-http://localhost:1318/wrkchain/1  
-http://localhost:1318/wrkchain/1/block/1  
-
-### Interacting with BEACON module
-
-Register:
-undcli tx beacon register --moniker=beacon1 --name="Beacon 1" --from wrktest
-
-then run:
-```
-undcli query tx [TX HASH]
-```
-
-this will return the generated Beacon ID integer
-
-Query metadata
-```
-undcli query beacon beacon 1
-```
-
-Record Timestamp hash
-```
-undcli tx beacon record 1 --hash=d04b98f48e8 --subtime=$(date +%s) --from wrktest --gas=auto --gas-adjustment=1.15
-```
-
-Query a Timestamp
-```
-undcli query beacon timestamp 1 1
-```
-
-#### BEACON REST
-
-http://localhost:1318/beacon/beacons  
-http://localhost:1318/beacon/beacons?moniker=beacon1  
-http://localhost:1318/beacon/beacons?owner=[bech32address]  
-http://localhost:1318/beacon/1   
-http://localhost:1318/beacon/1/timestamp/1  
-
-### Purchase Enterprise UND
-
-Raise purchase order:
-```
-undcli tx enterprise purchase 1002000000000nund --from wrktest --gas=auto --gas-adjustment=1.15
-```
-
-List purchase orders:
-```
-undcli query enterprise get-all-pos
-```
-
-get specific purchase order:
-```
-undcli query enterprise get 1
-```
-
-Accept purchase order (must be sent from specified enterprise account)
-```
-undcli tx enterprise process 1 accept --from ent --gas=auto --gas-adjustment=1.15
-```
-
-Reject purchase order:
-```
-undcli tx enterprise process 1 reject --from ent --gas=auto --gas-adjustment=1.15
-```
-
-Query total locked enterprise UND
-```
-undcli query enterprise total-locked
-```
-
-Query locked enterprise UND for an account
-```
-undcli query enterprise locked [address]
-```
-
-#### Enterprise REST
-
-http://localhost:1317/enterprise/params  
-http://localhost:1317/enterprise/locked  
-http://localhost:1317/enterprise/unlocked  
-http://localhost:1317/enterprise/pos  
-http://localhost:1317/enterprise/po/1  
-http://localhost:1317/enterprise/[bech32addr]/locked
-
-## Invariance checking
-
-Start a full node with the `--inv-check-period` flag. Value of 1 will
-check every block for invariances:
-
-```
-und start --inv-check-period 1
-```
-
-Invariance Tx can be sent using:
-
-```
-undcli tx crisis invariant-broken enterprise module-account --from wrktest
-```
-
-## Simulation
-
-### test full app simulation
+The parameters used to generate the chain, along with the final chain state export and simulation statistics will be saved to the specified `ExportParamsPath`, `ExportStatePath` and `ExportStatsPath` paths respectively.
 
 ```
 go test -mod=readonly ./simapp \
     -run=TestFullAppSimulation \
     -Enabled=true \
     -NumBlocks=500 \
-    -BlockSize=300 \
+    -BlockSize=200 \
     -Commit=true \
     -Seed=24 \
     -Period=1 \
@@ -292,16 +105,32 @@ go test -mod=readonly ./simapp \
     -timeout 24h
 ```
 
-### benchmark test
+### Benchmark testing
+
+CPU and RAM benchmarks can also be generated using the `simapp`, which are useful for checking resources used by modules and features and resolving resource issues. For example, the following will generate a CPU benchmark for a full simulation, using the default block/blocksize values:
 
 ```
-go test -mod=readonly -benchmem -run=^$ github.com/unification-com/mainchain/simapp -bench ^BenchmarkFullAppSimulation -Commit=true -cpuprofile /path/to/.simapp/cpu.out -v -timeout 24h
+go test -mod=readonly \
+    -benchmem \
+    -run=^$ github.com/unification-com/mainchain/simapp \
+    -bench ^BenchmarkFullAppSimulation \
+    -Commit=true \
+    -cpuprofile /path/to/.simapp/cpu.out \
+    -v \
+    -timeout 24h
 ```
 
 #### pprof tools
 
+The profile output can then be analysed using the `pprof` tool:
+
 ```
 go tool pprof /path/to/.simapp/cpu.out
+```
+
+using, for example, the following `pprof` commands:
+
+```
 (pprof) top
 (pprof) list [function]
 (pprof) web

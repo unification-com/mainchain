@@ -65,6 +65,16 @@ The `lastblock` tells us for which block number hashes were last submitted for t
 
 >**Important**: Only the `owner` - i.e. the account used to register the WRKChain - will be able to submit block hashes.
 
+## Filter WRKChain metadata
+
+WRKChain metadata can be searched for on Mainchain:
+
+```
+undcli query wrkchain search --moniker wrkchain1
+undcli query wrkchain search --owner und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
+undcli query wrkchain search --page=2 --limit=100
+```
+
 ## Recording Hashes
 
 Once successfully registered, you will be able to submit block hashes however

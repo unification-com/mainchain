@@ -4,7 +4,18 @@
 # IDEs
 .vscode
 .idea
+
 # Build
 build
 /ev-provision/
 dist
+
+# Testing
+coverage.txt
+profile.out
+cpuprofile.out
+memprofile.out
+simapp.test
+
+# Graphviz
+dependency-graph.png

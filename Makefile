@@ -43,8 +43,19 @@ lint:
 	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -w -s
 	go mod verify
 
-test:
+test: test-unit
+
+test-unit:
 	@go test -mod=readonly ./...
+
+test-race:
+	@go test -mod=readonly -race ./...
+
+test-cover:
+	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+test-cover-html:
+	@go tool cover -html=coverage.txt
 
 test-no-cache:
 	@go clean -testcache

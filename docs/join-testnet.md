@@ -117,6 +117,25 @@ sent via your local node (which was started using the `und start` command, and w
 
 >**Tip**: You can use the `--node` flag with the `undcli` command to have it send to a different node instead.
 
+## Invariance checking
+
+You don't need to become a validator to take part in the network - just running a full node as a p2p peer is very useful. Another method to help the network, is invariance checking. This can help the network by periodically checking blocks for invariances which could potentially cause issues.
+
+>**Note**: Invariance checking is resource intensive, so should not be invoked on validator nodes!
+
+Start a full node with the `--inv-check-period` flag. Value of 1 will
+check every block for invariances:
+
+```
+und start --inv-check-period 1
+```
+
+Invariance Tx can be sent using:
+
+```
+undcli tx crisis invariant-broken enterprise module-account --from wrktest
+```
+
 ## TestNet Faucet
 
 Our public TestNet has a faucet which can be used to obtain Test UND for
@@ -133,4 +152,4 @@ Our public TestNet explorer can be found at https://explorer-testnet.unification
 
 ## Next
 
-Creating and importing [accounts and wallets](accounts-wallets.md), [sending transactions](transactions.md) and [becoming a TestNet validator](become-testnet-validator.md)
+Creating and importing [accounts and wallets](accounts-wallets.md), [sending transactions](examples/transactions.md) and [becoming a TestNet validator](become-testnet-validator.md)

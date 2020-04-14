@@ -56,12 +56,18 @@ module.exports = {
                 ]
             },
             {
-                title: "Examples",
+                title: "Tx & Query Examples",
                 children: [
                     "/examples/transactions",
                     "/examples/wrkchain",
                     "/examples/beacon",
                     "/examples/enterprise-und"
+                ]
+            },
+            {
+                title: "In-depth Guides",
+                children: [
+                    "/guides/cloud/install-aws"
                 ]
             }
         ],

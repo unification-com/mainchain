@@ -1,9 +1,13 @@
 # Deploying a Local DevNet
 
->**IMPORTANT**: Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+::: warning IMPORTANT
+Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+:::
 
 The repository contains a ready to deploy Docker composition for local
 development and testing. DevNet comes in two flavours - `local` and `upstream`.
+
+[[toc]]
 
 ## Local build
 
@@ -49,8 +53,10 @@ make devnet-pristine-down
 
 ## DevNet Chain ID
 
-**Important**: DevNet's Chain ID is `UND-Mainchain-DevNet`. Any `und` or `undcli` commands
+::: warning IMPORTANT
+DevNet's Chain ID is `UND-Mainchain-DevNet`. Any `und` or `undcli` commands
 intended for DevNet should use the flag `--chain-id UND-Mainchain-DevNet`
+:::
 
 ## DevNet RPC Nodes
 
@@ -72,7 +78,9 @@ The DevNet composition will spin up three full nodes, one light REST client, and
 - `rest-server` - Light Client for REST interaction on 172.25.0.6:1317
 - `proxy` - a small proxy server allowing CORS queries to the `rest-server` via 172.25.0.7:1318
 
->**Note**: The DevNet nodes have their RPC ports set to 26661, 26662 and 26663 respectively, and not the default 26657.
+::: tip NOTE
+The DevNet nodes have their RPC ports set to 26661, 26662 and 26663 respectively, and not the default 26657.
+:::
 
 ## DevNet test accounts, wallets and keys
 
@@ -110,6 +118,6 @@ undcli config node tcp://localhost:26661
 
 With DevNet up, the REST API endpoints can be seen via http://localhost:1318/swagger-ui/
 
-## Next
+#### Next
 
 Creating and importing [accounts and wallets](accounts-wallets.md), [sending transactions](transactions.md)

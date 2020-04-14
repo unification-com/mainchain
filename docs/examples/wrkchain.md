@@ -7,6 +7,8 @@ This document will guide you though registering a new WRKChain and submitting ha
 >**Note**: It is _HIGHLY_ recommended that you only undertake this guide on
 either [DevNet](local-devnet.md) or TestNet first.
 
+[[toc]]
+
 ## Registering your WRKChain
 
 Registration is required so that the WRKChain has an identifier on Mainchain.

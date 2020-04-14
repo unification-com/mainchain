@@ -1,5 +1,7 @@
 # Enterprise UND Example
 
+[[toc]]
+
 Raise purchase order:
 ```
 undcli tx enterprise purchase 1002000000000nund --from wrktest --gas=auto --gas-adjustment=1.15

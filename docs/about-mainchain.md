@@ -37,6 +37,6 @@ Unification have also developed the following modules for Mainchain:
 - `x/mint`: A modified core Cosmos SDK module, handling inflation and Block Reward logic.
 - `x/wrkchain`: WRKChain block hash submission handling
 
-## Next
+#### Next
 
 [Installing](installation.md) the Mainchain binaries

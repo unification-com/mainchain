@@ -6,6 +6,8 @@ a variety of other network information.
 
 >**IMPORTANT**: Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
 
+[[toc]]
+
 ## Sending a Transaction
 
 In this example, we'll generate and sign a simple `send` transaction, which will

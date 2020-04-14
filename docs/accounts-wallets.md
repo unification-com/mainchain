@@ -3,6 +3,8 @@
 The `undcli` CMD can be used to create new accounts, or import previous accounts
 and keys.
 
+[[toc]]
+
 ## Prerequisites
 
 Before continuing, ensure you have gone through the following docs:
@@ -11,7 +13,9 @@ Before continuing, ensure you have gone through the following docs:
 
 ## Create a new account
 
->**IMPORTANT**: When you create a new account, the CMD will output a mnemonic. KEEP THIS SAFE - if you lose it, you will not be able to recover your account!
+::: danger IMPORTANT
+When you create a new account, the CMD will output a mnemonic. KEEP THIS SAFE - if you lose it, you will not be able to recover your account!
+:::
 
 To create a new account, run:
 
@@ -25,7 +29,9 @@ undcli keys add [account_name]
 undcli keys add my_new_wallet
 ```
 
->**Tip**: stick to alphanumeric characters, hyphens, underscores and full stops.
+::: tip
+stick to alphanumeric characters, hyphens, underscores and full stops.
+:::
 
 If your OS keyring for `undcli` is not already unlocked/created, you will be prompted for a password. Once entered, the application will output your account details, including your wallet address, public key and mnemonic for recovery/future importing.
 

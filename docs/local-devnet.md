@@ -7,6 +7,8 @@ Whenever you use `undcli` to send Txs or query the chain ensure you pass the cor
 The repository contains a ready to deploy Docker composition for local
 development and testing. DevNet comes in two flavours - `local` and `upstream`.
 
+### Contents
+
 [[toc]]
 
 ## Local build

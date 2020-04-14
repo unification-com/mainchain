@@ -6,6 +6,8 @@ Once you have [installed](installation.md) the required software, you can run a 
 Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
 :::
 
+### Contents
+
 [[toc]]
 
 ## Prerequisites

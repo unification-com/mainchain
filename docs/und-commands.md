@@ -2,6 +2,8 @@
 
 The `und` binary is the Mainchain server-side software, used to run a full-node and validator.
 
+### Contents
+
 [[toc]]
 
 ## Commands

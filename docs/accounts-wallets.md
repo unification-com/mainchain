@@ -3,6 +3,8 @@
 The `undcli` CMD can be used to create new accounts, or import previous accounts
 and keys.
 
+### Contents
+
 [[toc]]
 
 ## Prerequisites

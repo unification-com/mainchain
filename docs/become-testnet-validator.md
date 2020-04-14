@@ -6,6 +6,8 @@ If you intend to become a [MainNet Validator](become-mainnet-validator.md), it w
 Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
 :::
 
+### Contents
+
 [[toc]]
 
 ## Prerequisites

@@ -1,5 +1,7 @@
 # Running `und` as a background service
 
+### Contents
+
 [[toc]]
 
 If you intend to run your node as a Validator on any of the public networks, then you will most likely need to permanently run `und` as a background service (as opposed to manually running `und start` and leaving a terminal window/SSH session open).

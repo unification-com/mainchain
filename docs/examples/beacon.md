@@ -1,5 +1,7 @@
 # BEACON Example
 
+### Contents
+
 [[toc]]
 
 Register:

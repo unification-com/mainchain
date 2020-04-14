@@ -1,3 +1,5 @@
+![Unification Logo](./.vuepress/public/assets/img/unification_logoblack.png)
+
 # Unification Mainchain Documentation
 
 Welcome to the documentation for Unification's Mainchain. These docs

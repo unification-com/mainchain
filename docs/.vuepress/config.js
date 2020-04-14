@@ -1,16 +1,17 @@
 module.exports = {
-    title: 'Unification Mainchain Documentation',
+    title: 'Mainchain Documentation',
     description: 'Welcome to the documentation for Unification Mainchain',
     base: '/mainchain/',
     markdown: {
         // options for markdown-it-toc
-        toc: {includeLevel: [2, 3]}
+        toc: {includeLevel: [2]}
     },
 
     themeConfig: {
         lastUpdated: 'Last Updated',
         repo: 'unification-com/mainchain',
         docsDir: 'docs',
+        logo: '/assets/img/unification_logoblack.png',
         nav: [{
             text: 'Releases',
             link: 'https://github.com/unification-com/mainchain/releases'

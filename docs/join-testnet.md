@@ -36,7 +36,7 @@ the default directory used by `und` is `$HOME/.und_mainchain`. This can be chang
 
 ## Genesis
 
-The latest TestNet genesis can always be found at https://github.com/unification-com/testnet/latest
+The latest TestNet genesis can always be found at [https://github.com/unification-com/testnet/latest](https://github.com/unification-com/testnet/latest)
 
 ### Download the latest Genesis
 
@@ -88,7 +88,7 @@ undcli query tx TX_HASH --chain-id UND-Mainchain-TestNet-v3
 ## Seed Node Peers
 
 Your node will need to know at least one seed node in order to join the network
-and begin P2P communication with other nodes in the network. The latest seed information will always be available at https://github.com/unification-com/testnet/blob/master/latest/seed_nodes.md
+and begin P2P communication with other nodes in the network. The latest seed information will always be available at [https://github.com/unification-com/testnet/blob/master/latest/seed_nodes.md](https://github.com/unification-com/testnet/blob/master/latest/seed_nodes.md)
 
 Edit `$HOME/.und_mainchain/config/config.toml`, and set the `persistent_peers` value with a comma separated list of one or more peers. For example, a TestNet seed node:
 
@@ -155,7 +155,7 @@ undcli tx crisis invariant-broken enterprise module-account --from wrktest
 Our public TestNet has a faucet which can be used to obtain Test UND for
 use exclusively on the TestNet network. You will need an [account](accounts-wallets.md) and its associated address in order to be able to claim Test UND.
 
-See https://faucet-testnet.unification.io
+See [https://faucet-testnet.unification.io](https://faucet-testnet.unification.io)
 
 ::: tip NOTE
 You will need an account setting up before requesting Test UND.
@@ -164,7 +164,7 @@ See [accounts and wallets](accounts-wallets.md) for more details
 
 ## TestNet Explorer
 
-Our public TestNet explorer can be found at https://explorer-testnet.unification.io
+Our public TestNet explorer can be found at [https://explorer-testnet.unification.io](https://explorer-testnet.unification.io)
 
 #### Next
 

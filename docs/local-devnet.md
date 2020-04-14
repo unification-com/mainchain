@@ -84,9 +84,9 @@ The DevNet nodes have their RPC ports set to 26661, 26662 and 26663 respectively
 
 ## DevNet test accounts, wallets and keys
 
-DevNet is deployed with a pre-defined <a href="https://raw.githubusercontent.com/unification-com/mainchain/master/Docker/assets/node1/config/genesis.json" target="_blank">genesis.json</a>, containing several test accounts loaded with UND and pre-defined validators with self delegation.
+DevNet is deployed with a pre-defined [genesis.json](https://raw.githubusercontent.com/unification-com/mainchain/master/Docker/assets/node1/config/genesis.json), containing several test accounts loaded with UND and pre-defined validators with self delegation.
 
-See <a href="https://github.com/unification-com/mainchain/blob/master/Docker/README.md" target="_blank">https://github.com/unification-com/mainchain/blob/master/Docker/README.md</a> for the mnemonic phrases and keys used by the above nodes, and for test accounts included in DevNet's genesis.
+See [https://github.com/unification-com/mainchain/blob/master/Docker/README.md](https://github.com/unification-com/mainchain/blob/master/Docker/README.md) for the mnemonic phrases and keys used by the above nodes, and for test accounts included in DevNet's genesis.
 
 ### Importing the DevNet keys
 
@@ -116,7 +116,7 @@ undcli config node tcp://localhost:26661
 
 ### REST API Endpoints
 
-With DevNet up, the REST API endpoints can be seen via http://localhost:1318/swagger-ui/
+With DevNet up, the REST API endpoints can be seen via [http://localhost:1318/swagger-ui/](http://localhost:1318/swagger-ui/)
 
 #### Next
 

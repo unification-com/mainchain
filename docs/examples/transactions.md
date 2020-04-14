@@ -196,6 +196,6 @@ Which will output a result similar to:
 }
 ```
 
-## Next
+#### Next
 
 Example transactions for [registering a WRKChain and submitting hashes](wrkchain.md)

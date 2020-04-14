@@ -3,9 +3,13 @@
 This documentation outlines how to install the UND Mainchain software, in
 order to participate and interact with any of the Mainchain networks.
 
+### Contents
+
+[[toc]]
+
 ## Installing the latest release binaries
 
-The latest pre-compiled binaries are available from https://github.com/unification-com/mainchain/releases.
+The latest pre-compiled binaries are available from [https://github.com/unification-com/mainchain/releases](https://github.com/unification-com/mainchain/releases).
 
 - The `undcli` binary has been compiled for Linux, OSX and Windows.
 - The `und` binary has been compiled for Linux only.
@@ -56,10 +60,12 @@ $ source ~/.bash_profile
 
 ### Build and install the binaries
 
->**IMPORTANT**: unless you are contributing to Mainchain development, it is recommended you checkout and build from the latest release tag and **not** the `master` branch if you intend to connect to a live, public network (e.g. TestNet/MainNet).
+::: warning IMPORTANT
+unless you are contributing to Mainchain development, it is recommended you checkout and build from the latest release tag and **not** the `master` branch if you intend to connect to a live, public network (e.g. TestNet/MainNet).
+:::
 
 Download the **latest** tagged Mainchain release from
-https://github.com/unification-com/mainchain/releases
+[https://github.com/unification-com/mainchain/releases](https://github.com/unification-com/mainchain/releases)
 
 The **`[latest-release-tag]`** required for the command below can also be obtained by running:
 
@@ -125,6 +131,6 @@ Likewise, the `--help` flag can be passed to subcommands, for example:
 undcli query wrkchain --help
 ```
 
-## Next
+#### Next
 
 Running [Devnet](local-devnet.md), joining [Testnet](join-testnet.md) or [MainNet](join-mainnet.md)

@@ -2,7 +2,13 @@
 
 If you intend to become a [MainNet Validator](become-mainnet-validator.md), it will be good practice to fist run a validator node on TestNet to become familiar with the process.
 
->**IMPORTANT**: Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+::: warning IMPORTANT
+Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+:::
+
+### Contents
+
+[[toc]]
 
 ## Prerequisites
 
@@ -19,9 +25,13 @@ jq --raw-output '.chain_id' $HOME/.und_mainchain/config/genesis.json
 
 The above command assumes you have downloaded the TestNet genesis to the default `$HOME/.und_mainchain` directory.
 
->**Important**: you will need an account with sufficient UND to self-delegate to your validator node.
+::: warning IMPORTANT
+you will need an account with sufficient UND to self-delegate to your validator node.
+:::
 
->**Tip**: if you intend to fully participate in the running of **TestNet**, your node will need to be permanently available and online. In which case, you will need to investigate running `und` as a [background service](run-und-as-service.md)
+::: tip
+if you intend to fully participate in the running of **TestNet**, your node will need to be permanently available and online. In which case, you will need to investigate running `und` as a [background service](run-und-as-service.md)
+:::
 
 ## Creating a validator
 
@@ -32,9 +42,13 @@ und tendermint show-validator
 ```
 This will output your node's public key. Make a note of it, as it will be required soon.
 
->**Important**: Before continuing, ensure your full node has fully synced with TestNet and downloaded all the blocks (this may take a while, so go and make a brew). You can check the current network block height in the [TestNet block explorer](https://explorer-testnet.unification.io). For each block your full node syncs, you will see:
+::: warning IMPORTANT
+Before continuing, ensure your full node has fully synced with TestNet and downloaded all the blocks (this may take a while, so go and make a brew). You can check the current network block height in the [TestNet block explorer](https://explorer-testnet.unification.io). For each block your full node syncs, you will see:
+
 `I[2020-01-15|11:45:07.782] Executed block module=state height=37285 validTxs=0 invalidTxs=0`
+
 When the height is the same as the current network block number, your full node has completed syncing.
+:::
 
 To create your Validator, you will need to generate, sign and broadcast a special transaction to the network which will register your Tendermint validator public key and stake the amount of UND specified (via self-delegation). Run the following command, modifying as required:
 
@@ -62,13 +76,17 @@ undcli tx staking create-validator \
 
 `STAKE_IN_NUND`: the amount in nund you want to delegate to yourself. For example, if you want to stake 1000 UND, enter 1000000000000nund.
 
->**Tip**: You can use the built in `undcli` conversion tool to calculate this:
+::: tip
+You can use the built in `undcli` conversion tool to calculate this:
 
 ```
 undcli convert 1000 und nund.
 ```
+:::
 
->**Important**: do not attempt to stake more than you have in your account, and ensure you have enough UND to pay for the transaction fees, and enough left over for future transactions!
+::: warning IMPORTANT
+do not attempt to stake more than you have in your account, and ensure you have enough UND to pay for the transaction fees, and enough left over for future transactions!
+:::
 
 `NODE_TENDERMINT_PUBLIC_KEY`: Your node's tendermint public key, obtained earlier via the `und tendermint show-validator` command.
 
@@ -80,7 +98,9 @@ undcli convert 1000 und nund.
 
 **Optional fields**
 
->**Tip**: Ensure you create your validator with as much of the following additional information as you can. It will be publicly visible, and help potential stakers connect with you
+::: tip
+Ensure you create your validator with as much of the following additional information as you can. It will be publicly visible, and help potential stakers connect with you
+:::
 
 `YOUR_WEBSITE_URL`: the URL for the site promoting your validation node
 
@@ -100,7 +120,9 @@ Your commission rates can be set using the `--commission-rate` , `--commission-m
 
 `--commission-max-change-rate`: The maximum you can change the commission-rate by in any one change request. For example, if your maximum change rate is 0.01, you can only make changes in 0.01 increments, so from 0.10 (10%) to 0.09 (9%).
 
->**Important**: The values for `--commission-max-change-rate` and `--commission-max-rate` flags cannot be changed after the create-validator command has been run.
+::: warning IMPORTANT
+The values for `--commission-max-change-rate` and `--commission-max-rate` flags cannot be changed after the create-validator command has been run.
+:::
 
 Finally, the `--min-self-delegation` flag is the minimum amount of `nund` you are required to keep self-delegated to your validator, meaning you must always have _at least_ this amount self-delegated to your node.
 
@@ -131,7 +153,9 @@ The command will return a Tx hash, which you can use to query whether or not the
 undcli query tx TX_HASH --chain-id UND-Mainchain-TestNet-v3
 ```
 
->**Tip**: you can set the `--broadcast-mode` flag in the command to `block`. This will tell `undcli` to wait for the transaction to be processed in a block before returning the result. This will take up to 5-6 seconds to complete, but the Tx result will be included in the output.
+::: tip
+you can set the `--broadcast-mode` flag in the command to `block`. This will tell `undcli` to wait for the transaction to be processed in a block before returning the result. This will take up to 5-6 seconds to complete, but the Tx result will be included in the output.
+:::
 
 ### Verify
 

@@ -6,12 +6,20 @@ Mainchain is the backbone of the Unification Network. It is a Tendermint based c
 >rewards, and network fees is UND. The on-chain denomination is `nund`
 > (nano UND) which is 10^-9 UND.
 
-There are currently two live/planned public Mainchain networks:
+## Networks
 
-**TestNet**: Launched in Q1 2020, `UND-Mainchain-TestNet-v3` serves as the official Unification public Test network.
-**MainNet**: MainNet is the upcoming official Unification `MainNet` - this will be the live public Unification Main network.
+There are currently two live/planned public Mainchain networks, and one private development network:
 
-Additionally, this repository comes with a full private [DevNet](local-devnet.md) - a completely self-contained network for development and testing Mainchain features.
+#### Testnet
+Launched in Q4 2019, [UND-Mainchain-TestNet](https://github.com/unification-com/testnet) serves as the official Unification public Test network.  
+
+#### MainNet
+MainNet is the upcoming official Unification `MainNet` - this will be the live public Unification Main network.
+
+#### DevNet
+Additionally, the [Mainchain repository](https://github.com/unification-com/mainchain) comes with a full private [DevNet](local-devnet.md) - a completely self-contained network for development and testing Mainchain features.
+
+## Software
 
 The Mainchain suite comes with two binaries: `und` and `undcli`
 
@@ -37,6 +45,6 @@ Unification have also developed the following modules for Mainchain:
 - `x/mint`: A modified core Cosmos SDK module, handling inflation and Block Reward logic.
 - `x/wrkchain`: WRKChain block hash submission handling
 
-## Next
+#### Next
 
 [Installing](installation.md) the Mainchain binaries

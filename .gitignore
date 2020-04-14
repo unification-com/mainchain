@@ -9,6 +9,7 @@
 build
 /ev-provision/
 dist
+docs/.vuepress/dist
 
 # Testing
 coverage.txt

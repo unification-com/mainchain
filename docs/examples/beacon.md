@@ -1,5 +1,9 @@
 # BEACON Example
 
+### Contents
+
+[[toc]]
+
 Register:
 undcli tx beacon register --moniker=beacon1 --name="Beacon 1" --from wrktest
 

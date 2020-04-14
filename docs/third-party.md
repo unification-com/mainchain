@@ -2,6 +2,10 @@
 
 This page contains information that may be useful for developers of third party tools, such as wallets and block explorers
 
+### Contents
+
+[[toc]]
+
 ## HD Wallet Path
 
 The BIP-0044 Path for our HD Wallets is as follows:

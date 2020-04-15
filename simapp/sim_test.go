@@ -458,6 +458,9 @@ func TestFullAppSimulation(t *testing.T) {
 	if config.ExportStatePath != "" {
 		err := ExportStateToJSON(app, config.ExportStatePath)
 		require.NoError(t, err)
+
+		err = ExportStateToGenesisJSON(app, config.ExportStatePath)
+		require.NoError(t, err)
 	}
 
 	if config.ExportParamsPath != "" {

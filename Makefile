@@ -54,7 +54,7 @@ test-race:
 test-cover:
 	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic ./...
 
-test-cover-html:
+test-cover-html: test-cover
 	@go tool cover -html=coverage.txt
 
 test-no-cache:

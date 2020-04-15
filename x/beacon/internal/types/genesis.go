@@ -54,30 +54,36 @@ func ValidateGenesis(data GenesisState) error {
 	}
 
 	for _, record := range data.Beacons {
+		if record.Beacon.BeaconID == 0 {
+			return fmt.Errorf("invalid Beacon: ID: %d. Error: Missing ID", record.Beacon.BeaconID)
+		}
 		if record.Beacon.Owner == nil {
 			return fmt.Errorf("invalid Beacon: Owner: %s. Error: Missing Owner", record.Beacon.Owner)
 		}
-		if record.Beacon.BeaconID == 0 {
-			return fmt.Errorf("invalid Beacon: Moniker: %d. Error: Missing ID", record.Beacon.BeaconID)
-		}
-		if record.Beacon.Name == "" {
-			return fmt.Errorf("invalid Beacon: Name: %s. Error: Missing name", record.Beacon.Name)
+		if record.Beacon.Moniker == "" {
+			return fmt.Errorf("invalid Beacon: Moniker: %s. Error: Missing Moniker", record.Beacon.Moniker)
 		}
 		for _, timestamp := range record.BeaconTimestamps {
+			if timestamp.BeaconID == 0 {
+				return fmt.Errorf("invalid Beacon timestamp: BeaconID: %d. Error: Missing BeaconID", timestamp.BeaconID)
+			}
+			if timestamp.BeaconID != record.Beacon.BeaconID {
+				return fmt.Errorf("beacon timestamp beacon id mismatch. Timestamp: %d, Beacon: %d. Error: Owner mismatch", timestamp.BeaconID, record.Beacon.BeaconID)
+			}
+			if timestamp.TimestampID == 0 {
+				return fmt.Errorf("invalid Beacon timestamp: TimestampID: %d. Error: Missing TimestampID", timestamp.TimestampID)
+			}
 			if timestamp.Owner == nil {
 				return fmt.Errorf("invalid Beacon timestamp: Owner: %s. Error: Missing Owner", timestamp.Owner)
+			}
+			if !timestamp.Owner.Equals(record.Beacon.Owner) {
+				return fmt.Errorf("beacon timestamp owner mismatch. Timestamp: %s, Beacon: %s. Error: Owner mismatch", timestamp.Owner, record.Beacon.Owner)
 			}
 			if timestamp.Hash == "" {
 				return fmt.Errorf("invalid Beacon timestamp: Hash: %s. Error: Missing Hash", timestamp.Hash)
 			}
 			if timestamp.SubmitTime == 0 {
 				return fmt.Errorf("invalid Beacon timestamp: SubmitTime: %d. Error: Missing SubmitTime", timestamp.SubmitTime)
-			}
-			if timestamp.TimestampID == 0 {
-				return fmt.Errorf("invalid Beacon timestamp: TimestampID: %d. Error: Missing TimestampID", timestamp.TimestampID)
-			}
-			if timestamp.BeaconID == 0 {
-				return fmt.Errorf("invalid Beacon timestamp: BeaconID: %d. Error: Missing BeaconID", timestamp.BeaconID)
 			}
 		}
 	}

@@ -58,5 +58,32 @@ func ValidateGenesis(data GenesisState) error {
 		return fmt.Errorf("enterprise starting purchase order id should be greater than 0")
 	}
 
+	for _, po := range data.PurchaseOrders {
+		if po.PurchaseOrderID == 0 {
+			return fmt.Errorf("invalid purchase order: PurchaseOrderID: %d. Error: Missing PurchaseOrderID", po.PurchaseOrderID)
+		}
+		if po.Purchaser == nil {
+			return fmt.Errorf("invalid purchase order: Purchaser: %s. Error: Missing Purchaser", po.Purchaser)
+		}
+		if !po.Amount.IsValid() {
+			return fmt.Errorf("invalid purchase order: Amount: %s. Error: Missing Amount", po.Amount.Amount)
+		}
+		if po.Amount.IsZero() || po.Amount.IsNegative() {
+			return fmt.Errorf("invalid purchase order: Amount. Error: Amount must be greater than 0")
+		}
+		if !ValidPurchaseOrderStatus(po.Status) {
+			return fmt.Errorf("invalid purchase order: Status: %s. Error: Invalid Status", po.Status)
+		}
+
+		for _, decision := range po.Decisions {
+			if decision.Signer.Empty() {
+				return fmt.Errorf("invalid decision: Signer cannot be empty")
+			}
+			if !ValidPurchaseOrderAcceptRejectStatus(decision.Decision) {
+				return fmt.Errorf("invalid decision: Decision: %s. Error: Invalid Decision", decision.Decision)
+			}
+		}
+	}
+
 	return nil
 }

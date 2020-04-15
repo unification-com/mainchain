@@ -54,24 +54,37 @@ func ValidateGenesis(data GenesisState) error {
 	}
 
 	for _, record := range data.WrkChains {
+		if record.WrkChain.WrkChainID == 0 {
+			return fmt.Errorf("invalid WrkChain: ID: %d. Error: Missing ID", record.WrkChain.WrkChainID)
+		}
 		if record.WrkChain.Owner == nil {
 			return fmt.Errorf("invalid WrkChain: Owner: %s. Error: Missing Owner", record.WrkChain.Owner)
 		}
-		if record.WrkChain.WrkChainID == 0 {
-			return fmt.Errorf("invalid WrkChain: Moniker: %d. Error: Missing ID", record.WrkChain.WrkChainID)
+		if record.WrkChain.Moniker == "" {
+			return fmt.Errorf("invalid WrkChain: Moniker: %s. Error: Missing Moniker", record.WrkChain.Moniker)
+		}
+		if record.WrkChain.BaseType == "" {
+			return fmt.Errorf("invalid WrkChain: BaseType: %s. Error: Missing BaseType", record.WrkChain.BaseType)
 		}
 		for _, block := range record.WrkChainBlocks {
+
+			if block.WrkChainID == 0 {
+				return fmt.Errorf("invalid WrkChain block: WrkChainID: %d. Error: Missing WrkChainID", block.WrkChainID)
+			}
+			if block.WrkChainID != record.WrkChain.WrkChainID {
+				return fmt.Errorf("invalid WrkChain block wrkchain id mismatch. Block: %d, Wrkchain: %d. Error: WrkChain ID mismatch", block.WrkChainID, record.WrkChain.WrkChainID)
+			}
 			if block.Owner == nil {
 				return fmt.Errorf("invalid WrkChain block: Owner: %s. Error: Missing Owner", block.Owner)
+			}
+			if !block.Owner.Equals(record.WrkChain.Owner) {
+				return fmt.Errorf("wrkchain owner owner mismatch. Block: %s, Wrkchain: %s. Error: Owner mismatch", block.Owner, record.WrkChain.Owner)
 			}
 			if block.BlockHash == "" {
 				return fmt.Errorf("invalid WrkChain block: BlockHash: %s. Error: Missing BlockHash", block.BlockHash)
 			}
 			if block.Height == 0 {
 				return fmt.Errorf("invalid WrkChain block: Height: %d. Error: Missing Height", block.Height)
-			}
-			if block.WrkChainID == 0 {
-				return fmt.Errorf("invalid WrkChain block: WrkChainID: %d. Error: Missing WrkChainID", block.WrkChainID)
 			}
 		}
 	}

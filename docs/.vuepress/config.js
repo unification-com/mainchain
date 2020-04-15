@@ -4,7 +4,7 @@ module.exports = {
     base: '/mainchain/',
     markdown: {
         // options for markdown-it-toc
-        toc: {includeLevel: [2]}
+        toc: {includeLevel: [2, 3]}
     },
 
     themeConfig: {

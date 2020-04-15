@@ -2,7 +2,7 @@
 
 This page contains information that may be useful for developers of third party tools, such as wallets and block explorers
 
-### Contents
+#### Contents
 
 [[toc]]
 

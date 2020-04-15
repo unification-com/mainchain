@@ -18,7 +18,7 @@ Usage:
 Available Commands:
 | Command | Description |
 |---------|-------------|
-|[init](#und-init)|Initialize private validator, p2p, genesis, and application configuration files|
+|[init](#und-init)|Initialise private validator, p2p, genesis, and application configuration files|
 |[validate-genesis](#und-validate-genesis)|validates the genesis file at the default location or at the location passed as an arg|
 |[debug](#und-debug)|Tool for helping with debugging your application|
 |[start](#und-start)|Run the full node|

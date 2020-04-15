@@ -2,6 +2,7 @@ package ante_test
 
 import (
 	"fmt"
+	undtypes "github.com/unification-com/mainchain/types"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -25,11 +26,25 @@ const TestChainID = "und-unit-test-chain"
 
 // returns context and app with params set on account keeper
 func createTestApp(isCheckTx bool) (*simapp.UndSimApp, sdk.Context) {
+
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount(undtypes.Bech32PrefixAccAddr, undtypes.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
+	config.SetCoinType(undtypes.CoinType)
+	config.SetFullFundraiserPath(undtypes.HdWalletPath)
+
+	privK2 := ed25519.GenPrivKey()
+	pubKey2 := privK2.PubKey()
+	signerAddr := sdk.AccAddress(pubKey2.Address())
+
 	app := simapp.Setup(isCheckTx)
 	ctx := app.BaseApp.NewContext(isCheckTx, abci.Header{ChainID: TestChainID})
 	app.AccountKeeper.SetParams(ctx, auth.DefaultParams())
 	app.BeaconKeeper.SetParams(ctx, beacon.DefaultParams())
-	app.EnterpriseKeeper.SetParams(ctx, enterprise.DefaultParams())
+	entParams := enterprise.DefaultParams()
+	entParams.EntSigners = signerAddr.String()
+	app.EnterpriseKeeper.SetParams(ctx, entParams)
 
 	return app, ctx
 }

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"path"
 
 	tmkv "github.com/tendermint/tendermint/libs/kv"
 
@@ -88,25 +89,40 @@ func NewConfigFromFlags() simulation.Config {
 // Simulation Utils
 
 // ExportStateToJSON util function to export the app state to JSON
-func ExportStateToJSON(app *UndSimApp, path string) error {
-	fmt.Println("exporting app state...")
+func ExportStateToJSON(app *UndSimApp, filepath string) error {
+	fmt.Println(fmt.Sprintf("exporting app state to %s ...", filepath))
 	appState, _, err := app.ExportAppStateAndValidators(false, nil)
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(path, []byte(appState), 0644)
+	return ioutil.WriteFile(filepath, []byte(appState), 0644)
+}
+
+// ExportStateToGenesisJSON util function to export the app state to a new zero-height genesis JSON
+func ExportStateToGenesisJSON(app *UndSimApp, filepath string) error {
+
+	dir, _ := path.Split(filepath)
+	genesisPath := path.Join(dir, "genesis.json")
+
+	fmt.Println(fmt.Sprintf("exporting genesis to %s ...", genesisPath))
+	appState, _, err := app.ExportAppStateAndValidators(true, nil)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(genesisPath, []byte(appState), 0644)
 }
 
 // ExportParamsToJSON util function to export the simulation parameters to JSON
-func ExportParamsToJSON(params simulation.Params, path string) error {
-	fmt.Println("exporting simulation params...")
+func ExportParamsToJSON(params simulation.Params, filepath string) error {
+	fmt.Println(fmt.Sprintf("exporting simulation params to %s ...", filepath))
 	paramsBz, err := json.MarshalIndent(params, "", " ")
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(path, paramsBz, 0644)
+	return ioutil.WriteFile(filepath, paramsBz, 0644)
 }
 
 // GetSimulationLog unmarshals the KVPair's Value to the corresponding type based on the

@@ -26,6 +26,31 @@ func TestSetGetTotalLockedUnd(t *testing.T) {
 	require.True(t, lockedDb.Amount.Int64() == amount)
 }
 
+func TestGetTotalUnlocked(t *testing.T) {
+	ctx, _, keeper, _, supplyKeeper := createTestInput(t, false, 100)
+
+	denom := TestDenomination
+	amount := int64(1000)
+	locked := sdk.NewInt64Coin(denom, amount)
+
+	err := keeper.SetTotalLockedUnd(ctx, locked)
+	require.NoError(t, err)
+
+	totUnlocked := keeper.GetTotalUnLockedUnd(ctx)
+	totalSupply := supplyKeeper.GetSupply(ctx).GetTotal()
+
+	diff := totalSupply.Sub(sdk.Coins{totUnlocked})
+
+	require.Equal(t, sdk.Coins{locked}, diff)
+}
+
+func TestGetTotalUndSupply(t *testing.T) {
+	ctx, _, keeper, _, supplyKeeper := createTestInput(t, false, 100)
+	totalSupply := supplyKeeper.GetSupply(ctx).GetTotal()
+	totalSupplyFromEnt := keeper.GetTotalUndSupply(ctx)
+	require.Equal(t, totalSupply, sdk.Coins{totalSupplyFromEnt})
+}
+
 func TestSetGetLockedUndForAccount(t *testing.T) {
 	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
 

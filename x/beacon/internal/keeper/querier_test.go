@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 	"strings"
 	"testing"
@@ -92,6 +93,22 @@ func TestQueryParams(t *testing.T) {
 	keeper.SetParams(ctx, paramsNew)
 	params := getQueriedParams(t, ctx, keeper.cdc, querier)
 	require.True(t, ParamsEqual(paramsNew, params))
+}
+
+func TestInvalidQuerier(t *testing.T) {
+	ctx, _, keeper := createTestInput(t, false, 100, 0)
+	querier := NewQuerier(keeper)
+
+	query := abci.RequestQuery{
+		Path: strings.Join([]string{custom, types.QuerierRoute, "nosuchpath"}, "/"),
+		Data: []byte{},
+	}
+
+	expextedErr := sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: nosuchpath")
+
+	_, err := querier(ctx, []string{"nosuchpath"}, query)
+
+	require.Equal(t, expextedErr.Error(), err.Error())
 }
 
 func TestQueryBeaconByID(t *testing.T) {

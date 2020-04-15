@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
 var testParams = types.NewParams(1000,100, "nund")

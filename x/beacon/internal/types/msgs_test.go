@@ -8,6 +8,42 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
+func TestMsgRegisterBeacon_Route(t *testing.T) {
+	msg := MsgRegisterBeacon{}
+	require.Equal(t, ModuleName, msg.Route())
+}
+
+func TestMsgRegisterBeacon_Type(t *testing.T) {
+	msg := MsgRegisterBeacon{}
+	require.Equal(t, "register_beacon", msg.Type())
+}
+
+func TestMsgRegisterBeacon_GetSigners(t *testing.T) {
+	privK2 := ed25519.GenPrivKey()
+	pubKey2 := privK2.PubKey()
+	ownerAddr := sdk.AccAddress(pubKey2.Address())
+	msg := MsgRegisterBeacon{Owner: ownerAddr}
+	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
+}
+
+func TestMsgRecordBeaconTimestamp_Route(t *testing.T) {
+	msg := MsgRecordBeaconTimestamp{}
+	require.Equal(t, ModuleName, msg.Route())
+}
+
+func TestMsgRecordBeaconTimestamp_Type(t *testing.T) {
+	msg := MsgRecordBeaconTimestamp{}
+	require.Equal(t, "record_beacon_timestamp", msg.Type())
+}
+
+func TestMsgRecordBeaconTimestamp_GetSigners(t *testing.T) {
+	privK2 := ed25519.GenPrivKey()
+	pubKey2 := privK2.PubKey()
+	ownerAddr := sdk.AccAddress(pubKey2.Address())
+	msg := MsgRecordBeaconTimestamp{Owner: ownerAddr}
+	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
+}
+
 func TestMsgRegisterBeacon(t *testing.T) {
 
 	tests := []struct {

@@ -18,6 +18,10 @@ func TestAddAddressesToWhitelist(t *testing.T) {
 		err := keeper.AddAddressToWhitelist(ctx, addr)
 		require.NoError(t, err)
 	}
+
+	expectedErr := sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
+	err := keeper.AddAddressToWhitelist(ctx, sdk.AccAddress{})
+	require.Equal(t, expectedErr.Error(), err.Error())
 }
 
 func TestRemoveAddressesToWhitelist(t *testing.T) {
@@ -33,6 +37,10 @@ func TestRemoveAddressesToWhitelist(t *testing.T) {
 		err := keeper.RemoveAddressFromWhitelist(ctx, addr)
 		require.NoError(t, err)
 	}
+
+	expectedErr := sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
+	err := keeper.RemoveAddressFromWhitelist(ctx, sdk.AccAddress{})
+	require.Equal(t, expectedErr.Error(), err.Error())
 }
 
 func TestOnlyAuthotisedAddressesCanModify(t *testing.T) {
@@ -73,6 +81,9 @@ func TestAddressIsWhitelisted(t *testing.T) {
 		isWhitelisted := keeper.AddressIsWhitelisted(ctx, addr)
 		require.True(t, isWhitelisted)
 	}
+
+	isWhitelisted := keeper.AddressIsWhitelisted(ctx, sdk.AccAddress{})
+	require.False(t, isWhitelisted)
 }
 
 func TestProcessWhitelistAction(t *testing.T) {

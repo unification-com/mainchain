@@ -42,7 +42,7 @@ func NewParams(denom string, minAccepts uint64, decisionLimit uint64, entSigners
 // default enterprise UND module parameters
 func DefaultParams() Params {
 	return Params{
-		EntSigners:    "",
+		EntSigners:    "und1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq5x8kpm", // default to 0000000000000000000000000000000000000000
 		Denom:         DefaultDenomination,
 		MinAccepts:    1,
 		DecisionLimit: 84600,
@@ -143,6 +143,10 @@ func validateEntSigners(i interface{}) error {
 	v, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if len(v) == 0 {
+		return fmt.Errorf("must have at least one signer")
 	}
 
 	entSigners := strings.Split(v, ",")

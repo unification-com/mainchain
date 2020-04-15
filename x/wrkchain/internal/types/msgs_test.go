@@ -8,6 +8,43 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
+
+func TestMsgRegisterWrkChain_Route(t *testing.T) {
+	msg := MsgRegisterWrkChain{}
+	require.Equal(t, ModuleName, msg.Route())
+}
+
+func TestMsgRegisterWrkChain_Type(t *testing.T) {
+	msg := MsgRegisterWrkChain{}
+	require.Equal(t, "register_wrkchain", msg.Type())
+}
+
+func TestMsgRegisterWrkChain_GetSigners(t *testing.T) {
+	privK2 := ed25519.GenPrivKey()
+	pubKey2 := privK2.PubKey()
+	ownerAddr := sdk.AccAddress(pubKey2.Address())
+	msg := MsgRegisterWrkChain{Owner: ownerAddr}
+	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
+}
+
+func TestMsgRecordWrkChainBlock_Route(t *testing.T) {
+	msg := MsgRecordWrkChainBlock{}
+	require.Equal(t, ModuleName, msg.Route())
+}
+
+func TestMsgRecordWrkChainBlock_Type(t *testing.T) {
+	msg := MsgRecordWrkChainBlock{}
+	require.Equal(t, "record_wrkchain_hash", msg.Type())
+}
+
+func TestMsgRecordWrkChainBlock_GetSigners(t *testing.T) {
+	privK2 := ed25519.GenPrivKey()
+	pubKey2 := privK2.PubKey()
+	ownerAddr := sdk.AccAddress(pubKey2.Address())
+	msg := MsgRecordWrkChainBlock{Owner: ownerAddr}
+	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
+}
+
 func TestMsgRegisterWrkChain(t *testing.T) {
 
 	tests := []struct {

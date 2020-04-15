@@ -31,6 +31,54 @@ func getQueriedParams(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier s
 	return params
 }
 
+func getQueriedTotalLocked(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier) sdk.Coin {
+	query := abci.RequestQuery{
+		Path: strings.Join([]string{custom, types.QuerierRoute, QueryTotalLocked}, "/"),
+		Data: []byte{},
+	}
+
+	bz, err := querier(ctx, []string{QueryTotalLocked}, query)
+	require.NoError(t, err)
+	require.NotNil(t, bz)
+
+	var totalLocked sdk.Coin
+	require.NoError(t, cdc.UnmarshalJSON(bz, &totalLocked))
+
+	return totalLocked
+}
+
+func getQueriedTotalUnLocked(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier) sdk.Coin {
+	query := abci.RequestQuery{
+		Path: strings.Join([]string{custom, types.QuerierRoute, QueryTotalUnlocked}, "/"),
+		Data: []byte{},
+	}
+
+	bz, err := querier(ctx, []string{QueryTotalUnlocked}, query)
+	require.NoError(t, err)
+	require.NotNil(t, bz)
+
+	var totalLocked sdk.Coin
+	require.NoError(t, cdc.UnmarshalJSON(bz, &totalLocked))
+
+	return totalLocked
+}
+
+func getQueriedTotalSupply(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier) sdk.Coin {
+	query := abci.RequestQuery{
+		Path: strings.Join([]string{custom, types.QuerierRoute, QueryTotalSupply}, "/"),
+		Data: []byte{},
+	}
+
+	bz, err := querier(ctx, []string{QueryTotalSupply}, query)
+	require.NoError(t, err)
+	require.NotNil(t, bz)
+
+	var totalLocked sdk.Coin
+	require.NoError(t, cdc.UnmarshalJSON(bz, &totalLocked))
+
+	return totalLocked
+}
+
 func getQueriedPurchaseOrder(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, poID uint64) types.EnterpriseUndPurchaseOrder {
 
 	query := abci.RequestQuery{
@@ -110,6 +158,48 @@ func TestQueryParams(t *testing.T) {
 	keeper.SetParams(ctx, paramsNew)
 	params := getQueriedParams(t, ctx, keeper.cdc, querier)
 	require.True(t, ParamsEqual(paramsNew, params))
+}
+
+func TestQueryTotalLocked(t *testing.T) {
+	ctx, _, keeper, _, _ := createTestInput(t, false, 100)
+	querier := NewQuerier(keeper)
+
+	denom := TestDenomination
+	amount := int64(1000)
+	locked := sdk.NewInt64Coin(denom, amount)
+
+	_ = keeper.SetTotalLockedUnd(ctx, locked)
+
+	totalLocked := getQueriedTotalLocked(t, ctx, keeper.cdc, querier)
+	require.True(t, locked.IsEqual(totalLocked))
+}
+
+func TestQueryTotalUnLocked(t *testing.T) {
+	ctx, _, keeper, _, supplyKeeper := createTestInput(t, false, 100)
+	querier := NewQuerier(keeper)
+
+	denom := TestDenomination
+	amount := int64(1000)
+	locked := sdk.NewInt64Coin(denom, amount)
+
+	_ = keeper.SetTotalLockedUnd(ctx, locked)
+	totalSupply := supplyKeeper.GetSupply(ctx).GetTotal()
+
+	totalUnLocked := getQueriedTotalUnLocked(t, ctx, keeper.cdc, querier)
+
+	diff := totalSupply.Sub(sdk.Coins{totalUnLocked})
+
+	require.Equal(t, sdk.Coins{locked}, diff)
+}
+
+func TestQueryTotalSupply(t *testing.T) {
+	ctx, _, keeper, _, supplyKeeper := createTestInput(t, false, 100)
+	querier := NewQuerier(keeper)
+
+	totalSupply := supplyKeeper.GetSupply(ctx).GetTotal()
+
+	totalSupplyFromEnt := getQueriedTotalSupply(t, ctx, keeper.cdc, querier)
+	require.Equal(t, totalSupply, sdk.Coins{totalSupplyFromEnt})
 }
 
 func TestQueryPurchaseOrder(t *testing.T) {

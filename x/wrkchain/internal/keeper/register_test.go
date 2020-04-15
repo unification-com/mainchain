@@ -5,9 +5,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmtypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 )
 
@@ -22,6 +28,42 @@ func TestSetGetHighestWRKChainID(t *testing.T) {
 		require.NoError(t, err)
 		require.True(t, wcID == i)
 	}
+}
+
+func TestSetGetHighestWRKChainIDNotSet(t *testing.T) {
+	keyWrkchain := sdk.NewKVStoreKey(types.StoreKey)
+	keyParams := sdk.NewKVStoreKey(params.StoreKey)
+	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
+
+
+	db := dbm.NewMemDB()
+	ms := store.NewCommitMultiStore(db)
+	ms.MountStoreWithDB(keyWrkchain, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
+	require.Nil(t, ms.LoadLatestVersion())
+
+	ctx := sdk.NewContext(ms, abci.Header{ChainID: "und-unit-test-chain"}, false, log.NewNopLogger())
+	ctx = ctx.WithConsensusParams(
+		&abci.ConsensusParams{
+			Validator: &abci.ValidatorParams{
+				PubKeyTypes: []string{tmtypes.ABCIPubKeyTypeEd25519},
+			},
+		},
+	)
+
+	cdc := makeTestCodec()
+	pk := params.NewKeeper(cdc, keyParams, tkeyParams)
+
+	keeper := NewKeeper(
+		keyWrkchain, pk.Subspace(types.DefaultParamspace), cdc,
+	)
+
+	expectedErr := sdkerrors.Wrapf(types.ErrInvalidGenesis, "initial wrkchain ID hasn't been set")
+	bId, err := keeper.GetHighestWrkChainID(ctx)
+
+	require.Equal(t, expectedErr.Error(), err.Error())
+	require.Equal(t, uint64(0x0), bId)
 }
 
 // Tests for Get/Set WRKChains

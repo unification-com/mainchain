@@ -1,6 +1,6 @@
 # Running `und` as a background service
 
-### Contents
+#### Contents
 
 [[toc]]
 

@@ -1,12 +1,12 @@
-# `undcli` command overview
+# `undcli` Command Reference
 
 The `undcli` binary is the primary CLI client tool used for interacting with a full `und` node. The `und` node can be running locally, or one being run as a public service. By default, `undcli` will assume the `und` node is running locally and attempt to connect via RPC to `tcp://localhost:26657`.
 
-### Contents
+#### Contents
 
 [[toc]]
 
-## Commands
+## undcli
 
 ### Query account
 

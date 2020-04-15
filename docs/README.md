@@ -17,8 +17,8 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [Installation](installation.md)
 - [Accounts and Wallets](accounts-wallets.md)
-- [`und` - the und server](und-commands.md)
-- [`undcli` - the und client](undcli-commands.md)
+- [`und` - the und server command reference](und-commands.md)
+- [`undcli` - the und client command reference](undcli-commands.md)
 
 ## Mainchain Public Testnet
 

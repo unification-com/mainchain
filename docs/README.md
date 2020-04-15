@@ -34,11 +34,15 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [Devnet](local-devnet.md)
 
-## Examples
+## Tx & Query Examples
 
 - [Sending Simple Transactions](examples/transactions.md)
 - [Example WRKChain Transactions and Queries](examples/wrkchain.md)
 - [Example BEACON Transactions and Queries](examples/beacon.md)
 - [Example Enterprise UND Transactions and Queries](examples/enterprise-und.md)
+
+## In-depth guides
+
+- [AWS 101: Introduction to installing `und` on AWS EC2 instances](guides/cloud/install-aws.md)
 
 ## Light Clients & RPC

@@ -1823,16 +1823,16 @@ Example:
 Flags:
 | Flag | Type | Description |
 |------|------|-------------|
+|`--limit`|`int`|pagination limit to query for (default 100)|
+|`--page`|`int`|pagination page to query for|
+|`--moniker`|`string`|(optional) filter wrkchains by moniker|
+|`--owner`|`string`|(optional) filter wrkchains by owner address|
 |`--height`|`int`|Use a specific height to query state at (this can error if the node is pruning state)|
 |`-h`, `--help`||help for redelegation|
 |`--indent`||Add indent to JSON response|
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
-|`--limit`|`int`|pagination limit to query for (default 100)|
-|`--page`|`int`|pagination page to query for|
-|`--moniker`|`string`|(optional) filter wrkchains by moniker|
-|`--owner`|`string`|(optional) filter wrkchains by owner address|
 
 ## undcli query wrkchain block
 
@@ -1917,10 +1917,8 @@ Module Specific Sub-Commands:
 |[auth](#undcli-tx-auth)|Auth transaction subcommands|
 |[bank](#undcli-tx-bank)|Bank transaction subcommands|
 |[beacon](#undcli-tx-beacon)|Beacon transaction subcommands|
-|[crisis](#undcli-tx-crisis)|Crisis transactions subcommands|
 |[distribution](#undcli-tx-distribution)|Distribution transactions subcommands|
 |[enterprise](#undcli-tx-enterprise)|Enterprise UND transaction subcommands|
-|[evidence](#undcli-tx-evidence)|Evidence transaction subcommands|
 |[gov](#undcli-tx-gov)|Governance transactions subcommands|
 |[slashing](#undcli-tx-slashing)|Slashing transactions subcommands|
 |[staking](#undcli-tx-staking)|Staking transaction subcommands|
@@ -1933,7 +1931,7 @@ Flags:
 
 ## undcli tx broadcast
 
-Broadcast transactions created with the --generate-only
+Broadcast transactions created with the `--generate-only`
 flag and signed with the sign command. Read a transaction from `[file_path]` and
 broadcast it to a node. If you supply a dash (-) argument in place of an input
 filename, the command reads from standard input.
@@ -1972,29 +1970,1380 @@ Flags:
 
 ## undcli tx encode
 
+Encode transactions created with the `--generate-only` flag and signed with the sign command.
+Read a transaction from \<file\>, serialize it to the Amino wire protocol, and output it as base64.
+If you supply a dash (-) argument in place of an input filename, the command reads from standard input.
+
+Usage:
+```bash
+  undcli tx encode [file] [flags]
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
 
 ## undcli tx decode
 
+Decode an amino-encoded transaction string.
+
+Usage:
+```bash
+  undcli tx decode [amino-byte-string] [flags]
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-x`, `--hex`||Treat input as hexadecimal instead of base64|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
 ## undcli tx multisign
+
+Alias of [undcli tx auth multisign](#undcli-tx-auth-multisign)
+
+Sign transactions created with the --generate-only flag that require multisig signatures.
+
+Read signature(s) from `[signature]` file(s), generate a multisig signature compliant to the multisig key `[name]`, and attach it to the transaction read from `[file]`.
+
+Example:
+```bash
+  undcli multisign transaction.json k1k2k3 k1sig.json k2sig.json k3sig.json
+```
+
+If the flag `--signature-only` flag is on, it outputs a JSON representation
+of the generated signature only.
+
+The `--offline` flag makes sure that the client will not reach out to an external node. Thus account number or sequence number lookups will not be performed and it is recommended to set such parameters manually.
+
+Usage:
+```bash
+  undcli tx multisign [file] [name] [[signature]...] [flags]
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--offline`||Offline mode. Do not query a full node|
+|`--output-document`|`string`|The document will be written to the given file instead of `STDOUT`|
+|`--signature-only`||Print only the generated signature, then exit|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
 
 ## undcli tx send
 
+Alias of [undcli tx bank send](#undcli-tx-bank-send)
+
+Create and sign a send tx. Amount to send is in `nund`, e.g. `1000000000nund`.
+
+Usage:
+```bash
+  undcli tx send [from_key_or_address] [to_address] [amount] [flags]
+```
+
+Example:
+```bash
+  undcli tx send my-wallet und1hp2km26czxlvesn8nmwswdd90umvcm5gxwpk98 1000000000nund
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
 ## undcli tx sign
 
+Alias of [undcli tx auth sign](#undcli-tx-auth-sign)
+
+Sign transactions created with the `--generate-only` flag.
+It will read a transaction from `[file]`, sign it, and print its JSON encoding.
+
+If the flag `--signature-only` flag is set, it will output a JSON representation
+of the generated signature only.
+
+If the flag `--validate-signatures` is set, then the command would check whether all required signers have signed the transactions, whether the signatures were collected in the right order, and if the signature is valid over the given transaction.
+
+If the `--offline` flag is also set, signature validation over the transaction will be not be performed as that will require RPC communication with a full node.
+
+The `--offline` flag makes sure that the client will not reach out to full node.
+As a result, the account and sequence number queries will not be performed and
+it is required to set such parameters manually. Note, invalid values will cause
+the transaction to fail.
+
+The `--multisig=<multisig_key>` flag generates a signature on behalf of a multisig account key. It implies `--signature-only`. Full multisig signed transactions may eventually be generated via the '`multisign`' command.
+
+Usage:
+```bash
+  undcli tx sign [file] [flags]
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--append`||Append the signature to the existing ones. If disabled, old signatures would be overwritten. Ignored if` --multisig` is on (default true)
+|`--multisig`|`string`|Address of the multisig account on behalf of which the transaction shall be signed|
+|`--offline`||Offline mode; Do not query a full node. `--account` and `--sequence` options would be required if offline is set|
+|`--output-document`|`string`|The document will be written to the given file instead of `STDOUT`|
+|`--signature-only`||Print only the generated signature, then exit|
+|`--validate-signatures`||Print the addresses that must sign the transaction, those who have already signed it, and make sure that signatures are in the correct order|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
 ## undcli tx auth
+
+Auth transaction subcommands
+
+Usage:
+```bash
+  undcli tx auth [flags]
+  undcli tx auth [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[multisign](#undcli-tx-auth-multisign)|Generate multisig signatures for transactions generated offline|
+|[sign](#undcli-tx-auth-sign)|Sign transactions generated offline|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for auth|
+
+## undcli tx auth multisign
+
+See [undcli tx multisign](#undcli-tx-multisign)
+
+## undcli tx auth sign
+
+See [undcli tx sign](#undcli-tx-sign)
+
 ## undcli tx bank
+
+Bank transaction subcommands
+
+Usage:
+```bash
+  undcli tx bank [flags]
+  undcli tx bank [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[send](#undcli-tx-bank-send)|Create and sign a send tx|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for bank|
+
+## undcli tx bank send
+
+See [undcli tx send](#undcli-tx-send)
+
 ## undcli tx beacon
-## undcli tx crisis
+
+Beacon transaction subcommands
+
+Usage:
+```bash
+  undcli tx beacon [flags]
+  undcli tx beacon [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[register](#undcli-tx-beacon-register)|register a new BEACON|
+|[record](#undcli-tx-beacon-record)|record a BEACON's timestamp hash|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for beacon|
+
+## undcli tx beacon register
+
+Register a new BEACON, to enable timestamp hash submissions.
+
+The BEACON registration fees are automatically calculated and applied to the transaction. Fees can be queried using the `undcli query beacon params` command.
+
+Usage:
+```bash
+  undcli tx beacon register [flags]
+```
+
+::: tip
+The `--moniker` flag is required to register a BEACON.
+:::
+
+Example:
+```bash
+  undcli tx beacon register --moniker=MyBeacon --name="My BEACON" --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--moniker`|`string`|BEACON's moniker|
+|`--name`|`string`|(optional) BEACON's name|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx beacon record
+
+Record a BEACON's' timestamp hash.
+
+::: tip Note
+The `--hash` flag is required to record a BEACON hash.  
+If the `--subtime` is not set, the current UTC UNIX time will be used.
+:::
+
+Usage:
+```bash
+  undcli tx beacon record [beacon id] [flags]
+```
+
+Example:
+```bash
+  undcli tx beacon record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--hash`|`string`|BEACON's timestamp hash|
+|`--subtime`|`uint`|BEACON's timestamp submission time|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
 ## undcli tx distribution
+
+Distribution transactions subcommands
+
+Usage:
+```bash
+  undcli tx distribution [flags]
+  undcli tx distribution [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[withdraw-rewards](#undcli-tx-distribution-withdraw-rewards)|Withdraw rewards from a given delegation address, and optionally withdraw validator commission if the delegation address given is a validator operator|
+|[set-withdraw-addr](#undcli-tx-distribution-set-withdraw-addr)|change the default withdraw address for rewards associated with an address|
+|[withdraw-all-rewards](#undcli-tx-distribution-withdraw-all-rewards)|withdraw all delegations rewards for a delegator|
+|[fund-community-pool](#undcli-tx-distribution-fund-community-pool)|Funds the community pool with the specified amount|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for distribution|
+
+## undcli tx distribution withdraw-rewards
+
+Withdraw rewards from a given delegation address, and optionally withdraw validator commission if the delegation address given is a validator operator.
+
+Usage:
+```bash
+  undcli tx distribution withdraw-rewards [validator-addr] [flags]
+```
+
+Example:
+```bash
+  $ undcli tx distribution withdraw-rewards undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj --from mykey
+  $ undcli tx distribution withdraw-rewards undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj --from mykey --commission
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--commission`||also withdraw validator's commission|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx distribution set-withdraw-addr
+
+Set the withdraw address for rewards associated with a delegator address.
+
+Usage:
+```bash
+  undcli tx distribution set-withdraw-addr [withdraw-addr] [flags]
+```
+
+Example:
+```bash
+$ undcli tx distribution set-withdraw-addr und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx distribution withdraw-all-rewards
+
+Withdraw all rewards for a single delegator.
+
+Usage:
+```bash
+  undcli tx distribution withdraw-all-rewards [flags]
+```
+
+Example:
+```bash
+  undcli tx distribution withdraw-all-rewards --from mykey
+```
+
+Flags:
+
+| Flag | Type | Description |
+|------|------|-------------|
+|`--max-msgs`|`int`|Limit the number of messages per tx (0 for unlimited) (default 5)|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx distribution fund-community-pool
+
+Funds the community pool with the specified amount
+
+Usage:
+```bash
+  undcli tx distribution fund-community-pool [amount] [flags]
+```
+
+Example:
+```bash
+  undcli tx distribution fund-community-pool 1000000000nund --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
 ## undcli tx enterprise
-## undcli tx evidence
+
+Enterprise UND transaction subcommands
+
+Usage:
+```bash
+  undcli tx enterprise [flags]
+  undcli tx enterprise [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[purchase](#undcli-tx-enterprise-purchase)|Raise a new Enterprise UND purchase order|
+|[process](#undcli-tx-enterprise-process)|Process an Enterprise UND purchase order|
+|[whitelist](#undcli-tx-enterprise-whitelist)|Add/Remove an address from the enterprise purchase order whitelist|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for enterprise|
+
+## undcli tx enterprise purchase
+
+Raise a new Enterprise UND purchase order.
+
+Usage:
+```bash
+  undcli tx enterprise purchase [amount] [flags]
+```
+
+Example:
+```bash
+  $ undcli tx enterprise purchase 1000000000000nund --from wrktest
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx enterprise process
+
+Process an Enterprise UND purchase order.
+
+Only authorised addresses may process purchase orders
+
+`[decision]` must be `accept` or `reject`
+
+Usage:
+```bash
+  undcli tx enterprise process [purchase_order_id] [decision] [flags]
+```
+
+Example:
+```bash
+  $ undcli tx enterprise process 24 accept --from ent
+  $ undcli tx enterprise process 24 reject --from ent
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx enterprise whitelist
+
+Add/Remove an address from the enterprise purchase order whitelist.
+
+Only authorised addesses may edit the whitelist.
+
+`[action]` must be `add` or `remove`
+
+Usage:
+```bash
+  undcli tx enterprise whitelist [action] [address] [flags]
+```
+
+Example:
+```bash
+  $ undcli tx enterprise whitelist add und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --from ent
+  $ undcli tx enterprise whitelist remove und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --from ent
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+
 ## undcli tx gov
+
+Governance transactions subcommands
+
+Usage:
+```bash
+  undcli tx gov [flags]
+  undcli tx gov [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[deposit](#undcli-tx-gov-deposit)|Deposit tokens for an active proposal|
+|[vote](#undcli-tx-gov-vote)|Vote for an active proposal, options: yes/no/no_with_veto/abstain|
+|[submit-proposal](#undcli-tx-gov-submit-proposal)|Submit a proposal along with an initial deposit|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for gov|
+
+## undcli tx gov deposit
+
+Submit a deposit for an active proposal. You can find the `[proposal-id]` by running "`undcli query gov proposals`".
+
+Usage:
+```bash
+  undcli tx gov deposit [proposal-id] [deposit] [flags]
+```
+
+Example:
+```bash
+  undcli tx gov deposit 1 10stake --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx gov vote
+
+Submit a vote for an active proposal. You can find the `[proposal-id]` by running "`undcli query gov proposals`".
+
+Usage:
+```bash
+  undcli tx gov vote [proposal-id] [option] [flags]
+```
+
+Example:
+```bash
+  undcli tx gov vote 1 yes --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx gov submit-proposal
+
+Submit a proposal along with an initial deposit.
+
+Proposal title, description, type and deposit can be given directly or through a proposal JSON file.
+
+Usage:
+```bash
+  undcli tx gov submit-proposal [flags]
+  undcli tx gov submit-proposal [command]
+```
+
+Example:
+```bash
+  undcli tx gov submit-proposal --proposal="path/to/proposal.json" --from mykey
+```
+
+Where `proposal.json` contains:
+
+```json
+{
+  "title": "Test Proposal",
+  "description": "My awesome proposal",
+  "type": "Text",
+  "deposit": "10test"
+}
+```
+
+Which is equivalent to:
+
+```bash
+  undcli tx gov submit-proposal --title="Test Proposal" --description="My awesome proposal" --type="Text" --deposit="10test" --from mykey
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[param-change](#undcli-tx-gov-submit-proposal-param-change)|Submit a parameter change proposal|
+|[community-pool-spend](#undcli-tx-gov-submit-proposal-community-pool-spend)|Submit a community pool spend proposal|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--deposit`|`string`|deposit of proposal, e.g. 100000000000nund|
+|`--description`|`string`|description of proposal|
+|`--proposal`|`string`|proposal file path (if this path is given, other proposal flags are ignored)|
+|`--title`|`string`|title of proposal|
+|`--type`|`string`|Type of proposal, types: `text`/`parameter_change`/`software_upgrade`|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx gov submit-proposal param-change
+
+Submit a parameter proposal along with an initial deposit.
+
+The proposal details must be supplied via a JSON file. For values that contains
+objects, only non-empty fields will be updated.
+
+::: warning IMPORTANT
+Currently parameter changes are evaluated but not validated, so it is
+very important that any "value" change is valid (ie. correct type and within bounds) for its respective parameter, eg. "MaxValidators" should be an integer and not a decimal.
+
+Proper vetting of a parameter change proposal should prevent this from happening
+(no deposits should occur during the governance process), but it should be noted
+regardless.
+:::
+
+Usage:
+```bash
+  undcli tx gov submit-proposal param-change [proposal-file] [flags]
+```
+
+Example:
+```bash
+$ undcli tx gov submit-proposal param-change <path/to/proposal.json> --from=<key_or_address>
+```
+
+Where `proposal.json` contains:
+```json
+{
+  "title": "Slashing parameters",
+  "description": "change the signed blocks window to 10,000, and minimum signed requirement to 5%",
+  "changes": [
+    {
+      "subspace": "slashing",
+      "key": "SignedBlocksWindow",
+      "value": "10000"
+    },
+    {
+      "subspace": "slashing",
+      "key": "MinSignedPerWindow",
+      "value": "0.050000000000000000"
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "nund",
+      "amount": "1000000000000"
+    }
+  ]
+}
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx gov submit-proposal community-pool-spend
+
+Submit a community pool spend proposal along with an initial deposit.
+The proposal details must be supplied via a JSON file.
+
+Usage:
+```bash
+  undcli tx gov submit-proposal community-pool-spend [proposal-file] [flags]
+```
+
+Example:
+```bash
+  undcli tx gov submit-proposal community-pool-spend <path/to/proposal.json> --from=<key_or_address>
+```
+
+Where `proposal.json` contains:
+
+```json
+{
+  "title": "Community Pool Spend",
+  "description": "Send some community pool UND to this address",
+  "recipient": "und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car",
+  "amount": [
+    {
+      "denom": "nund",
+      "amount": "10000"
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "nund",
+      "amount": "10000"
+    }
+  ]
+}
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
 ## undcli tx slashing
+
+Slashing transactions subcommands
+
+Usage:
+```bash
+  undcli tx slashing [flags]
+  undcli tx slashing [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[unjail](#undcli-tx-slashing-unjail)|unjail validator previously jailed for downtime|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for slashing|
+
+## undcli tx slashing unjail
+
+unjail a jailed validator:
+
+Usage:
+```bash
+  undcli tx slashing unjail [flags]
+```
+
+Example:
+```bash
+  undcli tx slashing unjail --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
 ## undcli tx staking
+
+Staking transaction subcommands
+
+Usage:
+```bash
+  undcli tx staking [flags]
+  undcli tx staking [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[create-validator](#undcli-tx-staking-create-validator)|create new validator initialized with a self-delegation to it|
+|[edit-validator](#undcli-tx-staking-edit-validator)|edit an existing validator account|
+|[delegate](#undcli-tx-staking-delegate)|Delegate UND to a validator|
+|[redelegate](#undcli-tx-staking-redelegate)|Redelegate illiquid tokens from one validator to another|
+|[unbond](#undcli-tx-staking-unbond)|Unbond shares from a validator|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for staking|
+
+## undcli tx staking create-validator
+
+create new validator initialized with a self-delegation to it
+
+Usage:
+```bash
+  undcli tx staking create-validator [flags]
+```
+
+Example:
+```bash
+undcli tx staking create-validator \
+  --amount=1000000000000nund \
+  --pubkey=undvalconspub1zcjduepq6yq7drzefkavsrxhxk69cy63tj3r... \
+  --moniker="MyAwesomeNode" \
+  --website="https://my-node-site.com" \
+  --details="My node is awesome" \
+  --security-contact="security@my-node-site.com" \
+  --commission-rate="0.05" \
+  --commission-max-rate="0.10" \
+  --commission-max-change-rate="0.01" \
+  --min-self-delegation="1" \
+  --from=my_new_wallet
+```
+
+::: warning
+The values for `--commission-max-change-rate` and `--commission-max-rate` flags cannot be changed after the create-validator command has been run.
+:::
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--amount`|`string`|Amount of coins to bond|
+|`--commission-max-change-rate`|`string`|The maximum commission change rate percentage (per day)|
+|`--commission-max-rate`|`string`|The maximum commission rate percentage|
+|`--commission-rate`|`string`|The initial commission rate percentage|
+|`--details`|`string`|The validator's (optional) details|
+|`--identity`|`string`|The optional identity signature (ex. UPort or Keybase)|
+|`--ip`|`string`|The node's public IP. It takes effect only when used in combination with `--generate-only`|
+|`--min-self-delegation`|`string`|The minimum self delegation required on the validator|
+|`--moniker`|`string`|The validator's name|
+|`--node-id`|`string`|The node's ID|
+|`--pubkey`|`string`|The Bech32 encoded PubKey of the validator|
+|`--security-contact`|`string`|The validator's (optional) security contact email|
+|`--website`|`string`|The validator's (optional) website|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx staking edit-validator
+
+edit an existing validator account
+
+Usage:
+```bash
+  undcli tx staking edit-validator [flags]
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--commission-rate`|`string`|The new commission rate percentage|
+|`--details`|`string`|The validator's (optional) details (default "`[do-not-modify]`")|
+|`--identity`|`string`|The (optional) identity signature (ex. UPort or Keybase) (default "`[do-not-modify]`")|
+|`--min-self-delegation`|`string`|The minimum self delegation required on the validator|
+|`--moniker`|`string`|The validator's name (default "`[do-not-modify]`")|
+|`--security-contact`|`string`|The validator's (optional) security contact email (default "`[do-not-modify]`")|
+|`--website`|`string`|The validator's (optional) website (default "`[do-not-modify]`")|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx staking delegate
+
+Delegate an amount of UND (in `nund`) to a validator from your wallet.
+
+Usage:
+```bash
+  undcli tx staking delegate [validator-addr] [amount] [flags]
+```
+
+Example:
+```bash
+$ undcli tx staking delegate undvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1000000000nund --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx staking redelegate
+
+Redelegate an amount of liquid staking tokens from one validator to another.
+
+Usage:
+```bash
+  undcli tx staking redelegate [src-validator-addr] [dst-validator-addr] [amount] [flags]
+```
+
+Example:
+```bash
+$ undcli tx staking redelegate undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj undvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 100nund --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx staking unbond
+
+Unbond an amount of bonded shares from a validator.
+
+Usage:
+```bash
+  undcli tx staking unbond [validator-addr] [amount] [flags]
+```
+
+Example:
+```bash
+  undcli tx staking unbond undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 100nund --from mykey
+```
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
 ## undcli tx wrkchain
+
+WRKChain transaction subcommands
+
+Usage:
+```bash
+  undcli tx wrkchain [flags]
+  undcli tx wrkchain [command]
+```
+
+Available Commands:
+| Command | Description |
+|---------|-------------|
+|[register](#undcli-tx-wrkchain-register)|register a new WRKChain|
+|[record](#undcli-tx-wrkchain-record)|record a WRKChain's block hashes|
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for wrkchain|
+
+## undcli tx wrkchain register
+
+Register a new WRKChain, to enable WRKChain hash submissions
+
+Usage:
+```bash
+  undcli tx wrkchain register [flags]
+```
+
+Example:
+```bash
+  undcli tx wrkchain register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa" --name="My WRKChain" --base="geth" --from mykey
+```
+
+::: warning Note
+The `--moniker` and `--base` flags are the minimum requirements for registering a WRKChain, and are mandatory flags.
+:::
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--base`|`string`|(optional) WRKChain's chain type - `geth`/`tendermint`, etc.|
+|`--genesis`|`string`|(optional) WRKChain's Genesis hash|
+|`--moniker`|`string`|WRKChain's moniker|
+|`--name`|`string`|(optional) WRKChain's name|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+## undcli tx wrkchain record
+
+Record a new WRKChain block's hash(es)
+
+Usage:
+```bash
+  undcli tx wrkchain record [wrkchain id] [flags]
+```
+
+Example:
+```bash
+  $ undcli tx wrkchain record 1 --wc_height=24 --block_hash="d04b98f48e8" --parent_hash="f8bcc15c6ae" --hash1="5ac050801cd6" --hash2="dcfd428fb5f9e" --hash3="65c4e16e7807340fa" --from mykey
+  $ undcli tx wrkchain record 1 --wc_height=25 --block_hash="d04b98f48e8" --from mykey
+  $ undcli tx wrkchain record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8bcc15c6ae" --from mykey
+```
+
+::: warning Note
+The `--wc_height` and `--block_hash` are the minimum requirements for submitting WRKChain block header hashes, and are mandatory flags.
+:::
+
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--block_hash`|`string`|WRKChain block's header (main) hash|
+|`--hash1`|`string`|(optional) Additional WRKChain hash - e.g. State Merkle Root|
+|`--hash2`|`string`|(optional) Additional WRKChain hash - e.g. Tx Merkle Root|
+|`--hash3`|`string`|(optional) Additional WRKChain hash|
+|`--parent_hash`|`string`|(optional) WRKChain block's parent hash|
+|`--wc_height`|`uint`|WRKChain block's height/block number|
+|`-a`, `--account-number`|`uint`|The account number of the signing account (offline mode only)|
+|`-b`, `--broadcast-mode`|`string`|Transaction broadcasting mode (`sync`\|`async`\|`block`) (default "`sync`")|
+|`--dry-run`||ignore the `--gas` flag and perform a simulation of a transaction, but don't broadcast it|
+|`--fees`|`string`|Fees to pay along with transaction; eg: `10000nund`|
+|`--from`|`string`|Name or address of private key with which to sign|
+|`--gas`|`string`|gas limit to set per-transaction; set to "auto" to calculate required gas automatically (default 200000) (default "200000")|
+|`--gas-adjustment`|`float`|adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)|
+|`--gas-prices`|`string`|Gas prices to determine the transaction fee (e.g. `0.25nund`)|
+|`--generate-only`||Build an unsigned transaction and write it to `STDOUT` (when enabled, the local Keybase is not accessible and the node operates offline)|
+|`-h`, `--help`||help for broadcast|
+|`--indent`||Add indent to JSON response|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`--ledger`||Use a connected Ledger device|
+|`--memo`|`string`|Memo to send along with transaction|
+|`--node`|`string`|\<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")|
+|`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
+|`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
+|`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
 ## undcli version
 

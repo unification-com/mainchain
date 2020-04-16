@@ -51,7 +51,7 @@ fi
 
 # check binary
 # check und
-check () {
+check() {
   CHECK_LOC="${LOCAL_BIN}/${1}"
   GO_BIN=""
   VERS=""
@@ -109,7 +109,7 @@ check () {
   fi
 }
 
-backup () {
+backup() {
   BACKUP_VERS=$("${LOCAL_BIN}/${1}" version)
   echo "Atempting to backup ${LOCAL_BIN}/${1} ${BACKUP_VERS}"
   BACKUP_LOC="${BACKUP_DIR}"
@@ -149,7 +149,7 @@ backup () {
 }
 
 # check if requested version exists
-exists () {
+exists() {
   DOWLOAD_ARCHIVE="${2}/${1}_v${2}_${3}_x86_64.tar.gz"
   DOWLOAD_FILE="${GH_DL_PREFIX}/${DOWLOAD_ARCHIVE}"
   echo "Checking if ${1} v${2} has been released"
@@ -165,7 +165,7 @@ exists () {
 
 # download binary_name version os
 # download "undcli" "1.1.1" "linux"
-download () {
+download() {
   DOWLOAD_FILE="${GH_DL_PREFIX}/${2}/${1}_v${2}_${3}_x86_64.tar.gz"
   DEST="${DOWNLOAD_DEST}/${1}.tar.gz"
   echo "Downloading ${DOWLOAD_FILE} to ${DEST}"
@@ -180,7 +180,7 @@ download () {
 
 # extract binary_name dir
 # extract "undcli"
-extract () {
+extract() {
   ARCHIVE="${DOWNLOAD_DEST}/${1}.tar.gz"
   BIN_RES="${DOWNLOAD_DEST}/${1}"
   echo "Extracting ${ARCHIVE}"
@@ -204,7 +204,7 @@ clean() {
 
 # install binary
 # install und
-install () {
+install() {
   if [ -f "${DOWNLOAD_DEST}/${1}" ]; then
     echo "Found ${DOWNLOAD_DEST}/${1}. installing into ${LOCAL_BIN}/${1}"
     sudo cp "${DOWNLOAD_DEST}/${1}" "${LOCAL_BIN}/${1}"
@@ -228,101 +228,106 @@ install () {
   fi
 }
 
-# delete any previous downloads
-clean
+# Wrap it all in a run function
+run() {
+  # delete any previous downloads
+  clean
 
-## create a tmp download dir
-echo "creating ${DOWNLOAD_DEST}"
-mkdir -p "${DOWNLOAD_DEST}"
-echo ""
-
-for i in ${BINARIES_TO_INSTALL}; do
-  SKIP_INSTALL=false
-  REQUIRE_BACKUP=false
-  INSTALL_LOCATION=""
-  INSTALLED_VERSION=""
-
+  ## create a tmp download dir
+  echo "creating ${DOWNLOAD_DEST}"
+  mkdir -p "${DOWNLOAD_DEST}"
   echo ""
-  echo "${bold}--Attempting to install/update ${i}--${normal}"
 
-  # if user requested a particular version, check it exists first
-  if test "${VERSION_TO_INSTALL}" != "${LATEST_VERSION}"; then
-    exists  "${i}" "${VERSION_TO_INSTALL}" "linux"
-    if [ "$SKIP_INSTALL" = true ] ; then
+  for i in ${BINARIES_TO_INSTALL}; do
+    SKIP_INSTALL=false
+    REQUIRE_BACKUP=false
+    INSTALL_LOCATION=""
+    INSTALLED_VERSION=""
+
+    echo ""
+    echo "${bold}--Attempting to install/update ${i}--${normal}"
+
+    # if user requested a particular version, check it exists first
+    if test "${VERSION_TO_INSTALL}" != "${LATEST_VERSION}"; then
+      exists "${i}" "${VERSION_TO_INSTALL}" "linux"
+      if [ "$SKIP_INSTALL" = true ]; then
+        continue
+      fi
+    fi
+
+    # installation pre-check
+    check "${i}"
+
+    if [ "$REQUIRE_BACKUP" = true ]; then
+      backup "${i}"
+    fi
+
+    echo ""
+    if [ "$SKIP_INSTALL" = true ]; then
       continue
     fi
-  fi
 
-  # installation pre-check
-  check "${i}"
+    if [ -f "${LOCAL_BIN}/${i}" ]; then
+      echo "Removing old version of ${LOCAL_BIN}/${i}"
+      sudo rm "${LOCAL_BIN}/${i}"
+    fi
 
-  if [ "$REQUIRE_BACKUP" = true ] ; then
-    backup "${i}"
+    echo "Installing ${i}"
+    echo ""
+    # Download the latest archive
+    download "${i}" "${VERSION_TO_INSTALL}" "linux"
+    echo ""
+    # Extract the archive
+    extract "${i}"
+    echo ""
+    # install the binary
+    install "${i}"
+    echo ""
+
+    echo "${i} has been installed to:"
+    INSTALL_LOCATION=$(which "${i}")
+    echo "${INSTALL_LOCATION}"
+    INSTALLED_VERSION=$("${INSTALL_LOCATION}" version)
+
+    echo "Checking "${INSTALL_LOCATION}" version."
+    echo "expected version: ${VERSION_TO_INSTALL}"
+    echo "installed version: ${INSTALLED_VERSION}"
+
+    if test "${VERSION_TO_INSTALL}" = "${INSTALLED_VERSION}"; then
+      INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${bold}${i} v${INSTALLED_VERSION} successfully installed!${normal}\nLocation: ${INSTALL_LOCATION}"
+      INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\nRun:\n\n${INSTALL_LOCATION} version --long\n\nto verify. Version should be ${VERSION_TO_INSTALL}.\n"
+    else
+      INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${bold}Something went wrong installing ${i} v${VERSION_TO_INSTALL}. See previous output.${normal}"
+    fi
+  done
+
+  if [ -z "$HOME" ]; then
+    echo "${bold}WARNING: NO HOME ENVIRONMENT VARIABLE DETECTED! ABORTING.${normal}"
+    exit
   fi
+  # remove the tmp files
+  clean
 
   echo ""
-  if [ "$SKIP_INSTALL" = true ] ; then
-    continue
+  echo "----------------------"
+  echo ""
+
+  # output installation summary
+  if [ -n "$INSTALLATION_SUMMARY" ]; then
+    echo "${bold}Installation/Upgrade summary${normal}"
+    echo "----------------------------"
+    echo "${INSTALLATION_SUMMARY}"
   fi
 
-  if [ -f "${LOCAL_BIN}/${i}" ]; then
-    echo "Removing old version of ${LOCAL_BIN}/${i}"
-    sudo rm "${LOCAL_BIN}/${i}"
+  INSTALLED_UND_VERSION=$("/usr/local/bin/und" version)
+  INSTALLED_UNDCLI_VERSION=$("/usr/local/bin/undcli" version)
+
+  if test "${INSTALLED_UND_VERSION}" != "${INSTALLED_UNDCLI_VERSION}"; then
+    echo "${bold}WARNING:${normal} und and undcli version mismatch."
+    echo "und: v${INSTALLED_UND_VERSION}"
+    echo "undcli: v${INSTALLED_UNDCLI_VERSION}"
+    echo "Versions should match. Check for errors."
   fi
+}
 
-  echo "Installing ${i}"
-  echo ""
-  # Download the latest archive
-  download "${i}" "${VERSION_TO_INSTALL}" "linux"
-  echo ""
-  # Extract the archive
-  extract "${i}"
-  echo ""
-  # install the binary
-  install "${i}"
-  echo ""
-
-  echo "${i} has been installed to:"
-  INSTALL_LOCATION=$(which "${i}")
-  echo "${INSTALL_LOCATION}"
-  INSTALLED_VERSION=$("${INSTALL_LOCATION}" version)
-
-  echo "Checking "${INSTALL_LOCATION}" version."
-  echo "expected version: ${VERSION_TO_INSTALL}"
-  echo "installed version: ${INSTALLED_VERSION}"
-
-  if test "${VERSION_TO_INSTALL}" = "${INSTALLED_VERSION}"; then
-    INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${bold}${i} v${INSTALLED_VERSION} successfully installed!${normal}\nLocation: ${INSTALL_LOCATION}"
-    INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\nRun:\n\n${INSTALL_LOCATION} version --long\n\nto verify. Version should be ${VERSION_TO_INSTALL}.\n"
-  else
-    INSTALLATION_SUMMARY="${INSTALLATION_SUMMARY}\n${bold}Something went wrong installing ${i} v${VERSION_TO_INSTALL}. See previous output.${normal}"
-  fi
-done
-
-if [ -z "$HOME" ]; then
-  echo "${bold}WARNING: NO HOME ENVIRONMENT VARIABLE DETECTED! ABORTING.${normal}"
-  exit
-fi
-# remove the tmp files
-clean
-
-echo ""
-echo "----------------------"
-echo ""
-
-# output installation summary
-if [ -n "$INSTALLATION_SUMMARY" ]; then
-  echo "${bold}Installation/Upgrade summary${normal}"
-  echo "----------------------------"
-  echo "${INSTALLATION_SUMMARY}"
-fi
-
-INSTALLED_UND_VERSION=$("/usr/local/bin/und" version)
-INSTALLED_UNDCLI_VERSION=$("/usr/local/bin/undcli" version)
-
-if test "${INSTALLED_UND_VERSION}" != "${INSTALLED_UNDCLI_VERSION}"; then
-  echo "${bold}WARNING:${normal} und and undcli version mismatch."
-  echo "und: v${INSTALLED_UND_VERSION}"
-  echo "undcli: v${INSTALLED_UNDCLI_VERSION}"
-  echo "Versions should match. Check for errors."
-fi
+run

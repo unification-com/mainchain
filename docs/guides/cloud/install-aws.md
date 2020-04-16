@@ -169,7 +169,7 @@ sudo yum install nano jq -y
 We have a shell script available in the mainchain GitHub repository which will automatically download and install the latest version of `und`. While still logged in to the instance via SSH, run the following:
 
 ```bash
-$ curl -sfL https://git.io/JvHZO | sh
+$ sh -c "$(curl -sfSL https://git.io/JvHZO)"
 ```
 
 This should install the binary into `/usr/local/bin/und`. Verify the installation was successful:

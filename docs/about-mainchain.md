@@ -23,8 +23,8 @@ Additionally, the [Mainchain repository](https://github.com/unification-com/main
 
 The Mainchain suite comes with two binaries: `und` and `undcli`
 
-- `und` - The Mainchain server-side daemon, used to run a full node for Mainchain. Validators run this service to produce blocks.  
-- `undcli` - The command line interface for interacting with Mainchain nodes. It can also be used to run a light-client RPC node service.
+- `und` - The Mainchain server-side daemon, used to run a full node for Mainchain. Validators run this service to produce blocks. See [full command reference](und-commands.md)  
+- `undcli` - The command line interface for interacting with Mainchain nodes. It can also be used to run a light-client RPC node service. See [full command reference](undcli-commands.md)
 
 Mainchain has been built with the following core Cosmos SDK modules:
 

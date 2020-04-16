@@ -169,7 +169,7 @@ sudo yum install nano jq -y
 We have a shell script available in the mainchain GitHub repository which will automatically download and install the latest version of `und`. While still logged in to the instance via SSH, run the following:
 
 ```bash
-$ curl -sfL https://git.io/JvHZO | sh
+$ sh -c "$(curl -sfSL https://git.io/JvHZO)"
 ```
 
 This should install the binary into `/usr/local/bin/und`. Verify the installation was successful:
@@ -481,7 +481,7 @@ Your commission rates can be set using the `--commission-rate` , `--commission-m
 `--commission-max-change-rate`: The maximum you can change the commission-rate by in any one change request. For example, if your maximum change rate is 0.01, you can only make changes in 0.01 increments, so from 0.10 (10%) to 0.09 (9%).
 
 ::: warning
-The values for --commission-max-change-rate and --commission-max-rate flags cannot be changed after the create-validator command has been run.
+The values for `--commission-max-change-rate` and `--commission-max-rate` flags cannot be changed after the create-validator command has been run.
 :::
 
 Finally, the `--min-self-delegation` flag is the minimum amount of `nund` you are required to keep self-delegated to your validtor, meaning you must always have at least this amount self-delegated to your node.

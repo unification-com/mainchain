@@ -481,7 +481,7 @@ Your commission rates can be set using the `--commission-rate` , `--commission-m
 `--commission-max-change-rate`: The maximum you can change the commission-rate by in any one change request. For example, if your maximum change rate is 0.01, you can only make changes in 0.01 increments, so from 0.10 (10%) to 0.09 (9%).
 
 ::: warning
-The values for --commission-max-change-rate and --commission-max-rate flags cannot be changed after the create-validator command has been run.
+The values for `--commission-max-change-rate` and `--commission-max-rate` flags cannot be changed after the create-validator command has been run.
 :::
 
 Finally, the `--min-self-delegation` flag is the minimum amount of `nund` you are required to keep self-delegated to your validtor, meaning you must always have at least this amount self-delegated to your node.

@@ -36,7 +36,7 @@ Global flags can be passed to any of the commands and sub-commands below
 
 | Flag | Type | Description |
 |------|------|-------------|
-|`--home`|`string`|directory for config and data (default "/home/username/.und_mainchain")|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
 |`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
 |`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
 |`--trace`||print out full stack trace on errors|

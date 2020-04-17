@@ -230,8 +230,11 @@ install() {
 
 # Wrap it all in a run function
 run() {
-  # delete any previous downloads
-  clean
+
+  if [ -z "$HOME" ]; then
+    echo "${bold}WARNING: NO HOME ENVIRONMENT VARIABLE DETECTED! ABORTING.${normal}"
+    exit
+  fi
 
   ## create a tmp download dir
   echo "creating ${DOWNLOAD_DEST}"
@@ -267,11 +270,6 @@ run() {
       continue
     fi
 
-    if [ -f "${LOCAL_BIN}/${i}" ]; then
-      echo "Removing old version of ${LOCAL_BIN}/${i}"
-      sudo rm "${LOCAL_BIN}/${i}"
-    fi
-
     echo "Installing ${i}"
     echo ""
     # Download the latest archive
@@ -301,10 +299,6 @@ run() {
     fi
   done
 
-  if [ -z "$HOME" ]; then
-    echo "${bold}WARNING: NO HOME ENVIRONMENT VARIABLE DETECTED! ABORTING.${normal}"
-    exit
-  fi
   # remove the tmp files
   clean
 

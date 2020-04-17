@@ -11,7 +11,7 @@ Mainchain is the backbone of the Unification Network. It is a Tendermint based c
 
 ## Quick start installation
 
-See [Documentation](https://unification-com.github.io/mainchain) for full guides.
+See [Documentation](https://docs.unification.io) for full guides.
 
 There are several options for installing the binaries
 

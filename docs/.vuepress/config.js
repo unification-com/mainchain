@@ -1,7 +1,7 @@
 module.exports = {
     title: 'Mainchain Documentation',
     description: 'Welcome to the documentation for Unification Mainchain',
-    base: '/mainchain/',
+    base: '/',
     markdown: {
         // options for markdown-it-toc
         toc: {includeLevel: [2, 3]}

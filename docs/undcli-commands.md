@@ -359,6 +359,65 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+
+Example:
+```bash
+  undcli query account und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+```
+
+`--output=json` Result:
+```json
+{
+  "account": {
+    "type": "cosmos-sdk/Account",
+    "value": {
+      "address": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs",
+      "coins": [
+        {
+          "denom": "nund",
+          "amount": "975269999995000"
+        }
+      ],
+      "public_key": "undpub1addwnpepqvcner5ngj4tqxadx3wfpsruzcv533xnpjq9arqrkunw30sjy53tus776nr",
+      "account_number": 36,
+      "sequence": 34732
+    }
+  },
+  "enterprise": {
+    "locked": {
+      "denom": "nund",
+      "amount": "99999000000000"
+    },
+    "available_for_wrkchain": [
+      {
+        "denom": "nund",
+        "amount": "1075268999995000"
+      }
+    ]
+  }
+}
+```
+
+`--output=text` Result:
+```yaml
+account: |
+  address: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+  coins:
+  - denom: nund
+    amount: "975269999995000"
+  public_key: undpub1addwnpepqvcner5ngj4tqxadx3wfpsruzcv533xnpjq9arqrkunw30sjy53tus776nr
+  account_number: 36
+  sequence: 34733
+enterprise:
+  locked:
+    denom: nund
+    amount: "99999000000000"
+  available:
+  - denom: nund
+    amount: "1075268999995000"
+
+```
+
 ## undcli query auth
 
 Querying commands for the auth module
@@ -381,7 +440,13 @@ Flags:
 
 ## undcli query auth account
 
-Query account balance
+Query account balance.
+
+::: warning Note
+The `undcli query auth account` command will only return the liquid UND available for the account, and does not include any Enterprise UND information.
+
+To obtain full account information, including Enterprise UND, use `undcli query account`
+:::
 
 Usage:
 ```bash
@@ -397,6 +462,43 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+
+```bash
+undcli query auth account und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+```
+
+`--output=json` Result:
+```json
+{
+  "type": "cosmos-sdk/Account",
+  "value": {
+    "address": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs",
+    "coins": [
+      {
+        "denom": "nund",
+        "amount": "975269999995000"
+      }
+    ],
+    "public_key": "undpub1addwnpepqvcner5ngj4tqxadx3wfpsruzcv533xnpjq9arqrkunw30sjy53tus776nr",
+    "account_number": 36,
+    "sequence": 34736
+  }
+}
+```
+
+`--output=text` Result:
+```yaml
+|
+  address: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+  coins:
+  - denom: nund
+    amount: "975269999995000"
+  public_key: undpub1addwnpepqvcner5ngj4tqxadx3wfpsruzcv533xnpjq9arqrkunw30sjy53tus776nr
+  account_number: 36
+  sequence: 34740
+```
 
 ## undcli query beacon
 
@@ -440,6 +542,28 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query beacon params
+```
+
+`--output=json` Result:
+```json
+{
+  "fee_register": "1000000000",
+  "fee_record": "1000000000",
+  "denom": "nund"
+}
+```
+
+`--output=text` Result:
+```yaml
+fee_register: 1000000000
+fee_record: 1000000000
+denom: nund
+```
+
 ## undcli query beacon beacon
 
 Query a BEACON for given ID
@@ -458,6 +582,33 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+
+```bash
+  undcli query beacon beacon 1
+```
+
+`--output=json` Result:
+```json
+{
+  "beacon_id": "1",
+  "moniker": "MyBeacon",
+  "name": "My BEACON",
+  "last_timestamp_id": "4885",
+  "owner": "und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly"
+}
+
+```
+
+`--output=text` Result:
+```yaml
+beaconid: 1
+moniker: MyBeacon
+name: My BEACON
+lasttimestampid: 4885
+owner: und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly
+```
 
 ## undcli query beacon timestamp
 
@@ -478,6 +629,33 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query beacon timestamp 1 1
+```
+
+`--output=json` Result:
+```json
+{
+  "beacon_id": "1",
+  "timestamp_id": "1",
+  "submit_time": "1",
+  "hash": "123",
+  "owner": "und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly"
+}
+```
+
+`--output=text` Result:
+```yaml
+text
+beaconid: 1
+timestampid: 1
+submittime: 1
+hash: "123"
+owner: und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly
+```
+
 ## undcli query beacon search
 
 Query for all paginated BEACONs that match optional filters:
@@ -485,13 +663,6 @@ Query for all paginated BEACONs that match optional filters:
 Usage:
 ```bash
   undcli query beacon search [flags]
-```
-
-Example:
-```bash
-$ undcli query beacon search --moniker beacon1
-$ undcli query beacon search --owner und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
-$ undcli query beacon search --page=2 --limit=100
 ```
 
 Flags:
@@ -508,6 +679,35 @@ Flags:
 |`--page`|`int`|pagination page of beacons to to query for (default 1)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+$ undcli query beacon search --moniker MyBeacon
+$ undcli query beacon search --owner und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly
+$ undcli query beacon search --page=1 --limit=100
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "beacon_id": "1",
+    "moniker": "MyBeacon",
+    "name": "My BEACON",
+    "last_timestamp_id": "4885",
+    "owner": "und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly"
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- beaconid: 1
+  moniker: MyBeacon
+  name: My BEACON
+  lasttimestampid: 4885
+  owner: und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly
+```
+
 ## undcli query block
 
 Get verified data for a the block at given height
@@ -523,6 +723,101 @@ Flags:
 |`-h`, `--help`||help for block|
 |`-n`, `--node`|`string`|Node to connect to (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+
+```bash
+  undcli query block 1234
+```
+
+`--output=json` Result:
+```json
+{
+  "block_id": {
+    "hash": "A0544753D01D09963A24B9DC67E24AEA3F073F8F82E67985E82958BFDBF41C04",
+    "parts": {
+      "total": "1",
+      "hash": "5549CDD5511EF7EC573981F69F4C511057DB69DE1A19BE43AB205A5956CC4270"
+    }
+  },
+  "block": {
+    "header": {
+      "version": {
+        "block": "10",
+        "app": "0"
+      },
+      "chain_id": "UND-Mainchain-TestNet-v4",
+      "height": "1234",
+      "time": "2020-04-09T18:48:00.246726475Z",
+      "last_block_id": {
+        "hash": "066E23184AC1AE19D25C986FBE3422132EF03D934A77A010D33D00136591332A",
+        "parts": {
+          "total": "1",
+          "hash": "9E5EE87EDBA06C026456C73F2286E1609860109E384A9A3E615C75463C183BE6"
+        }
+      },
+      "last_commit_hash": "98CCEB6DEBD4E04C2E485218F699D0F77CAB2A40C447BCF72A1E07AA7BC45178",
+      "data_hash": "",
+      "validators_hash": "75AAC0A199E23518AAF2CB2BBAF0B03772289AA461A8E820B70ED0B213F55CA3",
+      "next_validators_hash": "75AAC0A199E23518AAF2CB2BBAF0B03772289AA461A8E820B70ED0B213F55CA3",
+      "consensus_hash": "048091BC7DDC283F77BFBF91D73C44DA58C3DF8A9CBC867405D8B7F3DAADA22F",
+      "app_hash": "722B2650285AFE318554F6FBD4C2564349B14C1813A9B2AB2A15BC38ECC56751",
+      "last_results_hash": "",
+      "evidence_hash": "",
+      "proposer_address": "9309670C2C2DC4020F06E9D4F5F184A0121B17B5"
+    },
+    "data": {
+      "txs": null
+    },
+    "evidence": {
+      "evidence": null
+    },
+    "last_commit": {
+      "height": "1233",
+      "round": "0",
+      "block_id": {
+        "hash": "066E23184AC1AE19D25C986FBE3422132EF03D934A77A010D33D00136591332A",
+        "parts": {
+          "total": "1",
+          "hash": "9E5EE87EDBA06C026456C73F2286E1609860109E384A9A3E615C75463C183BE6"
+        }
+      },
+      "signatures": [
+        {
+          "block_id_flag": 2,
+          "validator_address": "176E25F7B0C100B63C9B3A2D886D93EF11FF3AE8",
+          "timestamp": "2020-04-09T18:48:00.359553211Z",
+          "signature": "oYbC675btbp7y8xh9UjB7GzHh6xdCsAJhpEmuKcCpHu4VJD1pbhcszuLpYWCDv/YF4DnEb0VSfZKkhAMLpcbDg=="
+        },
+        {
+          "block_id_flag": 2,
+          "validator_address": "6CF1CBC687CDFB037745BBBEED920EA34025FF52",
+          "timestamp": "2020-04-09T18:48:00.167018827Z",
+          "signature": "kJyFAvh7rP7J6zVaLoWsgJSKH/8tGHDuNArvTaSf7DH7vr7/yA0b7wJB2/FunURazuX0MCzOQgkXZsvaM4P6Ag=="
+        },
+        {
+          "block_id_flag": 2,
+          "validator_address": "771340B06E0FDBEF42C89316A7C9461C75E2636F",
+          "timestamp": "2020-04-09T18:48:00.246726475Z",
+          "signature": "GtW0eJ1YZNPycYw7Szl9GiEdXvXv+49T5ciVoS5pFhQJkLirCdQk+oGoHe6EiEgoVUsDRgX+1RHadRT9FXyFAA=="
+        },
+        {
+          "block_id_flag": 2,
+          "validator_address": "9309670C2C2DC4020F06E9D4F5F184A0121B17B5",
+          "timestamp": "2020-04-09T18:48:00.175695327Z",
+          "signature": "cGuYan8WqUF+UFdkeyfRYrMk/OSZ5Vhvh/JtyeR/VvrEt+ij/gzCF/8JPktsMUMCL59C1x+/7KEtlnXQBpvGDQ=="
+        },
+        {
+          "block_id_flag": 2,
+          "validator_address": "BCEE21D0C9BB7DC6454966670A140DE9D67D488E",
+          "timestamp": "2020-04-09T18:47:59.559232798Z",
+          "signature": "KdDpXrrOn+e5frneN8JB4XkOUDdPR0PJeqHZayV0gPZ528VSB9hwYf1LjJnYHR/7tH6EUsJ/1M9fky8kio8DAQ=="
+        }
+      ]
+    }
+  }
+}
+```
 
 ## undcli query distribution
 
@@ -568,6 +863,30 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query distribution params
+```
+
+`--output=json` Result:
+```json
+{
+  "community_tax": "0.000000000000000000",
+  "base_proposer_reward": "0.010000000000000000",
+  "bonus_proposer_reward": "0.040000000000000000",
+  "withdraw_addr_enabled": true
+}
+```
+
+`--output=text` Result:
+```yaml
+community_tax: "0.000000000000000000"
+base_proposer_reward: "0.010000000000000000"
+bonus_proposer_reward: "0.040000000000000000"
+withdraw_addr_enabled: true
+```
+
 ## undcli query distribution validator-outstanding-rewards
 
 Query distribution outstanding (un-withdrawn) rewards
@@ -576,11 +895,6 @@ for a validator and all their delegations.
 Usage:
 ```bash
   undcli query distribution validator-outstanding-rewards [validator] [flags]
-```
-
-Example:
-```bash
-  undcli query distribution validator-outstanding-rewards undvaloper1lwjmdnks33xwnmfayc64ycprww49n33mtm92ne
 ```
 
 Flags:
@@ -593,6 +907,27 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query distribution validator-outstanding-rewards undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "denom": "nund",
+    "amount": "1238029579197.350778828167866215"
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- denom: nund
+  amount: "1238029579197.350778828167866215"
+```
+
 ## undcli query distribution commission
 
 Query validator commission rewards from delegators to that validator.
@@ -600,11 +935,6 @@ Query validator commission rewards from delegators to that validator.
 Usage:
 ```bash
   undcli query distribution commission [validator] [flags]
-```
-
-Example:
-```bash
-  undcli query distribution commission undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 ```
 
 Flags:
@@ -617,6 +947,27 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query distribution commission undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "denom": "nund",
+    "amount": "173834351436.585261128618628279"
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- denom: nund
+  amount: "173834351436.585261128618628279"
+```
+
 ## undcli query distribution slashes
 
 Query all slashes of a validator for a given block range.
@@ -624,11 +975,6 @@ Query all slashes of a validator for a given block range.
 Usage:
 ```bash
   undcli query distribution slashes [validator] [start-height] [end-height] [flags]
-```
-
-Example:
-```bash
-  undcli query distribution slashes undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 0 100
 ```
 
 Flags:
@@ -641,6 +987,11 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query distribution slashes undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps 0 100000
+```
+
 ## undcli query distribution rewards
 
 Query all rewards earned by a delegator, optionally restrict to rewards from a single validator.
@@ -648,11 +999,6 @@ Query all rewards earned by a delegator, optionally restrict to rewards from a s
 Usage:
 ```bash
   undcli query distribution rewards [delegator-addr] [<validator-addr>] [flags]
-```
-Example:
-```bash
-  $ undcli query distribution rewards und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
-  $ undcli query distribution rewards und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 ```
 
 Flags:
@@ -665,6 +1011,72 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  $ undcli query distribution rewards und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+  $ undcli query distribution rewards und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+```
+
+`--output=json` Result:
+```json
+{
+  "rewards": [
+    {
+      "validator_address": "undvaloper1duyhqzcgrzjy9y2yvueur2h3e2yqxhjl6yvpze",
+      "reward": [
+        {
+          "denom": "nund",
+          "amount": "83489748666.746008599999999999"
+        }
+      ]
+    },
+    {
+      "validator_address": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg",
+      "reward": [
+        {
+          "denom": "nund",
+          "amount": "76284149221.457684407698415710"
+        }
+      ]
+    },
+    {
+      "validator_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+      "reward": [
+        {
+          "denom": "nund",
+          "amount": "1065310354090.116372019242500000"
+        }
+      ]
+    }
+  ],
+  "total": [
+    {
+      "denom": "nund",
+      "amount": "1225084251978.320065026940915709"
+    }
+  ]
+}
+```
+
+`--output=text` Result:
+```yaml
+- validator_address: undvaloper1duyhqzcgrzjy9y2yvueur2h3e2yqxhjl6yvpze
+  reward:
+  - denom: nund
+    amount: "83489748666.746008599999999999"
+- validator_address: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+  reward:
+  - denom: nund
+    amount: "76284149221.457684407698415710"
+- validator_address: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+  reward:
+  - denom: nund
+    amount: "1065310354090.116372019242500000"
+total:
+- denom: nund
+  amount: "1225084251978.320065026940915709"
+```
+
 ## undcli query distribution community-pool
 
 Query all coins in the community pool which is under Governance control.
@@ -672,11 +1084,6 @@ Query all coins in the community pool which is under Governance control.
 Usage:
 ```bash
   undcli query distribution community-pool [flags]
-```
-
-Example:
-```bash
-  undcli query distribution community-pool
 ```
 
 Flags:
@@ -688,6 +1095,27 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+```bash
+  undcli query distribution community-pool
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "denom": "nund",
+    "amount": "25686887481640.752897315286145048"
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- denom: nund
+  amount: "25686887481640.752897315286145048"
+```
 
 ## undcli query enterprise
 
@@ -735,6 +1163,30 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query enterprise params
+```
+
+`--output=json` Result:
+```json
+{
+  "ent_signers": "und1dz0llvwrhg4ln6ngwl69v9nvvsvj6y52h96ndn",
+  "denom": "nund",
+  "min_Accepts": "1",
+  "decision_time_limit": "84600"
+}
+```
+
+`--output=text` Result:
+```yaml
+ent_signers: und1dz0llvwrhg4ln6ngwl69v9nvvsvj6y52h96ndn
+denom: nund
+min_Accepts: 1
+decision_time_limit: 84600
+```
+
 ## undcli query enterprise orders
 
 Query for a all paginated Enterprise UND purchase orders that match optional filters:
@@ -742,13 +1194,6 @@ Query for a all paginated Enterprise UND purchase orders that match optional fil
 Usage:
 ```bash
   undcli query enterprise orders [flags]
-```
-
-Example:
-```bash
-  $ undcli query enterprise orders --status (raised|accept|reject|complete)
-  $ undcli query enterprise orders --purchaser und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
-  $ undcli query enterprise orders --page=2 --limit=100
 ```
 
 Flags:
@@ -765,6 +1210,83 @@ Flags:
 |`--page`|`int`|pagination page to query for|
 |`--purchaser`|`string`|(optional) filter purchase orders raised by address|
 |`--status`|`string`|(optional) filter purchase orders by status, status: `raised`/`accept`/`reject`/`complete`|
+
+Example:
+```bash
+  $ undcli query enterprise orders --status (raised|accept|reject|complete)
+  $ undcli query enterprise orders --purchaser und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+  $ undcli query enterprise orders --page=1 --limit=100
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "id": "7",
+    "purchaser": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs",
+    "amount": {
+      "denom": "nund",
+      "amount": "10000000000000"
+    },
+    "status": "complete",
+    "raise_time": "1585559505",
+    "decisions": [
+      {
+        "signer": "und1dz0llvwrhg4ln6ngwl69v9nvvsvj6y52h96ndn",
+        "decision": "accept",
+        "decision_time": "1585559536"
+      }
+    ],
+    "completion_time": "1585559541"
+  },
+  {
+    "id": "8",
+    "purchaser": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs",
+    "amount": {
+      "denom": "nund",
+      "amount": "100000000000000"
+    },
+    "status": "complete",
+    "raise_time": "1587117676",
+    "decisions": [
+      {
+        "signer": "und1dz0llvwrhg4ln6ngwl69v9nvvsvj6y52h96ndn",
+        "decision": "accept",
+        "decision_time": "1587117836"
+      }
+    ],
+    "completion_time": "1587117841"
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- purchaseorderid: 7
+  purchaser: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+  amount:
+    denom: nund
+    amount: "10000000000000"
+  status: 4
+  raisedtime: 1585559505
+  decisions:
+  - signer: und1dz0llvwrhg4ln6ngwl69v9nvvsvj6y52h96ndn
+    decision: 2
+    decisiontime: 1585559536
+  completiontime: 1585559541
+- purchaseorderid: 8
+  purchaser: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+  amount:
+    denom: nund
+    amount: "100000000000000"
+  status: 4
+  raisedtime: 1587117676
+  decisions:
+  - signer: und1dz0llvwrhg4ln6ngwl69v9nvvsvj6y52h96ndn
+    decision: 2
+    decisiontime: 1587117836
+  completiontime: 1587117841
+```
 
 ## undcli query enterprise order
 
@@ -785,6 +1307,50 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query enterprise order 8
+```
+
+`--output=json` Result:
+```json
+{
+  "id": "8",
+  "purchaser": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs",
+  "amount": {
+    "denom": "nund",
+    "amount": "100000000000000"
+  },
+  "status": "complete",
+  "raise_time": "1587117676",
+  "decisions": [
+    {
+      "signer": "und1dz0llvwrhg4ln6ngwl69v9nvvsvj6y52h96ndn",
+      "decision": "accept",
+      "decision_time": "1587117836"
+    }
+  ],
+  "completion_time": "1587117841"
+}
+```
+
+`--output=text` Result:
+```yaml
+purchaseorderid: 8
+purchaser: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+amount:
+  denom: nund
+  amount: "100000000000000"
+status: 4
+raisedtime: 1587117676
+decisions:
+- signer: und1dz0llvwrhg4ln6ngwl69v9nvvsvj6y52h96ndn
+  decision: 2
+  decisiontime: 1587117836
+completiontime: 1587117841
+```
+
 ## undcli query enterprise locked
 
 get locked UND for an address
@@ -804,6 +1370,29 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query enterprise locked und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+```
+
+`--output=json` Result:
+```json
+{
+  "owner": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs",
+  "amount": {
+    "denom": "nund",
+    "amount": "99966000000000"
+  }
+}
+```
+
+`--output=text` Result:
+```yaml
+amount:
+  denom: nund
+  amount: "99965000000000"
+``
 ## undcli query enterprise total-locked
 
 Query the current total locked enterprise UND
@@ -823,9 +1412,29 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query enterprise total-locked
+```
+
+`--output=json` Result:
+```json
+{
+  "denom": "nund",
+  "amount": "101520000000000"
+}
+```
+
+`--output=text` Result:
+```yaml
+denom: nund
+amount: "101519000000000"
+```
+
 ## undcli query enterprise total-unlocked
 
-Query the current total unlocked und in circulation
+Query the current total unlocked (liquid) und in circulation
 
 Usage:
 ```bash
@@ -841,6 +1450,26 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+
+```bash
+  undcli query enterprise total-unlocked
+```
+
+`--output=json` Result:
+```json
+{
+  "denom": "nund",
+  "amount": "1002737496556850989"
+}
+```
+
+`--output=text` Result:
+```yaml
+denom: nund
+amount: "1002737498556850989"
+```
 
 ## undcli query enterprise whitelist
 
@@ -861,6 +1490,30 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query enterprise whitelist
+```
+
+`--output=json` Result:
+```json
+[
+  "und1q43fg7x7yn6wv3zxwxjknj7xv7tfqd0ahnc0mv",
+  "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs",
+  "und15s4ec3s97tu4pstk8tq86l5ues4dxnmadqmrjl",
+  "und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly"
+]
+```
+
+`--output=text` Result:
+```yaml
+- und1q43fg7x7yn6wv3zxwxjknj7xv7tfqd0ahnc0mv
+- und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+- und15s4ec3s97tu4pstk8tq86l5ues4dxnmadqmrjl
+- und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly
+```
+
 ## undcli query enterprise whitelisted
 
 check if given address is whitelested for purchase orders
@@ -880,6 +1533,22 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query enterprise whitelisted und1mtxp3jh5ytygjfpfyx4ell495zc2m4k8ft8uly
+```
+
+`--output=json` Result:
+```json
+true
+```
+
+`--output=text` Result:
+```yaml
+true
+```
+
 ## undcli query evidence
 
 Query for specific submitted evidence by hash or query for all (paginated) evidence.
@@ -888,12 +1557,6 @@ Usage:
 ```bash
   undcli query evidence [flags]
   undcli query evidence [command]
-```
-
-Example:
-```bash
-  $ undcli query evidence DF0C23E8634E480F84B9D5674A7CDC9816466DEC28A3358F73260F68D28D7660
-  $ undcli query evidence --page=2 --limit=50
 ```
 
 Available Commands:
@@ -931,6 +1594,24 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+
+```bash
+  undcli query evidence params
+```
+
+`--output=json` Result:
+```json
+{
+  "max_evidence_age": "120000000000"
+}
+```
+
+`--output=text` Result:
+```yaml
+max_evidence_age: 2m0s
+```
 
 ## undcli query gov
 
@@ -971,11 +1652,6 @@ Usage:
   undcli query gov proposal [proposal-id] [flags]
 ```
 
-Example:
-```bash
-  undcli query gov proposal 1
-```
-
 Flags:
 | Flag | Type | Description |
 |------|------|-------------|
@@ -986,7 +1662,82 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query gov proposal 9
+```
 
+`--output=json` Result:
+```json
+{
+  "content": {
+    "type": "cosmos-sdk/ParameterChangeProposal",
+    "value": {
+      "title": "Slashing parameters",
+      "description": "change the signed blocks window from 100 to 10,000, and minimum signed requirement from 50% to 5%",
+      "changes": [
+        {
+          "subspace": "slashing",
+          "key": "SignedBlocksWindow",
+          "value": "\"10000\""
+        },
+        {
+          "subspace": "slashing",
+          "key": "MinSignedPerWindow",
+          "value": "\"0.050000000000000000\""
+        }
+      ]
+    }
+  },
+  "id": "9",
+  "proposal_status": "Passed",
+  "final_tally_result": {
+    "yes": "3714680003497661",
+    "abstain": "0",
+    "no": "0",
+    "no_with_veto": "0"
+  },
+  "submit_time": "2020-04-09T09:58:59.281924052Z",
+  "deposit_end_time": "2020-04-11T09:58:59.281924052Z",
+  "total_deposit": [
+    {
+      "denom": "nund",
+      "amount": "1000000000000"
+    }
+  ],
+  "voting_start_time": "2020-04-09T09:58:59.281924052Z",
+  "voting_end_time": "2020-04-11T09:58:59.281924052Z"
+}
+```
+
+`--output=text` Result:
+```yaml
+content:
+  title: Slashing parameters
+  description: change the signed blocks window from 100 to 10,000, and minimum signed
+    requirement from 50% to 5%
+  changes:
+  - subspace: slashing
+    key: SignedBlocksWindow
+    value: '"10000"'
+  - subspace: slashing
+    key: MinSignedPerWindow
+    value: '"0.050000000000000000"'
+id: 9
+proposal_status: 3
+final_tally_result:
+  "yes": "3714680003497661"
+  abstain: "0"
+  "no": "0"
+  no_with_veto: "0"
+submit_time: 2020-04-09T09:58:59.281924052Z
+deposit_end_time: 2020-04-11T09:58:59.281924052Z
+total_deposit:
+- denom: nund
+  amount: "1000000000000"
+voting_start_time: 2020-04-09T09:58:59.281924052Z
+voting_end_time: 2020-04-11T09:58:59.281924052Z
+```
 ## undcli query gov proposals
 
 Query for a all paginated proposals that match optional filters:
@@ -994,14 +1745,6 @@ Query for a all paginated proposals that match optional filters:
 Usage:
 ```bash
   undcli query gov proposals [flags]
-```
-
-Example:
-```bash
-  $ undcli query gov proposals --depositor und1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
-  $ undcli query gov proposals --voter und1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
-  $ undcli query gov proposals --status (DepositPeriod|VotingPeriod|Passed|Rejected)
-  $ undcli query gov proposals --page=2 --limit=100
 ```
 
 Flags:
@@ -1020,6 +1763,78 @@ Flags:
 |`--status`|`string`|(optional) filter proposals by proposal status, status: `deposit_period`/`voting_period`/`passed`/`rejected`|
 |`--voter`|`string`|(optional) filter by proposals voted on by voted|
 
+Example:
+```bash
+  $ undcli query gov proposals --depositor und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce
+  $ undcli query gov proposals --status (DepositPeriod|VotingPeriod|Passed|Rejected)
+  $ undcli query gov proposals --page=1 --limit=100
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "content": {
+      "type": "cosmos-sdk/CommunityPoolSpendProposal",
+      "value": {
+        "title": "Community Pool Spend",
+        "description": "Send community pool UND to the TN Faucet",
+        "recipient": "und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car",
+        "amount": [
+          {
+            "denom": "nund",
+            "amount": "25000000000000"
+          }
+        ]
+      }
+    },
+    "id": "7",
+    "proposal_status": "Rejected",
+    "final_tally_result": {
+      "yes": "0",
+      "abstain": "0",
+      "no": "0",
+      "no_with_veto": "0"
+    },
+    "submit_time": "2020-03-20T12:22:18.684400772Z",
+    "deposit_end_time": "2020-03-22T12:22:18.684400772Z",
+    "total_deposit": [
+      {
+        "denom": "nund",
+        "amount": "1000000000000"
+      }
+    ],
+    "voting_start_time": "2020-03-20T12:22:18.684400772Z",
+    "voting_end_time": "2020-03-22T12:22:18.684400772Z"
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- content:
+    title: Community Pool Spend
+    description: Send community pool UND to the TN Faucet
+    recipient: und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car
+    amount:
+    - denom: nund
+      amount: "25000000000000"
+  id: 7
+  proposal_status: 4
+  final_tally_result:
+    "yes": "0"
+    abstain: "0"
+    "no": "0"
+    no_with_veto: "0"
+  submit_time: 2020-03-20T12:22:18.684400772Z
+  deposit_end_time: 2020-03-22T12:22:18.684400772Z
+  total_deposit:
+  - denom: nund
+    amount: "1000000000000"
+  voting_start_time: 2020-03-20T12:22:18.684400772Z
+  voting_end_time: 2020-03-22T12:22:18.684400772Z
+```
+
 ## undcli query gov vote
 
 Query details for a single vote on a proposal given its identifier.
@@ -1027,11 +1842,6 @@ Query details for a single vote on a proposal given its identifier.
 Usage:
 ```bash
   undcli query gov vote [proposal-id] [voter-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query gov vote 1 cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
 ```
 
 Flags:
@@ -1044,6 +1854,26 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query gov vote 9 und1nkh2dteta8drxntqp646sr6vz74lt9w9yc60pd
+```
+
+`--output=json` Result:
+```json
+{
+  "proposal_id": "9",
+  "voter": "und1nkh2dteta8drxntqp646sr6vz74lt9w9yc60pd",
+  "option": "Yes"
+}
+```
+
+`--output=text` Result:
+```yaml
+proposal_id: 9
+voter: und1nkh2dteta8drxntqp646sr6vz74lt9w9yc60pd
+option: 1
+```
 
 ## undcli query gov votes
 
@@ -1052,12 +1882,6 @@ Query vote details for a single proposal by its identifier.
 Usage:
 ```bash
   undcli query gov votes [proposal-id] [flags]
-```
-
-Example:
-```bash
-  $ undcli query gov votes 1
-  $ undcli query gov votes 1 --page=2 --limit=100
 ```
 
 Flags:
@@ -1072,6 +1896,30 @@ Flags:
 |`--limit`|`int`|pagination limit to query for (default 100)|
 |`--page`|`int`|pagination page to query for|
 
+Example:
+```bash
+  $ undcli query gov votes 9
+  $ undcli query gov votes 9 --page=1 --limit=100
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "proposal_id": "9",
+    "voter": "und1nkh2dteta8drxntqp646sr6vz74lt9w9yc60pd",
+    "option": "Yes"
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- proposal_id: 9
+  voter: und1nkh2dteta8drxntqp646sr6vz74lt9w9yc60pd
+  option: 1
+```
+
 ## undcli query gov param
 
 Query the all the parameters for the governance process.
@@ -1079,13 +1927,6 @@ Query the all the parameters for the governance process.
 Usage:
 ```bash
   undcli query gov param [param-type] [flags]
-```
-
-Example:
-```bash
-  $ undcli query gov param voting
-  $ undcli query gov param tallying
-  $ undcli query gov param deposit
 ```
 
 Flags:
@@ -1098,6 +1939,24 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  $ undcli query gov param voting
+  $ undcli query gov param tallying
+  $ undcli query gov param deposit
+```
+
+`--output=json` Result:
+```json
+{
+  "voting_period": "172800000000000"
+}
+```
+
+`--output=text` Result:
+```yaml
+voting_period: 48h0m0s
+```
 
 ## undcli query gov params
 
@@ -1106,11 +1965,6 @@ Query the all the parameters for the governance process.
 Usage:
 ```bash
   undcli query gov params [flags]
-```
-
-Example:
-```bash
-  undcli query gov params
 ```
 
 Flags:
@@ -1123,6 +1977,49 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query gov params
+```
+
+`--output=json` Result:
+```json
+{
+  "voting_params": {
+    "voting_period": "172800000000000"
+  },
+  "tally_params": {
+    "quorum": "0.334000000000000000",
+    "threshold": "0.500000000000000000",
+    "veto": "0.334000000000000000"
+  },
+  "deposit_params": {
+    "min_deposit": [
+      {
+        "denom": "nund",
+        "amount": "1000000000000"
+      }
+    ],
+    "max_deposit_period": "172800000000000"
+  }
+}
+```
+
+`--output=text` Result:
+```yaml
+voting_params:
+  voting_period: 48h0m0s
+tally_params:
+  quorum: "0.334000000000000000"
+  threshold: "0.500000000000000000"
+  veto: "0.334000000000000000"
+deposit_parmas:
+  min_deposit:
+  - denom: nund
+    amount: "1000000000000"
+  max_deposit_period: 48h0m0s
+```
+
 ## undcli query gov proposer
 
 Query which address proposed a proposal with a given ID.
@@ -1130,11 +2027,6 @@ Query which address proposed a proposal with a given ID.
 Usage:
 ```bash
   undcli query gov proposer [proposal-id] [flags]
-```
-
-Example:
-```bash
-  undcli query gov proposer 1
 ```
 
 Flags:
@@ -1147,6 +2039,24 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query gov proposer 10
+```
+
+`--output=json` Result:
+```json
+{
+  "proposal_id": "10",
+  "proposer": "und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce"
+}
+```
+
+`--output=text` Result:
+```yaml
+proposal_id: 10
+proposer: und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce
+```
 
 ## undcli query gov deposit
 
@@ -1155,11 +2065,6 @@ Query details for a single proposal deposit on a proposal by its identifier.
 Usage:
 ```bash
   undcli query gov deposit [proposal-id] [depositer-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query gov deposit 1 und1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
 ```
 
 Flags:
@@ -1172,6 +2077,33 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query gov deposit 10 und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce
+```
+
+`--output=json` Result:
+```json
+{
+  "proposal_id": "10",
+  "depositor": "und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce",
+  "amount": [
+    {
+      "denom": "nund",
+      "amount": "1000000000000"
+    }
+  ]
+}
+```
+
+`--output=text` Result:
+```yaml
+proposal_id: 10
+depositor: und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce
+amount:
+- denom: nund
+  amount: "1000000000000"
+```
 
 ## undcli query gov deposits
 
@@ -1181,11 +2113,6 @@ You can find the proposal-id by running "undcli query gov proposals".
 Usage:
 ```bash
   undcli query gov deposits [proposal-id] [flags]
-```
-
-Example:
-```bash
-  undcli query gov deposits 1
 ```
 
 Flags:
@@ -1198,6 +2125,35 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query gov deposits 10
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "proposal_id": "10",
+    "depositor": "und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce",
+    "amount": [
+      {
+        "denom": "nund",
+        "amount": "1000000000000"
+      }
+    ]
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- proposal_id: 10
+  depositor: und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce
+  amount:
+  - denom: nund
+    amount: "1000000000000"
+```
 
 ## undcli query gov tally
 
@@ -1209,11 +2165,6 @@ Usage:
   undcli query gov tally [proposal-id] [flags]
 ```
 
-Example:
-```bash
-  undcli query gov tally 1
-```
-
 Flags:
 | Flag | Type | Description |
 |------|------|-------------|
@@ -1223,6 +2174,29 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+```bash
+  undcli query gov tally 9
+```
+
+`--output=json` Result:
+```json
+{
+  "yes": "3714680003497661",
+  "abstain": "0",
+  "no": "0",
+  "no_with_veto": "0"
+}
+```
+
+`--output=text` Result:
+```yaml
+"yes": "3714680003497661"
+abstain: "0"
+"no": "0"
+no_with_veto: "0"
+```
 
 ## undcli query slashing
 
@@ -1254,11 +2228,6 @@ Usage:
   undcli query slashing signing-info [validator-conspub] [flags]
 ```
 
-Example:
-```bash
-  undcli query slashing signing-info undvalconspub1zcjduepqfhvwcmt7p06fvdgexxhmz0l8c7sgswl7ulv7aulk364x4g5xsw7sr0k2g5
-```
-
 Flags:
 | Flag | Type | Description |
 |------|------|-------------|
@@ -1268,6 +2237,11 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+```bash
+  undcli query slashing signing-info undvalconspub1addwnpepqddjl38kr5smtcvcgtwen6z373xm8hntdn62905j607l7h3cef5863cwhnf
+```
 
 ## undcli query slashing params
 
@@ -1287,6 +2261,32 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+
+```bash
+  undcli query slashing params
+```
+
+`--output=json` Result:
+```json
+{
+  "signed_blocks_window": "10000",
+  "min_signed_per_window": "0.050000000000000000",
+  "downtime_jail_duration": "600000000000",
+  "slash_fraction_double_sign": "0.050000000000000000",
+  "slash_fraction_downtime": "0.010000000000000000"
+}
+```
+
+`--output=text` Result:
+```yaml
+signed_blocks_window: 10000
+min_signed_per_window: "0.050000000000000000"
+downtime_jail_duration: 10m0s
+slash_fraction_double_sign: "0.050000000000000000"
+slash_fraction_downtime: "0.010000000000000000"
+```
 
 ## undcli query staking
 
@@ -1330,11 +2330,6 @@ Usage:
   undcli query staking delegation [delegator-addr] [validator-addr] [flags]
 ```
 
-Example:
-```bash
-  undcli query staking delegation und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
-```
-
 Flags:
 | Flag | Type | Description |
 |------|------|-------------|
@@ -1345,6 +2340,35 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking delegation und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+```
+
+`--output=json` Result:
+```json
+{
+  "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+  "validator_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+  "shares": "1315507652899786.664739529784222192",
+  "balance": {
+    "denom": "nund",
+    "amount": "1263671402500000"
+  }
+}
+```
+
+`--output=text` Result:
+```yaml
+delegation:
+  delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+  validator_address: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+  shares: "1315507652899786.664739529784222192"
+balance:
+  denom: nund
+  amount: "1263671402500000"
+```
+
 ## undcli query staking delegations
 
 Query delegations for an individual delegator on all validators.
@@ -1352,11 +2376,6 @@ Query delegations for an individual delegator on all validators.
 Usage:
 ```bash
   undcli query staking delegations [delegator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking delegations und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
 ```
 
 Flags:
@@ -1369,6 +2388,69 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking delegations und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_address": "undvaloper1duyhqzcgrzjy9y2yvueur2h3e2yqxhjl6yvpze",
+    "shares": "107080910111213.141516171819202122",
+    "balance": {
+      "denom": "nund",
+      "amount": "104950000000000"
+    }
+  },
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_address": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg",
+    "shares": "106215728125200.313827203266684784",
+    "balance": {
+      "denom": "nund",
+      "amount": "96059601007661"
+    }
+  },
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+    "shares": "1315507652899786.664739529784222192",
+    "balance": {
+      "denom": "nund",
+      "amount": "1263671402500000"
+    }
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- delegation:
+    delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    validator_address: undvaloper1duyhqzcgrzjy9y2yvueur2h3e2yqxhjl6yvpze
+    shares: "107080910111213.141516171819202122"
+  balance:
+    denom: nund
+    amount: "104950000000000"
+- delegation:
+    delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    validator_address: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+    shares: "106215728125200.313827203266684784"
+  balance:
+    denom: nund
+    amount: "96059601007661"
+- delegation:
+    delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    validator_address: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+    shares: "1315507652899786.664739529784222192"
+  balance:
+    denom: nund
+    amount: "1263671402500000"
+```
+
 ## undcli query staking unbonding-delegation
 
 Query unbonding delegations for an individual delegator on an individual validator.
@@ -1376,11 +2458,6 @@ Query unbonding delegations for an individual delegator on an individual validat
 Usage:
 ```bash
   undcli query staking unbonding-delegation [delegator-addr] [validator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking unbonding-delegation und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 ```
 
 Flags:
@@ -1393,6 +2470,11 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking unbonding-delegation und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+```
+
 ## undcli query staking unbonding-delegations
 
 Query unbonding delegations for an individual delegator.
@@ -1400,11 +2482,6 @@ Query unbonding delegations for an individual delegator.
 Usage:
 ```bash
   undcli query staking unbonding-delegations [delegator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking unbonding-delegation und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
 ```
 
 Flags:
@@ -1417,6 +2494,40 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking unbonding-delegations  und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_address": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg",
+    "entries": [
+      {
+        "creation_height": "117202",
+        "completion_time": "2020-05-08T11:26:07.375057672Z",
+        "initial_balance": "10000000000",
+        "balance": "10000000000"
+      }
+    ]
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+  validator_address: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+  entries:
+  - creation_height: 117202
+    completion_time: 2020-05-08T11:26:07.375057672Z
+    initial_balance: "10000000000"
+    balance: "10000000000"
+```
+
 ## undcli query staking redelegation
 
 Query a redelegation record for an individual delegator between a source and destination validator.
@@ -1424,11 +2535,6 @@ Query a redelegation record for an individual delegator between a source and des
 Usage:
 ```bash
   undcli query staking redelegation [delegator-addr] [src-validator-addr] [dst-validator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking redelegation und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p undvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 ```
 
 Flags:
@@ -1441,6 +2547,47 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking redelegation und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_src_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+    "validator_dst_address": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg",
+    "entries": [
+      {
+        "creation_height": 117259,
+        "completion_time": "2020-05-08T11:31:30.934863875Z",
+        "initial_balance": "10000000000",
+        "shares_dst": "11057273506.344128034033086712",
+        "balance": "10000000000"
+      }
+    ]
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- redelegation:
+    delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    validator_src_address: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+    validator_dst_address: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+    entries: []
+  entries:
+  - redelegationentry:
+      creation_height: 117259
+      completion_time: 2020-05-08T11:31:30.934863875Z
+      initial_balance: "10000000000"
+      shares_dst: "11057273506.344128034033086712"
+    balance: "10000000000"
+```
+
 ## undcli query staking redelegations
 
 Query all redelegation records for an individual delegator.
@@ -1448,11 +2595,6 @@ Query all redelegation records for an individual delegator.
 Usage:
 ```bash
   undcli query staking redelegations [delegator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking redelegation und1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
 ```
 
 Flags:
@@ -1465,6 +2607,47 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking redelegations und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_src_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+    "validator_dst_address": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg",
+    "entries": [
+      {
+        "creation_height": 117259,
+        "completion_time": "2020-05-08T11:31:30.934863875Z",
+        "initial_balance": "10000000000",
+        "shares_dst": "11057273506.344128034033086712",
+        "balance": "10000000000"
+      }
+    ]
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- redelegation:
+    delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    validator_src_address: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+    validator_dst_address: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+    entries: []
+  entries:
+  - redelegationentry:
+      creation_height: 117259
+      completion_time: 2020-05-08T11:31:30.934863875Z
+      initial_balance: "10000000000"
+      shares_dst: "11057273506.344128034033086712"
+    balance: "10000000000"
+```
+
 ## undcli query staking validator
 
 Query details about an individual validator.
@@ -1472,11 +2655,6 @@ Query details about an individual validator.
 Usage:
 ```bash
   undcli query staking validator [validator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking validator undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 ```
 
 Flags:
@@ -1488,6 +2666,67 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+```bash
+  undcli query staking validator undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+```
+
+`--output=json` Result:
+```json
+{
+  "operator_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+  "consensus_pubkey": "undvalconspub1zcjduepq6yq7drzefkavsrxhxk69cy63tj3r7trq4qgvksre47266gpfpevqz8n8h5",
+  "jailed": false,
+  "status": 2,
+  "tokens": "1263661402500000",
+  "delegator_shares": "1315497242696229.812572300815615504",
+  "description": {
+    "moniker": "SerenityTN",
+    "identity": "",
+    "website": "",
+    "security_contact": "",
+    "details": "Serenity TestNet"
+  },
+  "unbonding_height": "567798",
+  "unbonding_time": "2020-04-21T02:42:15.384696258Z",
+  "commission": {
+    "commission_rates": {
+      "rate": "0.050000000000000000",
+      "max_rate": "0.100000000000000000",
+      "max_change_rate": "0.010000000000000000"
+    },
+    "update_time": "2020-03-19T15:40:11.555272561Z"
+  },
+  "min_self_delegation": "1"
+}
+```
+
+`--output=text` Result:
+```yaml
+|
+  operatoraddress: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+  conspubkey: undvalconspub1zcjduepq6yq7drzefkavsrxhxk69cy63tj3r7trq4qgvksre47266gpfpevqz8n8h5
+  jailed: false
+  status: 2
+  tokens: "1263661402500000"
+  delegatorshares: "1315497242696229.812572300815615504"
+  description:
+    moniker: SerenityTN
+    identity: ""
+    website: ""
+    security_contact: ""
+    details: Serenity TestNet
+  unbondingheight: 567798
+  unbondingcompletiontime: 2020-04-21T02:42:15.384696258Z
+  commission:
+    commission_rates:
+      rate: "0.050000000000000000"
+      max_rate: "0.100000000000000000"
+      max_change_rate: "0.010000000000000000"
+    update_time: 2020-03-19T15:40:11.555272561Z
+  minselfdelegation: "1"
+```
 
 ## undcli query staking validators
 
@@ -1508,6 +2747,120 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query staking validators
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "operator_address": "undvaloper1z575nxpemg4dtcrv0rd2u5pwctjxjzsyppgfj4",
+    "consensus_pubkey": "undvalconspub1zcjduepqng6dka9glcps04vq67hv46hel3xklmpl00sknek67fdpy4z40hvs5krlz0",
+    "jailed": false,
+    "status": 2,
+    "tokens": "348987245313000",
+    "delegator_shares": "356073099983000.000000000000000000",
+    "description": {
+      "moniker": "集体计算机",
+      "identity": "",
+      "website": "",
+      "security_contact": "",
+      "details": ""
+    },
+    "unbonding_height": "97634",
+    "unbonding_time": "2020-05-07T04:00:33.807902347Z",
+    "commission": {
+      "commission_rates": {
+        "rate": "0.400000000000000000",
+        "max_rate": "1.000000000000000000",
+        "max_change_rate": "0.100000000000000000"
+      },
+      "update_time": "2020-03-30T06:18:32.22789609Z"
+    },
+    "min_self_delegation": "1"
+  },
+  {
+    "operator_address": "undvaloper19enk9tmm98sa6yzk4pwarxamkkc0nth9p84vny",
+    "consensus_pubkey": "undvalconspub1zcjduepqger0ht3yc4aqylwjlatmmur629wkunqg8jhy9zml2nhe3spp0ajqsar4p0",
+    "jailed": false,
+    "status": 2,
+    "tokens": "297974677770000",
+    "delegator_shares": "300984523000000.000000000000000000",
+    "description": {
+      "moniker": "UNDEurope",
+      "identity": "",
+      "website": "",
+      "security_contact": "",
+      "details": ""
+    },
+    "unbonding_height": "591414",
+    "unbonding_time": "2020-04-22T12:07:32.72068041Z",
+    "commission": {
+      "commission_rates": {
+        "rate": "0.100000000000000000",
+        "max_rate": "1.000000000000000000",
+        "max_change_rate": "0.100000000000000000"
+      },
+      "update_time": "2020-01-25T05:39:47.228048938Z"
+    },
+    "min_self_delegation": "1"
+  },
+  ...
+]
+```
+
+`--output=text` Result:
+```yaml
+- |
+  operatoraddress: undvaloper1z575nxpemg4dtcrv0rd2u5pwctjxjzsyppgfj4
+  conspubkey: undvalconspub1zcjduepqng6dka9glcps04vq67hv46hel3xklmpl00sknek67fdpy4z40hvs5krlz0
+  jailed: false
+  status: 2
+  tokens: "348987245313000"
+  delegatorshares: "356073099983000.000000000000000000"
+  description:
+    moniker: 集体计算机
+    identity: ""
+    website: ""
+    security_contact: ""
+    details: ""
+  unbondingheight: 97634
+  unbondingcompletiontime: 2020-05-07T04:00:33.807902347Z
+  commission:
+    commission_rates:
+      rate: "0.400000000000000000"
+      max_rate: "1.000000000000000000"
+      max_change_rate: "0.100000000000000000"
+    update_time: 2020-03-30T06:18:32.22789609Z
+  minselfdelegation: "1"
+- |
+  operatoraddress: undvaloper19enk9tmm98sa6yzk4pwarxamkkc0nth9p84vny
+  conspubkey: undvalconspub1zcjduepqger0ht3yc4aqylwjlatmmur629wkunqg8jhy9zml2nhe3spp0ajqsar4p0
+  jailed: false
+  status: 2
+  tokens: "297974677770000"
+  delegatorshares: "300984523000000.000000000000000000"
+  description:
+    moniker: UNDEurope
+    identity: ""
+    website: ""
+    security_contact: ""
+    details: ""
+  unbondingheight: 591414
+  unbondingcompletiontime: 2020-04-22T12:07:32.72068041Z
+  commission:
+    commission_rates:
+      rate: "0.100000000000000000"
+      max_rate: "1.000000000000000000"
+      max_change_rate: "0.100000000000000000"
+    update_time: 2020-01-25T05:39:47.228048938Z
+  minselfdelegation: "1"
+  ...
+```
+
 ## undcli query staking delegations-to
 
 Query delegations on an individual validator.
@@ -1515,11 +2868,6 @@ Query delegations on an individual validator.
 Usage:
 ```bash
   undcli query staking delegations-to [validator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking delegations-to undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 ```
 
 Flags:
@@ -1532,6 +2880,37 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking delegations-to undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+    "shares": "1315497242696229.812572300815615504",
+    "balance": {
+      "denom": "nund",
+      "amount": "1263661402500000"
+    }
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- delegation:
+    delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    validator_address: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+    shares: "1315497242696229.812572300815615504"
+  balance:
+    denom: nund
+    amount: "1263661402500000"
+```
+
 ## undcli query staking unbonding-delegations-from
 
 Query delegations that are unbonding _from_ a validator.
@@ -1539,11 +2918,6 @@ Query delegations that are unbonding _from_ a validator.
 Usage:
 ```bash
   undcli query staking unbonding-delegations-from [validator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking unbonding-delegations-from undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 ```
 
 Flags:
@@ -1556,6 +2930,40 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking unbonding-delegations-from undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_address": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg",
+    "entries": [
+      {
+        "creation_height": "117202",
+        "completion_time": "2020-05-08T11:26:07.375057672Z",
+        "initial_balance": "10000000000",
+        "balance": "10000000000"
+      }
+    ]
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+  validator_address: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+  entries:
+  - creation_height: 117202
+    completion_time: 2020-05-08T11:26:07.375057672Z
+    initial_balance: "10000000000"
+    balance: "10000000000"
+```
+
 ## undcli query staking redelegations-from
 
 Query delegations that are redelegating _from_ a validator.
@@ -1563,11 +2971,6 @@ Query delegations that are redelegating _from_ a validator.
 Usage:
 ```bash
   undcli query staking redelegations-from [validator-addr] [flags]
-```
-
-Example:
-```bash
-  undcli query staking redelegations-from undvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 ```
 
 Flags:
@@ -1580,6 +2983,47 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query staking redelegations-from undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+    "validator_src_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+    "validator_dst_address": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg",
+    "entries": [
+      {
+        "creation_height": 117259,
+        "completion_time": "2020-05-08T11:31:30.934863875Z",
+        "initial_balance": "10000000000",
+        "shares_dst": "11057273506.344128034033086712",
+        "balance": "10000000000"
+      }
+    ]
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- redelegation:
+    delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    validator_src_address: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+    validator_dst_address: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+    entries: []
+  entries:
+  - redelegationentry:
+      creation_height: 117259
+      completion_time: 2020-05-08T11:31:30.934863875Z
+      initial_balance: "10000000000"
+      shares_dst: "11057273506.344128034033086712"
+    balance: "10000000000"
+```
+
 ## undcli query staking historical-info
 
 Query historical info at given height.
@@ -1587,11 +3031,6 @@ Query historical info at given height.
 Usage:
 ```bash
   undcli query staking historical-info [height] [flags]
-```
-
-Example:
-```bash
-  undcli query staking historical-info 5
 ```
 
 Flags:
@@ -1603,6 +3042,11 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+```bash
+  undcli query staking historical-info 5
+```
 
 ## undcli query staking params
 
@@ -1623,6 +3067,32 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query staking params
+```
+
+`--output=json` Result:
+```json
+{
+  "unbonding_time": "1814400000000000",
+  "max_validators": 96,
+  "max_entries": 7,
+  "historical_entries": 3,
+  "bond_denom": "nund"
+}
+```
+
+`--output=text` Result:
+```yaml
+unbonding_time: 504h0m0s
+max_validators: 96
+max_entries: 7
+historical_entries: 3
+bond_denom: nund
+```
+
 ## undcli query staking pool
 
 Query values for amounts stored in the staking pool.
@@ -1641,6 +3111,26 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+
+```bash
+  undcli query staking pool
+```
+
+`--output=json` Result:
+```json
+{
+  "not_bonded_tokens": "171571803499999",
+  "bonded_tokens": "5397623673233001"
+}
+```
+
+`--output=text` Result:
+```yaml
+not_bonded_tokens: "171571803499999"
+bonded_tokens: "5397623673233001"
+```
 
 ## undcli query supply
 
@@ -1665,10 +3155,6 @@ Usage:
 ```bash
   undcli query supply [flags]
 ```
-Example:
-```bash
-  undcli query supply
-```
 
 Flags:
 | Flag | Type | Description |
@@ -1680,6 +3166,28 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+```bash
+  undcli query supply
+```
+
+`--output=json` Result:
+```json
+{
+  "denom": "nund",
+  "amount": "1002737561556850989",
+  "locked": "101454000000000",
+  "total": "1002839015556850989"
+}
+```
+
+`--output=text` Result:
+```yaml
+denom: nund
+amount: 1002737561556850989
+locked: 101454000000000
+total: 1002839015556850989
+```
 
 ## undcli query tendermint-validator-set
 
@@ -1700,6 +3208,107 @@ Flags:
 |`--page`|`int`|Query a specific page of paginated results|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query tendermint-validator-set
+```
+
+`--output=json` Result:
+```json
+{
+  "block_height": "117406",
+  "validators": [
+    {
+      "address": "undvalcons1zahztaascyqtv0ym8gkcsmvnaugl7whg8slsux",
+      "pub_key": "undvalconspub1zcjduepqng6dka9glcps04vq67hv46hel3xklmpl00sknek67fdpy4z40hvs5krlz0",
+      "proposer_priority": "-405676367",
+      "voting_power": "348987245"
+    },
+    {
+      "address": "undvalcons1dncuh358ehasxa69hwlwmysw5dqztl6jcukydq",
+      "pub_key": "undvalconspub1zcjduepq6ftvp4cw0t89swuf6wmj7dh9j3khjjxja96qrmn85uc0metnh5zsyc4aas",
+      "proposer_priority": "-573761026",
+      "voting_power": "350004403"
+    },
+    {
+      "address": "undvalcons1wuf5pvrwpld77skgjvt20j2xr367ycm0f55avf",
+      "pub_key": "undvalconspub1zcjduepqf25xmd7q00x0mxekuq96uhrye6tpm2a8l9n5ehvlr2te2zkk7past6g4lu",
+      "proposer_priority": "1658834369",
+      "voting_power": "2502048332"
+    },
+    {
+      "address": "undvalcons1jvykwrpv9hzqyrcxa820tuvy5qfpk9a47utec8",
+      "pub_key": "undvalconspub1zcjduepq6yq7drzefkavsrxhxk69cy63tj3r7trq4qgvksre47266gpfpevqz8n8h5",
+      "proposer_priority": "3531853998",
+      "voting_power": "1263661402"
+    },
+    {
+      "address": "undvalcons1n75a4hwv8cn3smm8r6e6ssgpks82700w9c763t",
+      "pub_key": "undvalconspub1zcjduepqrcgsx6380dpcgdvns8mdcexd402dpe06ewvk4aphjvdt267tg8kqhu4umx",
+      "proposer_priority": "880424921",
+      "voting_power": "490050000"
+    },
+    {
+      "address": "undvalcons1hnhzr5xfhd7uv32fvens59qda8t86jywd88prz",
+      "pub_key": "undvalconspub1zcjduepqger0ht3yc4aqylwjlatmmur629wkunqg8jhy9zml2nhe3spp0ajqsar4p0",
+      "proposer_priority": "-552115870",
+      "voting_power": "297974677"
+    },
+    {
+      "address": "undvalcons1ezskagtc4lmr6wsnp6tvgztkf2scq8rwvrhrez",
+      "pub_key": "undvalconspub1zcjduepq2d87vxx5g7px5hwdx07mvfnj24rt9j52cs4j49glf388jlwyjcxs2h4fau",
+      "proposer_priority": "-2185936894",
+      "voting_power": "45211448"
+    },
+    {
+      "address": "undvalcons170cp2v6pnwefvayxtrjh6u3kftprhd9ud5jy0c",
+      "pub_key": "undvalconspub1zcjduepq7ayhnappxxzwm23l4gu3zl7s2tggdwaw4mxydf4uq5j5r7l35p3qzla3l5",
+      "proposer_priority": "-2353623126",
+      "voting_power": "99686164"
+    }
+  ]
+}
+```
+
+`--output=text` Result:
+```yaml
+blockheight: 117412
+validators:
+- address: undvalcons1zahztaascyqtv0ym8gkcsmvnaugl7whg8slsux
+  pubkey: undvalconspub1zcjduepqng6dka9glcps04vq67hv46hel3xklmpl00sknek67fdpy4z40hvs5krlz0
+  proposerpriority: 2037234348
+  votingpower: 348987245
+- address: undvalcons1dncuh358ehasxa69hwlwmysw5dqztl6jcukydq
+  pubkey: undvalconspub1zcjduepq6ftvp4cw0t89swuf6wmj7dh9j3khjjxja96qrmn85uc0metnh5zsyc4aas
+  proposerpriority: 1876269795
+  votingpower: 350004403
+- address: undvalcons1wuf5pvrwpld77skgjvt20j2xr367ycm0f55avf
+  pubkey: undvalconspub1zcjduepqf25xmd7q00x0mxekuq96uhrye6tpm2a8l9n5ehvlr2te2zkk7past6g4lu
+  proposerpriority: -2417321991
+  votingpower: 2502048332
+- address: undvalcons1jvykwrpv9hzqyrcxa820tuvy5qfpk9a47utec8
+  pubkey: undvalconspub1zcjduepq6yq7drzefkavsrxhxk69cy63tj3r7trq4qgvksre47266gpfpevqz8n8h5
+  proposerpriority: 1582236470
+  votingpower: 1263661402
+- address: undvalcons1n75a4hwv8cn3smm8r6e6ssgpks82700w9c763t
+  pubkey: undvalconspub1zcjduepqrcgsx6380dpcgdvns8mdcexd402dpe06ewvk4aphjvdt267tg8kqhu4umx
+  proposerpriority: -1086848750
+  votingpower: 490050000
+- address: undvalcons1hnhzr5xfhd7uv32fvens59qda8t86jywd88prz
+  pubkey: undvalconspub1zcjduepqger0ht3yc4aqylwjlatmmur629wkunqg8jhy9zml2nhe3spp0ajqsar4p0
+  proposerpriority: 1533706869
+  votingpower: 297974677
+- address: undvalcons1ezskagtc4lmr6wsnp6tvgztkf2scq8rwvrhrez
+  pubkey: undvalconspub1zcjduepq2d87vxx5g7px5hwdx07mvfnj24rt9j52cs4j49glf388jlwyjcxs2h4fau
+  proposerpriority: -1869456758
+  votingpower: 45211448
+- address: undvalcons170cp2v6pnwefvayxtrjh6u3kftprhd9ud5jy0c
+  pubkey: undvalconspub1zcjduepq7ayhnappxxzwm23l4gu3zl7s2tggdwaw4mxydf4uq5j5r7l35p3qzla3l5
+  proposerpriority: -1655819978
+  votingpower: 99686164
+```
+
 ## undcli query tx
 
 Query for a transaction by hash in a committed block
@@ -1716,6 +3325,208 @@ Flags:
 |`-n`, `--node`|string|Node to connect to (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query tx DE11EF61545D742B9EBB4D43B7A86EC36412B401CCF77A44403A49B67CCC4DF1
+```
+
+`--output=json` Result:
+```json
+{
+  "height": "117259",
+  "txhash": "DE11EF61545D742B9EBB4D43B7A86EC36412B401CCF77A44403A49B67CCC4DF1",
+  "data": "0C089286D5F5051083C8E3BD03",
+  "raw_log": "[{\"msg_index\":0,\"log\":\"\",\"events\":[{\"type\":\"message\",\"attributes\":[{\"key\":\"action\",\"value\":\"begin_redelegate\"},{\"key\":\"sender\",\"value\":\"und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e\"},{\"key\":\"sender\",\"value\":\"und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e\"},{\"key\":\"module\",\"value\":\"staking\"},{\"key\":\"sender\",\"value\":\"und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk\"}]},{\"type\":\"redelegate\",\"attributes\":[{\"key\":\"source_validator\",\"value\":\"undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps\"},{\"key\":\"destination_validator\",\"value\":\"undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg\"},{\"key\":\"amount\",\"value\":\"10000000000\"},{\"key\":\"completion_time\",\"value\":\"2020-05-08T11:31:30Z\"}]},{\"type\":\"transfer\",\"attributes\":[{\"key\":\"recipient\",\"value\":\"und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk\"},{\"key\":\"amount\",\"value\":\"1078652753472nund\"},{\"key\":\"recipient\",\"value\":\"und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk\"},{\"key\":\"amount\",\"value\":\"91319655nund\"}]}]}]",
+  "logs": [
+    {
+      "msg_index": 0,
+      "log": "",
+      "events": [
+        {
+          "type": "message",
+          "attributes": [
+            {
+              "key": "action",
+              "value": "begin_redelegate"
+            },
+            {
+              "key": "sender",
+              "value": "und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e"
+            },
+            {
+              "key": "sender",
+              "value": "und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e"
+            },
+            {
+              "key": "module",
+              "value": "staking"
+            },
+            {
+              "key": "sender",
+              "value": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk"
+            }
+          ]
+        },
+        {
+          "type": "redelegate",
+          "attributes": [
+            {
+              "key": "source_validator",
+              "value": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps"
+            },
+            {
+              "key": "destination_validator",
+              "value": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg"
+            },
+            {
+              "key": "amount",
+              "value": "10000000000"
+            },
+            {
+              "key": "completion_time",
+              "value": "2020-05-08T11:31:30Z"
+            }
+          ]
+        },
+        {
+          "type": "transfer",
+          "attributes": [
+            {
+              "key": "recipient",
+              "value": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk"
+            },
+            {
+              "key": "amount",
+              "value": "1078652753472nund"
+            },
+            {
+              "key": "recipient",
+              "value": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk"
+            },
+            {
+              "key": "amount",
+              "value": "91319655nund"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "gas_wanted": "250000",
+  "gas_used": "230308",
+  "tx": {
+    "type": "cosmos-sdk/StdTx",
+    "value": {
+      "msg": [
+        {
+          "type": "cosmos-sdk/MsgBeginRedelegate",
+          "value": {
+            "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+            "validator_src_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps",
+            "validator_dst_address": "undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg",
+            "amount": {
+              "denom": "nund",
+              "amount": "10000000000"
+            }
+          }
+        }
+      ],
+      "fee": {
+        "amount": [
+          {
+            "denom": "nund",
+            "amount": "15000"
+          }
+        ],
+        "gas": "250000"
+      },
+      "signatures": [
+        {
+          "pub_key": {
+            "type": "tendermint/PubKeySecp256k1",
+            "value": "A1svxPYdIbXhmELdmehR9E2z3mts9KK+ktP9/144ymh9"
+          },
+          "signature": "GC1gcask7LY8SLbVYfhbBPA2pCoZQFtW6Yd60HCRKedHppAudBK4ikn/VLijMAeWutWStj1CptWU2tDEFjv4RQ=="
+        }
+      ],
+      "memo": "sent from Unification Web Wallet"
+    }
+  },
+  "timestamp": "2020-04-17T11:31:30Z"
+}
+```
+
+`--output=text` Result:
+```yaml
+height: 117259
+txhash: DE11EF61545D742B9EBB4D43B7A86EC36412B401CCF77A44403A49B67CCC4DF1
+codespace: ""
+code: 0
+data: 0C089286D5F5051083C8E3BD03
+rawlog: '[{"msg_index":0,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"begin_redelegate"},{"key":"sender","value":"und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e"},{"key":"sender","value":"und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e"},{"key":"module","value":"staking"},{"key":"sender","value":"und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk"}]},{"type":"redelegate","attributes":[{"key":"source_validator","value":"undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps"},{"key":"destination_validator","value":"undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg"},{"key":"amount","value":"10000000000"},{"key":"completion_time","value":"2020-05-08T11:31:30Z"}]},{"type":"transfer","attributes":[{"key":"recipient","value":"und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk"},{"key":"amount","value":"1078652753472nund"},{"key":"recipient","value":"und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk"},{"key":"amount","value":"91319655nund"}]}]}]'
+logs:
+- msgindex: 0
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: begin_redelegate
+    - key: sender
+      value: und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e
+    - key: sender
+      value: und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e
+    - key: module
+      value: staking
+    - key: sender
+      value: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+  - type: redelegate
+    attributes:
+    - key: source_validator
+      value: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+    - key: destination_validator
+      value: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+    - key: amount
+      value: "10000000000"
+    - key: completion_time
+      value: "2020-05-08T11:31:30Z"
+  - type: transfer
+    attributes:
+    - key: recipient
+      value: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    - key: amount
+      value: 1078652753472nund
+    - key: recipient
+      value: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    - key: amount
+      value: 91319655nund
+info: ""
+gaswanted: 250000
+gasused: 230308
+tx:
+  msg:
+  - delegator_address: und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
+    validator_src_address: undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
+    validator_dst_address: undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
+    amount:
+      denom: nund
+      amount: "10000000000"
+  fee:
+    amount:
+    - denom: nund
+      amount: "15000"
+    gas: 250000
+  signatures:
+  - |
+    pubkey: undpub1addwnpepqddjl38kr5smtcvcgtwen6z373xm8hntdn62905j607l7h3cef586k283s9
+    signature: !!binary |
+      GC1gcask7LY8SLbVYfhbBPA2pCoZQFtW6Yd60HCRKedHppAudBK4ikn/VLijMAeWutWStj
+      1CptWU2tDEFjv4RQ==
+  memo: sent from Unification Web Wallet
+timestamp: "2020-04-17T11:31:30Z"
+```
+
 
 ## undcli query txs
 
@@ -1728,11 +3539,6 @@ Usage:
   undcli query txs [flags]
 ```
 
-Example:
-```bash
-undcli query txs --events 'message.sender=und1hp2km26czxlvesn8nmwswdd90umvcm5gxwpk98&message.action=withdraw_delegator_reward' --page 1 --limit 30
-```
-
 Flags:
 | Flag | Type | Description |
 |------|------|-------------|
@@ -1742,6 +3548,123 @@ Flags:
 |`-n`, `--node`|`string`|Node to connect to (default "tcp://localhost:26657")|
 |`--page`|`uint32`|Query a specific page of paginated results (default 1)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+```bash
+undcli query txs --events 'message.sender=und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk&message.action=withdraw_delegator_reward' --page 1 --limit 30
+```
+
+
+`--output=json` Result:
+```json
+{
+  "total_count": "3",
+  "count": "3",
+  "page_number": "1",
+  "page_total": "1",
+  "limit": "30",
+  "txs": [
+    {
+      "height": "12750",
+      "txhash": "03CF3FD6780A7EC9E833D673B1FACAF92D8E4212397A12BFB41E2255BB909101",
+      "raw_log": "[{\"msg_index\":0,\"log\":\"\",\"events\":[{\"type\":\"message\",\"attributes\":[{\"key\":\"action\",\"value\":\"withdraw_delegator_reward\"},{\"key\":\"sender\",\"value\":\"und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e\"},{\"key\":\"module\",\"value\":\"distribution\"},{\"key\":\"sender\",\"value\":\"und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk\"}]},{\"type\":\"transfer\",\"attributes\":[{\"key\":\"recipient\",\"value\":\"und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk\"},{\"key\":\"amount\",\"value\":\"291320378636nund\"}]},{\"type\":\"withdraw_rewards\",\"attributes\":[{\"key\":\"amount\",\"value\":\"291320378636nund\"},{\"key\":\"validator\",\"value\":\"undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps\"}]}]}]",
+      "logs": [
+        {
+          "msg_index": 0,
+          "log": "",
+          "events": [
+            {
+              "type": "message",
+              "attributes": [
+                {
+                  "key": "action",
+                  "value": "withdraw_delegator_reward"
+                },
+                {
+                  "key": "sender",
+                  "value": "und1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8q6r40e"
+                },
+                {
+                  "key": "module",
+                  "value": "distribution"
+                },
+                {
+                  "key": "sender",
+                  "value": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk"
+                }
+              ]
+            },
+            {
+              "type": "transfer",
+              "attributes": [
+                {
+                  "key": "recipient",
+                  "value": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk"
+                },
+                {
+                  "key": "amount",
+                  "value": "291320378636nund"
+                }
+              ]
+            },
+            {
+              "type": "withdraw_rewards",
+              "attributes": [
+                {
+                  "key": "amount",
+                  "value": "291320378636nund"
+                },
+                {
+                  "key": "validator",
+                  "value": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gas_wanted": "190000",
+      "gas_used": "106818",
+      "tx": {
+        "type": "cosmos-sdk/StdTx",
+        "value": {
+          "msg": [
+            {
+              "type": "cosmos-sdk/MsgWithdrawDelegationReward",
+              "value": {
+                "delegator_address": "und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk",
+                "validator_address": "undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps"
+              }
+            }
+          ],
+          "fee": {
+            "amount": [
+              {
+                "denom": "nund",
+                "amount": "6000"
+              }
+            ],
+            "gas": "190000"
+          },
+          "signatures": [
+            {
+              "pub_key": {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "A1svxPYdIbXhmELdmehR9E2z3mts9KK+ktP9/144ymh9"
+              },
+              "signature": "eNsxrhygORZHPNp2KkhfpgJTRyNrE2Tx7aDvdhjzSQ1SW5pz8UQO4OATASTgc0Ip3kgllFz/ar5kJPMP/wWELg=="
+            }
+          ],
+          "memo": "sent from Unification Web Wallet"
+        }
+      },
+      "timestamp": "2020-04-10T12:58:38Z"
+    },
+    ...
+  ]
+}
+
+```
 
 ## undcli query wrkchain
 
@@ -1785,6 +3708,28 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query wrkchain params
+```
+
+`--output=json` Result:
+```json
+{
+  "fee_register": "1000000000",
+  "fee_record": "1000000000",
+  "denom": "nund"
+}
+```
+
+`--output=text` Result:
+```yaml
+fee_register: 1000000000
+fee_record: 1000000000
+denom: nund
+```
+
 ## undcli query wrkchain wrkchain
 
 Query a WRKChain for given ID
@@ -1804,6 +3749,40 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Example:
+
+```bash
+  undcli query wrkchain wrkchain 1
+```
+
+`--output=json` Result:
+```json
+{
+  "wrkchain_id": "1",
+  "moniker": "finchain",
+  "name": "Finchain TestNet",
+  "genesis": "19e4596ad881f2fbf2d80c04c2228b06bafc75e2ae611b2e19f9164b2c901354",
+  "type": "geth",
+  "lastblock": "309",
+  "num_blocks": "65",
+  "reg_time": "1584004250",
+  "owner": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs"
+}
+```
+
+`--output=text` Result:
+```yaml
+wrkchainid: 1
+moniker: finchain
+name: Finchain TestNet
+genesishash: 19e4596ad881f2fbf2d80c04c2228b06bafc75e2ae611b2e19f9164b2c901354
+basetype: geth
+lastblock: 309
+numberblocks: 65
+registertime: 1584004250
+owner: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+```
+
 ## undcli query wrkchain search
 
 Query for all paginated WRKChains that match optional filters:
@@ -1811,13 +3790,6 @@ Query for all paginated WRKChains that match optional filters:
 Usage:
 ```bash
   undcli query wrkchain search [flags]
-```
-
-Example:
-```bash
-  $ undcli query wrkchain search --moniker wrkchain1
-  $ undcli query wrkchain search --owner und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
-  $ undcli query wrkchain search --page=2 --limit=100
 ```
 
 Flags:
@@ -1833,6 +3805,63 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+```bash
+  $ undcli query wrkchain search --moniker wrkchain1
+  $ undcli query wrkchain search --owner und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+  $ undcli query wrkchain search --page=2 --limit=100
+```
+
+`--output=json` Result:
+```json
+[
+  {
+    "wrkchain_id": "1",
+    "moniker": "finchain",
+    "name": "Finchain TestNet",
+    "genesis": "19e4596ad881f2fbf2d80c04c2228b06bafc75e2ae611b2e19f9164b2c901354",
+    "type": "geth",
+    "lastblock": "309",
+    "num_blocks": "65",
+    "reg_time": "1584004250",
+    "owner": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs"
+  },
+  {
+    "wrkchain_id": "2",
+    "moniker": "finchain-tn",
+    "name": "Finchain TestNet",
+    "genesis": "19e4596ad881f2fbf2d80c04c2228b06bafc75e2ae611b2e19f9164b2c901354",
+    "type": "geth",
+    "lastblock": "206694",
+    "num_blocks": "34771",
+    "reg_time": "1584012884",
+    "owner": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs"
+  }
+]
+```
+
+`--output=text` Result:
+```yaml
+- wrkchainid: 1
+  moniker: finchain
+  name: Finchain TestNet
+  genesishash: 19e4596ad881f2fbf2d80c04c2228b06bafc75e2ae611b2e19f9164b2c901354
+  basetype: geth
+  lastblock: 309
+  numberblocks: 65
+  registertime: 1584004250
+  owner: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+- wrkchainid: 2
+  moniker: finchain-tn
+  name: Finchain TestNet
+  genesishash: 19e4596ad881f2fbf2d80c04c2228b06bafc75e2ae611b2e19f9164b2c901354
+  basetype: geth
+  lastblock: 206694
+  numberblocks: 34771
+  registertime: 1584012884
+  owner: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+```
 
 ## undcli query wrkchain block
 
@@ -1852,6 +3881,40 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Example:
+
+```bash
+  undcli query wrkchain block 2 206650
+```
+
+`--output=json` Result:
+```json
+{
+  "wrkchain_id": "2",
+  "height": "206650",
+  "blockhash": "0xcd843fef654343f1a2befa00aadd69d424cbbfe8732a005e0d8cf46b0f25c0a4",
+  "parenthash": "0x253420699f7af31eaff0b0d3ff4c5c43f4e39cdb6081fbd7ec595fba2f5e62c4",
+  "hash1": "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
+  "hash2": "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
+  "hash3": "0xfa190168b7c394c91006f3670aae52bf0dbdadafe3051ed8398e003c0effc9d4",
+  "sub_time": "1587123683",
+  "owner": "und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs"
+}
+```
+
+`--output=text` Result:
+```yaml
+wrkchainid: 2
+height: 206650
+blockhash: 0xcd843fef654343f1a2befa00aadd69d424cbbfe8732a005e0d8cf46b0f25c0a4
+parenthash: 0x253420699f7af31eaff0b0d3ff4c5c43f4e39cdb6081fbd7ec595fba2f5e62c4
+hash1: 0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421
+hash2: 0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421
+hash3: 0xfa190168b7c394c91006f3670aae52bf0dbdadafe3051ed8398e003c0effc9d4
+submittime: 1587123683
+owner: und12zns8tfm0g2rskl4f9zg2hr9n53agkyvtftngs
+```
 
 ## undcli rest-server
 
@@ -1971,7 +4034,7 @@ Flags:
 ## undcli tx encode
 
 Encode transactions created with the `--generate-only` flag and signed with the sign command.
-Read a transaction from \<file\>, serialize it to the Amino wire protocol, and output it as base64.
+Read a transaction from \<file\>, serialise it to the Amino wire protocol, and output it as base64.
 If you supply a dash (-) argument in place of an input filename, the command reads from standard input.
 
 Usage:
@@ -3011,7 +5074,7 @@ Usage:
 Available Commands:
 | Command | Description |
 |---------|-------------|
-|[create-validator](#undcli-tx-staking-create-validator)|create new validator initialized with a self-delegation to it|
+|[create-validator](#undcli-tx-staking-create-validator)|create new validator initialised with a self-delegation to it|
 |[edit-validator](#undcli-tx-staking-edit-validator)|edit an existing validator account|
 |[delegate](#undcli-tx-staking-delegate)|Delegate UND to a validator|
 |[redelegate](#undcli-tx-staking-redelegate)|Redelegate illiquid tokens from one validator to another|
@@ -3024,7 +5087,7 @@ Flags:
 
 ## undcli tx staking create-validator
 
-create new validator initialized with a self-delegation to it
+create new validator initialised with a self-delegation to it
 
 Usage:
 ```bash

@@ -6,7 +6,7 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200115165343-aa45d48b5ed6 // indirect
 	github.com/btcsuite/btcutil v1.0.1 // indirect
-	github.com/cosmos/cosmos-sdk v0.38.2
+	github.com/cosmos/cosmos-sdk v0.38.3
 	github.com/gorilla/mux v1.7.3
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/rakyll/statik v0.1.6
@@ -17,7 +17,7 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.5.1
 	github.com/tendermint/go-amino v0.15.1
-	github.com/tendermint/tendermint v0.33.2
+	github.com/tendermint/tendermint v0.33.3
 	github.com/tendermint/tm-db v0.5.1
 	golang.org/x/crypto v0.0.0-20200128174031-69ecbb4d6d5d // indirect
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa // indirect

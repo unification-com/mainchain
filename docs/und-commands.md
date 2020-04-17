@@ -36,7 +36,7 @@ Global flags can be passed to any of the commands and sub-commands below
 
 | Flag | Type | Description |
 |------|------|-------------|
-|`--home`|`string`|directory for config and data (default "/home/username/.und_mainchain")|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
 |`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
 |`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
 |`--trace`||print out full stack trace on errors|
@@ -61,6 +61,14 @@ Flags:
 |`--chain-id`|`string`|genesis file chain-id, if left blank will be randomly created|
 |`-h`, `--help`||help for init|
 |`-o`, `--overwrite`||overwrite the genesis.json file|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
 
 ## und start
 
@@ -121,6 +129,14 @@ Additionally, see `$HOME/.und_mainchain/config/config.toml` and `$HOME/.und_main
 |`--trace-store`|`string`|Enable KVStore tracing to an output file|
 |`--with-tendermint`||Run abci app embedded in-process with tendermint (default true)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
 ## und unsafe-reset-all
 
 Resets the blockchain database, removes address book files, and resets `priv_validator.json` to the genesis state
@@ -134,6 +150,14 @@ Flags:
 | Flag | Type | Description |
 |------|------|-------------|
 |`-h`, `--help`||help for unsafe-reset-all|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
 
 ## und tendermint
 
@@ -157,6 +181,14 @@ Flags:
 |------|------|-------------|
 |`-h`, `--help`||help for tendermint|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
 Use "`und tendermint [command] --help`" for more information about a command.
 
 ## und tendermint show-node-id
@@ -173,6 +205,25 @@ Flags:
 |------|------|-------------|
 |`-h`, `--help`||help for show-node-id|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
+Example:
+
+```bash
+  und tendermint show-node-id
+```
+
+Result:
+```yaml
+56c43a2bc3dc60fe60bc7020e51e5a1669d1d42d
+```
+
 ## und tendermint show-validator
 
 Show this node's tendermint validator info
@@ -187,6 +238,25 @@ Flags:
 |------|------|-------------|
 |`-h`, `--help`||help for show-validator|
 |`-o`, `--output`|`string`|Output format (text\|json) (default "text")|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
+Example:
+
+```bash
+  und tendermint show-validator
+```
+
+Result:
+```yaml
+undvalconspub1zcjduepq7f4t0v67jjjv7fpp2vs6y78tej58t7wufpweq0md7fqlkrq5gcusjc25t5
+```
 
 ## und tendermint show-address
 
@@ -203,6 +273,25 @@ Flags:
 |`-h`, `--help`||help for show-address|
 |`-o`, `--output`|`string`|Output format (text\|json) (default "text")|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
+Example:
+
+```bash
+  und tendermint show-address
+```
+
+Result:
+```yaml
+undvalcons1f5wcshy4pxaa27mmq468jxkfqsq6aw5gqlf7yy
+```
+
 ## und tendermint version
 
 Print protocols' and libraries' version numbers
@@ -217,6 +306,28 @@ Flags:
 | Flag | Type | Description |
 |------|------|-------------|
 |`-h`, `--help`||help for version|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
+Example:
+
+```bash
+  und tendermint version
+```
+
+Result:
+```yaml
+tendermint: 0.33.2
+abci: 0.16.1
+blockprotocol: 10
+p2pprotocol: 7
+```
 
 ## und export
 
@@ -235,6 +346,14 @@ Flags:
 |`-h`, `--help`||help for export|
 |`--jail-whitelist`|`strings`|List of validators to not jail state export|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
 ## und version
 
 Print the und version
@@ -249,6 +368,23 @@ Flags:
 |------|------|-------------|
 |`-h`, `--help`||help for version|
 |`--long`||Print long version information|
+
+Example:
+
+```bash
+  und version --long
+```
+
+Result:
+```yaml
+name: UndMainchain
+server_name: und
+client_name: undcli
+version: 1.4.1
+commit: 0d0538747bd2e28d363eae5bd9f95184c3be1a8e
+build_tags: netgo ledger
+go: go version go1.13.3 linux/amd64
+```
 
 ## und debug
 
@@ -281,16 +417,26 @@ Usage:
   und debug pubkey [pubkey] [flags]
 ```
 
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for pubkey|
+
 Example:
 ```bash
   $ und debug pubkey TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlz
   $ und debug pubkey und1hp2km26czxlvesn8nmwswdd90umvcm5gxwpk98
 ```
 
-Flags:
-| Flag | Type | Description |
-|------|------|-------------|
-|`-h`, `--help`||help for pubkey|
+Result:
+```yaml
+Address: B4441F84EACE33146EB774F914E6C0FAB1DBC461
+Hex: 4D616E2069732064697374696E677569736865642C206E6F74206F6E6C792062
+JSON (base64): {"type":"tendermint/PubKeyEd25519","value":"TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGI="}
+Bech32 Acc: undpub1zcjduepqf4skugrfwvsxg6tnw35kuem4d9eksety9ssxumm5yphkumreyp3qqv0yr7
+Bech32 Validator Operator: undvaloperpub1zcjduepqf4skugrfwvsxg6tnw35kuem4d9eksety9ssxumm5yphkumreyp3q76gkyw
+Bech32 Validator Consensus: undvalconspub1zcjduepqf4skugrfwvsxg6tnw35kuem4d9eksety9ssxumm5yphkumreyp3qns0stx
+```
 
 ## und debug addr
 
@@ -301,15 +447,23 @@ Usage:
   und debug addr [address] [flags]
 ```
 
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for addr|
+
 Example:
 ```bash
   und debug addr und1hp2km26czxlvesn8nmwswdd90umvcm5gxwpk98
 ```
 
-Flags:
-| Flag | Type | Description |
-|------|------|-------------|
-|`-h`, `--help`||help for addr|
+Result:
+```yaml
+Address: [184 85 109 171 88 17 190 204 194 103 158 221 7 53 165 127 54 204 110 136]
+Address (hex): B8556DAB5811BECCC2679EDD0735A57F36CC6E88
+Bech32 Acc: und1hp2km26czxlvesn8nmwswdd90umvcm5gxwpk98
+Bech32 Val: undvaloper1hp2km26czxlvesn8nmwswdd90umvcm5gdcda9p
+```
 
 ## und debug raw-bytes
 
@@ -320,15 +474,20 @@ Usage:
   und debug raw-bytes [raw-bytes] [flags]
 ```
 
+Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`-h`, `--help`||help for raw-bytes|
+
 Example:
 ```bash
   und debug raw-bytes "[72 101 108 108 111 44 32 112 108 97 121 103 114 111 117 110 100]"
 ```
 
-Flags:
-| Flag | Type | Description |
-|------|------|-------------|
-|`-h`, `--help`||help for raw-bytes|
+Result:
+```yaml
+48656C6C6F2C20706C617967726F756E64
+```
 
 ## und validate-genesis
 
@@ -343,6 +502,14 @@ Flags:
 | Flag | Type | Description |
 |------|------|-------------|
 |`-h`, `--help`||help for validate-genesis|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
 
 ## Ports overview
 

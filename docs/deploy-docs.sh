@@ -7,6 +7,8 @@ rm -rf .vuepress/dist
 
 vuepress build
 
+echo "docs.unification.io" > .vuepress/dist/CNAME
+
 cd .vuepress/dist
 
 git init

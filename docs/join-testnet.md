@@ -52,21 +52,6 @@ curl https://raw.githubusercontent.com/unification-com/testnet/master/latest/gen
 remember to change the output directory if you are using something other than the default `$HOME/.und_mainchain`
 :::
 
-### Validate Genesis
-
-Optionally, you can validate the downloaded genesis file by running:
-
-```bash
-und validate-genesis $HOME/.und_mainchain/config/genesis.json
-```
-
-which should result in:
-
-```bash
-validating genesis file at $HOME/.und_mainchain/config/genesis.json
-File at $HOME/.und_mainchain/config/genesis.json is a valid genesis file
-```
-
 ### Get the current TestNet chain ID
 
 The Chain ID will need to be passed to all `undcli` commands via the `--chain-id` flag. The current TestNet Chain ID can easily be found by running:
@@ -78,13 +63,13 @@ jq --raw-output '.chain_id' $HOME/.und_mainchain/config/genesis.json
 This will output, for example:
 
 ```
-UND-Mainchain-TestNet-v3
+UND-Mainchain-TestNet-v4
 ```
 
 which can then be passed to your `undcli` commands:
 
 ```bash
-undcli query tx TX_HASH --chain-id UND-Mainchain-TestNet-v3
+undcli query tx TX_HASH --chain-id UND-Mainchain-TestNet-v4
 ```
 
 ## Seed Node Peers

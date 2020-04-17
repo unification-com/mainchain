@@ -6,42 +6,48 @@ Welcome to the documentation for Unification's Mainchain. These docs
 cover how to build and install the two main applications `und` and `undcli`,
 how to run a node on MainNet, TestNet and DevNet, and how to interact with the Mainchain network.
 
-## About Mainchain
+## 1. About Mainchain
 
-- [Introduction to Mainchain](about-mainchain.md)
+- [What is Mainchain?](about-mainchain.md)
 - [Native Coin Denomination: nund](denomination.md)
 - [Fees and Gas](fees-and-gas.md)
 - [Third Party Tool Development](third-party.md)
 
-## Install & Use the Software
+## 2. Install & Use the Software
 
 - [Installation](installation.md)
 - [Accounts and Wallets](accounts-wallets.md)
+
+### Full Command References
+
 - [`und` - the und server command reference](und-commands.md)
 - [`undcli` - the und client command reference](undcli-commands.md)
 
-## Mainchain Public Testnet
+## 3. Mainchain Networks
+
+### Mainchain Public Testnet
 
 - [Join TestNet](join-testnet.md)
 - [Becoming a TestNet Validator](become-testnet-validator.md)
 
-## Mainchain Public MainNet
+### Mainchain Public MainNet
 
 - [Join MainNet](join-mainnet.md)
 - [Becoming a MainNet Validator](become-mainnet-validator.md)
 
-## Play with DevNet
+### Private DevNet
 
-- [Devnet](local-devnet.md)
+- [Play with DevNet](local-devnet.md)
 
-## Tx & Query Examples
+## 4. Guides & Examples
 
+### Tx & Query Examples
 - [Sending Simple Transactions](examples/transactions.md)
 - [Example WRKChain Transactions and Queries](examples/wrkchain.md)
 - [Example BEACON Transactions and Queries](examples/beacon.md)
 - [Example Enterprise UND Transactions and Queries](examples/enterprise-und.md)
 
-## In-depth guides
+### In-depth guides
 
 - [AWS 101: Introduction to installing `und` on AWS EC2 instances](guides/cloud/install-aws.md)
 

@@ -64,6 +64,17 @@ Flags:
 |`--get`||print configuration value or its default if unset|
 |`-h`, `--help`||help for config|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli convert
 
 convert between UND denominations
@@ -134,6 +145,17 @@ Flags:
 |`-h`, `--help`||help for mnemonic|
 |`--unsafe-entropy`||Prompt the user to supply their own entropy, instead of relying on the system|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli keys add
 
 Derive a new private key and encrypt to disk.
@@ -176,6 +198,17 @@ Flags:
 |`--pubkey`|`string`|Parse a public key in bech32 format and save it to disk|
 |`--recover`||Provide seed phrase to recover existing key instead of creating|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli keys export
 
 Export a private key from the local keybase in ASCII-armored encrypted format.
@@ -188,8 +221,18 @@ Usage:
 Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`-h`, `--help`||help for export
+|`-h`, `--help`||help for export|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli keys import
 
@@ -205,6 +248,16 @@ Flags:
 |------|------|-------------|
 |`-h`, `--help`||help for import|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli keys list
 
@@ -222,6 +275,17 @@ Flags:
 |`-h`, `--help`||help for list|
 |`--indent`||Add indent to JSON response|
 |`-n`, `--list-names`||List names only|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 
 ## undcli keys show
@@ -246,6 +310,17 @@ Flags:
 |`--multisig-threshold`|`uint`|K out of N required signatures (default 1)|
 |`-p`, `--pubkey`||Output the public key only (overrides `--output`)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli keys delete
 
 Delete keys from the Keybase backend.
@@ -266,6 +341,17 @@ Flags:
 |`-h`, `--help`||help for delete|
 |`-y`, `--yes`||Skip confirmation prompt when deleting offline or ledger key references|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli keys parse
 
 Convert and print to stdout key addresses and fingerprints from
@@ -281,6 +367,17 @@ Flags:
 |------|------|-------------|
 |`-h`, `--help`||help for parse|
 |`--indent`||Indent JSON output|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli keys migrate
 
@@ -301,6 +398,17 @@ Flags:
 |------|------|-------------|
 |`--dry-run`||Run migration without actually persisting any changes to the new Keybase|
 |`-h`, `--help`||help for migrate|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli query
 
@@ -358,6 +466,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 
 Example:
@@ -463,6 +582,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -542,6 +672,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -582,6 +723,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -628,6 +780,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -679,6 +842,17 @@ Flags:
 |`--page`|`int`|pagination page of beacons to to query for (default 1)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
 $ undcli query beacon search --moniker MyBeacon
@@ -723,6 +897,17 @@ Flags:
 |`-h`, `--help`||help for block|
 |`-n`, `--node`|`string`|Node to connect to (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -863,6 +1048,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -907,6 +1103,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query distribution validator-outstanding-rewards undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
@@ -946,6 +1153,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -987,6 +1205,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query distribution slashes undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps 0 100000
@@ -1010,6 +1239,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -1096,6 +1336,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query distribution community-pool
@@ -1163,6 +1414,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -1210,6 +1472,17 @@ Flags:
 |`--page`|`int`|pagination page to query for|
 |`--purchaser`|`string`|(optional) filter purchase orders raised by address|
 |`--status`|`string`|(optional) filter purchase orders by status, status: `raised`/`accept`/`reject`/`complete`|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -1307,6 +1580,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -1370,6 +1654,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -1392,7 +1687,8 @@ Example:
 amount:
   denom: nund
   amount: "99965000000000"
-``
+```
+
 ## undcli query enterprise total-locked
 
 Query the current total locked enterprise UND
@@ -1411,6 +1707,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -1451,6 +1758,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -1489,6 +1807,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -1532,6 +1861,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -1594,6 +1934,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -1661,6 +2012,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -1763,6 +2125,17 @@ Flags:
 |`--status`|`string`|(optional) filter proposals by proposal status, status: `deposit_period`/`voting_period`/`passed`/`rejected`|
 |`--voter`|`string`|(optional) filter by proposals voted on by voted|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   $ undcli query gov proposals --depositor und1ru9zsaek6nh94e4tzyx49r23mexwwzqd8yasce
@@ -1854,6 +2227,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query gov vote 9 und1nkh2dteta8drxntqp646sr6vz74lt9w9yc60pd
@@ -1895,6 +2279,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 |`--limit`|`int`|pagination limit to query for (default 100)|
 |`--page`|`int`|pagination page to query for|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -1939,6 +2334,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   $ undcli query gov param voting
@@ -1976,6 +2382,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2039,6 +2456,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query gov proposer 10
@@ -2076,6 +2504,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2124,6 +2563,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2174,6 +2624,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2238,6 +2699,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query slashing signing-info undvalconspub1addwnpepqddjl38kr5smtcvcgtwen6z373xm8hntdn62905j607l7h3cef5863cwhnf
@@ -2261,6 +2733,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -2340,6 +2823,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query staking delegation und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
@@ -2387,6 +2881,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2470,6 +2975,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query staking unbonding-delegation und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk undvaloper1w2dlf0793gk3m5zk8e554stg97x7uw95dfx4kg
@@ -2493,6 +3009,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2546,6 +3073,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2607,6 +3145,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query staking redelegations und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk
@@ -2666,6 +3215,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2746,6 +3306,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -2880,6 +3451,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query staking delegations-to undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps
@@ -2929,6 +3511,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -2982,6 +3575,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -3043,6 +3647,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query staking historical-info 5
@@ -3066,6 +3681,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -3111,6 +3737,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -3166,6 +3803,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
   undcli query supply
@@ -3207,6 +3855,17 @@ Flags:
 |`-n`, `--node`|`string`|Node to connect to (default "tcp://localhost:26657")|
 |`--page`|`int`|Query a specific page of paginated results|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -3324,6 +3983,17 @@ Flags:
 |`-h`, `--help`||help for tx|
 |`-n`, `--node`|string|Node to connect to (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -3549,6 +4219,17 @@ Flags:
 |`--page`|`uint32`|Query a specific page of paginated results (default 1)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 ```bash
 undcli query txs --events 'message.sender=und16twxa6lyj7uhp56tukrcfz2p6q93mrxgqvrspk&message.action=withdraw_delegator_reward' --page 1 --limit 30
@@ -3708,6 +4389,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -3748,6 +4440,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -3805,6 +4508,17 @@ Flags:
 |`--ledger`||Use a connected Ledger device|
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 Example:
 ```bash
@@ -3882,6 +4596,17 @@ Flags:
 |`--node`|`string`|\<host\>:\<port\> to Tendermint RPC interface for this chain (default "tcp://localhost:26657")|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -3939,6 +4664,17 @@ Flags:
 |--trust-node||Trust connected full node (don't verify proofs for responses)|
 |--write-timeout|uint|The RPC write timeout (in seconds) (default 10)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli status
 
 Query remote node for status
@@ -3954,6 +4690,17 @@ Flags:
 |`-h`, `--help`||help for status|
 |`--indent`||Add indent to JSON response|
 |`-n`, `--node`|`string`|Node to connect to (default "tcp://localhost:26657")|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx
 
@@ -4031,6 +4778,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx encode
 
 Encode transactions created with the `--generate-only` flag and signed with the sign command.
@@ -4064,6 +4822,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 
 ## undcli tx decode
 
@@ -4096,6 +4865,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx multisign
 
@@ -4145,6 +4925,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 
 ## undcli tx send
 
@@ -4183,6 +4974,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx sign
 
@@ -4237,6 +5039,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx auth
 
@@ -4356,6 +5169,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx beacon record
 
 Record a BEACON's' timestamp hash.
@@ -4398,6 +5222,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx distribution
 
@@ -4460,6 +5295,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx distribution set-withdraw-addr
 
 Set the withdraw address for rewards associated with a delegator address.
@@ -4495,6 +5341,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx distribution withdraw-all-rewards
 
@@ -4534,6 +5391,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx distribution fund-community-pool
 
 Funds the community pool with the specified amount
@@ -4569,6 +5437,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx enterprise
 
@@ -4628,6 +5507,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx enterprise process
 
 Process an Enterprise UND purchase order.
@@ -4669,6 +5559,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx enterprise whitelist
 
 Add/Remove an address from the enterprise purchase order whitelist.
@@ -4709,6 +5610,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 
 ## undcli tx gov
@@ -4769,6 +5681,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx gov vote
 
 Submit a vote for an active proposal. You can find the `[proposal-id]` by running "`undcli query gov proposals`".
@@ -4804,6 +5727,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx gov submit-proposal
 
@@ -4871,6 +5805,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx gov submit-proposal param-change
 
@@ -4946,6 +5891,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx gov submit-proposal community-pool-spend
 
 Submit a community pool spend proposal along with an initial deposit.
@@ -5005,6 +5961,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx slashing
 
 Slashing transactions subcommands
@@ -5060,6 +6027,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx staking
 
@@ -5149,6 +6127,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx staking edit-validator
 
 edit an existing validator account
@@ -5187,6 +6176,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx staking delegate
 
 Delegate an amount of UND (in `nund`) to a validator from your wallet.
@@ -5222,6 +6222,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx staking redelegate
 
@@ -5259,6 +6270,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx staking unbond
 
 Unbond an amount of bonded shares from a validator.
@@ -5294,6 +6316,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli tx wrkchain
 
@@ -5360,6 +6393,17 @@ Flags:
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
+
 ## undcli tx wrkchain record
 
 Record a new WRKChain block's hash(es)
@@ -5407,6 +6451,17 @@ Flags:
 |`-s`, `--sequence`|`uint`|The sequence number of the signing account (offline mode only)|
 |`--trust-node`||Trust connected full node (don't verify proofs for responses) (default true)|
 |`-y`, `--yes`||Skip tx broadcasting prompt confirmation|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
+|`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
+|`-h`, `--help`||help for undcli|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_cli`")|
+|`-o`, `--output`|`string`|Output format (`text`\|`json`) (default "`text`")|
+|`--trace`||print out full stack trace on errors|
 
 ## undcli version
 

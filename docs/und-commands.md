@@ -62,6 +62,14 @@ Flags:
 |`-h`, `--help`||help for init|
 |`-o`, `--overwrite`||overwrite the genesis.json file|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
 ## und start
 
 Run the full node application with Tendermint in or out of process. By
@@ -121,6 +129,14 @@ Additionally, see `$HOME/.und_mainchain/config/config.toml` and `$HOME/.und_main
 |`--trace-store`|`string`|Enable KVStore tracing to an output file|
 |`--with-tendermint`||Run abci app embedded in-process with tendermint (default true)|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
 ## und unsafe-reset-all
 
 Resets the blockchain database, removes address book files, and resets `priv_validator.json` to the genesis state
@@ -134,6 +150,14 @@ Flags:
 | Flag | Type | Description |
 |------|------|-------------|
 |`-h`, `--help`||help for unsafe-reset-all|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
 
 ## und tendermint
 
@@ -157,6 +181,14 @@ Flags:
 |------|------|-------------|
 |`-h`, `--help`||help for tendermint|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
 Use "`und tendermint [command] --help`" for more information about a command.
 
 ## und tendermint show-node-id
@@ -172,6 +204,14 @@ Flags:
 | Flag | Type | Description |
 |------|------|-------------|
 |`-h`, `--help`||help for show-node-id|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -199,6 +239,14 @@ Flags:
 |`-h`, `--help`||help for show-validator|
 |`-o`, `--output`|`string`|Output format (text\|json) (default "text")|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -225,6 +273,14 @@ Flags:
 |`-h`, `--help`||help for show-address|
 |`-o`, `--output`|`string`|Output format (text\|json) (default "text")|
 
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
+
 Example:
 
 ```bash
@@ -250,6 +306,14 @@ Flags:
 | Flag | Type | Description |
 |------|------|-------------|
 |`-h`, `--help`||help for version|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
 
 Example:
 
@@ -281,6 +345,14 @@ Flags:
 |`--height`|`int`|Export state from a particular height (-1 means latest height) (default -1)|
 |`-h`, `--help`||help for export|
 |`--jail-whitelist`|`strings`|List of validators to not jail state export|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
 
 ## und version
 
@@ -430,6 +502,14 @@ Flags:
 | Flag | Type | Description |
 |------|------|-------------|
 |`-h`, `--help`||help for validate-genesis|
+
+Global Flags:
+| Flag | Type | Description |
+|------|------|-------------|
+|`--home`|`string`|directory for config and data (default "`$HOME/.und_mainchain`")|
+|`--inv-check-period`|`uint`|Assert registered invariants every N blocks |
+|`--log_level`|`string`|Log level (default `"main:info,state:info,*:error"`)|  
+|`--trace`||print out full stack trace on errors|
 
 ## Ports overview
 

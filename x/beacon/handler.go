@@ -38,7 +38,7 @@ func handleMsgRegisterBeacon(ctx sdk.Context, keeper Keeper, msg MsgRegisterBeac
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeRegisterBeacon,
 			sdk.NewAttribute(AttributeKeyBeaconId, strconv.FormatUint(beaconID, 10)),
@@ -46,7 +46,7 @@ func handleMsgRegisterBeacon(ctx sdk.Context, keeper Keeper, msg MsgRegisterBeac
 			sdk.NewAttribute(AttributeKeyBeaconName, msg.BeaconName),
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
-	})
+	)
 
 	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
@@ -74,7 +74,7 @@ func handleMsgRecordBeaconTimestamp(ctx sdk.Context, keeper Keeper, msg MsgRecor
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeRecordBeaconTimestamp,
 			sdk.NewAttribute(AttributeKeyBeaconId, strconv.FormatUint(msg.BeaconID, 10)),
@@ -83,7 +83,7 @@ func handleMsgRecordBeaconTimestamp(ctx sdk.Context, keeper Keeper, msg MsgRecor
 			sdk.NewAttribute(AttributeKeyTimestampSubmitTime, strconv.FormatUint(msg.SubmitTime, 10)),
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
-	})
+	)
 	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
 		Data:   GetTimestampIDBytes(tsID),

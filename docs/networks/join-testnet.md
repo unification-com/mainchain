@@ -1,6 +1,6 @@
 # Join the Public TestNet
 
-Once you have [installed](installation.md) the required software, you can run a full node, join the public TestNet and try out [becoming a TestNet validator](become-testnet-validator.md).
+Once you have [installed](../installation.md) the required software, you can run a full node, join the public TestNet and try out [becoming a TestNet validator](become-testnet-validator.md).
 
 ::: warning IMPORTANT
 Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
@@ -14,7 +14,7 @@ Whenever you use `undcli` to send Txs or query the chain ensure you pass the cor
 
 Before continuing, ensure you have gone through the following docs:
 
-1. [Installing the software](installation.md)
+1. [Installing the software](../installation.md)
 
 ## Initialising a New Node
 

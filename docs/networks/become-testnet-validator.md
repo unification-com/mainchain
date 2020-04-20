@@ -14,9 +14,9 @@ Whenever you use `undcli` to send Txs or query the chain ensure you pass the cor
 
 Before continuing, ensure you have gone through the following docs:
 
-1. [Installing the software](installation.md)
+1. [Installing the software](../installation.md)
 2. [Join the Public TestNet](join-testnet.md)
-3. [Accounts and Wallets](accounts-wallets.md)
+3. [Accounts and Wallets](../accounts-wallets.md)
 4. **TestNet** Chain ID - if you haven't already, you can get the current chain ID by running:
 
 ```

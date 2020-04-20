@@ -23,7 +23,8 @@ module.exports = {
                     "/about-mainchain",
                     "/denomination",
                     "/fees-and-gas",
-                    "/third-party"
+                    "/third-party",
+                    "/genesis-settings"
                 ]
             },
             {
@@ -32,27 +33,34 @@ module.exports = {
                     "/installation",
                     "/accounts-wallets",
                     "/und-commands",
-                    "/undcli-commands"
+                    "/undcli-commands",
+                    "/run-und-as-service"
                 ]
             },
             {
-                title: "Mainchain Public TestNet",
+                title: "Networks",
                 children: [
-                    "/join-testnet",
-                    "/become-testnet-validator"
-                ]
-            },
-            {
-                title: "Mainchain Public MainNet",
-                children: [
-                    "/join-mainnet",
-                    "/become-mainnet-validator"
-                ]
-            },
-            {
-                title: "Play with DevNet",
-                children: [
-                    "/local-devnet"
+                  {
+                      title: "Mainchain Public TestNet",
+                      children: [
+                          "/networks/join-testnet",
+                          "/networks/become-testnet-validator"
+                      ]
+                  },
+                  {
+                      title: "Mainchain Public MainNet",
+                      children: [
+                          "/networks/join-mainnet",
+                          "/networks/become-mainnet-validator"
+                      ]
+                  },
+                  {
+                      title: "Play with DevNet",
+                      children: [
+                          "/networks/local-devnet"
+                      ]
+                  },
+                  "/networks/participation",
                 ]
             },
             {
@@ -61,7 +69,8 @@ module.exports = {
                     "/examples/transactions",
                     "/examples/wrkchain",
                     "/examples/beacon",
-                    "/examples/enterprise-und"
+                    "/examples/enterprise-und",
+                    "/examples/finchain"
                 ]
             },
             {

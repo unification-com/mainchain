@@ -40,14 +40,14 @@ func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) (*sdk.R
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeRaisePurchaseOrder,
 			sdk.NewAttribute(AttributeKeyPurchaseOrderID, strconv.FormatUint(purchaseOrderID, 10)),
 			sdk.NewAttribute(AttributeKeyPurchaser, msg.Purchaser.String()),
 			sdk.NewAttribute(AttributeKeyAmount, msg.Amount.String()),
 		),
-	})
+	)
 
 	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
@@ -72,14 +72,14 @@ func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPur
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeProcessPurchaseOrderDecision,
 			sdk.NewAttribute(AttributeKeyPurchaseOrderID, strconv.FormatUint(msg.PurchaseOrderID, 10)),
 			sdk.NewAttribute(AttributeKeySigner, msg.Signer.String()),
 			sdk.NewAttribute(AttributeKeyDecision, msg.Decision.String()),
 		),
-	})
+	)
 
 	retData := append(GetPurchaseOrderIDBytes(msg.PurchaseOrderID), []byte{byte(msg.Decision)}...)
 
@@ -105,14 +105,14 @@ func handleMsgWhitelistAddress(ctx sdk.Context, k Keeper, msg types.MsgWhitelist
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeWhitelistAddress,
 			sdk.NewAttribute(AttributeWhitelistAddress, msg.Address.String()),
 			sdk.NewAttribute(AttributeKeySigner, msg.Signer.String()),
 			sdk.NewAttribute(AttributeKeyWhitelistAction, msg.Action.String()),
 		),
-	})
+	)
 
 	return &sdk.Result{
 		Events: ctx.EventManager().Events(),

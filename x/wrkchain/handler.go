@@ -39,7 +39,7 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeRegisterWrkChain,
 			sdk.NewAttribute(AttributeKeyWrkChainId, strconv.FormatUint(wrkChainID, 10)),
@@ -49,7 +49,7 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 			sdk.NewAttribute(AttributeKeyBaseType, msg.BaseType),
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
-	})
+	)
 
 	return &sdk.Result{
 		Events: ctx.EventManager().Events(),
@@ -76,7 +76,7 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeRecordWrkChainBlock,
 			sdk.NewAttribute(AttributeKeyWrkChainId, strconv.FormatUint(msg.WrkChainID, 10)),
@@ -88,6 +88,7 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 			sdk.NewAttribute(AttributeKeyHash3, msg.Hash3),
 			sdk.NewAttribute(AttributeKeyOwner, msg.Owner.String()),
 		),
-	})
+	)
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+
 }

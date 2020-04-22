@@ -1,4 +1,4 @@
-# Join MainNet
+# Run a Full Node & Join MainNet
 
 **Coming soon!**
 

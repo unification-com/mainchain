@@ -23,7 +23,9 @@ module.exports = {
                     "/introduction/about-mainchain",
                     "/introduction/denomination",
                     "/introduction/fees-and-gas",
-                    "/introduction/genesis-settings"
+                    "/introduction/genesis-settings",
+                    "/introduction/delegators",
+                    "/introduction/validators"
                 ]
             },
             {

@@ -1,6 +1,6 @@
-# Join the Public TestNet
+# Run a Full Node & Join the Public TestNet
 
-Once you have [installed](../installation.md) the required software, you can run a full node, join the public TestNet and try out [becoming a TestNet validator](become-testnet-validator.md).
+Once you have [installed](../software/installation.md) the required software, you can run a full node, join the public TestNet and try out [becoming a TestNet validator](become-testnet-validator.md).
 
 ::: warning IMPORTANT
 Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
@@ -14,7 +14,7 @@ Whenever you use `undcli` to send Txs or query the chain ensure you pass the cor
 
 Before continuing, ensure you have gone through the following docs:
 
-1. [Installing the software](../installation.md)
+1. [Installing the software](../software/installation.md)
 
 ## Initialising a New Node
 
@@ -30,7 +30,7 @@ und init [your_node_moniker]
 und init MyAwesomeNode
 ```
 
-Once initialised, you can edit your configuration in `$HOME/.und_mainchain/config/config.toml`
+Once initialised, you can edit your configuration in `$HOME/.und_mainchain/config/config.toml`. See [configuration reference](../software/und-mainchain-config-ref.md) for more details on the config file.
 
 ::: tip NOTE
 the default directory used by `und` is `$HOME/.und_mainchain`. This can be changed by passing the global `--home=` flag to the `und` command, for example `und start --home=$HOME/.und_mainchain_TestNet`.
@@ -115,27 +115,6 @@ sent via your local node (which was started using the `und start` command, and w
 ::: tip
 You can use the `--node` flag with the `undcli` command to have it send to a different node instead.
 :::
-
-## Invariance checking
-
-You don't need to become a validator to take part in the network - just running a full node as a p2p peer is very useful. Another method to help the network, is invariance checking. This can help the network by periodically checking blocks for invariances which could potentially cause issues.
-
-::: tip NOTE
-Invariance checking is resource intensive, so should not be invoked on validator nodes!
-:::
-
-Start a full node with the `--inv-check-period` flag. Value of 1 will
-check every block for invariances:
-
-```
-und start --inv-check-period 1
-```
-
-Invariance Tx can be sent using:
-
-```
-undcli tx crisis invariant-broken enterprise module-account --from wrktest
-```
 
 ## TestNet Faucet
 

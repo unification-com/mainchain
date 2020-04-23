@@ -6,6 +6,10 @@ If you intend to become a [MainNet Validator](become-mainnet-validator.md), it w
 Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
 :::
 
+::: tip
+Validator nodes require high availability and uptimes. The following guide therefore assumes the node is running on a server/cloud VM, as opposed to a laptop or home PC.
+:::
+
 #### Contents
 
 [[toc]]
@@ -14,7 +18,7 @@ Whenever you use `undcli` to send Txs or query the chain ensure you pass the cor
 
 Before continuing, ensure you have gone through the following docs:
 
-1. [Installing the software](../installation.md)
+1. [Installing the software](../software/installation.md)
 2. [Join the Public TestNet](join-testnet.md)
 3. [Accounts and Wallets](../accounts-wallets.md)
 4. **TestNet** Chain ID - if you haven't already, you can get the current chain ID by running:
@@ -34,6 +38,10 @@ if you intend to fully participate in the running of **TestNet**, your node will
 :::
 
 ## Creating a validator
+
+::: danger IMPORTANT
+keep your `$HOME/.und_mainchain/config/node_key.json` and `$HOME/.und_mainchain/config/priv_validator_key.json` files safe! These are required for your node to propose and sign blocks. If you ever migrate your node to a different host machine or need to restore your node, you will need these!
+:::
 
 The first thing you will need is your node's Tendermint validator public key. This will be used to register your node as a Validator on the network. To get the key, open a terminal and run:
 

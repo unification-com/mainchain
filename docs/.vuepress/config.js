@@ -20,21 +20,30 @@ module.exports = {
             {
                 title: "About Mainchain",
                 children: [
-                    "/about-mainchain",
-                    "/denomination",
-                    "/fees-and-gas",
-                    "/third-party",
-                    "/genesis-settings"
+                    "/introduction/about-mainchain",
+                    "/introduction/denomination",
+                    "/introduction/fees-and-gas",
+                    "/introduction/genesis-settings"
                 ]
             },
             {
                 title: "Install and Use the Software",
                 children: [
-                    "/installation",
-                    "/accounts-wallets",
-                    "/und-commands",
-                    "/undcli-commands",
-                    "/run-und-as-service"
+                    "/software/installation",
+                    "/software/accounts-wallets",
+                    "networks/join-testnet",
+                    "networks/join-mainnet",
+                    "/software/run-und-as-service",
+                    "/software/light-client-rpc",
+                    {
+                      title: "CLI Command & Config References",
+                      children: [
+                        "/software/und-commands",
+                        "/software/undcli-commands",
+                        "/software/und-mainchain-config-ref",
+                        "/software/und-mainchain-app-config-ref"
+                      ]
+                    }
                 ]
             },
             {
@@ -78,7 +87,13 @@ module.exports = {
                 children: [
                     "/guides/cloud/install-aws"
                 ]
-            }
+            },
+            {
+                title: "Developers",
+                children: [
+                    "/developers/third-party",
+                ]
+            },
         ],
     }
 }

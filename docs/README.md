@@ -8,23 +8,33 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 ## 1. About Mainchain
 
-- [What is Mainchain?](about-mainchain.md)
-- [Native Coin Denomination: nund](denomination.md)
-- [Fees and Gas](fees-and-gas.md)
-- [Third Party Tool Development](third-party.md)
-- [Introduction to Genesis Params](genesis-settings.md)
+- [What is Mainchain?](introduction/about-mainchain.md)
+- [Native Coin Denomination: nund](introduction/denomination.md)
+- [Fees and Gas](introduction/fees-and-gas.md)
+- [Introduction to Genesis Params](introduction/genesis-settings.md)
 
 ## 2. Install & Use the Software
 
-- [Installation](installation.md)
-- [Accounts and Wallets](accounts-wallets.md)
-- [Run `und` as a daemon](run-und-as-service.md)
+- [Installation](software/installation.md)
+- [Accounts and Wallets](software/accounts-wallets.md)
+- [Run a full node & join TestNet](networks/join-testnet.md)
+- [Run a full node & join MainNet](networks/join-mainnet.md)
+- [Run `und` as a daemon](software/run-und-as-service.md)
+
+### Light Client & REST
+
+- [Running a Light Client/REST server](software/light-client-rpc.md)
+
 
 ### Full Command References
 
-- [`und` - the und server command reference](und-commands.md)
-- [`undcli` - the und client command reference](undcli-commands.md)
+- [`und` - the und server command reference](software/und-commands.md)
+- [`undcli` - the und client command reference](software/undcli-commands.md)
 
+### Full Config File References
+
+- [`.und_mainchain/config/config.toml` Reference](software/und-mainchain-config-ref.md)
+- [`.und_mainchain/config/app.toml` Reference](software/und-mainchain-app-config-ref.md)
 ## 3. Mainchain Networks
 
 ### Mainchain Public Testnet
@@ -54,4 +64,6 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [AWS 101: Introduction to installing `und` on AWS EC2 instances](guides/cloud/install-aws.md)
 
-## Light Clients & RPC
+## 5. Developer guides
+
+- [Third Party Tool Development](developers/third-party.md)

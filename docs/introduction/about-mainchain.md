@@ -47,4 +47,4 @@ Unification have also developed the following modules for Mainchain:
 
 #### Next
 
-[Installing](installation.md) the Mainchain binaries
+[Installing](../software/installation.md) the Mainchain binaries

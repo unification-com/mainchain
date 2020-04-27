@@ -4,6 +4,10 @@
 
 Unreleased changes have been merged into `master`
 
+* [[`137519cc0f`](https://github.com/unification-com/mainchain/commit/137519cc0f)] - docs - add google cloud 101 guide to menus (Codegnosis)
+* [[`b80e871105`](https://github.com/unification-com/mainchain/commit/b80e871105)] - docs - add google cloud 101 guide (Codegnosis)
+* [[`5d942aaea9`](https://github.com/unification-com/mainchain/commit/5d942aaea9)] - Merge pull request [#143](https://github.com/unification-com/mainchain/pull/143) from unification-com/improve\_changelog (Indika)
+* [[`0b97f42410`](https://github.com/unification-com/mainchain/commit/0b97f42410)] - improved changelog (Codegnosis)
 * [[`247c82c466`](https://github.com/unification-com/mainchain/commit/247c82c466)] - Merge pull request [#142](https://github.com/unification-com/mainchain/pull/142) from unification-com/docs\_20200423 ([Indika](https://github.com/indika))
 * [[`100a093cfd`](https://github.com/unification-com/mainchain/commit/100a093cfd)] - docs - menus and links to new docs ([Codegnosis](https://github.com/Codegnosis))
 * [[`b12720e098`](https://github.com/unification-com/mainchain/commit/b12720e098)] - docs - appendix to AWS guide intro caveat ([Codegnosis](https://github.com/Codegnosis))

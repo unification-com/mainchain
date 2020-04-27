@@ -7,7 +7,7 @@ This document will guide you though registering a new WRKChain and submitting ha
 >**Note**: It is _HIGHLY_ recommended that you only undertake this guide on
 either [DevNet](local-devnet.md) or TestNet first.
 
-### Contents
+#### Contents
 
 [[toc]]
 

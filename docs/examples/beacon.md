@@ -1,6 +1,6 @@
 # BEACON Example
 
-### Contents
+#### Contents
 
 [[toc]]
 

@@ -87,7 +87,8 @@ module.exports = {
             {
                 title: "In-depth Guides",
                 children: [
-                    "/guides/cloud/install-aws"
+                    "/guides/cloud/install-aws",
+                    "/guides/cloud/install-gc"
                 ]
             },
             {

@@ -65,6 +65,7 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 ### In-depth guides
 
 - [AWS 101: Introduction to installing `und` on AWS EC2 instances](guides/cloud/install-aws.md)
+- [Google Cloud 101: Introduction to installing `und` on Google Cloud VMs](guides/cloud/install-gc.md)
 
 ## 5. Developer guides
 

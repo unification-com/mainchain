@@ -10,9 +10,13 @@ By default, your node's `P2P` address is not advertised, and its `RPC` is only a
 
 This scenario is ideal for users who wish to infrequently spin up their node for the purpose of sending transactions to the network, or for users who are for example running a WRKChain, and wish to use the local node for broadcasting their WRKChain transactions.
 
+Local full nodes can be run on your local PC, or server/cloud VMs alongside WRKChain architecture.
+
 ## Seed Nodes
 
 Seed nodes are used by full nodes to bootstrap their address book, by keeping a record of permanently connected nodes, and broadcasting their addresses on request. Seed nodes don't accept or broadcast transactions, and immediately disconnect from a peer once it has sent its address book to the connected peer.
+
+Seed nodes are best run on servers/cloud VMs with high uptimes.
 
 ### Configuring a seed node
 
@@ -26,6 +30,8 @@ p2p.seed_mode = true
 ## Archive Nodes
 
 Archive nodes are full nodes that keep a complete history of the chain state, by not pruning any sync data (i.e. `pruning` is set to `nothing` in `$HOME/.und_mainchain/app.toml`). They are used as the data source for third party applications such as block explorers and wallet apps, since they keep a complete event and transaction history.
+
+Archive nodes are best run on servers/cloud VMs with high uptimes.
 
 ### Configuring an archive node
 
@@ -45,11 +51,13 @@ minimum-gas-prices = "0.25nund"
 pruning = "nothing"
 ```
 
-Ensure any firewall rules allow incoming requests to ports `26656` and `26657` from `0.0.0.0/0`.
+Ensure any firewall rules allow incoming requests to ports `26656` and `26657` from `0.0.0.0/0` - this will allow any clients to query your node.
 
 ### REST server
 
 A REST (light-client) server can be run alongside an Archive Node to offer deeper querying capabilities to the network. Third party applications such as block explorers and wallet apps rely on REST servers along with Archive nodes for their data.
+
+REST servers are best run on servers/cloud VMs with high uptimes, along with an Archive node.
 
 ## Relay Nodes
 

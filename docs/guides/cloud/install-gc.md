@@ -274,6 +274,8 @@ laddr = "tcp://127.0.0.1:26657"
 once you have run the` create-validator` command. Broadcasting transactions can instead be done via a public RPC node, or, more securely, via a full node running on your local PC. See [Part 8: Final cleanup](#part-8-final-cleanup) for further details.
 :::
 
+**Pruning & Gas Prices**
+
 It is good practice to set the `minimum-gas-prices` value in `$HOME/.und_mainchain/config/app.toml`, in order to protect your full node from spam transactions. This should be set as a decimal value in `nund`, and the recommended value is currently **`0.25nund`**. This means your node will ignore any Txs with a gas price below this value. To do so, open up `$HOME/.und_mainchain/config/app.toml` in a text editor, and set `minimum-gas-prices`
 
 ```bash
@@ -290,6 +292,12 @@ To, for example:
 
 ```toml
 minimum-gas-prices = "0.25nund"
+```
+
+Finally, set the `pruning` value to `nothing`:
+
+```toml
+pruning = "nothing"
 ```
 
 Hit <kbd>Ctrl</kbd>+<kbd>X</kbd> followed by `y` and then return to save the file and exit nano.
@@ -335,7 +343,7 @@ Description=Unification Mainchain Validator Node
 User=vmusername
 Group=vmusername
 WorkingDirectory=/home/vmusername
-ExecStart=/usr/local/bin/und start --home /home/vmusername/.und_mainchain
+ExecStart=/usr/local/bin/und start --pruning=nothing --home=/home/vmusername/.und_mainchain
 
 [Install]
 WantedBy=default.target

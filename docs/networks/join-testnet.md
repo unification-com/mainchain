@@ -91,6 +91,12 @@ always check the latest TestNet seed node in the repository - the above example 
 
 In order to protect your full node from spam transactions, it is good practice to set the `minimum-gas-prices` value in `$HOME/.und_mainchain/config/app.toml`. This should be set as a decimal value, and the recommended value for **TestNet** is currently `0.025nund` to `0.25nund`.
 
+## Pruning
+
+::: tip Note
+If you intend for your node to become a **Validator node**, you should also set `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`, or start your node with the `--pruning=nothing` flag.
+:::
+
 ## Running your node
 
 Now that you have `genesis`, and some seed nodes, you can run your full node:

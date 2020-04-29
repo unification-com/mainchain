@@ -4,6 +4,8 @@
 
 Unreleased changes have been merged into `master`
 
+* [[`cb8189b636`](https://github.com/unification-com/mainchain/commit/cb8189b636)] - docs - pruning notes (Codegnosis)
+* [[`1d747147ef`](https://github.com/unification-com/mainchain/commit/1d747147ef)] - Merge pull request [#144](https://github.com/unification-com/mainchain/pull/144) from unification-com/docs\_20200427 (Indika)
 * [[`137519cc0f`](https://github.com/unification-com/mainchain/commit/137519cc0f)] - docs - add google cloud 101 guide to menus (Codegnosis)
 * [[`b80e871105`](https://github.com/unification-com/mainchain/commit/b80e871105)] - docs - add google cloud 101 guide (Codegnosis)
 * [[`5d942aaea9`](https://github.com/unification-com/mainchain/commit/5d942aaea9)] - Merge pull request [#143](https://github.com/unification-com/mainchain/pull/143) from unification-com/improve\_changelog (Indika)

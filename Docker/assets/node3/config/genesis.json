@@ -62,15 +62,15 @@
     },
     "mint": {
       "minter": {
-        "inflation": "0.001000000000000000",
+        "inflation": "0.000000000000000000",
         "annual_provisions": "0.000000000000000000"
       },
       "params": {
         "mint_denom": "nund",
-        "inflation_rate_change": "0.130000000000000000",
-        "inflation_max": "0.200000000000000000",
-        "inflation_min": "0.001000000000000000",
-        "goal_bonded": "0.100000000000000000",
+        "inflation_rate_change": "0.000000000000000000",
+        "inflation_max": "0.000000000000000000",
+        "inflation_min": "0.000000000000000000",
+        "goal_bonded": "0.670000000000000000",
         "blocks_per_year": "6311520"
       }
     },
@@ -116,7 +116,7 @@
             "coins": [
               {
                 "denom": "nund",
-                "amount": "100000000000000"
+                "amount": "18900000000000000"
               }
             ],
             "public_key": null,
@@ -310,7 +310,7 @@
       "params": {
         "ent_signers": "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6,und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
         "denom": "nund",
-        "min_Accepts": "2",
+        "min_Accepts": "1",
         "decision_time_limit": "120"
       },
       "starting_purchase_order_id": "1",
@@ -319,7 +319,8 @@
       "total_locked": {
         "denom": "nund",
         "amount": "0"
-      }
+      },
+      "whitelist": ["und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy"]
     }
   }
 }

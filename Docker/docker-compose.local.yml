@@ -8,12 +8,13 @@ services:
       args:
         WITH_DELVE: "no"
     container_name: node1
-    command: /root/.go/bin/und start --home /root/.und_mainchain/node1 --rpc.laddr=tcp://0.0.0.0:26661 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
+    command: /root/.go/bin/und start --home /root/.und_mainchain/node1 --p2p.laddr=tcp://0.0.0.0:26651 --rpc.laddr=tcp://0.0.0.0:26661 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.3
     ports:
       - "26661:26661"
+      - "26651:26651"
 
   node2:
     hostname: node2
@@ -23,12 +24,13 @@ services:
       args:
         WITH_DELVE: "no"
     container_name: node2
-    command: /root/.go/bin/und start --home /root/.und_mainchain/node2 --rpc.laddr=tcp://0.0.0.0:26662 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
+    command: /root/.go/bin/und start --home /root/.und_mainchain/node2 --p2p.laddr=tcp://0.0.0.0:26652 --rpc.laddr=tcp://0.0.0.0:26662 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.4
     ports:
       - "26662:26662"
+      - "26652:26652"
 
   node3:
     hostname: node3
@@ -38,12 +40,13 @@ services:
       args:
         WITH_DELVE: "no"
     container_name: node3
-    command: /root/.go/bin/und start --home /root/.und_mainchain/node3 --rpc.laddr=tcp://0.0.0.0:26663 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
+    command: /root/.go/bin/und start --home /root/.und_mainchain/node3 --p2p.laddr=tcp://0.0.0.0:26653 --rpc.laddr=tcp://0.0.0.0:26663 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.5
     ports:
       - "26663:26663"
+      - "26653:26653"
 
   rest-server:
     hostname: rest-server

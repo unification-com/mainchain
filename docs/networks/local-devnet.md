@@ -74,14 +74,16 @@ See below for each node's RPC IPs and Ports.
 
 The DevNet composition will spin up three full nodes, one light REST client, and a proxy server in the following Docker containers:
 
-- `node1` - Full validation node, RPC on 172.25.0.3:26661
-- `node2` - Full validation node, RPC on 172.25.0.4:26662
-- `node3` - Full validation node, RPC on 172.25.0.5:26663
+- `node1` - Full validation node, RPC on 172.25.0.3:26661, P2P on 172.25.0.3:26651
+- `node2` - Full validation node, RPC on 172.25.0.4:26662, P2P on 172.25.0.4:26652
+- `node3` - Full validation node, RPC on 172.25.0.5:26663, P2P on 172.25.0.5:26653
 - `rest-server` - Light Client for REST interaction on 172.25.0.6:1317
 - `proxy` - a small proxy server allowing CORS queries to the `rest-server` via 172.25.0.7:1318
 
 ::: tip NOTE
-The DevNet nodes have their RPC ports set to 26661, 26662 and 26663 respectively, and not the default 26657.
+The DevNet nodes:  
+P2P ports set to 26651, 26652 and 26653 respectively, and not the default 26656.  
+RPC ports set to 26661, 26662 and 26663 respectively, and not the default 26657.
 :::
 
 ## DevNet test accounts, wallets and keys

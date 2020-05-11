@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	// WRKChain fees, in nano UND
-	RegFee    = 1000000000000                // 1000 UND - used in init genesis
-	RecordFee = 1000000000                   // 1 UND - used in init genesis
+	// WRKChain fees, in nano FUND
+	RegFee    = 1000000000000                // 1000 FUND - used in init genesis
+	RecordFee = 1000000000                   // 1 FUND - used in init genesis
 	FeeDenom  = undtypes.DefaultDenomination // used in init genesis
 
 	DefaultStartingWrkChainID uint64 = 1 // used in init genesis

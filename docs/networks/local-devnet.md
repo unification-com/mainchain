@@ -56,8 +56,8 @@ make devnet-pristine-down
 ## DevNet Chain ID
 
 ::: warning IMPORTANT
-DevNet's Chain ID is `UND-Mainchain-DevNet`. Any `und` or `undcli` commands
-intended for DevNet should use the flag `--chain-id UND-Mainchain-DevNet`
+DevNet's Chain ID is `FUND-Mainchain-DevNet`. Any `und` or `undcli` commands
+intended for DevNet should use the flag `--chain-id FUND-Mainchain-DevNet`
 :::
 
 ## DevNet RPC Nodes
@@ -65,7 +65,7 @@ intended for DevNet should use the flag `--chain-id UND-Mainchain-DevNet`
 By default `undcli` will attempt to broadcast transactions to tcp://localhost:26656. However, any of the DevNet nodes can be used to send transactions via `undcli` using the `--node=` flag, for example:
 
 ```bash
-undcli query tx TX_HASH --chain-id UND-Mainchain-DevNet --node=tcp://172.25.0.3:26661
+undcli query tx TX_HASH --chain-id FUND-Mainchain-DevNet --node=tcp://172.25.0.3:26661
 ```
 
 See below for each node's RPC IPs and Ports.
@@ -114,7 +114,7 @@ You will be prompted to enter the mnemonic phrase, and a password for your OS's 
 `undcli` defaults for DevNet can be set as follows. This will set the corresponding values in `$HOME/.und_cli/config/config.toml`
 
 ```
-undcli config chain-id UND-Mainchain-DevNet
+undcli config chain-id FUND-Mainchain-DevNet
 undcli config node tcp://localhost:26661
 ```
 

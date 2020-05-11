@@ -37,7 +37,7 @@ account `und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy`. We would
 therefore run:
 
 ```bash
-undcli tx send und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy 1000000000nund --chain-id UND-Mainchain-DevNet --node=tcp://172.25.0.3:26661 --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node=false
+undcli tx send und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy 1000000000nund --chain-id FUND-Mainchain-DevNet --node=tcp://172.25.0.3:26661 --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node=false
 ```
 
 You will be prompted for confirmation, along with your password for the account.
@@ -61,7 +61,7 @@ similar to the following:
 You can then query the transaction's progress and final result by running:
 
 ```bash
-undcli query tx 6FC93147D467E27C104BD68DADAC0CFD6AA130E37E8B29F6652570A891E38F71 --chain-id UND-Mainchain-DevNet
+undcli query tx 6FC93147D467E27C104BD68DADAC0CFD6AA130E37E8B29F6652570A891E38F71 --chain-id FUND-Mainchain-DevNet
 ```
 
 The output should be similar to:
@@ -161,7 +161,7 @@ Finally, to check that the funds have been sent and received, we can query the
 account:
 
 ```bash
-undcli query account und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --chain-id UND-Mainchain-DevNet
+undcli query account und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --chain-id FUND-Mainchain-DevNet
 ```
 
 Which will output a result similar to:

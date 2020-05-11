@@ -1,13 +1,13 @@
 ![Unification](https://raw.githubusercontent.com/unification-com/mainchain/master/unification_logoblack.png "Unification")
 
-## UND Mainchain
+## Unification Mainchain
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain)](https://goreportcard.com/report/github.com/unification-com/mainchain)
 [![Join the chat at https://gitter.im/unification-com/mainchain](https://badges.gitter.im/unification-com/mainchain.svg)](https://gitter.im/unification-com/mainchain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Official Golang implementation of Unification Mainchain.
 
-Mainchain is the backbone of the Unification Network. It is a Tendermint based chain, and is where WRKChains and BEACONs submit their hashes, and UND transactions take place.
+Mainchain is the backbone of the Unification Network. It is a Tendermint based chain, and is where WRKChains and BEACONs submit their hashes, and FUND transactions take place.
 
 ## Quick start installation
 
@@ -59,7 +59,7 @@ $ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_ma
 
 ## DevNet Development Enviroment
 
-A complete DevNet environment, comprising of 3 EVs, a REST server, a reverse proxy server and several test wallets loaded with UND is available via Docker Compose compositions  for development and testing purposes. See [DevNet documentation](docs/local-devnet.md) for more detailed information.
+A complete DevNet environment, comprising of 3 EVs, a REST server, a reverse proxy server and several test wallets loaded with FUND is available via Docker Compose compositions  for development and testing purposes. See [DevNet documentation](docs/local-devnet.md) for more detailed information.
 
 ## Unit Tests & Chain Simulation
 

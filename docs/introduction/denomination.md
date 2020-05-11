@@ -1,32 +1,32 @@
 # Native Coin Denomination `nund`
 
-The native coin denomination on Mainchain (MainNet, TestNet and DevNet) is **`nund`**, or "Nano UND", such that 1,000,000,000 nund == 1 UND.
+The currency used on Mainchain is FUND. However, the native coin denomination on Mainchain (MainNet, TestNet and DevNet) is **`nund`**, or "Nano Unification Denomination", such that 1,000,000,000 nund == 1 FUND.
 
-All transactions, fees and stakes are paid for in `nund`. For example, if you need to send 1 UND to your friend, you will need to set your Tx to send `1000000000nund`.
+All transactions, fees and stakes are paid for in `nund`. For example, if you need to send 1 FUND to your friend, you will need to set your Tx to send `1000000000nund`.
 
 The `undcli` CMD has a simple conversion utility to help convert any fees
-and UND transactions into `nund`, and vice-versa:
+and FUND transactions into `nund`, and vice-versa:
 
 ```bash
-undcli convert 1000000000 nund und
+undcli convert 1000000000 nund fund
 ```
 
 will result in:
 
 ```bash
-1000000000nund = 1.000000000und
+1000000000nund = 1.000000000fund
 ```
 
 Likewise,
 
 ```bash
-undcli convert 10 und nund
+undcli convert 10 fund nund
 ```
 
 will result in:
 
 ```bash
-10und = 10000000000nund
+10fund = 10000000000nund
 ```
 
 ## HD Wallet Path

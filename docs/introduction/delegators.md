@@ -2,15 +2,15 @@
 
 ## Overview
 
-Many users may want to participate in the running of Unification Mainchain without running a full node and becoming a validator operator. Delegators can stake their UND to a validator in order to participate.
+Many users may want to participate in the running of Unification Mainchain without running a full node and becoming a validator operator. Delegators can stake their FUND to a validator in order to participate.
 
-The current pool of 96 Validator nodes is selected based on not only the self-delegated UND staked by the Validator operator(s), but additionally the total UND delegated to it by other users.
+The current pool of 96 Validator nodes is selected based on not only the self-delegated FUND staked by the Validator operator(s), but additionally the total FUND delegated to it by other users.
 
-Delegators play an important role in the staking process, and indeed the running of the network itself, by acting as a further safeguard against any potential misbehaviour of validators. If delegators feel that a validator is not behaving in the best interests of the network, they can simply move their staked UND away from them. If the validator's total stake falls below the top 96 validator stakes, they will be removed from the active validator pool.
+Delegators play an important role in the staking process, and indeed the running of the network itself, by acting as a further safeguard against any potential misbehaviour of validators. If delegators feel that a validator is not behaving in the best interests of the network, they can simply move their staked FUND away from them. If the validator's total stake falls below the top 96 validator stakes, they will be removed from the active validator pool.
 
 Additionally, Delegators can (and should) take part in network governance by voting on proposals.
 
-Delegating comes with both [risks](#risks) and [rewards](#rewards). Delegators share a percentage of the UND earned by their chosen validator(s) from processing transactions, and singing/producing blocks. The amount earned proportional the amount staked. Risks come from losing a small amount of staked UND should the validator misbehave - this includes prolonged periods of downtime, and more importantly, double-signing blocks.
+Delegating comes with both [risks](#risks) and [rewards](#rewards). Delegators share a percentage of the FUND earned by their chosen validator(s) from processing transactions, and singing/producing blocks. The amount earned proportional the amount staked. Risks come from losing a small amount of staked FUND should the validator misbehave - this includes prolonged periods of downtime, and more importantly, double-signing blocks.
 
 ## The Delegation process
 
@@ -27,17 +27,17 @@ Information regarding validators can be obtained from a number of sources, inclu
 - **Maximum Rate Change** - the maximum daily percentage a validator can increase their commission rate.
 - **Minimum self-delegation** - the minimum `nund` a validator can self-delegate. If their self-delegation drops below this amount (for example, they manually unbond, or through slashing due to bad behaviour), all delegations are automatically unbonded. This ensures validators behave in the best interest of the network. Higher numbers are better.
 
-### Delegating your UND
+### Delegating your FUND
 
 The process is simple - a user sends a special delegation transaction, which tells the network to "bond" the chosen amount of UND to the selected validator. This can be done via the `undcli` CLI's [delegate](../software/undcli-commands.html#undcli-tx-staking-delegate) command, or via the [Web Wallet](https://chrome.google.com/webstore/detail/mkjjflkhdddfjhonakofipfojoepfndk) Chrome extension.
 
 ::: tip IMPORTANT
-When delegating UND to a validator, ownership of the UND being staked is **NEVER** actually transferred anywhere. You will **ALWAYS** retain 100% ownership and full control of that UND, since it is simply "flagged" in your wallet as being bonded to a Validator. The validator has absolutely **ZERO** control over your UND.
+When delegating FUND to a validator, ownership of the FUND being staked is **NEVER** actually transferred anywhere. You will **ALWAYS** retain 100% ownership and full control of that FUND, since it is simply "flagged" in your wallet as being bonded to a Validator. The validator has absolutely **ZERO** control over your FUND.
 :::
 
 **Example using `undcli`**
 
-You have done some research, and found a validator candidate to delegate 1000 UND to. You need a wallet with sufficient UND, and the Validator's Operator Address. This is different to a standard `und` address and begins with `undvaloper`, for example `undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps`.
+You have done some research, and found a validator candidate to delegate 1000 FUND to. You need a wallet with sufficient FUND, and the Validator's Operator Address. This is different to a standard `und` address and begins with `undvaloper`, for example `undvaloper16twxa6lyj7uhp56tukrcfz2p6q93mrxgt60mps`.
 
 Assuming you have [imported/added](../software/undcli-commands.html#undcli-keys-add) your wallet key into `undcli`'s keychain, you would run:
 
@@ -58,7 +58,7 @@ replacing `[full-node-ip]` and `[chain_id]` with the relevant IP and chain ID re
 
 Delegators may participate in several functions regarding the running of the network, including:
 
-- **Exercising due diligence when selecting a validator to delegate to**: an important fist step, before delegating UND is to ensure that the chosen validator has a history of good behaviour. There are several tools available, from block explorers to the `undcli` command line tools for querying a validator.
+- **Exercising due diligence when selecting a validator to delegate to**: an important fist step, before delegating FUND is to ensure that the chosen validator has a history of good behaviour. There are several tools available, from block explorers to the `undcli` command line tools for querying a validator.
 
 - **Monitore the validator's behaviour after delegation**: this includes ensuring the validator maintains high uptimes (does not frequently miss blocks), does not double-sign blocks, and participates in governance.
 
@@ -68,7 +68,7 @@ Delegators may participate in several functions regarding the running of the net
 
 ## Rewards
 
-Every transaction sent to the network has a fee paid. Some Tx fees, such as submitting WRKChain hashes are fixed at 1 UND per Tx, and others are more flexible depending on how much as user is willing to pay. With each block, the fees are distributed among the active validators and their delegators as rewards. Rewards paid are proportional to the amount staked.
+Every transaction sent to the network has a fee paid. Some Tx fees, such as submitting WRKChain hashes are fixed at 1 FUND per Tx, and others are more flexible depending on how much as user is willing to pay. With each block, the fees are distributed among the active validators and their delegators as rewards. Rewards paid are proportional to the amount staked.
 
 You can monitor and withdraw your rewards as often as you like with either the `undcli` [rewards](../software/undcli-commands.html#undcli-query-distribution-rewards) query and [withdraw-rewards](../software/undcli-commands.html#undcli-tx-distribution-withdraw-rewards) Tx, or via the [Web Wallet](https://chrome.google.com/webstore/detail/mkjjflkhdddfjhonakofipfojoepfndk) Chrome extension.
 

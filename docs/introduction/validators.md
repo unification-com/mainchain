@@ -2,7 +2,7 @@
 
 Validators play a key role in running Unification's Mainchain. Mainchain is built on Tendermint, which relies on a set of defined validator nodes to process transactions and produce and sign new blocks.
 
-The initial validator set for MainNet is 96, and is selected from the validators who have the most UND delegated to them through a combination of self-delegation, and user [delegation](delegators.md).
+The initial validator set for MainNet is 96, and is selected from the validators who have the most FUND delegated to them through a combination of self-delegation, and user [delegation](delegators.md).
 
 Validators earn rewards from transaction fees, and commission charged to their delegators.
 

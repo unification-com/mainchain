@@ -1,4 +1,4 @@
-# Enterprise UND Example
+# Enterprise FUND Example
 
 #### Contents
 
@@ -19,12 +19,12 @@ get specific purchase order:
 undcli query enterprise get 1
 ```
 
-Query total locked enterprise UND
+Query total locked enterprise FUND
 ```
 undcli query enterprise total-locked
 ```
 
-Query locked enterprise UND for an account
+Query locked enterprise FUND for an account
 ```
 undcli query enterprise locked [address]
 ```

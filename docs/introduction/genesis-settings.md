@@ -53,9 +53,9 @@ Enterprise parameters are changeable via governance
 - `.app_state.enterprise.params.decision_time_limit`  
 The time (in seconds) after which a raised Enterprise Purchase Order will automatically be rejected if no decision has been made. E.g. 259200
 - `.app_state.enterprise.params.denom`  
-Denomination in which Enterprise UND will be issued. E.g. nund
+Denomination in which Enterprise FUND will be issued. E.g. nund
 - `.app_state.enterprise.params.ent_signers`  
-Comma separated list of wallet addresses authorised to accept/reject Enterprise UND Purchase Orders.
+Comma separated list of wallet addresses authorised to accept/reject Enterprise FUND Purchase Orders.
 - `.app_state.enterprise.params.min_Accepts`  
 Minimum number of `params.ent_signers` required to make a decision on a Purchase Order.
 

@@ -9,7 +9,7 @@
 This guide introduces a _very simple_ "quick start" single AWS EC2 instance, using a VPC with a single public subnet to connect to the Mainchain Public **TestNet**. Validator node operators are highly encouraged to explore more sophisticated architecture configurations to increase the security, reliability and availability of their Validator node - for example, multi layered network with both private/public subnets, one or more "sentry" full (non-validator) nodes placed in front of your main (hidden in a private subnet) Validator node to handle and relay communication from the outside world, and reverse proxy for any RPC access via the sentries etc. in addition to implementing hardware KMS solutions to protect validator private keys.
 
 ::: danger Important
-This guide should not be considered the default, full, out of the box solution for a Validator node, but more an "AWS 101" guide to familiarise the reader with the core concepts involved in setting up the minimum AWS EC2 instance and associated service requirements in order to operate a UND Validator node. It should be considered a starting point giving you the initial building blocks from which to build a more sophisticated network/node architecture to support and protect your Validator node.
+This guide should not be considered the default, full, out of the box solution for a Validator node, but more an "AWS 101" guide to familiarise the reader with the core concepts involved in setting up the minimum AWS EC2 instance and associated service requirements in order to operate a Validator node. It should be considered a starting point giving you the initial building blocks from which to build a more sophisticated network/node architecture to support and protect your Validator node.
 :::
 
 ::: tip
@@ -432,7 +432,7 @@ If you already have a wallet, you can import the account using:
 
 in which case, you will be prompted for the mnemonic and a password to secure the wallet.
 
-From here, it is assumed the reader has an account with sufficient UND from which to self-delegate and create their Validator node. The account you use to self-delegate will become the "owner" account of the Validator node.
+From here, it is assumed the reader has an account with sufficient FUND from which to self-delegate and create their Validator node. The account you use to self-delegate will become the "owner" account of the Validator node.
 
 On your local PC, run the following command, replacing any text in `[square_brackets]` accordingly with your own values:
 
@@ -457,7 +457,7 @@ On your local PC, run the following command, replacing any text in `[square_brac
 --broadcast-mode block \
 --trust-node false
 ```
-`[stake_in_nund]` = (required) the amount of UND in `nund` you are self-delegating. You can use the `undcli convert 1000 und nund` command to convert UND to nund. E.g. `1000000000000nund`.
+`[stake_in_nund]` = (required) the amount of FUND in `nund` you are self-delegating. You can use the `undcli convert 1000 fund nund` command to convert FUND to nund. E.g. `1000000000000nund`.
 
 ::: warning Note
 do not enter more nund than you have in your wallet!
@@ -475,7 +475,7 @@ do not enter more nund than you have in your wallet!
 
 `[chain_id]` = the network (e.g. `UND-Mainchain-TestNet-v4`) you are creating a validator on - this was obtained earlier in the guide via the `jq` command
 
-`[account_name]` = the account self-delegating the UND, previously created/imported with the `undcli keys add` command
+`[account_name]` = the account self-delegating the FUND, previously created/imported with the `undcli keys add` command
 
 `[vm_ip]` = the IP address of your EC2 instance running the full node - you can get this from your AWS EC2 Instances console.
 

@@ -3,7 +3,7 @@ swagger: "2.0"
 info:
   version: "1.0"
   title: Und-Lite for Unification Mainchain
-  description: A REST interface for state queries, transaction generation and broadcasting on UND Mainchain.
+  description: A REST interface for state queries, transaction generation and broadcasting on und Mainchain.
 tags:
   - name: Transactions
     description: Search, encode, or broadcast transactions.
@@ -14,7 +14,7 @@ tags:
   - name: Bank
     description: Create and broadcast transactions
   - name: Enterprise
-    description: Enterprise UND module APIs
+    description: Enterprise FUND module APIs
   - name: WRKChain
     description: WRKChain module APIs
   - name: BEACON
@@ -89,7 +89,7 @@ paths:
                         example: 0
                   network:
                     type: string
-                    example: UND-Mainchain-DevNet
+                    example: FUND-Mainchain-DevNet
                   channels:
                     type: string
                   listen_addr:
@@ -255,7 +255,7 @@ paths:
         - in: query
           name: message.action
           type: string
-          description: "transaction events such as 'message.action=send' which results in the following endpoint: 'GET /txs?message.action=send'. note that each module documents its own events. look for xx_events.md in the corresponding und-sdk/docs/spec directory"
+          description: "transaction events such as 'message.action=send' which results in the following endpoint: 'GET /txs?message.action=send'. note that each module documents its own events. look for xx_events.md in the corresponding docs/spec directory"
           x-example: "send"
         - in: query
           name: message.sender
@@ -1391,13 +1391,13 @@ paths:
           description: Internal Server Error
   /supply/total:
     get:
-      summary: Total supply of UND in the chain
+      summary: Total supply of FUND in the chain
       description: |
-        Total UND on the chain, including any locked Enteprise UND.
+        Total FUND on the chain, including any locked Enteprise FUND.
         * denom - coin denomination. Always nund
-        * amount - amount of liquid UND (i.e. not locked) which can be used for transfers, staking, fees, standard tranactions etc.
-        * locked - amount of locked Enterprise UND. This is not in general circulation        and cannot be used for standard transactions, and therefore does not count towards the total supply. Locked UND only enters general circulation once used to pay for WRKChain or BEACON fees.
-        * total - overall total UND on chain, including any locked UND.
+        * amount - amount of liquid FUND (i.e. not locked) which can be used for transfers, staking, fees, standard tranactions etc.
+        * locked - amount of locked Enterprise FUND. This is not in general circulation        and cannot be used for standard transactions, and therefore does not count towards the total supply. Locked FUND only enters general circulation once used to pay for WRKChain or BEACON fees.
+        * total - overall total FUND on chain, including any locked FUND.
 
       tags:
         - Supply
@@ -1440,7 +1440,7 @@ paths:
           description: Internal Server Error
   /enterprise/locked:
     get:
-      summary: Total amount of locked Enterprise UND
+      summary: Total amount of locked Enterprise FUND
       tags:
         - Enterprise
       produces:
@@ -1454,7 +1454,7 @@ paths:
           description: Internal Server Error
   /enterprise/unlocked:
     get:
-      summary: Total liquid (unlocked) UND
+      summary: Total liquid (unlocked) FUND
       description: Equivalent to "amount" returned from /supply/total endpoint
       tags:
         - Enterprise
@@ -1470,7 +1470,7 @@ paths:
   /enterprise/whitelist:
     get:
       summary: Enteprise Addresses Whitelisted
-      description: returns an array of addresses whitelisted to raise Enterpise UND Purchase Orders.
+      description: returns an array of addresses whitelisted to raise Enterpise FUND Purchase Orders.
       tags:
         - Enterprise
       produces:
@@ -1490,7 +1490,7 @@ paths:
   /enterprise/whitelisted/{address}:
     get:
       summary: Enteprise Address Is Whitelisted
-      description: returns true/false whether or not a given address is whitelisted for raising Enterprise UND purchase orders
+      description: returns true/false whether or not a given address is whitelisted for raising Enterprise FUND purchase orders
       tags:
         - Enterprise
       parameters:
@@ -1515,7 +1515,7 @@ paths:
   /enterprise/pos:
     get:
       summary: Enteprise Purchase Orders
-      description: returns a paginated array of Enteprise UND Purchase orders. Can be filtered by status, purchaser address etc.
+      description: returns a paginated array of Enteprise FUND Purchase orders. Can be filtered by status, purchaser address etc.
       tags:
         - Enterprise
       parameters:
@@ -1579,7 +1579,7 @@ paths:
           description: Internal Server Error
   /enterprise/{purchaser}/locked:
     get:
-      summary: returns the amount of locked UND for the given address
+      summary: returns the amount of locked FUND for the given address
       tags:
         - Enterprise
       parameters:
@@ -1600,7 +1600,7 @@ paths:
           description: Internal Server Error
   /enterprise/purchase:
     post:
-      summary: Generate an Enterprise UND Purchase Order Tx
+      summary: Generate an Enterprise FUND Purchase Order Tx
       parameters:
         - in: body
           name: purchase
@@ -1629,7 +1629,7 @@ paths:
           description: Internal Server Error
   /enterprise/process:
     post:
-      summary: Generate an Enterprise UND Purchase Order process Tx
+      summary: Generate an Enterprise FUND Purchase Order process Tx
       parameters:
         - in: body
           name: process
@@ -2265,7 +2265,7 @@ definitions:
     properties:
       chain_id:
         type: string
-        example: UND-Mainchain-DevNet
+        example: FUND-Mainchain-DevNet
       height:
         type: number
         example: 1
@@ -2396,7 +2396,7 @@ definitions:
         example: "A memo for you"
       chain_id:
         type: string
-        example: "UND-Mainchain"
+        example: "FUND-Mainchain"
       account_number:
         type: string
         example: "0"

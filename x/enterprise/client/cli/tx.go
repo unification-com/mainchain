@@ -29,7 +29,7 @@ const (
 func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	enterpriseTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
-		Short:                      "Enterprise UND transaction subcommands",
+		Short:                      "Enterprise FUND transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -44,13 +44,13 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	return enterpriseTxCmd
 }
 
-// GetCmdRegisterWrkChain is the CLI command for creating an Enterprise UND purchase order
+// GetCmdRegisterWrkChain is the CLI command for creating an Enterprise FUND purchase order
 func GetCmdRaisePurchaseOrder(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "purchase [amount]",
-		Short: "Raise a new Enterprise UND purchase order",
+		Short: "Raise a new Enterprise FUND purchase order",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Raise a new Enterprise UND purchase order
+			fmt.Sprintf(`Raise a new Enterprise FUND purchase order
 Example:
 $ %s tx %s purchase 1000000000000%s --from wrktest
 $ %s tx %s purchase 1%s --from wrktest
@@ -99,13 +99,13 @@ $ %s tx %s purchase 1%s --from wrktest
 	}
 }
 
-// GetCmdProcessPurchaseOrder is the CLI command for processing an Enterprise UND purchase order
+// GetCmdProcessPurchaseOrder is the CLI command for processing an Enterprise FUND purchase order
 func GetCmdProcessPurchaseOrder(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "process [purchase_order_id] [decision]",
-		Short: "Process an Enterprise UND purchase order",
+		Short: "Process an Enterprise FUND purchase order",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Process an Enterprise UND purchase order
+			fmt.Sprintf(`Process an Enterprise FUND purchase order
 Example:
 $ %s tx %s process 24 accept --from ent
 $ %s tx %s process 24 reject --from ent

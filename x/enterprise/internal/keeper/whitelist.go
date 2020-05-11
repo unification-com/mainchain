@@ -7,7 +7,7 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
-// Check if a record exists for locked UND given an account address
+// Check if a record exists for locked FUND given an account address
 func (k Keeper) AddressIsWhitelisted(ctx sdk.Context, address sdk.AccAddress) bool {
 	if address.Empty() {
 		return false

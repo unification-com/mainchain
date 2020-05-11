@@ -6,9 +6,9 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
-// __TOTAL_LOCKED_UND___________________________________________________
+// __TOTAL_LOCKED_FUND___________________________________________________
 
-// GetTotalLockedUnd returns the total locked UND
+// GetTotalLockedUnd returns the total locked FUND
 func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 	store := ctx.KVStore(k.storeKey)
 
@@ -23,7 +23,7 @@ func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 	return totalLocked
 }
 
-// GetTotalUnLockedUnd returns the amount of unlocked UND - i.e. in active
+// GetTotalUnLockedUnd returns the amount of unlocked FUND - i.e. in active
 // circulation (totalSupply - locked)
 func (k Keeper) GetTotalUnLockedUnd(ctx sdk.Context) sdk.Coin {
 	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(k.GetParamDenom(ctx))
@@ -35,14 +35,14 @@ func (k Keeper) GetTotalUnLockedUnd(ctx sdk.Context) sdk.Coin {
 	return unlocked
 }
 
-// GetTotalUndSupply returns the total UND in supply, obtained from the supply module's keeper
+// GetTotalUndSupply returns the total FUND in supply, obtained from the supply module's keeper
 func (k Keeper) GetTotalUndSupply(ctx sdk.Context) sdk.Coin {
 	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(k.GetParamDenom(ctx))
 	total := sdk.NewCoin(k.GetParamDenom(ctx), supply)
 	return total
 }
 
-// GetTotalSupplyIncludingLockedUnd returns information including total UND supply, total locked and unlocked
+// GetTotalSupplyIncludingLockedUnd returns information including total FUND supply, total locked and unlocked
 func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSupply {
 	supply := k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(k.GetParamDenom(ctx))
 	total := sdk.NewCoin(k.GetParamDenom(ctx), supply)
@@ -52,13 +52,13 @@ func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSuppl
 
 	totalSupply := types.NewUndSupply(k.GetParamDenom(ctx))
 	totalSupply.Locked = locked.Amount.Int64()
-	totalSupply.Amount = unlocked.Amount.Int64() // current "liquid" UND
+	totalSupply.Amount = unlocked.Amount.Int64() // current "liquid" FUND
 	totalSupply.Total = total.Amount.Int64()
 
 	return totalSupply
 }
 
-// SetTotalLockedUnd sets the total locked UND
+// SetTotalLockedUnd sets the total locked FUND
 func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) error {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.TotalLockedUndKey, k.cdc.MustMarshalBinaryLengthPrefixed(totalLocked))
@@ -88,13 +88,13 @@ func (k Keeper) MintCoinsAndLock(ctx sdk.Context, recipient sdk.AccAddress, amou
 		return err
 	}
 
-	// Delegate the Enterprise UND module so they can't be spent
+	// Delegate the Enterprise FUND module so they can't be spent
 	err = k.supplyKeeper.DelegateCoinsFromAccountToModule(ctx, recipient, types.ModuleName, newCoins)
 	if err != nil {
 		return err
 	}
 
-	// keep track of how much UND is locked for this account, and in total
+	// keep track of how much FUND is locked for this account, and in total
 	err = k.incrementLockedUnd(ctx, recipient, amount)
 	if err != nil {
 		return err
@@ -110,11 +110,11 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
 	blockTime := ctx.BlockHeader().Time
 
-	// calculate how much Locked UND would be left over after deducting Tx fees
+	// calculate how much Locked FUND would be left over after deducting Tx fees
 	_, hasNeg := lockedUndCoins.SafeSub(feesToPay)
 
 	if !hasNeg {
-		// locked UND >= total fees
+		// locked FUND >= total fees
 		// undelegate the fee amount to allow for payment
 		err := k.supplyKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, feesToPay)
 
@@ -122,7 +122,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 			return err
 		}
 
-		// decrement the tracked locked UND
+		// decrement the tracked locked FUND
 		feeNund := feesToPay.AmountOf(k.GetParamDenom(ctx))
 		feeNundCoin := sdk.NewCoin(k.GetParamDenom(ctx), feeNund)
 		err = k.DecrementLockedUnd(ctx, feePayer, feeNundCoin)
@@ -145,10 +145,10 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		// would have enough to pay for the fees. If not, don't undelegate
 		feePayerAcc := k.accKeeper.GetAccount(ctx, feePayer)
 
-		// How many spendable UND does the account have
+		// How many spendable FUND does the account have
 		spendableCoins := feePayerAcc.SpendableCoins(blockTime)
 
-		// calculate how much would be available if UND were unlocked
+		// calculate how much would be available if FUND were unlocked
 		potentiallyAvailable := spendableCoins.Add(lockedUndCoins...)
 
 		// is this enough to pay for the fees
@@ -194,9 +194,9 @@ func (k Keeper) sendCoinsFromModuleToAccount(ctx sdk.Context, recipientAddr sdk.
 	return k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipientAddr, newCoins)
 }
 
-//__LOCKED_UND__________________________________________________________
+//__LOCKED_FUND__________________________________________________________
 
-// Check if a record exists for locked UND given an account address
+// Check if a record exists for locked FUND given an account address
 func (k Keeper) AccountHasLockedUnd(ctx sdk.Context, address sdk.AccAddress) bool {
 	store := ctx.KVStore(k.storeKey)
 	addressKeyBz := types.AddressStoreKey(address)
@@ -207,7 +207,7 @@ func (k Keeper) IsLocked(ctx sdk.Context, address sdk.AccAddress) bool {
 	return k.GetLockedUndForAccount(ctx, address).Amount.IsPositive()
 }
 
-// Gets a record for Locked UND for a given address
+// Gets a record for Locked FUND for a given address
 func (k Keeper) GetLockedUndForAccount(ctx sdk.Context, address sdk.AccAddress) types.LockedUnd {
 	store := ctx.KVStore(k.storeKey)
 
@@ -226,7 +226,7 @@ func (k Keeper) GetLockedUndAmountForAccount(ctx sdk.Context, address sdk.AccAdd
 	return k.GetLockedUndForAccount(ctx, address).Amount
 }
 
-// Get an iterator over all accounts with Locked UND
+// Get an iterator over all accounts with Locked FUND
 func (k Keeper) GetAllLockedUndAccountsIterator(ctx sdk.Context) sdk.Iterator {
 	store := ctx.KVStore(k.storeKey)
 	return sdk.KVStorePrefixIterator(store, types.LockedUndAddressKeyPrefix)
@@ -251,7 +251,7 @@ func (k Keeper) DeleteLockedUndForAccount(ctx sdk.Context, address sdk.AccAddres
 	store.Delete(types.AddressStoreKey(address))
 }
 
-// Sets the Locked UND data
+// Sets the Locked FUND data
 func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUnd) error {
 	// must have an owner
 	if lockedUnd.Owner.Empty() {
@@ -269,7 +269,7 @@ func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUn
 	return nil
 }
 
-// incrementLockedUnd increments the amount of locked UND - used when purchase order is accepted
+// incrementLockedUnd increments the amount of locked FUND - used when purchase order is accepted
 func (k Keeper) incrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
 
 	lockedUnd := k.GetLockedUndForAccount(ctx, address)
@@ -291,7 +291,7 @@ func (k Keeper) incrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 	return nil
 }
 
-// DecrementLockedUnd decrements the amount of locked UND - used when purchase order is accepted
+// DecrementLockedUnd decrements the amount of locked FUND - used when purchase order is accepted
 func (k Keeper) DecrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
 
 	lockedUnd := k.GetLockedUndForAccount(ctx, address)

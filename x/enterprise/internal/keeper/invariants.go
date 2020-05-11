@@ -19,7 +19,7 @@ func AllInvariants(keeper Keeper) sdk.Invariant {
 }
 
 // ModuleAccountInvariant checks that the module account coins reflects the sum of
-// locked UND held on store
+// locked FUND held on store
 func ModuleAccountInvariant(keeper Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 

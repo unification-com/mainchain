@@ -17,15 +17,15 @@ var (
 	KeyDecisionLimit = []byte("DecisionLimit")
 )
 
-// enterprise UND parameters
+// enterprise FUND parameters
 type Params struct {
-	EntSigners    string `json:"ent_signers" yaml:"ent_signers"` // Accounts allowed to sign decisions on UND purchase orders
+	EntSigners    string `json:"ent_signers" yaml:"ent_signers"` // Accounts allowed to sign decisions on FUND purchase orders
 	Denom         string `json:"denom" yaml:"denom"`
 	MinAccepts    uint64 `json:"min_Accepts" yaml:"min_Accepts"`                 // must be <= len(EntSigners)
 	DecisionLimit uint64 `json:"decision_time_limit" yaml:"decision_time_limit"` // num seconds elapsed before auto-reject
 }
 
-// ParamTable for enterprise UND module.
+// ParamTable for enterprise FUND module.
 func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&Params{})
 }
@@ -39,7 +39,7 @@ func NewParams(denom string, minAccepts uint64, decisionLimit uint64, entSigners
 	}
 }
 
-// default enterprise UND module parameters
+// default enterprise FUND module parameters
 func DefaultParams() Params {
 	return Params{
 		EntSigners:    "und1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq5x8kpm", // default to 0000000000000000000000000000000000000000
@@ -77,7 +77,7 @@ func (p Params) Validate() error {
 }
 
 func (p Params) String() string {
-	return fmt.Sprintf(`Enterprise UND Params:
+	return fmt.Sprintf(`Enterprise FUND Params:
   Source Address: %s
   Denomination: %s
   MinAccepts: %d

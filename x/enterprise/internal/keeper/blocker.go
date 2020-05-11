@@ -119,7 +119,7 @@ func (k Keeper) ProcessAcceptedPurchaseOrders(ctx sdk.Context) {
 			panic(err)
 		}
 
-		// Mint the Enterprise UND
+		// Mint the Enterprise FUND
 		err = k.MintCoinsAndLock(ctx, po.Purchaser, po.Amount)
 		if err != nil {
 			panic(err)

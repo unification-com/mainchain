@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	UndDenom  = "und"  // 1 (base unit)
+	FundDenom = "fund" // 1 (base unit)
 	NundDenom = "nund" // 10^-9 (nano)
 
 	DefaultDenomination = NundDenom // lowest denomination used on chain
-	BaseDenomination    = UndDenom  // actual Coin - i.e. 1 UND
+	BaseDenomination    = FundDenom // actual Coin - i.e. 1 UND
 
 	UndPow  = 1e9  // multiplier for converting from und to (nano) nund
 	NundPow = 1e-9 // multiplier for converting from (nano) nund to und
@@ -23,7 +23,7 @@ func ConvertUndDenomination(amount string, from string, to string) (string, erro
 	}
 
 	switch from {
-	case UndDenom: // from und to nund
+	case FundDenom: // from und to nund
 		fromAmt, err := strconv.ParseFloat(amount, 64)
 		if err != nil {
 			return "", err
@@ -33,7 +33,7 @@ func ConvertUndDenomination(amount string, from string, to string) (string, erro
 		result := new(big.Int)
 		res.Int(result)
 		return result.String() + to, nil
-	case NundDenom: // from nund to und
+	case NundDenom: // from nund to fund
 		fromAmt, err := strconv.ParseFloat(amount, 64)
 		if err != nil {
 			return "", err

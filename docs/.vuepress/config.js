@@ -80,7 +80,7 @@ module.exports = {
                     "/examples/transactions",
                     "/examples/wrkchain",
                     "/examples/beacon",
-                    "/examples/enterprise-und",
+                    "/examples/enterprise-fund",
                     "/examples/finchain"
                 ]
             },

@@ -30,7 +30,7 @@ jq --raw-output '.chain_id' $HOME/.und_mainchain/config/genesis.json
 The above command assumes you have downloaded the TestNet genesis to the default `$HOME/.und_mainchain` directory.
 
 ::: warning IMPORTANT
-you will need an account with sufficient UND to self-delegate to your validator node.
+you will need an account with sufficient FUND to self-delegate to your validator node.
 :::
 
 ::: tip
@@ -62,7 +62,7 @@ Before continuing, ensure your full node has fully synced with TestNet and downl
 When the height is the same as the current network block number, your full node has completed syncing.
 :::
 
-To create your Validator, you will need to generate, sign and broadcast a special transaction to the network which will register your Tendermint validator public key and stake the amount of UND specified (via self-delegation). Run the following command, modifying as required:
+To create your Validator, you will need to generate, sign and broadcast a special transaction to the network which will register your Tendermint validator public key and stake the amount of FUND (in `nund`) specified (via self-delegation). Run the following command, modifying as required:
 
 ```bash
 undcli tx staking create-validator \
@@ -86,25 +86,25 @@ undcli tx staking create-validator \
 
 **Mandatory fields**
 
-`STAKE_IN_NUND`: the amount in nund you want to delegate to yourself. For example, if you want to stake 1000 UND, enter 1000000000000nund.
+`STAKE_IN_NUND`: the amount in nund you want to delegate to yourself. For example, if you want to stake 1000 FUND, enter 1000000000000nund.
 
 ::: tip
 You can use the built in `undcli` conversion tool to calculate this:
 
 ```
-undcli convert 1000 und nund.
+undcli convert 1000 fund nund.
 ```
 :::
 
 ::: warning IMPORTANT
-do not attempt to stake more than you have in your account, and ensure you have enough UND to pay for the transaction fees, and enough left over for future transactions!
+do not attempt to stake more than you have in your account, and ensure you have enough FUND to pay for the transaction fees, and enough left over for future transactions!
 :::
 
 `NODE_TENDERMINT_PUBLIC_KEY`: Your node's tendermint public key, obtained earlier via the `und tendermint show-validator` command.
 
 `CHAIN_ID`: the chain you are creating a validator for. This was obtained previously via the `jq` command.
 
-`SELF_DELEGATOR_ACCOUNT`: the name of the account being used to stake self-delegated UND and sign the transaction — for example, the identifier you entered when running the `undcli keys add` command earlier to create/import an account.
+`SELF_DELEGATOR_ACCOUNT`: the name of the account being used to stake self-delegated FUND and sign the transaction — for example, the identifier you entered when running the `undcli keys add` command earlier to create/import an account.
 
 `YOUR_EV_MONIKER`: a moniker which will publicly identify your EV on the network.
 

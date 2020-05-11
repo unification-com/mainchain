@@ -88,7 +88,7 @@ RPC ports set to 26661, 26662 and 26663 respectively, and not the default 26657.
 
 ## DevNet test accounts, wallets and keys
 
-DevNet is deployed with a pre-defined [genesis.json](https://raw.githubusercontent.com/unification-com/mainchain/master/Docker/assets/node1/config/genesis.json), containing several test accounts loaded with UND and pre-defined validators with self delegation.
+DevNet is deployed with a pre-defined [genesis.json](https://raw.githubusercontent.com/unification-com/mainchain/master/Docker/assets/node1/config/genesis.json), containing several test accounts loaded with FUND and pre-defined validators with self delegation.
 
 See [https://github.com/unification-com/mainchain/blob/master/Docker/README.md](https://github.com/unification-com/mainchain/blob/master/Docker/README.md) for the mnemonic phrases and keys used by the above nodes, and for test accounts included in DevNet's genesis.
 

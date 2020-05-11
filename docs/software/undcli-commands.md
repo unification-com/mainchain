@@ -19,7 +19,7 @@ Available Commands:
 | Command | Description |
 |---------|-------------|
 |[config](#undcli-config)|Create or query an application CLI configuration file|
-|[convert](#undcli-convert)|convert between nund<->UND denominations|
+|[convert](#undcli-convert)|convert between nund<->FUND denominations|
 |[keys](#undcli-keys)|Add or view local private keys|
 |[query](#undcli-query)|Querying subcommands|
 |[rest-server](#undcli-rest-server)|Start LCD (light-client daemon), a local REST server|
@@ -35,7 +35,7 @@ Global flags can be passed to any of the commands and sub-commands below
 
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -67,7 +67,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -77,7 +77,7 @@ Global Flags:
 
 ## undcli convert
 
-convert between UND denominations
+convert between FUND denominations
 
 Usage:
 ```bash
@@ -86,7 +86,7 @@ Usage:
 
 Example:
 ```bash
-$ undcli convert 24 und nund
+$ undcli convert 24 fund nund
 ```
 
 Flags:
@@ -127,7 +127,7 @@ Flags:
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 
 ::: warning Note
-Any `--ledger` and Ledger related flags below are currently unused by `undcli`. Ledger support for UND will be available in a future version.
+Any `--ledger` and Ledger related flags below are currently unused by `undcli`. Ledger support for und will be available in a future version.
 :::
 
 ## undcli keys mnemonic
@@ -148,7 +148,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -201,7 +201,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -226,7 +226,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -251,7 +251,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -279,7 +279,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -313,7 +313,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -344,7 +344,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -371,7 +371,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -401,8 +401,8 @@ Flags:
 
 Global Flags:
 | Flag | Type | Description |
-|------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -435,7 +435,7 @@ Available Commands:
 |[gov](#undcli-query-gov)|Querying commands for the governance module|
 |[slashing](#undcli-query-slashing)|Querying commands for the slashing module|
 |[staking](#undcli-query-staking)|Querying commands for the staking module|
-|[supply](#undcli-query-supply)|Query total supply including locked enterprise UND|
+|[supply](#undcli-query-supply)|Query total supply including locked enterprise FUND|
 |[tendermint-validator-set](#undcli-query-tendermint-validator-set)|Get the full tendermint validator set at given height|
 |[tx](#undcli-query-tx)|Query for a transaction by hash in a committed block|
 |[txs](#undcli-query-txs)|Query for paginated transactions that match a set of events|
@@ -470,7 +470,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -562,9 +562,9 @@ Flags:
 Query account balance.
 
 ::: warning Note
-The `undcli query auth account` command will only return the liquid UND available for the account, and does not include any Enterprise UND information.
+The `undcli query auth account` command will only return the liquid FUND available for the account, and does not include any Enterprise UND information.
 
-To obtain full account information, including Enterprise UND, use `undcli query account`
+To obtain full account information, including Enterprise FUND, use `undcli query account`
 :::
 
 Usage:
@@ -585,7 +585,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -675,7 +675,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -727,7 +727,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -784,7 +784,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -845,7 +845,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -901,7 +901,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1051,7 +1051,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1106,7 +1106,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1157,7 +1157,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1208,7 +1208,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1243,7 +1243,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1339,7 +1339,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1381,10 +1381,10 @@ Usage:
 Available Commands:
 | Command | Description |
 |---------|-------------|
-|[params](#undcli-query-enterprise-params)|Query the current enterprise UND parameters|
-|[orders](#undcli-query-enterprise-orders)|Query Enterprise UND purchase orders with optional filters|
+|[params](#undcli-query-enterprise-params)|Query the current enterprise FUND parameters|
+|[orders](#undcli-query-enterprise-orders)|Query Enterprise FUND purchase orders with optional filters|
 |[order](#undcli-query-enterprise-order)|get a purchase order by ID|
-|[locked](#undcli-query-enterprise-locked)|get locked UND for an address|
+|[locked](#undcli-query-enterprise-locked)|get locked FUND for an address|
 |[total-locked](#undcli-query-enterprise-total-locked)|Query the current total locked enterprise UND|
 |[total-unlocked](#undcli-query-enterprise-total-unlocked)|Query the current total unlocked und in circulation|
 |[whitelist](#undcli-query-enterprise-whitelist)|get addresses whitelisted for raising enterprise purchase orders|
@@ -1397,7 +1397,7 @@ Flags:
 
 ## undcli query enterprise params
 
-Query the current enterprise UND parameters
+Query the current enterprise FUND parameters
 
 Usage:
 ```bash
@@ -1417,7 +1417,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1451,7 +1451,7 @@ decision_time_limit: 84600
 
 ## undcli query enterprise orders
 
-Query for a all paginated Enterprise UND purchase orders that match optional filters:
+Query for a all paginated Enterprise FUND purchase orders that match optional filters:
 
 Usage:
 ```bash
@@ -1476,7 +1476,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1583,7 +1583,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1637,7 +1637,7 @@ completiontime: 1587117841
 
 ## undcli query enterprise locked
 
-get locked UND for an address
+get locked FUND for an address
 
 Usage:
 ```bash
@@ -1657,7 +1657,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1691,7 +1691,7 @@ amount:
 
 ## undcli query enterprise total-locked
 
-Query the current total locked enterprise UND
+Query the current total locked enterprise FUND
 
 Usage:
 ```bash
@@ -1711,7 +1711,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1741,7 +1741,7 @@ amount: "101519000000000"
 
 ## undcli query enterprise total-unlocked
 
-Query the current total unlocked (liquid) und in circulation
+Query the current total unlocked (liquid) FUND in circulation
 
 Usage:
 ```bash
@@ -1761,7 +1761,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1811,7 +1811,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1865,7 +1865,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -1938,7 +1938,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2016,7 +2016,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2128,7 +2128,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2151,7 +2151,7 @@ Example:
       "type": "cosmos-sdk/CommunityPoolSpendProposal",
       "value": {
         "title": "Community Pool Spend",
-        "description": "Send community pool UND to the TN Faucet",
+        "description": "Send community pool FUND to the TN Faucet",
         "recipient": "und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car",
         "amount": [
           {
@@ -2187,7 +2187,7 @@ Example:
 ```yaml
 - content:
     title: Community Pool Spend
-    description: Send community pool UND to the TN Faucet
+    description: Send community pool FUND to the TN Faucet
     recipient: und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car
     amount:
     - denom: nund
@@ -2230,7 +2230,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2283,7 +2283,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2337,7 +2337,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2386,7 +2386,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2459,7 +2459,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2508,7 +2508,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2567,7 +2567,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2628,7 +2628,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2702,7 +2702,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2737,7 +2737,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2826,7 +2826,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2885,7 +2885,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -2978,7 +2978,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3013,7 +3013,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3077,7 +3077,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3148,7 +3148,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3219,7 +3219,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3310,7 +3310,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3454,7 +3454,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3515,7 +3515,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3579,7 +3579,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3650,7 +3650,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3685,7 +3685,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3741,7 +3741,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3771,22 +3771,22 @@ bonded_tokens: "5397623673233001"
 
 ## undcli query supply
 
-Query total UND supply, including locked and unlocked
+Query total FUND supply, including locked and unlocked
 
 Returns three values:
 
 locked:
-total UND locked through Enterprise purchases.
-This UND is only available to pay WRKChain/BEACON fees
+total FUND locked through Enterprise purchases.
+This FUND is only available to pay WRKChain/BEACON fees
 and cannot be used for transfers or staking/delegation
 
 amount:
-Liquid UND in active circulation, which can be used for
+Liquid FUND in active circulation, which can be used for
 transfers, staking etc. It is the
 LOCKED amount subtracted from TOTAL_SUPPLY
 
 total_supply:
-The total amount of UND currently on the chain, including locked UND
+The total amount of FUND currently on the chain, including locked FUND
 
 Usage:
 ```bash
@@ -3806,7 +3806,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3859,7 +3859,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -3987,7 +3987,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4222,7 +4222,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4392,7 +4392,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4444,7 +4444,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4512,7 +4512,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4599,7 +4599,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4667,7 +4667,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4694,7 +4694,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4728,7 +4728,7 @@ Module Specific Sub-Commands:
 |[bank](#undcli-tx-bank)|Bank transaction subcommands|
 |[beacon](#undcli-tx-beacon)|Beacon transaction subcommands|
 |[distribution](#undcli-tx-distribution)|Distribution transactions subcommands|
-|[enterprise](#undcli-tx-enterprise)|Enterprise UND transaction subcommands|
+|[enterprise](#undcli-tx-enterprise)|Enterprise FUND transaction subcommands|
 |[gov](#undcli-tx-gov)|Governance transactions subcommands|
 |[slashing](#undcli-tx-slashing)|Slashing transactions subcommands|
 |[staking](#undcli-tx-staking)|Staking transaction subcommands|
@@ -4781,7 +4781,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4825,7 +4825,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4869,7 +4869,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4928,7 +4928,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -4978,7 +4978,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5043,7 +5043,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5172,7 +5172,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5226,7 +5226,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5298,7 +5298,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5345,7 +5345,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5394,7 +5394,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5441,7 +5441,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5451,7 +5451,7 @@ Global Flags:
 
 ## undcli tx enterprise
 
-Enterprise UND transaction subcommands
+Enterprise FUND transaction subcommands
 
 Usage:
 ```bash
@@ -5462,8 +5462,8 @@ Usage:
 Available Commands:
 | Command | Description |
 |---------|-------------|
-|[purchase](#undcli-tx-enterprise-purchase)|Raise a new Enterprise UND purchase order|
-|[process](#undcli-tx-enterprise-process)|Process an Enterprise UND purchase order|
+|[purchase](#undcli-tx-enterprise-purchase)|Raise a new Enterprise FUND purchase order|
+|[process](#undcli-tx-enterprise-process)|Process an Enterprise FUND purchase order|
 |[whitelist](#undcli-tx-enterprise-whitelist)|Add/Remove an address from the enterprise purchase order whitelist|
 
 Flags:
@@ -5473,7 +5473,7 @@ Flags:
 
 ## undcli tx enterprise purchase
 
-Raise a new Enterprise UND purchase order.
+Raise a new Enterprise FUND purchase order.
 
 Usage:
 ```bash
@@ -5510,7 +5510,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5520,7 +5520,7 @@ Global Flags:
 
 ## undcli tx enterprise process
 
-Process an Enterprise UND purchase order.
+Process an Enterprise FUND purchase order.
 
 Only authorised addresses may process purchase orders
 
@@ -5562,7 +5562,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5614,7 +5614,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5684,7 +5684,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5731,7 +5731,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5809,7 +5809,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5894,7 +5894,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -5922,7 +5922,7 @@ Where `proposal.json` contains:
 ```json
 {
   "title": "Community Pool Spend",
-  "description": "Send some community pool UND to this address",
+  "description": "Send some community pool FUND to this address",
   "recipient": "und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car",
   "amount": [
     {
@@ -5964,7 +5964,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -6031,7 +6031,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -6130,7 +6130,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -6179,7 +6179,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -6189,7 +6189,7 @@ Global Flags:
 
 ## undcli tx staking delegate
 
-Delegate an amount of UND (in `nund`) to a validator from your wallet.
+Delegate an amount of FUND (in `nund`) to a validator from your wallet.
 
 Usage:
 ```bash
@@ -6226,7 +6226,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -6273,7 +6273,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -6320,7 +6320,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -6396,7 +6396,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|
@@ -6455,7 +6455,7 @@ Flags:
 Global Flags:
 | Flag | Type | Description |
 |------|------|-------------|
-|`--chain-id`|`string`|Chain ID of UND Mainchain node|
+|`--chain-id`|`string`|Chain ID of und Mainchain node|
 |`-e`, `--encoding`|`string`|Binary encoding (`hex`\|`b64`\|`btc`) (default "`hex`")|
 |`--keyring-backend`|`string`|Select keyring's backend (`os`\|`file`\|`test`) (default "`os`")|
 |`-h`, `--help`||help for undcli|

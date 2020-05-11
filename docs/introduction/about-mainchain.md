@@ -1,10 +1,10 @@
 # What is Mainchain?
 
-Mainchain is the backbone of the Unification Network. It is a Tendermint based chain, and is where WRKChains and BEACONs submit their hashes, and UND transactions take place.
+Mainchain is the backbone of the Unification Network. It is a Tendermint based chain, and is where WRKChains and BEACONs submit their hashes, and FUND transactions take place.
 
 >Mainchain is a public proof-of-stake chain. The core coin used for staking,
->rewards, and network fees is UND. The on-chain denomination is `nund`
-> (nano UND) which is 10^-9 UND.
+>rewards, and network fees is FUND. The on-chain denomination is `nund`
+> (Nano Unification Denomination) which is 10^-9 FUND.
 
 ## Networks
 
@@ -23,8 +23,8 @@ Additionally, the [Mainchain repository](https://github.com/unification-com/main
 
 The Mainchain suite comes with two binaries: `und` and `undcli`
 
-- `und` - The Mainchain server-side daemon, used to run a full node for Mainchain. Validators run this service to produce blocks. See [full command reference](und-commands.md)  
-- `undcli` - The command line interface for interacting with Mainchain nodes. It can also be used to run a light-client RPC node service. See [full command reference](undcli-commands.md)
+- `und` - "Unification Daemon": the Mainchain server-side daemon, used to run a full node for Mainchain. Validators run this service to produce blocks. See [full command reference](und-commands.md)  
+- `undcli` - "Unification Daemon Client": the command line interface for interacting with Mainchain nodes. It can also be used to run a light-client RPC node service. See [full command reference](undcli-commands.md)
 
 Mainchain has been built with the following core Cosmos SDK modules:
 
@@ -34,14 +34,14 @@ Mainchain has been built with the following core Cosmos SDK modules:
 - `x/distribution`: Fee distribution logic.
 - `x/slashing`: Slashing logic.
 - `x/gov`: on-chain governance logic.
-- `x/supply`: UND Coin supply logic
+- `x/supply`: FUND Coin supply logic
 - `x/params`: Handles module-level parameters, which can be modified via governance.
 - `x/crisis`: Handles potential network errors during the early days of deployment
 
 Unification have also developed the following modules for Mainchain:
 
 - `x/beacon`: BEACON hash timestamp submission logic
-- `x/enterprise`: Handles purchasing, locking and unlocking of Enterprise UND
+- `x/enterprise`: Handles purchasing, locking and unlocking of Enterprise FUND
 - `x/mint`: A modified core Cosmos SDK module, handling inflation and Block Reward logic.
 - `x/wrkchain`: WRKChain block hash submission handling
 

@@ -124,13 +124,13 @@ You can use the `--node` flag with the `undcli` command to have it send to a dif
 
 ## TestNet Faucet
 
-Our public TestNet has a faucet which can be used to obtain Test UND for
-use exclusively on the TestNet network. You will need an [account](accounts-wallets.md) and its associated address in order to be able to claim Test UND.
+Our public TestNet has a faucet which can be used to obtain Test FUND for
+use exclusively on the TestNet network. You will need an [account](accounts-wallets.md) and its associated address in order to be able to claim Test FUND.
 
 See [https://faucet-testnet.unification.io](https://faucet-testnet.unification.io)
 
 ::: tip NOTE
-You will need an account setting up before requesting Test UND.
+You will need an account setting up before requesting Test FUND.
 See [accounts and wallets](accounts-wallets.md) for more details
 :::
 

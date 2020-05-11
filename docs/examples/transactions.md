@@ -13,7 +13,7 @@ a variety of other network information.
 ## Sending a Transaction
 
 In this example, we'll generate and sign a simple `send` transaction, which will
-send 1UND. IF you have followed the documentation so far, you should already
+send 1 FUND. IF you have followed the documentation so far, you should already
 have the software installed, be running a full node, and have an account
 with funds.
 
@@ -24,14 +24,14 @@ undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id]
 ```
 
 - `[from_key_or_address]` - this can be either your account identifier, or your `bech32` address
-- `[to_address]` - the `bech32` address of the account you are sending UND to
+- `[to_address]` - the `bech32` address of the account you are sending FUND to
 - `[amount]` - the amount, in `nund`
 - `[chain_id]` - the ID of the chain to run the transaction on
 - `[ip]:[port]` - the IP and Port of the RPC node to broadcast the Tx
 
 >**Tip**: If you are running your own full node, you can set the `--trust-node` flag to `true`, which will tell `undcli` not to verify the proofs form the response.
 
-For example, we are running on DevNet, and would like to send 1 UND from
+For example, we are running on DevNet, and would like to send 1 FUND from
 our account `und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed`, to our friend's
 account `und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy`. We would
 therefore run:

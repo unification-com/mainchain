@@ -41,8 +41,8 @@ func (ld CheckLockedUndDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 	feePayer := feeTx.FeePayer()
 
 	if (wrkchain.CheckIsWrkChainTx(feeTx) || beacon.CheckIsBeaconTx(feeTx)) && ld.entk.IsLocked(ctx, feePayer) {
-		// WRKChain/BEACON Tx and has locked Enterprise UND.
-		// check for and Undelegate any Locked UND to pay for fees
+		// WRKChain/BEACON Tx and has locked Enterprise FUND.
+		// check for and Undelegate any Locked FUND to pay for fees
 		// We undelegate and unlock here (instead of handler) because
 		// fees are paid during the Ante process, further in the chain
 		// WRKChain/BEACON Txs have been checked before this decorator is called

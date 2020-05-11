@@ -45,7 +45,7 @@ func (k Keeper) GetParamEntSignersAsAddressArray(ctx sdk.Context) []sdk.AccAddre
 	return entSignersArray
 }
 
-// GetParams returns the total set of Enterprise UND parameters.
+// GetParams returns the total set of Enterprise FUND parameters.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	return types.NewParams(
 		k.GetParamDenom(ctx),
@@ -55,7 +55,7 @@ func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	)
 }
 
-// SetParams sets the total set of Enterprise UND parameters.
+// SetParams sets the total set of Enterprise FUND parameters.
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }

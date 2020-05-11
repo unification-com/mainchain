@@ -17,7 +17,7 @@ type NodeQuerier interface {
 }
 
 // LockedUndRetriever defines the properties of a type that can be used to
-// retrieve locked UND.
+// retrieve locked FUND.
 type LockedUndRetriever struct {
 	querier NodeQuerier
 }
@@ -27,14 +27,14 @@ func NewLockedUndRetriever(querier NodeQuerier) LockedUndRetriever {
 	return LockedUndRetriever{querier: querier}
 }
 
-// GetLockedUndForAccount queries for locked UND given an address. An
+// GetLockedUndForAccount queries for locked FUND given an address. An
 // error is returned if the query or decoding fails.
 func (ar LockedUndRetriever) GetLockedUnd(addr sdk.AccAddress) (types.LockedUnd, error) {
 	lockedUnd, _, err := ar.GetLockedUndHeight(addr)
 	return lockedUnd, err
 }
 
-// GetLockedUndHeight queries for locked UND  given an address. Returns the
+// GetLockedUndHeight queries for locked FUND  given an address. Returns the
 // height of the query with the account. An error is returned if the query
 // or decoding fails.
 func (ar LockedUndRetriever) GetLockedUndHeight(addr sdk.AccAddress) (types.LockedUnd, int64, error) {
@@ -71,7 +71,7 @@ func (ar LockedUndRetriever) getParams() (types.Params, int64, error) {
 }
 
 // TotalSupplyRetriever defines the properties of a type that can be used to
-// retrieve total UND supply.
+// retrieve total FUND supply.
 type TotalSupplyRetriever struct {
 	querier NodeQuerier
 }
@@ -81,14 +81,14 @@ func NewTotalSupplyRetriever(querier NodeQuerier) TotalSupplyRetriever {
 	return TotalSupplyRetriever{querier: querier}
 }
 
-// GetLockedUndForAccount queries for locked UND given an address. An
+// GetLockedUndForAccount queries for locked FUND given an address. An
 // error is returned if the query or decoding fails.
 func (ar TotalSupplyRetriever) GetTotalSupply() (types.UndSupply, error) {
 	totalSupply, _, err := ar.GetTotalSupplyHeight()
 	return totalSupply, err
 }
 
-// GetLockedUndHeight queries for locked UND given an address. Returns the
+// GetLockedUndHeight queries for locked FUND given an address. Returns the
 // height of the query with the account. An error is returned if the query
 // or decoding fails.
 func (ar TotalSupplyRetriever) GetTotalSupplyHeight() (types.UndSupply, int64, error) {

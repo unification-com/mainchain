@@ -8,7 +8,7 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
-// InitGenesis new enterprise UND genesis
+// InitGenesis new enterprise FUND genesis
 func InitGenesis(ctx sdk.Context, keeper Keeper, supplyKeeper types.SupplyKeeper, data GenesisState) []abci.ValidatorUpdate {
 	keeper.SetParams(ctx, data.Params)
 	keeper.SetHighestPurchaseOrderID(ctx, data.StartingPurchaseOrderID)
@@ -46,7 +46,7 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, supplyKeeper types.SupplyKeeper
 		}
 	}
 
-	// ensure locked UND is registered with supply keeper
+	// ensure locked FUND is registered with supply keeper
 	if moduleAcc.GetCoins().IsZero() {
 		var moduleHoldings sdk.Coins
 		moduleHoldings = moduleHoldings.Add(data.TotalLocked)

@@ -70,7 +70,7 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 
 	_, _ = app.BankKeeper.AddCoins(ctx, addr, sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt)))
 
-	// artificially add locked UND without minting first
+	// artificially add locked FUND without minting first
 	toLock := sdk.NewCoin(actualFeeDenom, accAmt)
 	lockeUnd := types.LockedUnd{
 		Owner:  addr,

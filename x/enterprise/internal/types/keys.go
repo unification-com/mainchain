@@ -27,7 +27,7 @@ var (
 	// prefix used to store/retrieve an purchase order waiting to be processed from the store
 	PurchaseOrderIDKeyPrefix = []byte{0x01}
 
-	// LockedUndAddressKeyPrefix prefix for address keys - used to store locked UND for an account
+	// LockedUndAddressKeyPrefix prefix for address keys - used to store locked FUND for an account
 	LockedUndAddressKeyPrefix = []byte{0x02}
 
 	// WhitelistKeyPrefix is the prefix for whitelisted addresses

@@ -20,7 +20,7 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 }
 
 // RegisterAuthAccountOverride registers a REST route to override the default /auth/accounts/{address} path
-// and additionally return Enterprise Locked UND data
+// and additionally return Enterprise Locked FUND data
 func RegisterAuthAccountOverride(cliCtx context.CLIContext, r *mux.Router) {
 	registerEnterpriseAuthAccountOverride(cliCtx, r)
 }

@@ -43,7 +43,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "params",
-		Short: "Query the current enterprise UND parameters",
+		Short: "Query the current enterprise FUND parameters",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
@@ -68,9 +68,9 @@ func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
 func GetCmdGetPurchaseOrders(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "orders",
-		Short: "Query Enterprise UND purchase orders with optional filters",
+		Short: "Query Enterprise FUND purchase orders with optional filters",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query for a all paginated Enterprise UND purchase orders that match optional filters:
+			fmt.Sprintf(`Query for a all paginated Enterprise FUND purchase orders that match optional filters:
 
 Example:
 $ %s query enterprise orders --status (raised|accept|reject|complete)
@@ -164,18 +164,18 @@ func GetCmdGetPurchaseOrderByID(queryRoute string, cdc *codec.Codec) *cobra.Comm
 	}
 }
 
-// GetCmdGetLockedUndByAddress queries locked UND for a given address
+// GetCmdGetLockedUndByAddress queries locked FUND for a given address
 func GetCmdGetLockedUndByAddress(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "locked [address]",
-		Short: "get locked UND for an address",
+		Short: "get locked FUND for an address",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryGetLocked, args[0]), nil)
 			if err != nil {
-				fmt.Printf("could not get query locked UND for address %s\n", args[0])
+				fmt.Printf("could not get query locked FUND for address %s\n", args[0])
 				return err
 			}
 
@@ -190,14 +190,14 @@ func GetCmdGetLockedUndByAddress(queryRoute string, cdc *codec.Codec) *cobra.Com
 func GetCmdQueryTotalLocked(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "total-locked",
-		Short: "Query the current total locked enterprise UND",
+		Short: "Query the current total locked enterprise FUND",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryTotalLocked), nil)
 			if err != nil {
-				fmt.Printf("could not get query total locked enterprise UND\n")
+				fmt.Printf("could not get query total locked enterprise FUND\n")
 				return err
 			}
 
@@ -219,7 +219,7 @@ func GetCmdQueryTotalUnlocked(queryRoute string, cdc *codec.Codec) *cobra.Comman
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryTotalUnlocked), nil)
 			if err != nil {
-				fmt.Printf("could not get query total unlocked UND\n")
+				fmt.Printf("could not get query total unlocked FUND\n")
 				return err
 			}
 
@@ -252,7 +252,7 @@ func GetCmdGetWhitelistedAddresses(queryRoute string, cdc *codec.Codec) *cobra.C
 	}
 }
 
-// GetCmdGetLockedUndByAddress queries locked UND for a given address
+// GetCmdGetLockedUndByAddress queries locked FUND for a given address
 func GetCmdGetAddresIsWhitelisted(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "whitelisted [address]",

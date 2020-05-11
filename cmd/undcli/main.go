@@ -51,7 +51,7 @@ func main() {
 	}
 
 	// Add --chain-id to persistent flags and mark it required
-	rootCmd.PersistentFlags().String(flags.FlagChainID, "", "Chain ID of UND Mainchain node")
+	rootCmd.PersistentFlags().String(flags.FlagChainID, "", "Chain ID of und Mainchain node")
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		return initConfig(rootCmd)
 	}
@@ -164,11 +164,11 @@ func initConfig(cmd *cobra.Command) error {
 func denomConversion(cdc *amino.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "convert [amount] [from_denom] [to_denom]",
-		Short: "convert between UND denominations",
+		Short: "convert between FUND denominations",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`convert between UND denominations'
+			fmt.Sprintf(`convert between FUND denominations'
 Example:
-$ %s convert 24 und nund
+$ %s convert 24 fund nund
 `,
 				version.ClientName,
 			),
@@ -238,27 +238,27 @@ func GetAccountWithLockedCmd(cdc *codec.Codec) *cobra.Command {
 func GetTotalSupplyWithLockedCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "supply",
-		Short: "Query total supply including locked enterprise UND",
+		Short: "Query total supply including locked enterprise FUND",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query total UND supply, including locked and unlocked
+			fmt.Sprintf(`Query total FUND supply, including locked and unlocked
 
 Returns three values:
 
 locked
 ------
-total UND locked through Enterprise purchases.
-This UND is only available to pay WRKChain/BEACON fees
+total FUND locked through Enterprise purchases.
+This FUND is only available to pay WRKChain/BEACON fees
 and cannot be used for transfers or staking/delegation
 
 amount
 --------
-Liquid UND in active circulation, which can be used for 
+Liquid FUND in active circulation, which can be used for 
 transfers, staking etc. It is the
 LOCKED amount subtracted from TOTAL_SUPPLY
 
 total_supply
 ------------
-The total amount of UND currently on the chain, including locked UND
+The total amount of FUND currently on the chain, including locked FUND
 
 Example:
 $ %s query supply

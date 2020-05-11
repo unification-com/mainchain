@@ -246,7 +246,7 @@ func NewPurchaseOrderDecision(signer sdk.AccAddress, decision PurchaseOrderStatu
 	}
 }
 
-// EnterpriseUndPurchaseOrder is a struct that contains information on Enterprise UND purchase orders and their status
+// EnterpriseUndPurchaseOrder is a struct that contains information on Enterprise FUND purchase orders and their status
 type EnterpriseUndPurchaseOrder struct {
 	PurchaseOrderID uint64                  `json:"id"`
 	Purchaser       sdk.AccAddress          `json:"purchaser"`
@@ -277,7 +277,7 @@ Status: %b
 `, po.PurchaseOrderID, po.Purchaser, po.Amount, po.RaisedTime, po.Decisions, po.Status))
 }
 
-// LockedUnds is an array of locked UND
+// LockedUnds is an array of locked FUND
 type LockedUnds []LockedUnd
 
 // String implements stringer interface
@@ -290,7 +290,7 @@ func (lund LockedUnds) String() string {
 	return strings.TrimSpace(out)
 }
 
-// LockedUnd is a struct that is used to track "Locked" Enterprise purchased UND
+// LockedUnd is a struct that is used to track "Locked" Enterprise purchased FUND
 type LockedUnd struct {
 	Owner  sdk.AccAddress `json:"owner"`
 	Amount sdk.Coin       `json:"amount"`
@@ -321,7 +321,7 @@ type UndSupply struct {
 func NewUndSupply(denom string) UndSupply {
 	return UndSupply{
 		Denom:  denom,
-		Amount: 0, // current unlocked, liquid UND
+		Amount: 0, // current unlocked, liquid FUND
 		Locked: 0,
 		Total:  0,
 	}

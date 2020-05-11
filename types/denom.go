@@ -10,7 +10,7 @@ const (
 	NundDenom = "nund" // 10^-9 (nano)
 
 	DefaultDenomination = NundDenom // lowest denomination used on chain
-	BaseDenomination    = FundDenom // actual Coin - i.e. 1 UND
+	BaseDenomination    = FundDenom // actual Coin - i.e. 1 FUND
 
 	UndPow  = 1e9  // multiplier for converting from und to (nano) nund
 	NundPow = 1e-9 // multiplier for converting from (nano) nund to und

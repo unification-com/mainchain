@@ -19,9 +19,9 @@ func NewAnteHandler(ak auth.AccountKeeper, supplyKeeper supply.Keeper, wrkchainK
 		authante.NewConsumeGasForTxSizeDecorator(ak),
 		authante.NewSetPubKeyDecorator(ak), // SetPubKeyDecorator must be called before all signature verification decorators
 		authante.NewValidateSigCountDecorator(ak),
-		wrkchain.NewCorrectWrkChainFeeDecorator(ak, wrkchainKeeper, enterpriseKeeper), // WRKChain check Tx fees. Specifically check after MemPool, but before consuming fees/gas and undelegating locked UND
-		beacon.NewCorrectBeaconFeeDecorator(ak, beaconKeeper, enterpriseKeeper),       // BEACON check Tx fees. Specifically check after MemPool, but before consuming fees/gas and undelegating locked UND
-		enterprise.NewCheckLockedUndDecorator(enterpriseKeeper),                       // check for and unlock any locked UND for valid WRKChain/BEACON Txs
+		wrkchain.NewCorrectWrkChainFeeDecorator(ak, wrkchainKeeper, enterpriseKeeper), // WRKChain check Tx fees. Specifically check after MemPool, but before consuming fees/gas and undelegating locked FUND
+		beacon.NewCorrectBeaconFeeDecorator(ak, beaconKeeper, enterpriseKeeper),       // BEACON check Tx fees. Specifically check after MemPool, but before consuming fees/gas and undelegating locked FUND
+		enterprise.NewCheckLockedUndDecorator(enterpriseKeeper),                       // check for and unlock any locked FUND for valid WRKChain/BEACON Txs
 		authante.NewDeductFeeDecorator(ak, supplyKeeper),
 		authante.NewSigGasConsumeDecorator(ak, sigGasConsumer),
 		authante.NewSigVerificationDecorator(ak),

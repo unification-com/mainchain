@@ -11,7 +11,7 @@ With the exception of Chain Params, the following parameters are changeable on-c
 - `.genesis_time`  
 Genesis block timestamp. E.g. 2020-01-06T12:00:00Z
 - `.chain_id`  
-ID of the current chain, E.g. `UND-Mainchain-MainNet-v1`
+ID of the current chain, E.g. `FUND-Mainchain-MainNet-v1`
 
 ## Auth Params
 

@@ -8,4 +8,4 @@ Validators earn rewards from transaction fees, and commission charged to their d
 
 Validator operator candidates are expected to thoroughly research security for their nodes to ensure the overall safety of the network.
 
-For further information, see [becoming a TestNet validator](../networks/become-testnet-validator.md), [becoming a MainNet validator](../networks/become-mainnet-validator.md) and [AWS 101](../guides/cloud/install-aws.md).
+For further information, see [becoming a validator](../networks/become-validator.md), [AWS 101](../guides/cloud/install-aws.md), [Google Cloud 101](../guides/cloud/install-gc.md).

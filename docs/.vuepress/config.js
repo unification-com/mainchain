@@ -33,8 +33,7 @@ module.exports = {
                 children: [
                     "/software/installation",
                     "/software/accounts-wallets",
-                    "networks/join-testnet",
-                    "networks/join-mainnet",
+                    "/networks/join-network",
                     "/software/run-und-as-service",
                     "/software/light-client-rpc",
                     {
@@ -52,17 +51,10 @@ module.exports = {
                 title: "Networks",
                 children: [
                   {
-                      title: "Mainchain Public TestNet",
+                      title: "Mainchain Public Networks",
                       children: [
-                          "/networks/join-testnet",
-                          "/networks/become-testnet-validator"
-                      ]
-                  },
-                  {
-                      title: "Mainchain Public MainNet",
-                      children: [
-                          "/networks/join-mainnet",
-                          "/networks/become-mainnet-validator"
+                          "/networks/join-network",
+                          "/networks/become-validator"
                       ]
                   },
                   {

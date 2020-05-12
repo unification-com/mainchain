@@ -5,6 +5,11 @@
 [[toc]]
 
 Raise purchase order:
+
+::: tip
+Enterprise Purchase Orders are raised using `nund`
+:::
+
 ```
 undcli tx enterprise purchase 1002000000000nund --from wrktest --gas=auto --gas-adjustment=1.15
 ```

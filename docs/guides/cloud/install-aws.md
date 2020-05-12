@@ -6,7 +6,11 @@
 
 ## Introduction to installing `und` on AWS EC2 instances
 
-This guide introduces a _very simple_ "quick start" single AWS EC2 instance, using a VPC with a single public subnet to connect to the Mainchain Public **TestNet**. Validator node operators are highly encouraged to explore more sophisticated architecture configurations to increase the security, reliability and availability of their Validator node - for example, multi layered network with both private/public subnets, one or more "sentry" full (non-validator) nodes placed in front of your main (hidden in a private subnet) Validator node to handle and relay communication from the outside world, and reverse proxy for any RPC access via the sentries etc. in addition to implementing hardware KMS solutions to protect validator private keys.
+::: danger
+If you intend to become a `MainNet` Validator, it is **HIGHLY** recommended that you practice on `TestNet` first in order to _fully familiarise_ yourself with the process.
+:::
+
+This guide introduces a _very simple_ "quick start" single AWS EC2 instance, using a VPC with a single public subnet to connect to a Mainchain Public network. Validator node operators are highly encouraged to explore more sophisticated architecture configurations to increase the security, reliability and availability of their Validator node - for example, multi layered network with both private/public subnets, one or more "sentry" full (non-validator) nodes placed in front of your main (hidden in a private subnet) Validator node to handle and relay communication from the outside world, and reverse proxy for any RPC access via the sentries etc. in addition to implementing hardware KMS solutions to protect validator private keys.
 
 ::: danger Important
 This guide should not be considered the default, full, out of the box solution for a Validator node, but more an "AWS 101" guide to familiarise the reader with the core concepts involved in setting up the minimum AWS EC2 instance and associated service requirements in order to operate a Validator node. It should be considered a starting point giving you the initial building blocks from which to build a more sophisticated network/node architecture to support and protect your Validator node.
@@ -215,10 +219,18 @@ und init [your_node_tag]
 
 ### Download the latest Genesis file.
 
-The following command downloads the latest `UND-Mainchain-TestNet` genesis. Command is all one line:
+The following command downloads the latest genesis for the respective network. Command is all one line:
+
+#### TestNet
 
 ```bash
 curl https://raw.githubusercontent.com/unification-com/testnet/master/latest/genesis.json > $HOME/.und_mainchain/config/genesis.json
+```
+
+#### MainNet
+
+```bash
+curl https://raw.githubusercontent.com/unification-com/mainnet/master/latest/genesis.json > $HOME/.und_mainchain/config/genesis.json
 ```
 
 Get the current chain ID from genesis. Make a note of the output, it'll be required in commands later in the guide. Command is all on one line:
@@ -229,7 +241,18 @@ $ jq --raw-output '.chain_id' $HOME/.und_mainchain/config/genesis.json
 
 ### Get seed nodes
 
-Next, we need the seed node info. This will allow your node to bootstrap some initial peers and connect to the network. Go to [https://github.com/unification-com/testnet/blob/master/latest/seed_nodes.md](https://github.com/unification-com/testnet/blob/master/latest/seed_nodes.md) and copy one or more of the seed nodes (you need the `id@address:port`)
+::: danger IMPORTANT
+Please ensure you get the correct seed node information for the network you would like to join! Remember to change the directory if you are using something other than the default `$HOME/.und_mainchain` directory!
+:::
+
+Your node will need to know at least one seed node in order to join the network
+and begin P2P communication with other nodes in the network. The latest seed information will always be available at each network's respective Github repo:
+
+#### TestNet: [https://github.com/unification-com/testnet/blob/master/latest/seed_nodes.md](https://github.com/unification-com/testnet/blob/master/latest/seed_nodes.md)
+
+#### MainNet: [https://github.com/unification-com/mainnet/blob/master/latest/seed_nodes.md](https://github.com/unification-com/mainnet/blob/master/latest/seed_nodes.md)
+
+Go to the repo for the network you are connecting to and copy one or more of the seed nodes (you only need the `id@address:port`)
 
 Edit your node configuration file using nano:
 
@@ -289,7 +312,7 @@ once you have run the `create-validator` command below. See [Part 8: Final clean
 
 **Pruning & Gas Prices**
 
-It is good practice to set the minimum-gas-prices value in `$HOME/.und_mainchain/config/app.toml`, in order to protect your full node from spam transactions. This should be set as a decimal value in `nund`, and the recommended value is currently `0.025nund` to `0.25nund`. This means your node will ignore any Txs with a gas price below this value. To do so, open up `$HOME/.und_mainchain/config/app.toml` in a text editor, and set `minimum-gas-prices`
+It is good practice to set the minimum-gas-prices value in `$HOME/.und_mainchain/config/app.toml`, in order to protect your full node from spam transactions. This should be set as a decimal value in `nund`, and the recommended value is currently `0.25nund`. This means your node will ignore any Txs with a gas price below this value. To do so, open up `$HOME/.und_mainchain/config/app.toml` in a text editor, and set `minimum-gas-prices`
 
 ```bash
 nano $HOME/.und_mainchain/config/app.toml
@@ -460,7 +483,7 @@ On your local PC, run the following command, replacing any text in `[square_brac
 `[stake_in_nund]` = (required) the amount of FUND in `nund` you are self-delegating. You can use the `undcli convert 1000 fund nund` command to convert FUND to nund. E.g. `1000000000000nund`.
 
 ::: warning Note
-do not enter more nund than you have in your wallet!
+do not enter more nund than you have in your wallet and ensure you have enough left over to pay for this and future Tx fees!
 :::
 
 `[your_validator_public_key]` = (required) the public key output from the previous und tendermint show-validator command.
@@ -473,7 +496,7 @@ do not enter more nund than you have in your wallet!
 
 `[security_email]` = (optional) security contact for your organisation
 
-`[chain_id]` = the network (e.g. `UND-Mainchain-TestNet-v4`) you are creating a validator on - this was obtained earlier in the guide via the `jq` command
+`[chain_id]` = the network (e.g. `FUND-Mainchain-TestNet-v7`, or `FUND-Mainchain-MainNet-v1`) you are creating a validator on - this was obtained earlier in the guide via the `jq` command
 
 `[account_name]` = the account self-delegating the FUND, previously created/imported with the `undcli keys add` command
 
@@ -486,7 +509,7 @@ Your commission rates can be set using the `--commission-rate` , `--commission-m
 
 `--commission-max-rate`: The maximum you will ever increase your commission rate to - you cannot raise commission above this value. Again, keeping this low can attract more delegators.
 
-`--commission-max-change-rate`: The maximum you can change the commission-rate by in any one change request. For example, if your maximum change rate is 0.01, you can only make changes in 0.01 increments, so from 0.10 (10%) to 0.09 (9%).
+`--commission-max-change-rate`: The maximum you can increase the commission-rate by per day. For example, if your maximum change rate is 0.01, you can only make changes in 0.01 increments, so from 0.10 (10%) to 0.11 (11%).
 
 ::: warning
 The values for `--commission-max-change-rate` and `--commission-max-rate` flags cannot be changed after the create-validator command has been run.
@@ -504,7 +527,7 @@ For example:
 --website="https://my-node-site.com" \
 --details="My node is awesome" \
 --security-contact="security@my-node-site.com" \
---chain-id=UND-Mainchain-TestNet-v3 \
+--chain-id=FUND-Mainchain-TestNet-v7 \
 --commission-rate="0.05" \
 --commission-max-rate="0.10" \
 --commission-max-change-rate="0.01" \
@@ -527,7 +550,7 @@ $(undcli keys show [account_name] --bech=val -a) \
 --node=tcp://[vm_ip]:26657
 ```
 
-Replacing `[account_name]`, `[chain_id]` and `[vm_ip]` accordingly. Assuming you are going through this guide on TestNet, you should also see your node listed in [https://explorer-testnet.unification.io/validators](https://explorer-testnet.unification.io/validators)
+Replacing `[account_name]`, `[chain_id]` and `[vm_ip]` accordingly. Assuming you are going through this guide on `TestNet`, you should also see your node listed in [https://explorer-testnet.unification.io/validators](https://explorer-testnet.unification.io/validators)
 
 ## Part 8: Final cleanup
 

@@ -8,13 +8,13 @@ Mainchain is the backbone of the Unification Network. It is a Tendermint based c
 
 ## Networks
 
-There are currently two live/planned public Mainchain networks, and one private development network:
-
-#### Testnet
-Launched in Q4 2019, [UND-Mainchain-TestNet](https://github.com/unification-com/testnet) serves as the official Unification public Test network.  
+There are currently two live public Mainchain networks, and one private development network:
 
 #### MainNet
-MainNet is the upcoming official Unification `MainNet` - this will be the live public Unification Main network.
+Launched on 14/05/2020, [FUND-Mainchain-MainNet](https://github.com/unification-com/mainnet) is the live public Unification **Main Network**.
+
+#### Testnet
+Launched in Q4 2019, [FUND-Mainchain-TestNet](https://github.com/unification-com/testnet) serves as the official Unification public **Test network**, where developers can test WRKChains/BEACONs or third party application ssuch as wallets and block explorers before deploying on MainNet. It also serves as a test platform for Mainchain developers to test updates and new features to the Mainchain code in a live environment.  
 
 #### DevNet
 Additionally, the [Mainchain repository](https://github.com/unification-com/mainchain) comes with a full private [DevNet](local-devnet.md) - a completely self-contained network for development and testing Mainchain features.

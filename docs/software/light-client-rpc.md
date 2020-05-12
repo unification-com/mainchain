@@ -13,7 +13,7 @@ The REST server is generally useful for third party services such as [wallets](h
 Before continuing, ensure you have gone through the following docs:
 
 1. [Installing the software](installation.md)
-2. Either [join TestNet](../networks/join-testnet.md), [join MainNet](../networks/join-mainnet.md) or [run DevNet](../networks/local-devnet.md)
+2. [join a Network](../networks/join-network.md), or [run DevNet](../networks/local-devnet.md)
 
 ## Running a light client
 
@@ -26,10 +26,10 @@ undcli rest-server --laddr=[tcp://ip:port] --node [tcp://ip:port] --chain-id=[ch
 For example:
 
 ```bash
-undcli rest-server --laddr=tcp://localhost:1317 --node tcp://11.22.33.44:26657 --chain-id=UND-Mainchain-TestNet-v4
+undcli rest-server --laddr=tcp://localhost:1317 --node tcp://11.22.33.44:26657 --chain-id=FUND-Mainchain-TestNet-v7
 ```
 
-This will start the light client on your local host listening on `localhost:1317`, and use the node hosted at `11.22.33.44:26657` to source its data and interface with the `UND-Mainchain-TestNet-v4` chain (e.g. broadcast any transactions).
+This will start the light client on your local host listening on `localhost:1317`, and use the node hosted at `11.22.33.44:26657` to source its data and interface with the `FUND-Mainchain-TestNet-v7` chain (e.g. broadcast any transactions).
 
 ::: tip
 setting the listen address IP to `0.0.0.0`, e.g. `--laddr=tcp://0.0.0.0:1317` will allow any host to connect to your REST server.

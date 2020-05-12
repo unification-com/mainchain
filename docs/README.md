@@ -19,8 +19,7 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [Installation](software/installation.md)
 - [Accounts and Wallets](software/accounts-wallets.md)
-- [Run a full node & join TestNet](networks/join-testnet.md)
-- [Run a full node & join MainNet](networks/join-mainnet.md)
+- [Run a full node & join a Network](networks/join-network.md)
 - [Run `und` as a daemon](software/run-und-as-service.md)
 
 ### Light Client & REST
@@ -37,17 +36,11 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [`.und_mainchain/config/config.toml` Reference](software/und-mainchain-config-ref.md)
 - [`.und_mainchain/config/app.toml` Reference](software/und-mainchain-app-config-ref.md)
+
 ## 3. Mainchain Networks
 
-### Mainchain Public Testnet
-
-- [Join TestNet](networks/join-testnet.md)
-- [Becoming a TestNet Validator](networks/become-testnet-validator.md)
-
-### Mainchain Public MainNet
-
-- [Join MainNet](networks/join-mainnet.md)
-- [Becoming a MainNet Validator](networks/become-mainnet-validator.md)
+- [Join a Network](networks/join-network.md)
+- [Becoming a Validator](networks/become-validator.md)
 
 ### Private DevNet
 

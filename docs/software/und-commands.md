@@ -52,7 +52,7 @@ Usage:
 
 Example:
 ```bash
-  und init MyAwesomeNode --chain-id="UND-Mainchain-TestNet"
+  und init MyAwesomeNode --chain-id="FUND-Mainchain-TestNet-v7"
 ```
 
 Flags:

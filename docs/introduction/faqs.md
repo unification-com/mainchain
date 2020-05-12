@@ -25,7 +25,7 @@ Unification is a scalable master blockchain for Enterprise.
 - `und` (server) command reference: [und commands](../software/und-commands.md)
 - `undcli` (client) command reference: [undcli commands](../software/undcli-commands.md)
 - Public REST API: [https://rest-testnet.unification.io/swagger-ui/](https://rest-testnet.unification.io/swagger-ui/) (Note: link for TestNet)
-- Public RPC Interface: [https://rpc1-testnet.unification.io:26657](https://rpc1-testnet.unification.io:26657) (Nore: link for TestNet)
+- Public RPC Interface: [https://rpc1-testnet.unification.io:26657](https://rpc1-testnet.unification.io:26657) (Nore: link for TestNet). The RPC specification is the same as [Tendermint](https://docs.tendermint.com/master/rpc/).
 
 Public REST/RPC APIs for MainNet will be available via [https://rest.unification.io/swagger-ui](https://rest.unification.io/swagger-ui) and [https://rpc1.unification.io:26657/](https://rpc1.unification.io:26657/) respectively on launch.
 

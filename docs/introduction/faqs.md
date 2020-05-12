@@ -22,8 +22,8 @@ Unification is a scalable master blockchain for Enterprise.
 
 ## 2. Where can I find the main API documents?
 
-- `und` (server) command reference: [https://docs.unification.io/software/und-commands.html](https://docs.unification.io/software/und-commands.html)
-- `undcli` (client) command reference: [https://docs.unification.io/software/undcli-commands.html](https://docs.unification.io/software/undcli-commands.html)
+- `und` (server) command reference: [und commands](../software/und-commands.md)
+- `undcli` (client) command reference: [undcli commands](../software/undcli-commands.md)
 - Public REST API: [https://rest-testnet.unification.io/swagger-ui/](https://rest-testnet.unification.io/swagger-ui/) (Note: link for TestNet)
 - Public RPC Interface: [https://rpc1-testnet.unification.io:26657](https://rpc1-testnet.unification.io:26657) (Nore: link for TestNet)
 
@@ -43,7 +43,7 @@ Latest compiled binaries available from [https://github.com/unification-com/main
 
 ## 5. How do I compile the code from source?
 
-Build instructions are available here: [https://docs.unification.io/software/installation.html#building-from-source](https://docs.unification.io/software/installation.html#building-from-source)
+Build instructions are [available here](../software/installation.md#building-from-source)
 
 This will build and install both `und` and `undcli` binaries into `$GOPATH/bin`
 
@@ -105,7 +105,7 @@ Example:
 undcli keys add some_new_account
 ```
 
-Run `undcli keys add --help` or see [https://docs.unification.io/software/undcli-commands.html#undcli-keys-add](https://docs.unification.io/software/undcli-commands.html#undcli-keys-add) for details on flags/command options  etc.
+Run `undcli keys add --help` or see the [undcli keys add](../software/undcli-commands.md#undcli-keys-add) reference for details on flags/command options  etc.
 
 ### 7.3. How to transfer FUND?
 
@@ -113,7 +113,7 @@ Run `undcli keys add --help` or see [https://docs.unification.io/software/undcli
 undcli tx send [from_key_or_address] [to_address] [amount] --chain-id=CHAIN_ID --node=tcp://NODE_IP:PORT
 ```
 
-Amount is `nund` - "Nano Unification Denomination", such that **1,000,000,000 nund == 1 FUND**. See [https://docs.unification.io/introduction/denomination.html](https://docs.unification.io/introduction/denomination.html).
+Amount is `nund` - "Nano Unification Denomination", such that **1,000,000,000 nund == 1 FUND**. See [denomination](denomination.md).
 
 Example to send **10 FUND** from `my_account` account (see Q7.2 about account names) on TestNet, using the public RPC node:
 
@@ -121,7 +121,7 @@ Example to send **10 FUND** from `my_account` account (see Q7.2 about account na
 undcli tx send my_account und1nkhnc5e8pvph4phv93k0lkscc7yf5eh9kas5f6 10000000000nund --chain-id=FUND-Mainchain-TestNet-v7 --node=tcp://rpc1-testnet.unification.io:26657 --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node=false
 ```
 
-See [https://docs.unification.io/software/undcli-commands.html#undcli-tx-send](https://docs.unification.io/software/undcli-commands.html#undcli-tx-send) and [https://docs.unification.io/introduction/fees-and-gas.html](https://docs.unification.io/introduction/fees-and-gas.html) for more in-depth information.
+See [undcli tx send](../software/undcli-commands.md#undcli-tx-send) and [fees and gas](fees-and-gas.md) for more in-depth information.
 
 ### 7.4. How do I get all transactions related to one wallet/account?
 
@@ -133,7 +133,7 @@ TestNet example to get Txs sent by `und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car`,
 undcli query txs --events 'message.sender=und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car' --chain-id=FUND-Mainchain-TestNet-v7 --node=tcp://rpc1-testnet.unification.io:26657 --page 1 --limit 30
 ```
 
-The `--events` flag can contain any `{eventType}.{eventAttribute}={value}` type query. For example `--events 'transfer.recipient=und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car'` will return queries relating to transfers into the account. See [https://docs.unification.io/software/undcli-commands.html#undcli-query-txs](https://docs.unification.io/software/undcli-commands.html#undcli-query-txs) for further information.
+The `--events` flag can contain any `{eventType}.{eventAttribute}={value}` type query. For example `--events 'transfer.recipient=und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car'` will return queries relating to transfers into the account. See [undcli query txs](../software/undcli-commands.md#undcli-query-txs) for further information.
 
 ### 7.5. How do I get the FUND balance for one wallet/account?
 
@@ -149,7 +149,37 @@ undcli query account und1eyn7s6qz2gcnfld0uskwxedyunpgjhlcjhvul9 --chain-id=FUND-
 
 Will return a JSON or text object (depending on options passed). `account.value.coins` in the returned result shows the amount of `nund`. The above example (currently) shows the account has **10000000000 nund (10 FUND)** on TestNet.
 
-### 7.6. How do I export（dump/backup）a wallet?
+### 7.6 How do I query the total FUND supply, and what is the significance of amount/locked/total?
+
+The command
+
+```bash
+undcli query supply
+```
+
+Will return the complete supply information. Three quantity values are returned:
+
+1. **amount**: Liquid FUND in active circulation, and the actual circulating total supply which is available and can be used for FUND transfers, staking, Tx fees etc. It is the **locked** amount subtracted from **total**. _This is the important value when processing any calculations dependent on FUND circulation/total supply of FUND etc._
+2. **locked**: Total FUND locked through Enterprise purchases. This FUND is only available specifically to pay WRKChain/BEACON fees and **cannot** be used for transfers, staking/delegation or any other transactions. _Locked FUND only enters the active circulation supply once it has been used to pay for WRKChain/BEACON fees. Until then, it is considered "dormant", and not part of the circulating total supply_
+3. **total**: The total amount of FUND currently known on the chain, including any Enterprise **locked** FUND. This is for informational purposes only and should not be used for any "circulating/total supply" calculations.
+
+The **amount** value is the important value regarding total supply _currently in active circulation_, and is the information that should be used to represent any "total supply/circulation" values for example in block explorers, wallets, exchanges etc.
+
+Consider the following `undcli query supply` result:
+
+```json
+{
+  "denom": "nund",
+  "amount": "120010263000000000",
+  "locked": "89737000000000",
+  "total": "120100000000000000"
+}
+```
+In the above example, the active circulating supply - usable for transfers and standard transactions etc. - is currently 120,010,263 FUND. 89,737 FUND is currently locked, and can only be used for paying for WRKChain/BEACON fees - it is "dormant" and _cannot be used for any other purpose until it has been used to pay for WRKChain/BEACON fees_. Finally, the total amount of FUND known on the chain is 120,100,000 FUND, and is the equivalent of 120,010,263 + 89,737.
+
+See [undcli-query-supply](../software/undcli-commands.md#undcli-query-supply) for more details on command flags and parameters.
+
+### 7.7. How do I export（dump/backup）a wallet?
 
 ```bash
 undcli keys export some_new_account
@@ -157,7 +187,7 @@ undcli keys export some_new_account
 
 will export an account private key in ASCII-armored encrypted format.
 
-### 7.7. How do I import a wallet?
+### 7.8. How do I import a wallet?
 
 There are a couple of methods, depending on the import format. If the bip39 mnemonic is available, then:
 
@@ -165,7 +195,7 @@ There are a couple of methods, depending on the import format. If the bip39 mnem
 undcli keys add some_new_account --recover
 ```
 
-Will prompt you for the bip39 mnemonic. See [https://docs.unification.io/software/undcli-commands.html#undcli-keys-add](https://docs.unification.io/software/undcli-commands.html#undcli-keys-add)
+Will prompt you for the bip39 mnemonic. See [undcli keys add](../software/undcli-commands.md#undcli-keys-add)
 
 If the private key has been exported (e.g. via `undcli keys export`), then the `undcli keys import` command can be used:
 
@@ -173,4 +203,4 @@ If the private key has been exported (e.g. via `undcli keys export`), then the `
 undcli keys import ACC_NAME KEYFILE
 ```
 
-See [https://docs.unification.io/software/undcli-commands.html#undcli-keys-import](https://docs.unification.io/software/undcli-commands.html#undcli-keys-import)
+See [undcli keys import](../software/undcli-commands.md#undcli-keys-import)

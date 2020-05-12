@@ -11,6 +11,8 @@ Unification is a scalable master blockchain for Enterprise.
 1. WRKChains can be considered similar to side-chains which allow scaling processing power and cost metrics for enterprises who need an immutable blockchain without being directly on a public blockchain
 2. Mainchain  is the master 100% public blockchain which WRKChains consume FUND to submit their block header hashes to Mainchain for public immutability.
 
+See [About Mainchain](about-mainchain.md) for further details.
+
 ### 1.1. What is the official project website?
 
 [https://unification.com](https://unification.com)

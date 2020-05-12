@@ -4,7 +4,9 @@ The `undcli` CMD can be used to generate, sign and broadcast new transactions
 to the network. It can also be used to query transactions, accounts and
 a variety of other network information.
 
->**IMPORTANT**: Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+::: warning IMPORTANT
+Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+:::
 
 #### Contents
 
@@ -29,7 +31,9 @@ undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id]
 - `[chain_id]` - the ID of the chain to run the transaction on
 - `[ip]:[port]` - the IP and Port of the RPC node to broadcast the Tx
 
->**Tip**: If you are running your own full node, you can set the `--trust-node` flag to `true`, which will tell `undcli` not to verify the proofs form the response.
+::: tip
+If you are running your own full node, you can set the `--trust-node` flag to `true`, which will tell `undcli` not to verify the proofs form the response.
+:::
 
 For example, we are running on DevNet, and would like to send 1 FUND from
 our account `und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed`, to our friend's
@@ -54,7 +58,9 @@ similar to the following:
 
 ```
 
->**Tip**: you can set the `--broadcast-mode` flag in the command to `block`. This will tell `undcli` to wait for the transaction to be processed in a block before returning the result. This will take up to 5-6 seconds to complete, but the Tx result will be included in the output.
+::: tip
+you can set the `--broadcast-mode` flag in the command to `block`. This will tell `undcli` to wait for the transaction to be processed in a block before returning the result. This will take up to 5-6 seconds to complete, but the Tx result will be included in the output.
+:::
 
 ## Query a Transaction
 

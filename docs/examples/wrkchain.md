@@ -2,10 +2,14 @@
 
 This document will guide you though registering a new WRKChain and submitting hashes via a manual process. Although hash submission is usually automated with the WRKOracle software, this guide will help you understand the process, and allow for testing.
 
->**IMPORTANT**: Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+::: warning IMPORTANT
+Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+:::
 
->**Note**: It is _HIGHLY_ recommended that you only undertake this guide on
+::: tip Note
+It is _HIGHLY_ recommended that you only undertake this guide on
 either [DevNet](local-devnet.md) or TestNet first.
+:::
 
 #### Contents
 

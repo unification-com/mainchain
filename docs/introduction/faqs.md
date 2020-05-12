@@ -47,9 +47,17 @@ Build instructions are available here: [https://docs.unification.io/software/ins
 
 This will build and install both `und` and `undcli` binaries into `$GOPATH/bin`
 
-## 6. Key operation instructions
+## 6. What is the currency used on Mainchain?
 
-### 6.1. How to get the block height?
+The currency used on Mainchain is **FUND**. However, the native on-chain coin denomination  (on MainNet, TestNet and DevNet) is **`nund`**, or "Nano Unification Denomination", such that **1,000,000,000 nund == 1 FUND**.
+
+All transactions, fees and stakes are defined and paid for in `nund`. For example, if you need to send **1 FUND** to your friend, you will need to set your Tx to send `1000000000nund`.
+
+See "[Native Coin Denomination `nund`](denomination.md)" for more details.
+
+## 7. Key operation instructions
+
+### 7.1. How to get the block height?
 
 Several methods available:
 
@@ -81,7 +89,7 @@ TestNet example, using the public RPC node:
 undcli query block --chain-id=FUND-Mainchain-TestNet-v7 --node=tcp://rpc1-testnet.unification.io:26657 --trust-node=false
 ```
 
-### 6.2. How do I create new wallet address?
+### 7.2. How do I create new wallet address?
 
 ```bash
 undcli keys add ACC_NAME
@@ -99,7 +107,7 @@ undcli keys add some_new_account
 
 Run `undcli keys add --help` or see [https://docs.unification.io/software/undcli-commands.html#undcli-keys-add](https://docs.unification.io/software/undcli-commands.html#undcli-keys-add) for details on flags/command options  etc.
 
-### 6.3. How to transfer FUND?
+### 7.3. How to transfer FUND?
 
 ```bash
 undcli tx send [from_key_or_address] [to_address] [amount] --chain-id=CHAIN_ID --node=tcp://NODE_IP:PORT
@@ -115,7 +123,7 @@ undcli tx send my_account und1nkhnc5e8pvph4phv93k0lkscc7yf5eh9kas5f6 10000000000
 
 See [https://docs.unification.io/software/undcli-commands.html#undcli-tx-send](https://docs.unification.io/software/undcli-commands.html#undcli-tx-send) and [https://docs.unification.io/introduction/fees-and-gas.html](https://docs.unification.io/introduction/fees-and-gas.html) for more in-depth information.
 
-### 6.4. How do I get all transactions related to one wallet/account?
+### 7.4. How do I get all transactions related to one wallet/account?
 
 `undcli query txs` can be used to query all transactions. Passing the `--events` flag will allow you to filter indexed events by a particular account. Data is returned paginated.
 
@@ -127,7 +135,7 @@ undcli query txs --events 'message.sender=und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z
 
 The `--events` flag can contain any `{eventType}.{eventAttribute}={value}` type query. For example `--events 'transfer.recipient=und17jv7rerc2e3undqumpf32a3xs9jc0kjk4z2car'` will return queries relating to transfers into the account. See [https://docs.unification.io/software/undcli-commands.html#undcli-query-txs](https://docs.unification.io/software/undcli-commands.html#undcli-query-txs) for further information.
 
-### 6.5. How do I get the FUND balance for one wallet/account?
+### 7.5. How do I get the FUND balance for one wallet/account?
 
 ```bash
 undcli query account [address] [flags]
@@ -141,7 +149,7 @@ undcli query account und1eyn7s6qz2gcnfld0uskwxedyunpgjhlcjhvul9 --chain-id=FUND-
 
 Will return a JSON or text object (depending on options passed). `account.value.coins` in the returned result shows the amount of `nund`. The above example (currently) shows the account has **10000000000 nund (10 FUND)** on TestNet.
 
-### 6.6. How do I export（dump/backup）a wallet?
+### 7.6. How do I export（dump/backup）a wallet?
 
 ```bash
 undcli keys export some_new_account
@@ -149,7 +157,7 @@ undcli keys export some_new_account
 
 will export an account private key in ASCII-armored encrypted format.
 
-### 6.7. How do I import a wallet?
+### 7.7. How do I import a wallet?
 
 There are a couple of methods, depending on the import format. If the bip39 mnemonic is available, then:
 

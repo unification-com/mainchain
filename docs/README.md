@@ -10,6 +10,7 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [What is Mainchain?](introduction/about-mainchain.md)
 - [Native Coin Denomination: nund](introduction/denomination.md)
+- [Total Supply Queries and Conversions](introduction/total-supply.md)
 - [Fees and Gas](introduction/fees-and-gas.md)
 - [Introduction to Genesis Params](introduction/genesis-settings.md)
 - [Introduction to Delegators and Staking](introduction/delegators.md)

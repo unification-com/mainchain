@@ -179,7 +179,7 @@ Consider the following `undcli query supply` result:
 ```
 In the above example, the active circulating supply - usable for transfers and standard transactions etc. - is currently 120,010,263 FUND. 89,737 FUND is currently locked, and can only be used for paying for WRKChain/BEACON fees - it is "dormant" and _cannot be used for any other purpose until it has been used to pay for WRKChain/BEACON fees_. Finally, the total amount of FUND known on the chain is 120,100,000 FUND, and is the equivalent of 120,010,263 + 89,737.
 
-See [undcli-query-supply](../software/undcli-commands.md#undcli-query-supply) for more details on command flags and parameters.
+See [undcli query supply](../software/undcli-commands.md#undcli-query-supply) for more details on command flags and parameters, and [total supply](total-supply.md) for more information on the query results and FUND conversion.
 
 ### 7.7. How do I export（dump/backup）a wallet?
 

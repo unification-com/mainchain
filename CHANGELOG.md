@@ -4,6 +4,18 @@
 
 Unreleased changes have been merged into `master`
 
+* [[`e81ed366ce`](https://github.com/unification-com/mainchain/commit/e81ed366ce)] - docs - faq, further details link ([Codegnosis](https://github.com/Codegnosis))
+* [[`122a4cc18a`](https://github.com/unification-com/mainchain/commit/122a4cc18a)] - docs - links for RPC endpoints and spec ([Codegnosis](https://github.com/Codegnosis))
+* [[`f4ff2662df`](https://github.com/unification-com/mainchain/commit/f4ff2662df)] - docs - faq for total supply ([Codegnosis](https://github.com/Codegnosis))
+* [[`20ee96c143`](https://github.com/unification-com/mainchain/commit/20ee96c143)] - docs - add Q on currency ([Codegnosis](https://github.com/Codegnosis))
+* [[`e9295db5f8`](https://github.com/unification-com/mainchain/commit/e9295db5f8)] - docs - improve denomination clarity ([Codegnosis](https://github.com/Codegnosis))
+* [[`9531fb99d1`](https://github.com/unification-com/mainchain/commit/9531fb99d1)] - docs - FAQs ([Codegnosis](https://github.com/Codegnosis))
+* [[`ce11d01b0a`](https://github.com/unification-com/mainchain/commit/ce11d01b0a)] - docs - updates for MainNet deployment ([Codegnosis](https://github.com/Codegnosis))
+* [[`178f79ab6d`](https://github.com/unification-com/mainchain/commit/178f79ab6d)] - Merge pull request [#151](https://github.com/unification-com/mainchain/pull/151) from unification-com/devnet\_id ([Indika](https://github.com/Indika))
+* [[`6029d7e03d`](https://github.com/unification-com/mainchain/commit/6029d7e03d)] - Merge pull request [#150](https://github.com/unification-com/mainchain/pull/150) from unification-com/update\_changelog\_20200511 ([Indika](https://github.com/Indika))
+* [[`c76354a502`](https://github.com/unification-com/mainchain/commit/c76354a502)] - devnet - set community tax to 2% ([Codegnosis](https://github.com/Codegnosis))
+* [[`5e00fbae94`](https://github.com/unification-com/mainchain/commit/5e00fbae94)] - docs - update references to DevNet chain ID ([Codegnosis](https://github.com/Codegnosis))
+* [[`a5823be6bf`](https://github.com/unification-com/mainchain/commit/a5823be6bf)] - docker - update DevNet chain ID ([Codegnosis](https://github.com/Codegnosis))
 * [[`f84ec3581e`](https://github.com/unification-com/mainchain/commit/f84ec3581e)] - Merge pull request [#147](https://github.com/unification-com/mainchain/pull/147) from unification-com/undcli\_rename ([Codegnosis](https://github.com/Codegnosis))
 * [[`ada05a8e55`](https://github.com/unification-com/mainchain/commit/ada05a8e55)] - misc renames of UND to FUND ([Indika](https://github.com/Indika))
 * [[`176c77a2ef`](https://github.com/unification-com/mainchain/commit/176c77a2ef)] - rename UND to FUND in the Wrkchain module ([Indika](https://github.com/Indika))

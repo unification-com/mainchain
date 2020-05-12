@@ -25,7 +25,8 @@ module.exports = {
                     "/introduction/fees-and-gas",
                     "/introduction/genesis-settings",
                     "/introduction/delegators",
-                    "/introduction/validators"
+                    "/introduction/validators",
+                    "/introduction/faqs"
                 ]
             },
             {

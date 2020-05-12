@@ -14,6 +14,7 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 - [Introduction to Genesis Params](introduction/genesis-settings.md)
 - [Introduction to Delegators and Staking](introduction/delegators.md)
 - [Introduction to Validators](introduction/validators.md)
+- [FAQs](introduction/faqs.md)
 
 ## 2. Install & Use the Software
 

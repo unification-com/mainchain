@@ -18,27 +18,54 @@ There are several options for installing the binaries
 ### Pre-compiled binaries
 
 The quickest way to obtain and run the `und` and `undcli` applications is to download
-the pre-compiled binaries from [latest release](https://github.com/unification-com/mainchain/releases)
+the latest pre-compiled binaries from [latest release](https://github.com/unification-com/mainchain/releases)
 
 ### Install from source
 
-Clone the repo and install `und` and `undcli` binaries into `$GOPATH`
+**IMPORTANT**: if you are connecting to MainNet, it is highly recommended you clone and 
+build from the [latest release tag](https://github.com/unification-com/mainchain/releases/latest) and **not** the `master` branch.
+
+Clone latest release for running on MainNet
 
 ```bash
-$ git clone https://github.com/unification-com/mainchain
+git clone -b [latest-release-tag] https://github.com/unification-com/mainchain
+```
+
+Or clone master for development/testing:
+
+```bash
+git clone https://github.com/unification-com/mainchain
+```
+
+Then run:
+
+```bash
 $ cd mainchain
 $ make install
 ```
 
 ### Build from source
 
-Clone the repo, and compile `und` and `undcli` binaries and output to `./build`. This is useful for development and testing.
+Clone latest release for running on MainNet
 
 ```bash
-$ git clone https://github.com/unification-com/mainchain
+git clone -b [latest-release-tag] https://github.com/unification-com/mainchain
+```
+
+Or clone master for development/testing:
+
+```bash
+git clone https://github.com/unification-com/mainchain
+```
+
+Then run:
+
+```bash
 $ cd mainchain
 $ make build
 ```
+
+`und` and `undcli` binaries and output to `./build`. This is useful for development and testing.
 
 ### Dockerised `und` and `undcli`
 

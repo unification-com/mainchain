@@ -4,6 +4,9 @@
 
 Unreleased changes have been merged into `master`
 
+## v1.4.5 - 13/05/2020
+
+* [[`6db7b6f9c7`](https://github.com/unification-com/mainchain/commit/6db7b6f9c7)] - docs - total supply ([Codegnosis](https://github.com/Codegnosis))
 * [[`e81ed366ce`](https://github.com/unification-com/mainchain/commit/e81ed366ce)] - docs - faq, further details link ([Codegnosis](https://github.com/Codegnosis))
 * [[`122a4cc18a`](https://github.com/unification-com/mainchain/commit/122a4cc18a)] - docs - links for RPC endpoints and spec ([Codegnosis](https://github.com/Codegnosis))
 * [[`f4ff2662df`](https://github.com/unification-com/mainchain/commit/f4ff2662df)] - docs - faq for total supply ([Codegnosis](https://github.com/Codegnosis))

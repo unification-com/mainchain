@@ -20,6 +20,13 @@ There are several options for installing the binaries
 The quickest way to obtain and run the `und` and `undcli` applications is to download
 the latest pre-compiled binaries from [latest release](https://github.com/unification-com/mainchain/releases)
 
+Once downloaded, you can verify the SHA256 checksum against those listed in the release's `checksums.txt`, for example:
+
+```bash
+openssl dgst -sha256 undcli_v1.4.5_linux_x86_64.tar.gz
+SHA256(undcli_v1.4.5_linux_x86_64.tar.gz)= 239559182183648379164f5ff0faa0b3fe0e404f5368e1995e56b2269c93ec05
+```
+
 ### Install from source
 
 **IMPORTANT**: if you are connecting to MainNet, it is highly recommended you clone and 

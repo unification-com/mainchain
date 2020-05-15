@@ -31,7 +31,7 @@ p2p.seed_mode = true
 
 Archive nodes are full nodes that keep a complete history of the chain state, by not pruning any sync data (i.e. `pruning` is set to `nothing` in `$HOME/.und_mainchain/app.toml`). They are used as the data source for third party applications such as block explorers and wallet apps, since they keep a complete event and transaction history.
 
-Archive nodes are best run on servers/cloud VMs with high uptimes.
+Archive nodes are best run on servers/cloud VMs with high uptimes and large disk space.
 
 ### Configuring an archive node
 

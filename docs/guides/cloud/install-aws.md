@@ -330,11 +330,13 @@ To, for example:
 minimum-gas-prices = "0.25nund"
 ```
 
-Finally, set the `pruning` value to `nothing`:
+Finally, you may want to set the `pruning` value to `nothing` to retain all data:
 
 ```toml
 pruning = "nothing"
 ```
+
+Be aware that pruning nothing will increase the required disk space considerably.
 
 Hit <kbd>Ctrl</kbd>+<kbd>X</kbd> followed by `y` and then return to save the file and exit nano.
 
@@ -379,7 +381,7 @@ Description=Unification Mainchain Validator Node
 User=centos
 Group=centos
 WorkingDirectory=/home/centos
-ExecStart=/usr/local/bin/und start  --pruning=nothing --home=/home/centos/.und_mainchain
+ExecStart=/usr/local/bin/und start --home=/home/centos/.und_mainchain
 
 [Install]
 WantedBy=default.target

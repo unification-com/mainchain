@@ -14,7 +14,16 @@ The latest pre-compiled binaries are available from [https://github.com/unificat
 - The `undcli` binary has been compiled for Linux, OSX and Windows.
 - The `und` binary has been compiled for Linux only.
 
-Simply download the archives for your OS, extract them and copy the binaries to a suitable location - preferably a location in your `$PATH` environment variable, for example `/usr/local/bin`, `/opt`, etc.
+Simply download the archives for your OS.
+
+Once downloaded, you can verify the SHA256 checksum against those listed in the release's `checksums.txt`, for example:
+
+```bash
+$ openssl dgst -sha256 undcli_v1.4.5_linux_x86_64.tar.gz
+SHA256(undcli_v1.4.5_linux_x86_64.tar.gz)= 239559182183648379164f5ff0faa0b3fe0e404f5368e1995e56b2269c93ec05
+```
+
+Extract them and copy the binaries to a suitable location - preferably a location in your `$PATH` environment variable, for example `/usr/local/bin`, `/opt`, etc.
 
 Once installed, verify:
 

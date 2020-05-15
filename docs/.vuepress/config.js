@@ -23,6 +23,7 @@ module.exports = {
                     "/introduction/about-mainchain",
                     "/introduction/denomination",
                     "/introduction/fees-and-gas",
+                    "/introduction/total-supply",
                     "/introduction/genesis-settings",
                     "/introduction/delegators",
                     "/introduction/validators",

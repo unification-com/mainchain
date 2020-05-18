@@ -66,6 +66,10 @@ Delegators may participate in several functions regarding the running of the net
 
 - **Unbonding from misbehaving validators to hold them accountable**: Delegators who feel that their selected validator is not behaving in the best interests of the network should remove their stake from that validator to reduce their chances of being included in the active validator pool. This can be done in one of two ways: unbonding, which simply removes the delegator's stake from the validator; or re-delegating - switching the delegated stake from one validator to another. Unbonding has a cool-down period of 3 weeks to process, but re-delegation is instant.
 
+::: tip Note
+Initial re-delegation from one validator to another is instant. However, once redelegated, the redelegated FUND will enter a cooldown period.
+:::
+
 ## Rewards
 
 Every transaction sent to the network has a fee paid. Some Tx fees, such as submitting WRKChain hashes are fixed at 1 FUND per Tx, and others are more flexible depending on how much as user is willing to pay. With each block, the fees are distributed among the active validators and their delegators as rewards. Rewards paid are proportional to the amount staked.

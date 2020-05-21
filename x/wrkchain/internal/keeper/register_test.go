@@ -177,9 +177,9 @@ func TestRegisterWrkChain(t *testing.T) {
 	i, _ := keeper.GetHighestWrkChainID(ctx)
 
 	for _, addr := range TestAddrs {
-		name := GenerateRandomString(20)
-		moniker := GenerateRandomString(12)
-		genesisHash := GenerateRandomString(32)
+		name := GenerateRandomString(128)
+		moniker := GenerateRandomString(64)
+		genesisHash := GenerateRandomString(66)
 
 		expectedWc := types.NewWrkChain()
 		expectedWc.Owner = addr
@@ -214,6 +214,10 @@ func TestRegisterWrkChain(t *testing.T) {
 func TestFailRegisterNewWrkChain(t *testing.T) {
 	ctx, _, keeper := createTestInput(t, false, 100, 0)
 
+	longName := GenerateRandomString(129)
+	longMoniker := GenerateRandomString(65)
+	longGenesisHash := GenerateRandomString(67)
+
 	testCases := []struct {
 		moniker      string
 		name         string
@@ -228,6 +232,9 @@ func TestFailRegisterNewWrkChain(t *testing.T) {
 		{"", "name", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "unable to set WRKChain - must have a moniker"), 0},
 		{"testmoniker", "", "", TestAddrs[0], nil, 1},
 		{"testmoniker", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrWrkChainAlreadyRegistered, fmt.Sprintf("wrkchain already registered with moniker 'testmoniker' - id: 1, owner: %s", TestAddrs[0])), 0},
+		{longMoniker, "name", "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit"), 0},
+		{"monikerok", longName, "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"), 0},
+		{"monikerok", "name ok", longGenesisHash, TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "genesis hash too big. 66 character limit"), 0},
 	}
 
 	for _, tc := range testCases {

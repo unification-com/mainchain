@@ -57,6 +57,9 @@ func TestMsgRegisterBeacon(t *testing.T) {
 		{"b2", "", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
 		{"b3", "BEACON 3", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
 		{"b4", "BEACON 4", sdk.AccAddress{}, false},
+		{"c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5", "c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{"c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a51", "c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{"c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5", "c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a51", sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
 	}
 
 	for i, tc := range tests {
@@ -87,6 +90,8 @@ func TestMsgRecordBeaconTimestamp(t *testing.T) {
 		expectPass bool
 	}{
 		{1, 1234, "beaconhash", addr, true},
+		{1, 12345, "0xc14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5", addr, true},
+		{1, 12346, "0xc14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a51", addr, false},
 		{1, 1, "beaconhash", emptyAddr, false},
 		{1, 1, "", addr, false},
 		{1, 0, "beaconhash", addr, false},

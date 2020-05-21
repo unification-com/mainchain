@@ -48,6 +48,19 @@ func (msg MsgRegisterWrkChain) ValidateBasic() error {
 	if len(msg.Moniker) == 0 {
 		return sdkerrors.Wrap(ErrMissingData, "Moniker cannot be empty")
 	}
+
+	if len(msg.WrkChainName) > 128 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+	}
+
+	if len(msg.Moniker) > 64 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+	}
+
+	if len(msg.GenesisHash) > 66 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "genesis hash too big. 66 character limit")
+	}
+
 	return nil
 }
 
@@ -117,6 +130,21 @@ func (msg MsgRecordWrkChainBlock) ValidateBasic() error {
 	}
 	if msg.Height == 0 {
 		return sdkerrors.Wrap(ErrMissingData, "Height cannot be zero")
+	}
+	if len(msg.BlockHash) > 66 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "block hash too big. 66 character limit")
+	}
+	if len(msg.ParentHash) > 66 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "parent hash too big. 66 character limit")
+	}
+	if len(msg.Hash1) > 66 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "hash1 too big. 66 character limit")
+	}
+	if len(msg.Hash2) > 66 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "hash2 too big. 66 character limit")
+	}
+	if len(msg.Hash3) > 66 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "hash3 too big. 66 character limit")
 	}
 
 	return nil

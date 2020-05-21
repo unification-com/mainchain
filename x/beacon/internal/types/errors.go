@@ -12,6 +12,7 @@ const (
 	CodeBeaconTimestampAlreadyRecorded = 203
 	CodeNotBeaconOwner                 = 204
 	CodeMissingData                    = 205
+	CodeContentTooLarge                = 206
 
 	CodeBeaconInsufficientFee   = 301
 	CodeBeaconTooMuchFee        = 302
@@ -32,4 +33,5 @@ var (
 	ErrTooMuchBeaconFee               = sdkerrors.Register(ModuleName, CodeBeaconTooMuchFee, "too much beacon fee")
 	ErrFeePayerNotOwner               = sdkerrors.Register(ModuleName, CodeBeaconFeePayerNotOwner, "fee payer is not beacon owner")
 	ErrIncorrectFeeDenomination       = sdkerrors.Register(ModuleName, CodeBeaconIncorrectFeeDenom, "incorrect beacon fee denomination")
+	ErrContentTooLarge                = sdkerrors.Register(ModuleName, CodeContentTooLarge, "msg content too large")
 )

@@ -125,6 +125,10 @@ func (k Keeper) RecordBeaconTimestamp(
 
 	logger := k.Logger(ctx)
 
+	if len(hash) > 66 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit")
+	}
+
 	if !k.IsBeaconRegistered(ctx, beaconID) {
 		// can't record hashes if BEACON isn't registered
 		return 0, types.ErrBeaconDoesNotExist

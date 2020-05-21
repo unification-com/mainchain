@@ -143,6 +143,22 @@ func (k Keeper) RecordWrkchainHashes(
 
 	logger := k.Logger(ctx)
 
+	if len(blockHash) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit")
+	}
+	if len(parentHash) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit")
+	}
+	if len(hash1) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit")
+	}
+	if len(hash2) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit")
+	}
+	if len(hash3) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit")
+	}
+
 	if !k.IsWrkChainRegistered(ctx, wrkchainId) {
 		// can't record hashes if WRKChain isn't registered
 		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))

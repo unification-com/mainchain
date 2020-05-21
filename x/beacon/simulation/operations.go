@@ -23,8 +23,8 @@ func SimulateMsgRegisterBeacon(ak auth.AccountKeeper, k keeper.Keeper) simulatio
 		simAccount, _ := simulation.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 
-		moniker := simulation.RandStringOfLength(r, 16)
-		name := simulation.RandStringOfLength(r, 16)
+		moniker := simulation.RandStringOfLength(r, 64)
+		name := simulation.RandStringOfLength(r, 128)
 
 		fees := k.GetRegistrationFeeAsCoins(ctx)
 
@@ -94,7 +94,7 @@ func SimulateMsgRecordBeaconTimestamp(ak auth.AccountKeeper, k keeper.Keeper) si
 
 		msg := types.NewMsgRecordBeaconTimestamp(
 			beacon.BeaconID,
-			simulation.RandStringOfLength(r, 32),
+			simulation.RandStringOfLength(r, 66),
 			uint64(time.Now().Unix()),
 			ownerAddr,
 		)

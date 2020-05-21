@@ -140,8 +140,8 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 	ctx, _, keeper := createTestInput(t, false, 100, 0)
 	numToRecord := uint64(100)
 
-	name := GenerateRandomString(20)
-	moniker := GenerateRandomString(12)
+	name := GenerateRandomString(128)
+	moniker := GenerateRandomString(64)
 
 	bID, err := keeper.RegisterBeacon(ctx, moniker, name, TestAddrs[0])
 	require.NoError(t, err)
@@ -151,7 +151,7 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 		expectedTs.BeaconID = bID
 		expectedTs.Owner = TestAddrs[0]
 		expectedTs.TimestampID = tsID
-		expectedTs.Hash = GenerateRandomString(32)
+		expectedTs.Hash = GenerateRandomString(66)
 		expectedTs.SubmitTime = uint64(time.Now().Unix())
 
 		retTsID, err := keeper.RecordBeaconTimestamp(ctx, bID, expectedTs.Hash, expectedTs.SubmitTime, expectedTs.Owner)
@@ -192,6 +192,7 @@ func TestRecordBeaconTimestampsFail(t *testing.T) {
 		{bID, 0, "timstamphash", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, submit time and hash"), 0},
 		{bID, 1, "timstamphash", TestAddrs[0], nil, 1},
 		{bID, 1, "timstamphash", TestAddrs[0], sdkerrors.Wrap(types.ErrBeaconTimestampAlreadyRecorded, "timestamp hash timstamphash already recorded at time 1"), 0},
+		{bID, 2, "0xc14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a51", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit"), 0},
 	}
 
 	for _, tc := range testCases {

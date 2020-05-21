@@ -56,6 +56,7 @@ var (
 	ErrNotWrkChainOwner             = types.ErrNotWrkChainOwner
 	ErrWrkChainBlockAlreadyRecorded = types.ErrWrkChainBlockAlreadyRecorded
 	ErrMissingData                  = types.ErrMissingData
+	ErrContentTooLarge              = types.ErrContentTooLarge
 
 	NewGenesisState     = types.NewGenesisState
 	DefaultGenesisState = types.DefaultGenesisState

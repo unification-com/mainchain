@@ -44,6 +44,15 @@ func (msg MsgRegisterBeacon) ValidateBasic() error {
 	if len(msg.Moniker) == 0 || len(msg.BeaconName) == 0 {
 		return sdkerrors.Wrap(ErrMissingData, "moniker and name cannot be empty")
 	}
+
+	if len(msg.BeaconName) > 128 {
+        return sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+	}
+
+	if len(msg.Moniker) > 64 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+	}
+
 	return nil
 }
 
@@ -101,6 +110,9 @@ func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 	}
 	if msg.SubmitTime == 0 {
 		return sdkerrors.Wrap(ErrMissingData, "submit time cannot be zero")
+	}
+	if len(msg.Hash) > 66 {
+		return sdkerrors.Wrap(ErrContentTooLarge, "hash too big. 66 character limit")
 	}
 
 	return nil

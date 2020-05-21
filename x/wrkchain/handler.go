@@ -25,6 +25,18 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // Handle a message to register a new WRKChain
 func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWrkChain) (*sdk.Result, error) {
 
+	if len(msg.WrkChainName) > 128 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+	}
+
+	if len(msg.Moniker) > 64 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+	}
+
+	if len(msg.GenesisHash) > 66 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "genesis hash too big. 66 character limit")
+	}
+
 	params := NewQueryWrkChainParams(1, 1, msg.Moniker, sdk.AccAddress{})
 	wrkChains := keeper.GetWrkChainsFiltered(ctx, params)
 
@@ -58,6 +70,23 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 }
 
 func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordWrkChainBlock) (*sdk.Result, error) {
+
+	if len(msg.BlockHash) > 66 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "block hash too big. 66 character limit")
+	}
+	if len(msg.ParentHash) > 66 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "parent hash too big. 66 character limit")
+	}
+	if len(msg.Hash1) > 66 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "hash1 too big. 66 character limit")
+	}
+	if len(msg.Hash2) > 66 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "hash2 too big. 66 character limit")
+	}
+	if len(msg.Hash3) > 66 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "hash3 too big. 66 character limit")
+	}
+
 	if !keeper.IsWrkChainRegistered(ctx, msg.WrkChainID) { // Checks if the WrkChain is already registered
 		return nil, sdkerrors.Wrap(ErrWrkChainDoesNotExist, "WRKChain has not been registered yet") // If not, throw an error
 	}

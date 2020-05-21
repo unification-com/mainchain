@@ -168,6 +168,13 @@ func (k Keeper) RegisterBeacon(ctx sdk.Context, moniker string, beaconName strin
 	if len(moniker) == 0 {
 		return 0, sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
 	}
+	if len(beaconName) > 128 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit")
+	}
+
+	if len(moniker) > 64 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit")
+	}
 
 	beaconID, err := k.GetHighestBeaconID(ctx)
 	if err != nil {

@@ -44,6 +44,7 @@ var (
 	ErrBeaconDoesNotExist             = types.ErrBeaconDoesNotExist
 	ErrNotBeaconOwner                 = types.ErrNotBeaconOwner
 	ErrBeaconTimestampAlreadyRecorded = types.ErrBeaconTimestampAlreadyRecorded
+	ErrContentTooLarge                = types.ErrContentTooLarge
 
 	// Events
 	EventTypeRegisterBeacon         = types.EventTypeRegisterBeacon

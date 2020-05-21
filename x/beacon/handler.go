@@ -24,6 +24,14 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // Handle a message to register a new BEACON
 func handleMsgRegisterBeacon(ctx sdk.Context, keeper Keeper, msg MsgRegisterBeacon) (*sdk.Result, error) {
 
+	if len(msg.BeaconName) > 128 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+	}
+
+	if len(msg.Moniker) > 64 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+	}
+
 	params := NewQueryBeaconParams(1, 1, msg.Moniker, sdk.AccAddress{})
 	beacons := keeper.GetBeaconsFiltered(ctx, params)
 
@@ -56,6 +64,12 @@ func handleMsgRegisterBeacon(ctx sdk.Context, keeper Keeper, msg MsgRegisterBeac
 
 // Handle a message to record a new BEACON timestamp
 func handleMsgRecordBeaconTimestamp(ctx sdk.Context, keeper Keeper, msg MsgRecordBeaconTimestamp) (*sdk.Result, error) {
+
+
+	if len(msg.Hash) > 66 {
+		return nil, sdkerrors.Wrap(ErrContentTooLarge, "hash too big. 66 character limit")
+	}
+
 	if !keeper.IsBeaconRegistered(ctx, msg.BeaconID) { // Checks if the BEACON is registered
 		return nil, sdkerrors.Wrap(ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
 	}

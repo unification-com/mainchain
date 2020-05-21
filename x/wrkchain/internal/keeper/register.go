@@ -183,6 +183,15 @@ func (k Keeper) RegisterWrkChain(ctx sdk.Context, moniker string, wrkchainName s
 	if len(moniker) == 0 {
 		return 0, sdkerrors.Wrap(types.ErrMissingData, "unable to set WRKChain - must have a moniker")
 	}
+	if len(moniker) > 64 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit")
+	}
+	if len(genesisHash) > 66 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "genesis hash too big. 66 character limit")
+	}
+	if len(wrkchainName) > 128 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit")
+	}
 
 	wrkChainId, err := k.GetHighestWrkChainID(ctx)
 	if err != nil {

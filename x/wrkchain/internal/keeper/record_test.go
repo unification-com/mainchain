@@ -19,9 +19,9 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 	numToRecord := uint64(100)
 
 	for _, addr := range TestAddrs {
-		name := GenerateRandomString(20)
-		moniker := GenerateRandomString(12)
-		genesisHash := GenerateRandomString(32)
+		name := GenerateRandomString(128)
+		moniker := GenerateRandomString(64)
+		genesisHash := GenerateRandomString(66)
 
 		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -31,11 +31,11 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 			block.WrkChainID = wcID
 			block.Owner = addr
 			block.Height = h
-			block.BlockHash = GenerateRandomString(32)
-			block.ParentHash = GenerateRandomString(32)
-			block.Hash1 = GenerateRandomString(32)
-			block.Hash2 = GenerateRandomString(32)
-			block.Hash3 = GenerateRandomString(32)
+			block.BlockHash = GenerateRandomString(66)
+			block.ParentHash = GenerateRandomString(66)
+			block.Hash1 = GenerateRandomString(66)
+			block.Hash2 = GenerateRandomString(66)
+			block.Hash3 = GenerateRandomString(66)
 			block.SubmitTime = time.Now().Unix()
 
 			err := keeper.SetWrkChainBlock(ctx, block)
@@ -52,9 +52,9 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 	numToRecord := uint64(100)
 
 	for _, addr := range TestAddrs {
-		name := GenerateRandomString(20)
-		moniker := GenerateRandomString(12)
-		genesisHash := GenerateRandomString(32)
+		name := GenerateRandomString(128)
+		moniker := GenerateRandomString(64)
+		genesisHash := GenerateRandomString(66)
 
 		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -64,11 +64,11 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 			block.WrkChainID = wcID
 			block.Owner = addr
 			block.Height = h
-			block.BlockHash = GenerateRandomString(32)
-			block.ParentHash = GenerateRandomString(32)
-			block.Hash1 = GenerateRandomString(32)
-			block.Hash2 = GenerateRandomString(32)
-			block.Hash3 = GenerateRandomString(32)
+			block.BlockHash = GenerateRandomString(66)
+			block.ParentHash = GenerateRandomString(66)
+			block.Hash1 = GenerateRandomString(66)
+			block.Hash2 = GenerateRandomString(66)
+			block.Hash3 = GenerateRandomString(66)
 			block.SubmitTime = time.Now().Unix()
 
 			err := keeper.SetWrkChainBlock(ctx, block)
@@ -85,9 +85,9 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 	numToRecord := uint64(1000)
 
 	for _, addr := range TestAddrs {
-		name := GenerateRandomString(20)
-		moniker := GenerateRandomString(12)
-		genesisHash := GenerateRandomString(32)
+		name := GenerateRandomString(128)
+		moniker := GenerateRandomString(64)
+		genesisHash := GenerateRandomString(66)
 
 		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -99,11 +99,11 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 			block.WrkChainID = wcID
 			block.Owner = addr
 			block.Height = h
-			block.BlockHash = GenerateRandomString(32)
-			block.ParentHash = GenerateRandomString(32)
-			block.Hash1 = GenerateRandomString(32)
-			block.Hash2 = GenerateRandomString(32)
-			block.Hash3 = GenerateRandomString(32)
+			block.BlockHash = GenerateRandomString(66)
+			block.ParentHash = GenerateRandomString(66)
+			block.Hash1 = GenerateRandomString(66)
+			block.Hash2 = GenerateRandomString(66)
+			block.Hash3 = GenerateRandomString(66)
 			block.SubmitTime = time.Now().Unix()
 
 			testBlocks = append(testBlocks, block)
@@ -129,9 +129,9 @@ func TestIsAuthorisedToRecord(t *testing.T) {
 	unauthorisedAddr := sdk.AccAddress(pubKey.Address())
 
 	for _, addr := range TestAddrs {
-		name := GenerateRandomString(20)
-		moniker := GenerateRandomString(12)
-		genesisHash := GenerateRandomString(32)
+		name := GenerateRandomString(128)
+		moniker := GenerateRandomString(64)
+		genesisHash := GenerateRandomString(66)
 
 		wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -148,9 +148,9 @@ func TestRecordWrkchainHashes(t *testing.T) {
 	ctx, _, keeper := createTestInput(t, false, 100, 0)
 	numToRecord := uint64(100)
 
-	name := GenerateRandomString(20)
-	moniker := GenerateRandomString(12)
-	genesisHash := GenerateRandomString(32)
+	name := GenerateRandomString(128)
+	moniker := GenerateRandomString(64)
+	genesisHash := GenerateRandomString(66)
 
 	wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", TestAddrs[0])
 	require.NoError(t, err)
@@ -160,11 +160,11 @@ func TestRecordWrkchainHashes(t *testing.T) {
 		expectedBlock.WrkChainID = wcID
 		expectedBlock.Owner = TestAddrs[0]
 		expectedBlock.Height = h
-		expectedBlock.BlockHash = GenerateRandomString(32)
-		expectedBlock.ParentHash = GenerateRandomString(32)
-		expectedBlock.Hash1 = GenerateRandomString(32)
-		expectedBlock.Hash2 = GenerateRandomString(32)
-		expectedBlock.Hash3 = GenerateRandomString(32)
+		expectedBlock.BlockHash = GenerateRandomString(66)
+		expectedBlock.ParentHash = GenerateRandomString(66)
+		expectedBlock.Hash1 = GenerateRandomString(66)
+		expectedBlock.Hash2 = GenerateRandomString(66)
+		expectedBlock.Hash3 = GenerateRandomString(66)
 		expectedBlock.SubmitTime = time.Now().Unix()
 
 		err := keeper.RecordWrkchainHashes(ctx, wcID, h, expectedBlock.BlockHash, expectedBlock.ParentHash, expectedBlock.Hash1, expectedBlock.Hash2, expectedBlock.Hash3, TestAddrs[0])
@@ -181,9 +181,12 @@ func TestRecordWrkchainHashes(t *testing.T) {
 func TestRecordWrkchainHashesFail(t *testing.T) {
 	ctx, _, keeper := createTestInput(t, false, 100, 0)
 
-	name := GenerateRandomString(20)
-	moniker := GenerateRandomString(12)
-	genesisHash := GenerateRandomString(32)
+	name := GenerateRandomString(128)
+	moniker := GenerateRandomString(64)
+	genesisHash := GenerateRandomString(66)
+
+	goodHash := GenerateRandomString(66)
+	tooLongHash := GenerateRandomString(67)
 
 	wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", TestAddrs[0])
 	require.NoError(t, err)
@@ -204,9 +207,14 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 		{wcID, 0, "", "", "", "", "", TestAddrs[1], sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
 		{wcID, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
 		{wcID, 1, "", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, height and hash")},
-		{wcID, 0, "blockhash", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, height and hash")},
-		{wcID, 1, "blockhash", "", "", "", "", TestAddrs[0], nil},
-		{wcID, 1, "blockhash", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "Block hashes already recorded for this height")},
+		{wcID, 0, goodHash, "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, height and hash")},
+		{wcID, 1, goodHash, "", "", "", "", TestAddrs[0], nil},
+		{wcID, 1, goodHash, "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "Block hashes already recorded for this height")},
+		{wcID, 2, tooLongHash, "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit")},
+		{wcID, 3, goodHash, tooLongHash, "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit")},
+		{wcID, 4, goodHash, goodHash, tooLongHash, "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit")},
+		{wcID, 5, goodHash, goodHash, goodHash, tooLongHash, "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit")},
+		{wcID, 6, goodHash, goodHash, goodHash, goodHash, tooLongHash, TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit")},
 	}
 
 	for _, tc := range testCases {

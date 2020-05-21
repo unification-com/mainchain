@@ -173,8 +173,8 @@ func TestRegisterBeacon(t *testing.T) {
 	i, _ := keeper.GetHighestBeaconID(ctx)
 
 	for _, addr := range TestAddrs {
-		name := GenerateRandomString(20)
-		moniker := GenerateRandomString(12)
+		name := GenerateRandomString(128)
+		moniker := GenerateRandomString(64)
 
 		expectedB := types.NewBeacon()
 		expectedB.Owner = addr
@@ -215,6 +215,8 @@ func TestFailRegisterNewBeacon(t *testing.T) {
 		{"", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker"), 0},
 		{"testmoniker", "", TestAddrs[0], nil, 1},
 		{"testmoniker", "", TestAddrs[0], sdkerrors.Wrap(types.ErrBeaconAlreadyRegistered, fmt.Sprintf("beacon already registered with moniker 'testmoniker' - id: 1, owner: %s", TestAddrs[0])), 0},
+		{"c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a51", "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit"), 0},
+		{"c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5", "c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a5c14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a51", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"), 0},
 	}
 
 	for _, tc := range testCases {

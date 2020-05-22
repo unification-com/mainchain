@@ -23,10 +23,10 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.ClientName=undcli
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.FullCommit}}
-      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags={{.Env.UND_BUILD_TAGS}}"
+      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo"
     flags:
       - -mod=readonly
-      - -tags="{{.Env.UND_BUILD_TAGS}}"
+      - -tags="netgo"
     hooks:
       pre: go mod verify
   -
@@ -47,10 +47,10 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.ClientName=undcli
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.FullCommit}}
-      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags={{.Env.UND_BUILD_TAGS}}"
+      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo"
     flags:
       - -mod=readonly
-      - -tags="{{.Env.UND_BUILD_TAGS}}"
+      - -tags="netgo"
     hooks:
       pre: go mod verify
 

@@ -4,8 +4,33 @@
 
 Unreleased changes have been merged into `master`
 
+## v1.4.6 - 22/05/2020
+
+* [[`272995b717`](https://github.com/unification-com/mainchain/commit/272995b717)] - makefile - add debug flag to snapshot target ([Codegnosis](https://github.com/Codegnosis))
+* [[`87f85ce94a`](https://github.com/unification-com/mainchain/commit/87f85ce94a)] - goreleaser - ledger support requires maually compiling from source with C compiler ([Codegnosis](https://github.com/Codegnosis))
+* [[`8b8c383d1e`](https://github.com/unification-com/mainchain/commit/8b8c383d1e)] - Merge pull request [#159](https://github.com/unification-com/mainchain/pull/159) from unification-com/limit\_hash\_size ([Indika](https://github.com/Indika))
+* [[`b1a7bbaa40`](https://github.com/unification-com/mainchain/commit/b1a7bbaa40)] - simapp - adjust op weights ([Codegnosis](https://github.com/Codegnosis))
+* [[`c6421c57e6`](https://github.com/unification-com/mainchain/commit/c6421c57e6)] - simapp - simplify GenTx helper ([Codegnosis](https://github.com/Codegnosis))
+* [[`88714dfdf3`](https://github.com/unification-com/mainchain/commit/88714dfdf3)] - x.wrkchain - unit tests for limiting input size ([Codegnosis](https://github.com/Codegnosis))
+* [[`82c0b819d1`](https://github.com/unification-com/mainchain/commit/82c0b819d1)] - x.wrkchain - limit hash sizes to 66 characters, moniker size to 64 and name to 128 ([Codegnosis](https://github.com/Codegnosis))
+* [[`b8d23d50e0`](https://github.com/unification-com/mainchain/commit/b8d23d50e0)] - x.wrkchain - new error codes for msg content too large ([Codegnosis](https://github.com/Codegnosis))
+* [[`dfe6abe047`](https://github.com/unification-com/mainchain/commit/dfe6abe047)] - x.beacon - unit tests for limiting input size ([Codegnosis](https://github.com/Codegnosis))
+* [[`6cacdd5c3e`](https://github.com/unification-com/mainchain/commit/6cacdd5c3e)] - x.beacon - limit hash size to 66 characters, moniker size to 64 and name to 128 ([Codegnosis](https://github.com/Codegnosis))
+* [[`a2dcaee34d`](https://github.com/unification-com/mainchain/commit/a2dcaee34d)] - x.beacon - new error codes for msg content too large ([Codegnosis](https://github.com/Codegnosis))
+* [[`fbc7cfd67a`](https://github.com/unification-com/mainchain/commit/fbc7cfd67a)] - Merge pull request [#158](https://github.com/unification-com/mainchain/pull/158) from unification-com/docs\_20200518 ([Indika](https://github.com/Indika))
+* [[`46b8398980`](https://github.com/unification-com/mainchain/commit/46b8398980)] - docs - redelegation clarity ([Codegnosis](https://github.com/Codegnosis))
+* [[`2cc63a55a2`](https://github.com/unification-com/mainchain/commit/2cc63a55a2)] - Merge pull request [#156](https://github.com/unification-com/mainchain/pull/156) from unification-com/docs\_20200514 ([Indika](https://github.com/Indika))
+* [[`3ab75e3205`](https://github.com/unification-com/mainchain/commit/3ab75e3205)] - docs - documentation edits and improvements ([Codegnosis](https://github.com/Codegnosis))
+* [[`e9b0d7ff59`](https://github.com/unification-com/mainchain/commit/e9b0d7ff59)] - Merge pull request [#155](https://github.com/unification-com/mainchain/pull/155) from unification-com/checksum\_readme ([Indika](https://github.com/Indika))
+* [[`abf1f8e410`](https://github.com/unification-com/mainchain/commit/abf1f8e410)] - readme - checksum notes ([Codegnosis](https://github.com/Codegnosis))
+* [[`5715b19e7d`](https://github.com/unification-com/mainchain/commit/5715b19e7d)] - Merge pull request [#154](https://github.com/unification-com/mainchain/pull/154) from unification-com/mainnet\_readme ([Indika](https://github.com/Indika))
+* [[`74a89e1092`](https://github.com/unification-com/mainchain/commit/74a89e1092)] - readme - additional notes on compiling ([Codegnosis](https://github.com/Codegnosis))
+
 ## v1.4.5 - 13/05/2020
 
+* [[`aedc8fe3d1`](https://github.com/unification-com/mainchain/commit/aedc8fe3d1)] - Merge pull request [#153](https://github.com/unification-com/mainchain/pull/153) from unification-com/v1\_4\_5\_changelog ([Indika](https://github.com/Indika))
+* [[`6547155d02`](https://github.com/unification-com/mainchain/commit/6547155d02)] - v1.4.5 changelog ([Codegnosis](https://github.com/Codegnosis))
+* [[`3a77ff68bd`](https://github.com/unification-com/mainchain/commit/3a77ff68bd)] - Merge pull request [#152](https://github.com/unification-com/mainchain/pull/152) from unification-com/mainnet\_docs ([Indika](https://github.com/Indika))
 * [[`6db7b6f9c7`](https://github.com/unification-com/mainchain/commit/6db7b6f9c7)] - docs - total supply ([Codegnosis](https://github.com/Codegnosis))
 * [[`e81ed366ce`](https://github.com/unification-com/mainchain/commit/e81ed366ce)] - docs - faq, further details link ([Codegnosis](https://github.com/Codegnosis))
 * [[`122a4cc18a`](https://github.com/unification-com/mainchain/commit/122a4cc18a)] - docs - links for RPC endpoints and spec ([Codegnosis](https://github.com/Codegnosis))

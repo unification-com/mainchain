@@ -112,7 +112,7 @@ build-update-sdk:
 	go build $(BUILD_FLAGS) -o build/undcli ./cmd/undcli
 
 snapshot: goreleaser
-	UND_BUILD_TAGS="$(build_tags)" goreleaser --snapshot --skip-publish --rm-dist
+	UND_BUILD_TAGS="$(build_tags)" goreleaser --snapshot --skip-publish --rm-dist --debug
 
 release: goreleaser
 	UND_BUILD_TAGS="$(build_tags)" goreleaser --rm-dist

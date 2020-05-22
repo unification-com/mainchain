@@ -1,63 +1,37 @@
-# Demo WRKChain: Finchain
+# WRKChain: Finchains
 
-[Finchain](https://finchain-testnet.unification.io/) is a live WRKChain example currently running on TestNet. The full source code is available on [Github](https://github.com/unification-com/finchain-demo), and can be run as a completely self-contained localised demo.
+Finchain is a live WRKChain. The full source code is available on [Github](https://github.com/unification-com/finchain).
+
+Finchain is an Ethereum based WRKChain that utilises a smart contract to analyse Stock data. Stock data is written to the smart contract from several API sources - each source API has an oracle periodically querying the APIs and submitting the data to the smart contract. The smart contract analyses input sent from the API oracles, and emits events for both submitted stock price updates and when a discrepancy is found between APIs' submitted prices. Discrepancies are detected when price differences exceed a configurable threshold value.  
 
 [[toc]]
 
-## Public Finchain Demo
+## Public Finchains
 
-The public Finchain Demo can be viewed here: [https://finchain.unification.io](https://finchain.unification.io)  
-The public Finchain Block explorer can be found here: [https://finchain.unification.io/explorer](https://finchain.unification.io/explorer)
+The TestNet Finchains can be viewed here: [https://finchain.unification.io](https://finchain.unification.io)
 
-The public Finchain demo writes its block hashes to the [UND Mainchain TestNet](https://explorer-testnet.unification.io/).
+The TestNet Finchains writes its block hashes to the [Mainchain TestNet](https://explorer-testnet.unification.io/).
 
-## Running Finchain Locally
+## Running Finchains Locally
 
-Finchain can be run locally as a completely self-contained demo, to allow developers to play with different configurations, and see how the internals of a WRKChain work.
+Finchains can also be run locally as a completely self-contained environment, to allow developers to play with different configurations, and see how the internals of a WRKChain work.
 
 Docker and Docker Compose are required to run the localised, self-contained
-Finchain demo.
+Finchains.
 
 Copy `example.env` to `.env` and make any required changes. API keys are required
-for the demo to work - see `example.env` for details on where to obtain the
+for the composition to work - see `example.env` for details on where to obtain the
 necessary API keys.
 
-Run the demo using:
+Run the composition using:
 
 ```bash
 make
 ```
 
-### Docker network issues
+### WRKChain: Localised Finchains Docker Composition Info
 
-By default, the demo uses the `172.25.0.0/24` subnet. If this subnet overlaps with your own, run:
-
-```bash
-ifconfig
-```
-
-and look for a line for your connection similar to:
-
-```bash
-inet addr:192.168.1.2  Bcast:192.168.1.255  Mask:255.255.255.0
-```
-
-Look for the `network` (first 3 parts of the IP address)
-value of `inet addr`. This is your current subnet. In the example above, this is `192.168.1`.
-
-Then set the `SUBNET_IP` variable to any other subnet. For example, run:
-
-```bash
-SUBNET_IP=192.168.5 make
-```
-
-or edit `.env` changing the value for `SUBNET_IP`
-
-to run the demo on the `192.168.5.0/24` subnet
-
-### WRKChain: Finchain Info
-
-Finchain is a `geth` based WRKChain.
+Finchains's WRKChain is a `geth` (Ethereum) based WRKChain.
 
 Network ID: `2339117895`  
 
@@ -70,9 +44,9 @@ WRKChain Block Validation UI: [http://localhost:4040](http://localhost:4040)
 
 ### Local UND Mainchain DevNet
 
-The Finchain demo contains a completely self-contained pre-configured local Mainchain DevNet:
+The local Finchains composition contains a completely self-contained pre-configured local Mainchain DevNet:
 
-Chain ID: `UND-Mainchain-DevNet  `
+Chain ID: `FUND-Mainchain-DevNet  `
 
 Block Explorer: [http://localhost:3000](http://localhost:3000)
 

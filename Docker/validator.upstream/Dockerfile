@@ -4,7 +4,7 @@ ARG GO_VERSION
 
 RUN apk update && \
     apk upgrade && \
-    apk add git make jq
+    apk add git make jq curl --no-cache --upgrade grep
 
 ENV GOPATH="/root/.go"
 ENV GOROOT="/usr/local/go"

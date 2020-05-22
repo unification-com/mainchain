@@ -34,7 +34,7 @@ make devnet-down
 
 ## Pure Upstream build
 
-Pure upstream downloads the `master` branch on GitHub to build the binaries, and is useful for testing the latest committed master version.
+Pure upstream downloads the `master` branch on GitHub to build the binaries, and is useful for testing the latest code committed to `master`, for example for pre-release testing.
 
 ```
 docker-compose -f Docker/docker-compose.upstream.yml up --build

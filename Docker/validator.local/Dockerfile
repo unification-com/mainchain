@@ -2,7 +2,7 @@ FROM golang:1.13.3-alpine
 
 RUN apk update && \
     apk upgrade && \
-    apk add git make jq gcc libc-dev
+    apk add git make jq gcc libc-dev curl --no-cache --upgrade grep
 
 ENV GOPATH="/root/.go"
 ENV GOROOT="/usr/local/go"

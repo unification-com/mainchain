@@ -55,7 +55,7 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 - [Example WRKChain Transactions and Queries](examples/wrkchain.md)
 - [Example BEACON Transactions and Queries](examples/beacon.md)
 - [Example Enterprise FUND Transactions and Queries](examples/enterprise-fund.md)
-- [Demo WRKChain: Finchain](examples/finchain.md)
+- [WRKChain: Finchains](examples/finchain.md)
 
 ### In-depth guides
 

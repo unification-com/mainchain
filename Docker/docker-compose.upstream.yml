@@ -46,7 +46,7 @@ services:
     hostname: rest-server
     build:
       context: ..
-      dockerfile: ./Docker/validator.local/Dockerfile
+      dockerfile: ./Docker/validator.upstream/Dockerfile
       args:
         WITH_DELVE: "no"
     container_name: rest-server

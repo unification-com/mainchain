@@ -2,15 +2,17 @@
 
 Finchain is a live WRKChain. The full source code is available on [Github](https://github.com/unification-com/finchain).
 
-Finchain is an Ethereum based WRKChain that utilises a smart contract to analyse Stock data. Stock data is written to the smart contract from several API sources - each source API has an oracle periodically querying the APIs and submitting the data to the smart contract. The smart contract analyses input sent from the API oracles, and emits events for both submitted stock price updates and when a discrepancy is found between APIs' submitted prices. Discrepancies are detected when price differences exceed a configurable threshold value.  
-
 [[toc]]
 
-## Public Finchains
+## Introduction
 
-The TestNet Finchains can be viewed here: [https://finchain.unification.io](https://finchain.unification.io)
+Finchains is WRKChain built using the Go-Ethereum codebase, and utilises smart contracts to analyse Crypto, Stocks, and other data. Data is written to the smart contracts from several API sources - each source API has an oracle periodically querying the APIs and submitting the data to the smart contracts. The smart contracts analyses input sent from the API oracles, and emit events for both submitted price updates and when a discrepancy is found between APIs' submissions. Discrepancies are detected when price differences exceed a configurable threshold value.  
 
-The TestNet Finchains writes its block hashes to the [Mainchain TestNet](https://explorer-testnet.unification.io/).
+## Finchains Public UI
+
+Finchains' front-end can be viewed at [https://finchains.io](https://finchains.io)
+
+The Finchains WRKChain writes its block hashes to the [Mainchain MainNet](https://explorer.unification.io/).
 
 ## Running Finchains Locally
 

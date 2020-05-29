@@ -25,3 +25,5 @@ require (
 	google.golang.org/genproto v0.0.0-20200128133413-58ce757ed39b // indirect
 	gopkg.in/ini.v1 v1.51.1 // indirect
 )
+
+replace github.com/cosmos/ledger-cosmos-go => github.com/unification-com/ledger-unification-go v0.11.2

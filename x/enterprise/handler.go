@@ -42,6 +42,12 @@ func handleMsgPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgPurchaseUnd) (*sdk.R
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+		),
+	)
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
 			EventTypeRaisePurchaseOrder,
 			sdk.NewAttribute(AttributeKeyPurchaseOrderID, strconv.FormatUint(purchaseOrderID, 10)),
 			sdk.NewAttribute(AttributeKeyPurchaser, msg.Purchaser.String()),
@@ -71,6 +77,13 @@ func handleMsgProcessPurchaseUnd(ctx sdk.Context, k Keeper, msg MsgProcessUndPur
 	if err != nil {
 		return nil, err
 	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+		),
+	)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -104,6 +117,13 @@ func handleMsgWhitelistAddress(ctx sdk.Context, k Keeper, msg types.MsgWhitelist
 	if err != nil {
 		return nil, err
 	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+		),
+	)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

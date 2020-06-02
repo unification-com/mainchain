@@ -101,15 +101,11 @@ devnet-systemtest-down:
 
 include Makefile.sims
 
-deps:
-	go get -u ./...
-
-update-sdk:
-	go get github.com/cosmos/cosmos-sdk@master
-
-build-update-sdk:
-	go build $(BUILD_FLAGS) -o build/und ./cmd/und
-	go build $(BUILD_FLAGS) -o build/undcli ./cmd/undcli
+check-updates:
+	@echo "checking for module updates"
+	@go list -u -f '{{if (and (not (or .Main .Indirect)) .Update)}}{{.Path}}: {{.Version}} -> {{.Update.Version}}{{end}}' -m all 2> /dev/null
+	@echo "run:"
+	@echo "go get github.com/user/repo to update. E.g. go get github.com/cosmos/cosmos-sdk"
 
 snapshot: goreleaser
 	UND_BUILD_TAGS="$(build_tags)" goreleaser --snapshot --skip-publish --rm-dist --debug

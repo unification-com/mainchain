@@ -142,4 +142,4 @@ undcli query wrkchain --help
 
 #### Next
 
-Running [Devnet](networks/local-devnet.md), joining [a network](networks/join-network.md)
+Running [Devnet](../networks/local-devnet.md), joining [a network](../networks/join-network.md)

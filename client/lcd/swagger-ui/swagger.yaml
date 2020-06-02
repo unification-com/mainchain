@@ -34,7 +34,7 @@ tags:
   - name: version
 schemes:
   - https
-host: rest-testnet.unification.io
+host: rest.unification.io
 securityDefinitions:
   kms:
     type: basic

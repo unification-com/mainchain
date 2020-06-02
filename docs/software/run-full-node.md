@@ -10,7 +10,7 @@ Once you have [installed](../software/installation.md) the required software, yo
 
 Before continuing, ensure you have gone through the following docs:
 
-1. [Installing the software](../software/installation.md)
+1. [Installing the software](installation.md)
 
 ## Initialising a New Node
 

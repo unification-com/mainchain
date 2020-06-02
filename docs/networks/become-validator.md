@@ -22,7 +22,7 @@ Before continuing, ensure you have gone through the following docs:
 
 1. [Installing the software](../software/installation.md)
 2. [Join a Public Network](join-network.md)
-3. [Accounts and Wallets](../accounts-wallets.md)
+3. [Accounts and Wallets](../software/accounts-wallets.md)
 4. Chain ID - if you haven't already, you can get the current chain ID by running:
 
 ```

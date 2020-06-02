@@ -27,7 +27,9 @@ p2p.persistent_peers = "[node_id_1]@[ip_1]:[port],[node_id_2]@[ip_2]:[port]" # L
 p2p.seed_mode = true
 ```
 
-## Archive Nodes
+Seed nodes can also prune all data, by setting `pruning=everything` in `$HOME/.und_mainchain/config/app.toml`.
+
+## Archive/Data Nodes
 
 Archive nodes are full nodes that keep a complete history of the chain state, by not pruning any sync data (i.e. `pruning` is set to `nothing` in `$HOME/.und_mainchain/app.toml`). They are used as the data source for third party applications such as block explorers and wallet apps, since they keep a complete event and transaction history.
 

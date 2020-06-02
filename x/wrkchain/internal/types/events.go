@@ -1,8 +1,8 @@
 package types
 
 var (
-	EventTypeRegisterWrkChain    = "register_wrkchain"
-	EventTypeRecordWrkChainBlock = "record_wrkchain_block"
+	EventTypeRegisterWrkChain    = RegisterAction
+	EventTypeRecordWrkChainBlock = RecordAction
 
 	AttributeValueCategory = ModuleName
 

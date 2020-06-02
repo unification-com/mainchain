@@ -15,7 +15,10 @@ ENV LEDGER_ENABLED="false"
 RUN mkdir -p $GOPATH/src/github.com/unification-com
 WORKDIR $GOPATH/src/github.com/unification-com
 
-RUN git clone https://github.com/unification-com/mainchain.git
+COPY .vers_docker /root
+
+RUN rm -rf $GOPATH/src/github.com/unification-com/mainchain && rm -f /root/.go/bin/und && rm -f /root/.go/bin/undcli
+RUN git clone -b $(cat /root/.vers_docker | tr -d '\n') https://github.com/unification-com/mainchain.git
 WORKDIR $GOPATH/src/github.com/unification-com/mainchain
 
 RUN make install

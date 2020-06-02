@@ -4,6 +4,22 @@
 
 Unreleased changes have been merged into `master`
 
+* [[`2a851932d7`](https://github.com/unification-com/mainchain/commit/2a851932d7)] - x.wrkchain - more meaningful event name ([Codegnosis](https://github.com/Codegnosis))
+* [[`ae8054e8be`](https://github.com/unification-com/mainchain/commit/ae8054e8be)] - x.wrkchain - derive event type from Msg ([Codegnosis](https://github.com/Codegnosis))
+* [[`0870c002dc`](https://github.com/unification-com/mainchain/commit/0870c002dc)] - x.wrkchain - add module name to message event type ([Codegnosis](https://github.com/Codegnosis))
+* [[`9fff258bde`](https://github.com/unification-com/mainchain/commit/9fff258bde)] - x.enterprise - add module name to message event type ([Codegnosis](https://github.com/Codegnosis))
+* [[`630bb59119`](https://github.com/unification-com/mainchain/commit/630bb59119)] - x.beacon - derive event type from Msg ([Codegnosis](https://github.com/Codegnosis))
+* [[`fd3018a2c8`](https://github.com/unification-com/mainchain/commit/fd3018a2c8)] - x.beacon - add module name to message event type ([Codegnosis](https://github.com/Codegnosis))
+* [[`8b38f8e9af`](https://github.com/unification-com/mainchain/commit/8b38f8e9af)] - Merge pull request [#163](https://github.com/unification-com/mainchain/pull/163) from unification-com/update\_faq\_docs ([Indika](https://github.com/Indika))
+* [[`0faf5de5f0`](https://github.com/unification-com/mainchain/commit/0faf5de5f0)] - docs - update FAQs with MainNet references and examples ([Codegnosis](https://github.com/Codegnosis))
+* [[`39bcc7c118`](https://github.com/unification-com/mainchain/commit/39bcc7c118)] - Merge pull request [#162](https://github.com/unification-com/mainchain/pull/162) from unification-com/docs\_20200526 ([Indika](https://github.com/Indika))
+* [[`d1b52907b0`](https://github.com/unification-com/mainchain/commit/d1b52907b0)] - docs - finchains live ui info ([Codegnosis](https://github.com/Codegnosis))
+* [[`3df30cb94f`](https://github.com/unification-com/mainchain/commit/3df30cb94f)] - Merge pull request [#161](https://github.com/unification-com/mainchain/pull/161) from unification-com/docs\_20200522 ([Indika](https://github.com/Indika))
+* [[`d8f2ad7ded`](https://github.com/unification-com/mainchain/commit/d8f2ad7ded)] - docs - minor fixes, tweaks and typos ([Codegnosis](https://github.com/Codegnosis))
+* [[`0d02ec5019`](https://github.com/unification-com/mainchain/commit/0d02ec5019)] - docker - minor DevNet docker fixes ([Codegnosis](https://github.com/Codegnosis))
+* [[`13fa881563`](https://github.com/unification-com/mainchain/commit/13fa881563)] - Merge pull request [#160](https://github.com/unification-com/mainchain/pull/160) from unification-com/1-4-6\_changelog ([Indika](https://github.com/Indika))
+* [[`8eb481035b`](https://github.com/unification-com/mainchain/commit/8eb481035b)] - changelog - prep for v1.4.6 release ([Codegnosis](https://github.com/Codegnosis))
+
 ## v1.4.6 - 22/05/2020
 
 * [[`272995b717`](https://github.com/unification-com/mainchain/commit/272995b717)] - makefile - add debug flag to snapshot target ([Codegnosis](https://github.com/Codegnosis))

@@ -48,6 +48,13 @@ func handleMsgRegisterBeacon(ctx sdk.Context, keeper Keeper, msg MsgRegisterBeac
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+		),
+	)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
 			EventTypeRegisterBeacon,
 			sdk.NewAttribute(AttributeKeyBeaconId, strconv.FormatUint(beaconID, 10)),
 			sdk.NewAttribute(AttributeKeyBeaconMoniker, msg.Moniker),
@@ -87,6 +94,13 @@ func handleMsgRecordBeaconTimestamp(ctx sdk.Context, keeper Keeper, msg MsgRecor
 	if err != nil {
 		return nil, err
 	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+		),
+	)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

@@ -53,6 +53,12 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+		),
+	)
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
 			EventTypeRegisterWrkChain,
 			sdk.NewAttribute(AttributeKeyWrkChainId, strconv.FormatUint(wrkChainID, 10)),
 			sdk.NewAttribute(AttributeKeyWrkChainMoniker, msg.Moniker),
@@ -105,6 +111,12 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 		return nil, err
 	}
 
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+		),
+	)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeRecordWrkChainBlock,

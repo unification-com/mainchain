@@ -9,7 +9,7 @@ const (
 	RouterKey = ModuleName // defined in keys.go file
 
 	RegisterAction = "register_wrkchain"
-	RecordAction   = "record_wrkchain_block"
+	RecordAction   = "record_wrkchain_hash"
 )
 
 // --- Register a WRKChain Msg ---

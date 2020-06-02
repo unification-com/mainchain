@@ -1,8 +1,8 @@
 package types
 
 var (
-	EventTypeRegisterBeacon        = "register_beacon"
-	EventTypeRecordBeaconTimestamp = "record_beacon_timestamp"
+	EventTypeRegisterBeacon        = RegisterAction
+	EventTypeRecordBeaconTimestamp = RecordAction
 
 	AttributeValueCategory = ModuleName
 

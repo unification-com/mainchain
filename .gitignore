@@ -10,6 +10,7 @@ build
 /ev-provision/
 dist
 docs/.vuepress/dist
+.vers_docker
 
 # Testing
 coverage.txt

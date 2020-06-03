@@ -4,6 +4,8 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 BINDIR ?= $(GOPATH)/bin
 
+LATEST_RELEASE := $(shell curl --silent https://api.github.com/repos/unification-com/mainchain/releases/latest | grep -Po '"tag_name": \"\K.*?(?=\")')
+
 export GO111MODULE = on
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain \
@@ -83,11 +85,20 @@ devnet:
 devnet-down:
 	docker-compose -f Docker/docker-compose.local.yml down --remove-orphans
 
-devnet-pristine:
+devnet-latest-release:
+	@echo "${LATEST_RELEASE}" > ./.vers_docker
 	docker-compose -f Docker/docker-compose.upstream.yml down --remove-orphans
 	docker-compose -f Docker/docker-compose.upstream.yml up --build
 
-devnet-pristine-down:
+devnet-latest-release-down:
+	docker-compose -f Docker/docker-compose.upstream.yml down
+
+devnet-master:
+	@echo "master" > ./.vers_docker
+	docker-compose -f Docker/docker-compose.upstream.yml down --remove-orphans
+	docker-compose -f Docker/docker-compose.upstream.yml up --build
+
+devnet-master-down:
 	docker-compose -f Docker/docker-compose.upstream.yml down
 
 devnet-systemtest:

@@ -6,7 +6,7 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200115165343-aa45d48b5ed6 // indirect
 	github.com/btcsuite/btcutil v1.0.1 // indirect
-	github.com/cosmos/cosmos-sdk v0.38.3
+	github.com/cosmos/cosmos-sdk v0.38.4
 	github.com/gorilla/mux v1.7.3
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/rakyll/statik v0.1.6

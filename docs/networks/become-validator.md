@@ -39,10 +39,6 @@ you will need an account with sufficient FUND to self-delegate to your validator
 if you intend to fully participate in the running of a network, your node will need to be permanently available and online. In which case, you will need to investigate running `und` as a [background service](run-und-as-service.md)
 :::
 
-::: tip
-You should also set `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`, or start your node with the `--pruning=nothing` flag.
-:::
-
 ## Creating a validator
 
 ::: danger IMPORTANT!

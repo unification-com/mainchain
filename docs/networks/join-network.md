@@ -120,12 +120,6 @@ always check the latest seed node in the respective network's repository - the a
 
 In order to protect your full node from spam transactions, it is good practice to set the `minimum-gas-prices` value in `$HOME/.und_mainchain/config/app.toml`. This should be set as a decimal value in `nund`, and the recommended value is currently `0.25nund`.
 
-## Pruning
-
-::: tip Note
-If you intend for your node to become a **Validator node**, you may want to consider  also setting `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`, or start your node with the `--pruning=nothing` flag. Be aware that pruning nothing will increase the disk space required considerably.
-:::
-
 ## Running your node
 
 Now that you have `genesis`, and some seed nodes, you can run your full node:

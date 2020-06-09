@@ -366,6 +366,7 @@ User=vmusername
 Group=vmusername
 WorkingDirectory=/home/vmusername
 ExecStart=/usr/local/bin/und start --home=/home/vmusername/.und_mainchain
+LimitNOFILE=4096
 
 [Install]
 WantedBy=default.target

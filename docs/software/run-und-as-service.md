@@ -27,6 +27,7 @@ User=USERNAME
 Group=USERNAME
 WorkingDirectory=/home/USERNAME
 ExecStart=/home/USERNAME/go/bin/und start --home /home/USERNAME/.und_mainchain
+LimitNOFILE=4096
 
 [Install]
 WantedBy=default.target

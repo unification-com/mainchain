@@ -374,6 +374,7 @@ User=centos
 Group=centos
 WorkingDirectory=/home/centos
 ExecStart=/usr/local/bin/und start --home=/home/centos/.und_mainchain
+LimitNOFILE=4096
 
 [Install]
 WantedBy=default.target

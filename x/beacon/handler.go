@@ -85,10 +85,6 @@ func handleMsgRecordBeaconTimestamp(ctx sdk.Context, keeper Keeper, msg MsgRecor
 		return nil, sdkerrors.Wrap(ErrNotBeaconOwner, "you are not the owner of this beacon")
 	}
 
-	if keeper.IsBeaconTimestampRecordedByHashTime(ctx, msg.BeaconID, msg.Hash, msg.SubmitTime) {
-		return nil, sdkerrors.Wrap(ErrBeaconTimestampAlreadyRecorded, fmt.Sprintf("timestamp hash %s already recorded at time %d", msg.Hash, msg.SubmitTime))
-	}
-
 	tsID, err := keeper.RecordBeaconTimestamp(ctx, msg.BeaconID, msg.Hash, msg.SubmitTime, msg.Owner)
 
 	if err != nil {

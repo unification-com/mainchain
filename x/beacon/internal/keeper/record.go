@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -138,13 +137,6 @@ func (k Keeper) RecordBeaconTimestamp(
 
 	if !k.IsAuthorisedToRecord(ctx, beacon.BeaconID, owner) {
 		return 0, sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", owner)
-	}
-
-	params := types.NewQueryBeaconTimestampParams(1, 1, beaconID, hash, submitTime)
-	bts := k.GetBeaconTimestampsFiltered(ctx, params)
-
-	if len(bts) > 0 {
-		return 0, sdkerrors.Wrap(types.ErrBeaconTimestampAlreadyRecorded, fmt.Sprintf("timestamp hash %s already recorded at time %d", hash, submitTime))
 	}
 
 	timestampID := beacon.LastTimestampID + 1

@@ -4,6 +4,9 @@
 
 Unreleased changes have been merged into `master`
 
+## v1.4.7 - 17/06/2020
+
+* [[`4a8f063485`](https://github.com/unification-com/mainchain/commit/4a8f063485)] - Merge pull request [#172](https://github.com/unification-com/mainchain/pull/172) from unification-com/fix\_beacon\_gas\_usage ([Indika](https://github.com/Indika))
 * [[`73d25d0fcc`](https://github.com/unification-com/mainchain/commit/73d25d0fcc)] - x.beacon - update unit test to reflect removing hash check ([Codegnosis](https://github.com/Codegnosis))
 * [[`3a8cd885ab`](https://github.com/unification-com/mainchain/commit/3a8cd885ab)] - x.beacon - nix hash check from handler ([Codegnosis](https://github.com/Codegnosis))
 * [[`22ed8cb5c5`](https://github.com/unification-com/mainchain/commit/22ed8cb5c5)] - x.beacon - nix hash filter check from keeper ([Codegnosis](https://github.com/Codegnosis))

@@ -3,7 +3,7 @@
 ## Unification Mainchain
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain)](https://goreportcard.com/report/github.com/unification-com/mainchain)
-[![Join the chat at https://gitter.im/unification-com/mainchain](https://badges.gitter.im/unification-com/mainchain.svg)](https://gitter.im/unification-com/mainchain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://discord.com/channels/725618617525207042](https://img.shields.io/discord/725618617525207042?label=Discord)](https://discord.com/channels/725618617525207042)
 
 Official Golang implementation of Unification Mainchain.
 

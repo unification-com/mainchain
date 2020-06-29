@@ -30,7 +30,11 @@ und init [your_node_moniker]
 und init MyAwesomeNode
 ```
 
-Once initialised, you can edit your configuration in `$HOME/.und_mainchain/config/config.toml`. See [configuration reference](../software/und-mainchain-config-ref.md) for more details on the config file.
+Once initialised, you can edit your configuration in `$HOME/.und_mainchain/config/config.toml` and in `$HOME/.und_mainchain/config/app.toml`. See [configuration reference](../software/und-mainchain-config-ref.md) for more details on the config file.
+
+::: danger IMPORTANT
+There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
+:::
 
 ::: tip NOTE
 the default directory used by `und` is `$HOME/.und_mainchain`. This can be changed by passing the global `--home=` flag to the `und` command, for example `und start --home=$HOME/.und_mainchain_TestNet`.

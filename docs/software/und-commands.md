@@ -77,6 +77,10 @@ default, the application will run with Tendermint in process.
 
 Pruning options can be provided via the `--pruning` flag. The pruning options are as follows:
 
+::: danger IMPORTANT
+There is a known issue with the `syncable` option in the Cosmos SDK. Since `syncable` is the default value when `und init` is run, it is recommended to set the value to either `everything` or `nothing`. Note that setting to `nothing` will increase storage usage considerably.
+:::
+
 `syncable`: only those states not needed for state syncing will be deleted (flushes every 100th to disk and keeps every 10000th)  
 `nothing`: all historic states will be saved, nothing will be deleted (i.e. archiving node)  
 `everything`: all saved states will be deleted, storing only the current state

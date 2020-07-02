@@ -4,6 +4,14 @@
 
 Unreleased changes have been merged into `master`
 
+* [[`4ff8f793ae`](https://github.com/unification-com/mainchain/commit/4ff8f793ae)] - rpc modifications for changes in Tendermint v0.33.6 (Codegnosis)
+* [[`7f30c58146`](https://github.com/unification-com/mainchain/commit/7f30c58146)] - update Cosmos SDK to 0.38.5 (Codegnosis)
+* [[`eb16cbf509`](https://github.com/unification-com/mainchain/commit/eb16cbf509)] - Merge pull request #175 from unification-com/docs\_pruning\_notes (Indika)
+* [[`a5aa0c049c`](https://github.com/unification-com/mainchain/commit/a5aa0c049c)] - docs - add notes on pruning configuration, and warning regarding "syncable" (Codegnosis)
+* [[`71894056ad`](https://github.com/unification-com/mainchain/commit/71894056ad)] - Merge pull request #174 from unification-com/discord\_badge (Indika)
+* [[`1a7c76ac64`](https://github.com/unification-com/mainchain/commit/1a7c76ac64)] - readme - discord chat badge (Codegnosis)
+* [[`64728b263d`](https://github.com/unification-com/mainchain/commit/64728b263d)] - Merge pull request #173 from unification-com/1.4.7\_changelog (Indika)
+
 ## v1.4.7 - 17/06/2020
 
 * [[`4a8f063485`](https://github.com/unification-com/mainchain/commit/4a8f063485)] - Merge pull request [#172](https://github.com/unification-com/mainchain/pull/172) from unification-com/fix\_beacon\_gas\_usage ([Indika](https://github.com/Indika))

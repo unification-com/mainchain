@@ -4,6 +4,8 @@
 
 Unreleased changes have been merged into `master`
 
+## v1.4.8 - 03/07/2020
+
 * [[`4ff8f793ae`](https://github.com/unification-com/mainchain/commit/4ff8f793ae)] - rpc modifications for changes in Tendermint v0.33.6 (Codegnosis)
 * [[`7f30c58146`](https://github.com/unification-com/mainchain/commit/7f30c58146)] - update Cosmos SDK to 0.38.5 (Codegnosis)
 * [[`eb16cbf509`](https://github.com/unification-com/mainchain/commit/eb16cbf509)] - Merge pull request #175 from unification-com/docs\_pruning\_notes (Indika)

@@ -210,10 +210,6 @@ und init [your_node_tag]
 ```
 `[your_node_tag]` can be any ID you like but is restricted to ASCII characters.
 
-::: danger IMPORTANT
-There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
-:::
-
 ### Download the latest Genesis file.
 
 The following command downloads the latest genesis for the respective network. Command is all one line:
@@ -324,6 +320,10 @@ To, for example:
 ```toml
 minimum-gas-prices = "0.25nund"
 ```
+
+::: danger IMPORTANT
+There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
+:::
 
 Also, change the pruning configuration at the end of the file.
 

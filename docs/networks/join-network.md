@@ -124,6 +124,10 @@ always check the latest seed node in the respective network's repository - the a
 
 In order to protect your full node from spam transactions, it is good practice to set the `minimum-gas-prices` value in `$HOME/.und_mainchain/config/app.toml`. This should be set as a decimal value in `nund`, and the recommended value is currently `0.25nund`.
 
+::: danger IMPORTANT
+There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
+:::
+
 ## Running your node
 
 Now that you have `genesis`, and some seed nodes, you can run your full node:

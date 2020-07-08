@@ -12,6 +12,10 @@ Whenever you use `undcli` to send Txs or query the chain ensure you pass the cor
 Validator nodes require high availability and uptimes. The following guide therefore assumes the node is running on a server/cloud VM, as opposed to a laptop or home PC.
 :::
 
+::: danger IMPORTANT
+There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
+:::
+
 #### Contents
 
 [[toc]]

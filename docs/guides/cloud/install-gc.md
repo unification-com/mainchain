@@ -210,10 +210,6 @@ und init [your_node_tag]
 ```
 `[your_node_tag]` can be any ID you like but is restricted to ASCII characters.
 
-::: danger IMPORTANT
-There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
-:::
-
 ### Download the latest Genesis file.
 
 The following command downloads the latest genesis for the respective network. Command is all one line:
@@ -305,7 +301,7 @@ laddr = "tcp://127.0.0.1:26657"
 once you have run the` create-validator` command. Broadcasting transactions can instead be done via a public RPC node, or, more securely, via a full node running on your local PC. See [Part 8: Final cleanup](#part-8-final-cleanup) for further details.
 :::
 
-**Gas Prices**
+**Gas Prices & Pruning**
 
 It is good practice to set the `minimum-gas-prices` value in `$HOME/.und_mainchain/config/app.toml`, in order to protect your full node from spam transactions. This should be set as a decimal value in `nund`, and the recommended value is currently **`0.25nund`**. This means your node will ignore any Txs with a gas price below this value. To do so, open up `$HOME/.und_mainchain/config/app.toml` in a text editor, and set `minimum-gas-prices`
 
@@ -323,6 +319,24 @@ To, for example:
 
 ```toml
 minimum-gas-prices = "0.25nund"
+```
+
+::: danger IMPORTANT
+There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
+:::
+
+Also, change the pruning configuration at the end of the file.
+
+Change:
+
+```toml
+pruning = "syncable"
+```
+
+To:
+
+```toml
+pruning = "everything"
 ```
 
 Hit <kbd>Ctrl</kbd>+<kbd>X</kbd> followed by `y` and then return to save the file and exit nano.

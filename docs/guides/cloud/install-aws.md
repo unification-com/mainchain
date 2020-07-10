@@ -121,6 +121,11 @@ Next, we need to create a rule for the `RPC` port:
 port `26657` can be closed on your Validator node once you have registered your validator.
 :::
 
+**Next**, click on the **"4. Add Storage"** tab.
+
+1. Change the size from 10 to **30** Gb.
+2. Optionally, configure disk encryption.
+
 Click "Review and Launch"
 
 Review the details are correct, then click "Launch". This will prompt you to select a key pair to use on the instance. Select the key you created in Part 1.

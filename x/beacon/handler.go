@@ -4,6 +4,7 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/unification-com/mainchain/x/beacon/internal/types"
 	"strconv"
 )
 
@@ -30,6 +31,10 @@ func handleMsgRegisterBeacon(ctx sdk.Context, keeper Keeper, msg MsgRegisterBeac
 
 	if len(msg.Moniker) > 64 {
 		return nil, sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+	}
+
+	if len(msg.Moniker) == 0 {
+		return nil, sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
 	}
 
 	params := NewQueryBeaconParams(1, 1, msg.Moniker, sdk.AccAddress{})

@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -19,6 +18,25 @@ func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlock types.WrkChainBl
 	store.Set(types.WrkChainBlockKey(wrkchainBlock.WrkChainID, wrkchainBlock.Height), k.cdc.MustMarshalBinaryLengthPrefixed(wrkchainBlock))
 
 	return nil
+}
+
+// QuickCheckHeightIsRecorded Checks if the given height can be recorded
+func (k Keeper) QuickCheckHeightIsRecorded(ctx sdk.Context, wrkchainId uint64, height uint64) bool {
+
+	wrkchain := k.GetWrkChain(ctx, wrkchainId)
+
+	// only check if height being submitted is <= last recorded height.
+	// Otherwise, no need to check entire db
+	if height <= wrkchain.LastBlock && height > 0 {
+		if height == wrkchain.LastBlock {
+			return true
+		} else {
+			store := ctx.KVStore(k.storeKey)
+			blockKey := types.WrkChainBlockKey(wrkchainId, height)
+			return store.Has(blockKey)
+		}
+	}
+	return false
 }
 
 // IsWrkChainBlockRecorded Check if the WrkChainBlock is present in the store or not
@@ -85,7 +103,7 @@ func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (w
 // GetWrkChainsFiltered retrieves wrkchains filtered by a given set of params which
 // include pagination parameters along a moniker and owner address.
 //
-// NOTE: If no filters are provided, all proposals will be returned in paginated
+// NOTE: If no filters are provided, all WRKChains will be returned in paginated
 // form.
 func (k Keeper) GetWrkChainBlockHashesFiltered(ctx sdk.Context, wrkchainID uint64, params types.QueryWrkChainBlockParams) []types.WrkChainBlock {
 	wrkChainHashes := k.GetAllWrkChainBlockHashes(ctx, wrkchainID)
@@ -143,40 +161,11 @@ func (k Keeper) RecordWrkchainHashes(
 
 	logger := k.Logger(ctx)
 
-	if len(blockHash) > 66 {
-		return sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit")
-	}
-	if len(parentHash) > 66 {
-		return sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit")
-	}
-	if len(hash1) > 66 {
-		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit")
-	}
-	if len(hash2) > 66 {
-		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit")
-	}
-	if len(hash3) > 66 {
-		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit")
-	}
+	// we're only ever adding new WRKChain data, never updating existing. Handler will have checked if height has
+	// previously been recorded.
+	wrkchainBlock := types.NewWrkChainBlock()
 
-	if !k.IsWrkChainRegistered(ctx, wrkchainId) {
-		// can't record hashes if WRKChain isn't registered
-		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))
-	}
-
-	wrkchain := k.GetWrkChain(ctx, wrkchainId)
-
-	if !k.IsAuthorisedToRecord(ctx, wrkchain.WrkChainID, owner) {
-		return sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")
-	}
-
-	if k.IsWrkChainBlockRecorded(ctx, wrkchain.WrkChainID, height) {
-		return sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "Block hashes already recorded for this height")
-	}
-
-	wrkchainBlock := k.GetWrkChainBlock(ctx, wrkchain.WrkChainID, height)
-
-	wrkchainBlock.WrkChainID = wrkchain.WrkChainID
+	wrkchainBlock.WrkChainID = wrkchainId
 	wrkchainBlock.Height = height
 	wrkchainBlock.BlockHash = blockHash
 	wrkchainBlock.ParentHash = parentHash
@@ -192,20 +181,20 @@ func (k Keeper) RecordWrkchainHashes(
 		return err
 	}
 
-	err = k.SetLastBlock(ctx, wrkchain.WrkChainID, height)
+	err = k.SetLastBlock(ctx, wrkchainId, height)
 
 	if err != nil {
 		return err
 	}
 
-	err = k.SetNumBlocks(ctx, wrkchain.WrkChainID)
+	err = k.SetNumBlocks(ctx, wrkchainId)
 
 	if err != nil {
 		return err
 	}
 
 	if !ctx.IsCheckTx() {
-		logger.Debug("wrkchain hashes recorded", "wcid", wrkchain.WrkChainID, "height", height, "hash", blockHash, "owner", owner.String())
+		logger.Debug("wrkchain hashes recorded", "wcid", wrkchainId, "height", height, "hash", blockHash, "owner", owner.String())
 	}
 	return nil
 }

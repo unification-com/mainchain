@@ -19,6 +19,7 @@ export UND_LDFLAGS = $(ldflags)
 
 include Makefile.devtools
 include Makefile.ledger
+include Makefile.cleveldb
 
 BUILD_FLAGS := -tags="$(build_tags)" -ldflags '$(ldflags)'
 

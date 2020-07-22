@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -186,7 +185,6 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 	genesisHash := GenerateRandomString(66)
 
 	goodHash := GenerateRandomString(66)
-	tooLongHash := GenerateRandomString(67)
 
 	wcID, err := keeper.RegisterWrkChain(ctx, moniker, name, genesisHash, "geth", TestAddrs[0])
 	require.NoError(t, err)
@@ -202,19 +200,9 @@ func TestRecordWrkchainHashesFail(t *testing.T) {
 		owner       sdk.AccAddress
 		expectedErr error
 	}{
-		{0, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", 0))},
-		{99, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "WRKChain 99 does not exist")},
-		{wcID, 0, "", "", "", "", "", TestAddrs[1], sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
-		{wcID, 0, "", "", "", "", "", sdk.AccAddress{}, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")},
 		{wcID, 1, "", "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, height and hash")},
 		{wcID, 0, goodHash, "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, height and hash")},
 		{wcID, 1, goodHash, "", "", "", "", TestAddrs[0], nil},
-		{wcID, 1, goodHash, "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "Block hashes already recorded for this height")},
-		{wcID, 2, tooLongHash, "", "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit")},
-		{wcID, 3, goodHash, tooLongHash, "", "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit")},
-		{wcID, 4, goodHash, goodHash, tooLongHash, "", "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit")},
-		{wcID, 5, goodHash, goodHash, goodHash, tooLongHash, "", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit")},
-		{wcID, 6, goodHash, goodHash, goodHash, goodHash, tooLongHash, TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit")},
 	}
 
 	for _, tc := range testCases {

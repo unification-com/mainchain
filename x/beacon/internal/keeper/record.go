@@ -20,7 +20,7 @@ func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconTimestamp types.Beacon
 	return nil
 }
 
-// IsBeaconTimestampRecordedByID Check if the BEACON timestamp is present in the store or not, given
+// IsBeaconTimestampRecordedByID Deep Check if the BEACON timestamp is present in the store or not, given
 // the beaconID and timestampID
 func (k Keeper) IsBeaconTimestampRecordedByID(ctx sdk.Context, beaconID uint64, timestampID uint64) bool {
 	store := ctx.KVStore(k.storeKey)
@@ -124,24 +124,13 @@ func (k Keeper) RecordBeaconTimestamp(
 
 	logger := k.Logger(ctx)
 
-	if len(hash) > 66 {
-		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit")
-	}
-
-	if !k.IsBeaconRegistered(ctx, beaconID) {
-		// can't record hashes if BEACON isn't registered
-		return 0, types.ErrBeaconDoesNotExist
-	}
-
 	beacon := k.GetBeacon(ctx, beaconID)
-
-	if !k.IsAuthorisedToRecord(ctx, beacon.BeaconID, owner) {
-		return 0, sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", owner)
-	}
 
 	timestampID := beacon.LastTimestampID + 1
 
-	beaconTimestamp := k.GetBeaconTimestampByID(ctx, beacon.BeaconID, timestampID)
+	// we're only ever recording new BEACON hashes, never updating existing. Handler has already run
+	// checks for authorisation etc.
+	beaconTimestamp := types.NewBeaconTimestamp()
 
 	beaconTimestamp.BeaconID = beacon.BeaconID
 	beaconTimestamp.TimestampID = timestampID

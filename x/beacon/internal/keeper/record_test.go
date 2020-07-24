@@ -184,14 +184,9 @@ func TestRecordBeaconTimestampsFail(t *testing.T) {
 		expectedErr error
 		expectedID  uint64
 	}{
-		{0, 0, "", sdk.AccAddress{}, types.ErrBeaconDoesNotExist, 0},
-		{99, 0, "", sdk.AccAddress{}, types.ErrBeaconDoesNotExist, 0},
-		{bID, 1, "hash", TestAddrs[1], sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", TestAddrs[1]), 0},
-		{bID, 1, "hash", sdk.AccAddress{}, sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", sdk.AccAddress{}), 0},
 		{bID, 1, "", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, submit time and hash"), 0},
 		{bID, 0, "timstamphash", TestAddrs[0], sdkerrors.Wrap(types.ErrMissingData, "must include owner, id, submit time and hash"), 0},
 		{bID, 1, "timstamphash", TestAddrs[0], nil, 1},
-		{bID, 2, "0xc14cb7f5c98846be8668e95e99312df0c74391dd328ef07daf66de05920c44a51", TestAddrs[0], sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit"), 0},
 	}
 
 	for _, tc := range testCases {

@@ -1,6 +1,6 @@
 module github.com/unification-com/mainchain
 
-go 1.13
+go 1.14
 
 require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4
@@ -18,3 +18,5 @@ require (
 	google.golang.org/genproto v0.0.0-20200128133413-58ce757ed39b // indirect
 	gopkg.in/ini.v1 v1.51.1 // indirect
 )
+
+replace github.com/cosmos/ledger-cosmos-go => github.com/unification-com/ledger-unification-go v0.11.3

@@ -51,6 +51,21 @@ $ cd mainchain
 $ make install
 ```
 
+#### cleveldb support
+
+To build with cleveldb as the database backend, run:
+
+```bash 
+CLEVELDB_ENABLED=true make install
+```
+
+Once the node has been initialised, the DB backend can be set in
+`$HOME/.und_mainchain/confog/config.toml`:
+
+```toml 
+db_backend = "cleveldb"
+```
+
 ### Build from source
 
 Clone latest release for running on MainNet
@@ -73,6 +88,21 @@ $ make build
 ```
 
 `und` and `undcli` binaries and output to `./build`. This is useful for development and testing.
+
+#### cleveldb support
+
+To build with cleveldb as the database backend, run:
+
+```bash 
+CLEVELDB_ENABLED=true make build
+```
+
+Once the node is initialised, the DB backend can be set in
+`$HOME/.und_mainchain/confog/config.toml`:
+
+```toml 
+db_backend = "cleveldb"
+```
 
 ### Dockerised `und` and `undcli`
 

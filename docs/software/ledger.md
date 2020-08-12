@@ -59,7 +59,7 @@ Once everything is installed, open the **Web Wallet** Chrome extension, plug in 
 1. In **Web Wallet**, click on the ![My Wallet](../.vuepress/public/assets/img/my_wallet_button.png) button, and select **Connect Ledger Device**
 2. You may be prompted by Chrome to allow access to your Ledger Device.
 
-A modal will appear allowing you to select a HD wallet path. Each time you change the selection, W**Web Wallet** will query your Ledger device for the corresponding wallet address and display it.
+A modal will appear allowing you to select a HD wallet path. Each time you change the selection, **Web Wallet** will query your Ledger device for the corresponding wallet address and display it.
 
 ![Select HD Path](../.vuepress/public/assets/img/ledger_select_hd_path.png)
 

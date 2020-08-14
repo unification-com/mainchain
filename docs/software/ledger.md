@@ -50,7 +50,11 @@ the **Web Wallet** Chrome Extension.
 1. Go to the official [Unification Web Wallet](https://chrome.google.com/webstore/detail/unification-web-wallet/mkjjflkhdddfjhonakofipfojoepfndk) Chrome extension in the Chrome Store.
 2. Click the "Add Extension" button.
 
-This will install the We Wallet Chrome extension in your browser. **Web Wallet >= v0.19.0** supports the **FUND Ledger app**.
+This will install the **Web Wallet** Chrome extension in your browser.
+
+::: tip Note
+**Web Wallet >= v0.19.0** supports the **FUND Ledger app**.
+:::
 
 ## Using the Web Wallet Chrome extension with your Ledger Device
 
@@ -88,15 +92,19 @@ Once you are happy with the details, click the ![Web Wallet Confirm](../.vuepres
 
 ![Web Wallet Confirm Transfer](../.vuepress/public/assets/img/ledger_web_wallet_confirm_transfer.png)
 
+::: tip
+If you are connected to **MainNet** (Chain ID `FUND-Mainchain-MainNet-v1`), and **expert mode** is disabled in the **FUND Ledger app**, then transfers, staking delegation amounts and tx fees will be displayed on the **Ledger Device** in `FUND`. Otherwise, they will be displayed in `nund`. See [Native Coin Denomination nund](../introduction/denomination.md) for more details on `FUND` and `nund`
+:::
+
 You will then be prompted to check the transaction details on your Ledger device to ensure they match those displayed in the confirmation dialog in **Web Wallet**. Click the **right** button on your Ledger device to scroll through the details. Once you reach the end, you are given the option to either ![Ledger Approve](../.vuepress/public/assets/img/ledger_approve.png) or ![Ledger Reject](../.vuepress/public/assets/img/ledger_reject.png) the transaction.
 
 Clicking **Approve** on your Ledger device will tell the device to sign the transaction and return the signed Tx. **Web Wallet** will receive the signed transaction from the Ledger device and broadcast it to the network.
 
-Clicking **Reject** on your Ledger device will cancel the process - the transaction will **not** be signed by your Ledger, and **Web Wallet** will cancel and clear the transaction details.
+Clicking **Reject** on your Ledger device will cancel the process - the transaction will **not** be signed by your Ledger, and **Web Wallet** will cancel and clear the transaction details from the **Web Wallet** UI.
 
 ## Staking with your Ledger Device
 
-Similar to sending FUND, it is possible to execute Stake transactions in **Web Wallet**, using your Ledger device to sign them.
+Similar to sending FUND to another wallet address, it is possible to execute Stake transactions in **Web Wallet**, using your **Ledger device** to sign them.
 
 1. Click the **Staking** tab in **Web Wallet**, followed by the **Delegate** tab.
 
@@ -121,7 +129,7 @@ Undelegating, Redelegating and Withdrawing your FUND rewards works in exactly th
 2. Click the ![Web Wallet Show Details](../.vuepress/public/assets/img/web_wallet_staking_show_details_button.png) button next to the Validator you have delegated FUND to. This will display more information, and several options.
 3. Click the respective ![Web Wallet Show Details](../.vuepress/public/assets/img/web_wallet_staking_option_buttons.png) button to perform the selected transaction.
 
-For each action, you will be asked to enter the relevant information, and, as with Transfer and Staking, you will be prompted to confirm the transaction on your Ledger device before it is signed and broadcast to the network.
+For each action, you will be asked to enter the relevant information, and, as with Transfer and Staking, you will be prompted to confirm the transaction on your **Ledger device** before signing it on your device and broadcasting it to the network. As previously, you will also be given the option to reject the transaction on your **Ledger device**.
 
 ## Issues & Support
 

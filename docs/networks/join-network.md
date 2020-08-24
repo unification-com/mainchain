@@ -82,7 +82,7 @@ jq --raw-output '.chain_id' $HOME/.und_mainchain/config/genesis.json
 This will output, for example:
 
 ```
-FUND-Mainchain-TestNet-v7
+FUND-Mainchain-TestNet-v8
 ```
 
 or
@@ -94,7 +94,7 @@ FUND-Mainchain-MainNet-v1
 which can then be passed to your `undcli` commands:
 
 ```bash
-undcli query tx FCDFE69F20431B23CF16CAA68C10325EB2E1126FCDF8AD4010CCE927A0808740 --chain-id FUND-Mainchain-TestNet-v7
+undcli query tx FCDFE69F20431B23CF16CAA68C10325EB2E1126FCDF8AD4010CCE927A0808740 --chain-id FUND-Mainchain-TestNet-v8
 ```
 
 ## Seed Node Peers

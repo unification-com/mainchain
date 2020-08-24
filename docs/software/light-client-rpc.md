@@ -26,10 +26,10 @@ undcli rest-server --laddr=[tcp://ip:port] --node [tcp://ip:port] --chain-id=[ch
 For example:
 
 ```bash
-undcli rest-server --laddr=tcp://localhost:1317 --node tcp://11.22.33.44:26657 --chain-id=FUND-Mainchain-TestNet-v7
+undcli rest-server --laddr=tcp://localhost:1317 --node tcp://11.22.33.44:26657 --chain-id=FUND-Mainchain-TestNet-v8
 ```
 
-This will start the light client on your local host listening on `localhost:1317`, and use the node hosted at `11.22.33.44:26657` to source its data and interface with the `FUND-Mainchain-TestNet-v7` chain (e.g. broadcast any transactions).
+This will start the light client on your local host listening on `localhost:1317`, and use the node hosted at `11.22.33.44:26657` to source its data and interface with the `FUND-Mainchain-TestNet-v8` chain (e.g. broadcast any transactions).
 
 ::: tip
 setting the listen address IP to `0.0.0.0`, e.g. `--laddr=tcp://0.0.0.0:1317` will allow any host to connect to your REST server.

@@ -104,7 +104,7 @@ do not attempt to stake more than you have in your account. **Ensure you have en
 
 `NODE_TENDERMINT_PUBLIC_KEY`: Your node's tendermint public key, obtained earlier via the `und tendermint show-validator` command.
 
-`CHAIN_ID`: the chain you are creating a validator for. This was obtained previously via the `jq` command, and will be for example `FUND-Mainchain-TestNet-v7` or `FUND-Mainchain-MainNet-v1` etc.
+`CHAIN_ID`: the chain you are creating a validator for. This was obtained previously via the `jq` command, and will be for example `FUND-Mainchain-TestNet-v8` or `FUND-Mainchain-MainNet-v1` etc.
 
 `SELF_DELEGATOR_ACCOUNT`: the name of the account being used to stake self-delegated FUND and sign the transaction — for example, the identifier you entered when running the `undcli keys add` command to create/import an account.
 
@@ -150,7 +150,7 @@ undcli tx staking create-validator \
 --website="https://my-node-site.com" \
 --details="My node is awesome" \
 --security-contact="security@my-node-site.com" \
---chain-id=FUND-Mainchain-TestNet-v7 \
+--chain-id=FUND-Mainchain-TestNet-v8 \
 --commission-rate="0.07" \
 --commission-max-rate="0.20" \
 --commission-max-change-rate="0.01" \
@@ -164,7 +164,7 @@ undcli tx staking create-validator \
 The command will return a Tx hash, which you can use to query whether or not the transaction was successful:
 
 ```bash
-undcli query tx TX_HASH --chain-id FUND-Mainchain-TestNet-v7
+undcli query tx TX_HASH --chain-id FUND-Mainchain-TestNet-v8
 ```
 
 ::: tip

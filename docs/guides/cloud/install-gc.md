@@ -505,7 +505,7 @@ do not enter more nund than you have in your wallet!
 
 `[security_email]` = (optional) security contact for your organisation
 
-`[chain_id]` = the network (e.g. `FUND-Mainchain-TestNet-v7`, or `FUND-Mainchain-MainNet-v1`) you are creating a validator on - this was obtained earlier in the guide via the `jq` command
+`[chain_id]` = the network (e.g. `FUND-Mainchain-TestNet-v8`, or `FUND-Mainchain-MainNet-v1`) you are creating a validator on - this was obtained earlier in the guide via the `jq` command
 
 `[account_name]` = the account self-delegating the FUND, previously created/imported with the `undcli keys add` command
 
@@ -536,7 +536,7 @@ For example:
 --website="https://my-node-site.com" \
 --details="My node is awesome" \
 --security-contact="security@my-node-site.com" \
---chain-id=FUND-Mainchain-TestNet-v7 \
+--chain-id=FUND-Mainchain-TestNet-v8 \
 --commission-rate="0.05" \
 --commission-max-rate="0.10" \
 --commission-max-change-rate="0.01" \

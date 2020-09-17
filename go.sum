@@ -481,6 +481,8 @@ github.com/tendermint/tm-db v0.5.1/go.mod h1:g92zWjHpCYlEvQXvy9M168Su8V1IBEeawpX
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
+github.com/unification-com/ledger-unification-go v0.11.3 h1:ZRhWsKBJTjTyYdtOueWZI/KPSAxncXvEClu76O9i2x4=
+github.com/unification-com/ledger-unification-go v0.11.3/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=

@@ -100,6 +100,25 @@ func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (w
 	return
 }
 
+// GetAllWrkChainBlockHashesForGenesisExport returns all the wrkchain's hashes from store for export in an optimised
+// format ready for genesis
+func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks types.WrkChainBlocksGenesisExport) {
+	k.IterateWrkChainBlockHashes(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
+		wcbExp := types.WrkChainBlockGenesisExport {
+			Height: wcb.Height,
+			BlockHash: wcb.BlockHash,
+			ParentHash: wcb.ParentHash,
+			Hash1: wcb.Hash1,
+			Hash2: wcb.Hash2,
+			Hash3: wcb.Hash3,
+			SubmitTime: wcb.SubmitTime,
+		}
+		wrkChainBlocks = append(wrkChainBlocks, wcbExp)
+		return false
+	})
+	return
+}
+
 // GetWrkChainsFiltered retrieves wrkchains filtered by a given set of params which
 // include pagination parameters along a moniker and owner address.
 //

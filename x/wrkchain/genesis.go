@@ -21,8 +21,19 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 		logger.Info("Registering WRKChain", "wc_id", wrkChain.WrkChainID)
 
 		for _, block := range record.WrkChainBlocks {
-			logger.Info("Registering Block for WRKChain", "wc_id", wrkChain.WrkChainID, "h", block.Height)
-			err = keeper.SetWrkChainBlock(ctx, block)
+			blk := WrkChainBlock{
+				WrkChainID: wrkChain.WrkChainID,
+				Height: block.Height,
+				BlockHash: block.BlockHash,
+				ParentHash: block.ParentHash,
+				Hash1: block.Hash1,
+				Hash2: block.Hash2,
+				Hash3: block.Hash3,
+				SubmitTime: block.SubmitTime,
+				Owner: wrkChain.Owner,
+			}
+			//logger.Info("Registering Block for WRKChain", "wc_id", wrkChain.WrkChainID, "h", block.Height)
+			err = keeper.SetWrkChainBlock(ctx, blk)
 			if err != nil {
 				panic(err)
 			}
@@ -48,26 +59,9 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 
 	for _, wc := range wrkChains {
 		wrkchainId := wc.WrkChainID
-		blockHashList := k.GetAllWrkChainBlockHashes(ctx, wrkchainId)
+		blockHashList := k.GetAllWrkChainBlockHashesForGenesisExport(ctx, wrkchainId)
 
-		var hashes []WrkChainBlock
-
-		for _, value := range blockHashList {
-			hash := WrkChainBlock{
-				WrkChainID: value.WrkChainID,
-				Height:     value.Height,
-				BlockHash:  value.BlockHash,
-				ParentHash: value.ParentHash,
-				Hash1:      value.Hash1,
-				Hash2:      value.Hash2,
-				Hash3:      value.Hash3,
-				SubmitTime: value.SubmitTime,
-				Owner:      value.Owner,
-			}
-			hashes = append(hashes, hash)
-		}
-
-		records = append(records, WrkChainExport{WrkChain: wc, WrkChainBlocks: hashes})
+		records = append(records, WrkChainExport{WrkChain: wc, WrkChainBlocks: blockHashList})
 	}
 	return GenesisState{
 		Params:             params,

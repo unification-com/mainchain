@@ -13,7 +13,7 @@ type GenesisState struct {
 }
 
 type BeaconExport struct {
-	Beacon           Beacon            `json:"beacon" yaml:"beacon"`
+	Beacon           Beacon                         `json:"beacon" yaml:"beacon"`
 	BeaconTimestamps []BeaconTimestampGenesisExport `json:"timestamps" yaml:"timestamps"`
 }
 
@@ -64,21 +64,9 @@ func ValidateGenesis(data GenesisState) error {
 			return fmt.Errorf("invalid Beacon: Moniker: %s. Error: Missing Moniker", record.Beacon.Moniker)
 		}
 		for _, timestamp := range record.BeaconTimestamps {
-			//if timestamp.BeaconID == 0 {
-			//	return fmt.Errorf("invalid Beacon timestamp: BeaconID: %d. Error: Missing BeaconID", timestamp.BeaconID)
-			//}
-			//if timestamp.BeaconID != record.Beacon.BeaconID {
-			//	return fmt.Errorf("beacon timestamp beacon id mismatch. Timestamp: %d, Beacon: %d. Error: Owner mismatch", timestamp.BeaconID, record.Beacon.BeaconID)
-			//}
 			if timestamp.TimestampID == 0 {
 				return fmt.Errorf("invalid Beacon timestamp: TimestampID: %d. Error: Missing TimestampID", timestamp.TimestampID)
 			}
-			//if timestamp.Owner == nil {
-			//	return fmt.Errorf("invalid Beacon timestamp: Owner: %s. Error: Missing Owner", timestamp.Owner)
-			//}
-			//if !timestamp.Owner.Equals(record.Beacon.Owner) {
-			//	return fmt.Errorf("beacon timestamp owner mismatch. Timestamp: %s, Beacon: %s. Error: Owner mismatch", timestamp.Owner, record.Beacon.Owner)
-			//}
 			if timestamp.Hash == "" {
 				return fmt.Errorf("invalid Beacon timestamp: Hash: %s. Error: Missing Hash", timestamp.Hash)
 			}

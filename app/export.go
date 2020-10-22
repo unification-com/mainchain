@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -59,8 +60,14 @@ func (app *MainchainApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList
 	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val staking.ValidatorI) (stop bool) {
 		_, err := app.distrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		if err != nil {
-			log.Fatal(err)
+			if err == distribution.ErrNoValidatorCommission {
+				// don't panic if there is no commission to withdraw - some validtors have 0% commission
+				log.Println(err)
+			} else {
+				log.Fatal(err)
+			}
 		}
+
 		return false
 	})
 

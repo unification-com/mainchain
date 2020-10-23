@@ -28,8 +28,16 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 		logger.Info("setting beacon", "bid", beacon.BeaconID)
 
 		for _, timestamp := range record.BeaconTimestamps {
-			logger.Info("setting timestamp for beacon", "bid", timestamp.BeaconID, "tid", timestamp.TimestampID)
-			err = keeper.SetBeaconTimestamp(ctx, timestamp)
+
+			bts := BeaconTimestamp{
+				BeaconID: beacon.BeaconID,
+				TimestampID: timestamp.TimestampID,
+				SubmitTime: timestamp.SubmitTime,
+				Hash: timestamp.Hash,
+				Owner: beacon.Owner,
+			}
+
+			err = keeper.SetBeaconTimestamp(ctx, bts)
 			if err != nil {
 				panic(err)
 			}
@@ -55,22 +63,9 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 
 	for _, b := range beacons {
 		beaconID := b.BeaconID
-		timestamps := k.GetAllBeaconTimestamps(ctx, beaconID)
+		timestamps := k.GetAllBeaconTimestampsForExport(ctx, beaconID)
 
-		var tss []BeaconTimestamp
-
-		for _, value := range timestamps {
-			ts := BeaconTimestamp{
-				BeaconID:    value.BeaconID,
-				TimestampID: value.TimestampID,
-				Hash:        value.Hash,
-				SubmitTime:  value.SubmitTime,
-				Owner:       value.Owner,
-			}
-			tss = append(tss, ts)
-		}
-
-		records = append(records, BeaconExport{Beacon: b, BeaconTimestamps: tss})
+		records = append(records, BeaconExport{Beacon: b, BeaconTimestamps: timestamps})
 	}
 	return GenesisState{
 		Params:           params,

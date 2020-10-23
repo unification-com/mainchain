@@ -13,8 +13,8 @@ type GenesisState struct {
 }
 
 type WrkChainExport struct {
-	WrkChain       WrkChain        `json:"wrkchain" yaml:"wrkchain"`
-	WrkChainBlocks []WrkChainBlock `json:"blocks" yaml:"blocks"`
+	WrkChain       WrkChain                     `json:"wrkchain" yaml:"wrkchain"`
+	WrkChainBlocks []WrkChainBlockGenesisExport `json:"blocks" yaml:"blocks"`
 }
 
 // NewGenesisState creates a new GenesisState object
@@ -67,19 +67,6 @@ func ValidateGenesis(data GenesisState) error {
 			return fmt.Errorf("invalid WrkChain: BaseType: %s. Error: Missing BaseType", record.WrkChain.BaseType)
 		}
 		for _, block := range record.WrkChainBlocks {
-
-			if block.WrkChainID == 0 {
-				return fmt.Errorf("invalid WrkChain block: WrkChainID: %d. Error: Missing WrkChainID", block.WrkChainID)
-			}
-			if block.WrkChainID != record.WrkChain.WrkChainID {
-				return fmt.Errorf("invalid WrkChain block wrkchain id mismatch. Block: %d, Wrkchain: %d. Error: WrkChain ID mismatch", block.WrkChainID, record.WrkChain.WrkChainID)
-			}
-			if block.Owner == nil {
-				return fmt.Errorf("invalid WrkChain block: Owner: %s. Error: Missing Owner", block.Owner)
-			}
-			if !block.Owner.Equals(record.WrkChain.Owner) {
-				return fmt.Errorf("wrkchain owner owner mismatch. Block: %s, Wrkchain: %s. Error: Owner mismatch", block.Owner, record.WrkChain.Owner)
-			}
 			if block.BlockHash == "" {
 				return fmt.Errorf("invalid WrkChain block: BlockHash: %s. Error: Missing BlockHash", block.BlockHash)
 			}

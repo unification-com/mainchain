@@ -69,39 +69,15 @@ func TestValidateGenesis(t *testing.T) {
 	err = ValidateGenesis(state3)
 	require.NoError(t, err)
 
-	timestamp := BeaconTimestamp{}
+	timestamp := BeaconTimestampGenesisExport{}
 	state3.Beacons[0].BeaconTimestamps = append(state3.Beacons[0].BeaconTimestamps, timestamp)
 
 	expectedErr = fmt.Errorf("invalid Beacon timestamp: BeaconID: 0. Error: Missing BeaconID")
 	err = ValidateGenesis(state3)
 	require.Error(t, expectedErr, err.Error())
 
-	state3.Beacons[0].BeaconTimestamps[0].BeaconID = 2
-	expectedErr = fmt.Errorf("beacon timestamp beacon id mismatch. Timestamp: 2, Beacon: 1. Error: Owner mismatch")
-	err = ValidateGenesis(state3)
-	require.Error(t, expectedErr, err.Error())
-
-	state3.Beacons[0].BeaconTimestamps[0].BeaconID = 1
-	expectedErr = fmt.Errorf("invalid Beacon timestamp: TimestampID: 0. Error: Missing TimestampID")
-	err = ValidateGenesis(state3)
-	require.Error(t, expectedErr, err.Error())
-
 	state3.Beacons[0].BeaconTimestamps[0].TimestampID = 1
 	expectedErr = fmt.Errorf("invalid Beacon timestamp: Owner: %s. Error: Missing Owner", sdk.AccAddress{})
-	err = ValidateGenesis(state3)
-	require.Error(t, expectedErr, err.Error())
-
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	notOwnerAddr := sdk.AccAddress(pubKey2.Address())
-
-	state3.Beacons[0].BeaconTimestamps[0].Owner = notOwnerAddr
-	expectedErr = fmt.Errorf("beacon timestamp owner mismatch. Timestamp: %s, Beacon: %s. Error: Owner mismatch", notOwnerAddr, bOwnerAddr)
-	err = ValidateGenesis(state3)
-	require.Error(t, expectedErr, err.Error())
-
-	state3.Beacons[0].BeaconTimestamps[0].Owner = bOwnerAddr
-	expectedErr = fmt.Errorf("invalid Beacon timestamp: Hash: . Error: Missing Hash")
 	err = ValidateGenesis(state3)
 	require.Error(t, expectedErr, err.Error())
 

@@ -4,6 +4,12 @@
 
 Unreleased changes have been merged into `master`
 
+* [[`6bce830be9`](https://github.com/unification-com/mainchain/commit/6bce830be9)] - scripts - quick script to export MainNet genesis and merge BEACON/WrkChain data with DevNet for import testing (Codegnosis)
+* [[`e41a1e5d55`](https://github.com/unification-com/mainchain/commit/e41a1e5d55)] - docker - tweak rest start script to allow for larger genesis files (Codegnosis)
+* [[`8f1f0be5a0`](https://github.com/unification-com/mainchain/commit/8f1f0be5a0)] - app - genesis export - do not panic on no commission error. Some validators have 0% commission (Codegnosis)
+* [[`fd6b9d8cb6`](https://github.com/unification-com/mainchain/commit/fd6b9d8cb6)] - x.wrkchain - genesis export optimisations (Codegnosis)
+* [[`9eb9a7ad01`](https://github.com/unification-com/mainchain/commit/9eb9a7ad01)] - x.beacon - genesis export optimisations (Codegnosis)
+* [[`f2f778287e`](https://github.com/unification-com/mainchain/commit/f2f778287e)] - Merge pull request #185 from unification-com/sdk\_v0.39.1 (Indica)
 * [[`1f40befc41`](https://github.com/unification-com/mainchain/commit/1f40befc41)] - DevNet docker - use golang:1.15.3-alpine (Codegnosis)
 * [[`700fc7992b`](https://github.com/unification-com/mainchain/commit/700fc7992b)] - update DevNet genesis and app configs for SDK 0.39.x (Codegnosis)
 * [[`25ce45540d`](https://github.com/unification-com/mainchain/commit/25ce45540d)] - implement required app changes for SDK v0.39.1 (Codegnosis)

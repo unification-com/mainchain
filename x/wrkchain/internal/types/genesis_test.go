@@ -87,34 +87,10 @@ func TestValidateGenesis(t *testing.T) {
 	err = ValidateGenesis(state3)
 	require.NoError(t, err)
 
-	block := WrkChainBlock{}
+	block := WrkChainBlockGenesisExport{}
 	state3.WrkChains[0].WrkChainBlocks = append(state3.WrkChains[0].WrkChainBlocks, block)
 
 	expectedErr = fmt.Errorf("invalid WrkChain block: WrkChainID: 0. Error: Missing WrkChainID")
-	err = ValidateGenesis(state3)
-	require.Error(t, expectedErr, err.Error())
-
-	state3.WrkChains[0].WrkChainBlocks[0].WrkChainID = 2
-	expectedErr = fmt.Errorf("invalid WrkChain block wrkchain id mismatch. Block: 2, Wrkchain: 1. Error: WrkChain ID mismatch")
-	err = ValidateGenesis(state3)
-	require.Error(t, expectedErr, err.Error())
-
-	state3.WrkChains[0].WrkChainBlocks[0].WrkChainID = 1
-	expectedErr = fmt.Errorf("invalid WrkChain block: Owner: . Error: Missing Owner")
-	err = ValidateGenesis(state3)
-	require.Error(t, expectedErr, err.Error())
-
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	notOwnerAddr := sdk.AccAddress(pubKey2.Address())
-
-	state3.WrkChains[0].WrkChainBlocks[0].Owner = notOwnerAddr
-	expectedErr = fmt.Errorf("wrkchain owner owner mismatch. Block: %s, Wrkchain: %s. Error: Owner mismatch", notOwnerAddr, bOwnerAddr)
-	err = ValidateGenesis(state3)
-	require.Error(t, expectedErr, err.Error())
-
-	state3.WrkChains[0].WrkChainBlocks[0].Owner = bOwnerAddr
-	expectedErr = fmt.Errorf("invalid WrkChain block: BlockHash: . Error: Missing BlockHash")
 	err = ValidateGenesis(state3)
 	require.Error(t, expectedErr, err.Error())
 

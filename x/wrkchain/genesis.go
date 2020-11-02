@@ -2,7 +2,9 @@ package wrkchain
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
+	undtypes "github.com/unification-com/mainchain/types"
 )
 
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
@@ -48,6 +50,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 	initialWrkChainID, _ := k.GetHighestWrkChainID(ctx)
 
 	wrkChains := k.GetAllWrkChains(ctx)
+	exportWrkChainDataIds := viper.GetIntSlice(undtypes.FlagExportIncludeWrkchainData)
 
 	if len(wrkChains) == 0 {
 		return GenesisState{
@@ -58,10 +61,25 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 	}
 
 	for _, wc := range wrkChains {
-		wrkchainId := wc.WrkChainID
-		blockHashList := k.GetAllWrkChainBlockHashesForGenesisExport(ctx, wrkchainId)
+		exportData := false
+		for _, expWrkChainId := range exportWrkChainDataIds {
+			if uint64(expWrkChainId) == wc.WrkChainID {
+				exportData = true
+			}
+		}
 
-		records = append(records, WrkChainExport{WrkChain: wc, WrkChainBlocks: blockHashList})
+		if exportData {
+			wrkchainId := wc.WrkChainID
+			blockHashList := k.GetAllWrkChainBlockHashesForGenesisExport(ctx, wrkchainId)
+			if blockHashList == nil {
+				blockHashList = WrkChainBlocksGenesisExport{}
+			}
+			records = append(records, WrkChainExport{WrkChain: wc, WrkChainBlocks: blockHashList})
+		} else {
+			wc.LastBlock = 0
+			wc.NumberBlocks = 0
+			records = append(records, WrkChainExport{WrkChain: wc, WrkChainBlocks: WrkChainBlocksGenesisExport{}})
+		}
 	}
 	return GenesisState{
 		Params:             params,

@@ -66,6 +66,7 @@ func main() {
 		AddGenesisAccountCmd(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome),
 		flags.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(cdc),
+		DumpDataCmd(ctx, cdc, dumpBeaconOrWrkchainData),
 	)
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
@@ -124,4 +125,22 @@ func exportAppStateAndTMValidators(
 	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1))
 
 	return undApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+}
+
+func dumpBeaconOrWrkchainData(
+	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, what string, id uint64,
+) (json.RawMessage, error) {
+
+	if height != -1 {
+		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1))
+		err := undApp.LoadHeight(height)
+		if err != nil {
+			return nil, err
+		}
+		return undApp.DumpWrkchainOrBeaconData(what, id)
+	}
+
+	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1))
+
+	return undApp.DumpWrkchainOrBeaconData(what, id)
 }

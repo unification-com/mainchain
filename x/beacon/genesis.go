@@ -2,7 +2,9 @@ package beacon
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
+	undtypes "github.com/unification-com/mainchain/types"
 )
 
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
@@ -52,6 +54,7 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 	initialBeaconID, _ := k.GetHighestBeaconID(ctx)
 
 	beacons := k.GetAllBeacons(ctx)
+	exportBeaconDataIds := viper.GetIntSlice(undtypes.FlagExportIncludeBeaconData)
 
 	if len(beacons) == 0 {
 		return GenesisState{
@@ -62,10 +65,24 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 	}
 
 	for _, b := range beacons {
-		beaconID := b.BeaconID
-		timestamps := k.GetAllBeaconTimestampsForExport(ctx, beaconID)
+		exportData := false
+		for _, expBeaconId := range exportBeaconDataIds {
+			if uint64(expBeaconId) == b.BeaconID {
+				exportData = true
+			}
+		}
 
-		records = append(records, BeaconExport{Beacon: b, BeaconTimestamps: timestamps})
+		if exportData {
+			beaconID := b.BeaconID
+			timestamps := k.GetAllBeaconTimestampsForExport(ctx, beaconID)
+			if timestamps == nil {
+				timestamps = BeaconTimestampsGenesisExport{}
+			}
+			records = append(records, BeaconExport{Beacon: b, BeaconTimestamps: timestamps})
+		} else {
+			b.LastTimestampID = 0
+			records = append(records, BeaconExport{Beacon: b, BeaconTimestamps: BeaconTimestampsGenesisExport{}})
+		}
 	}
 	return GenesisState{
 		Params:           params,

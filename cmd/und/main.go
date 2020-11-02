@@ -74,6 +74,12 @@ func main() {
 	executor := cli.PrepareBaseCmd(rootCmd, "UND", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
+
+	rootCmd.PersistentFlags().IntSlice(undtypes.FlagExportIncludeWrkchainData, []int{},
+		"Comma separated list of WRKChain IDs for which data will also be exported")
+	rootCmd.PersistentFlags().IntSlice(undtypes.FlagExportIncludeBeaconData, []int{},
+		"Comma separated list of BEACON IDs for which data will also be exported")
+
 	err := executor.Execute()
 	if err != nil {
 		panic(err)

@@ -4,6 +4,12 @@
 
 Unreleased changes have been merged into `master`
 
+* [[`5d893431df`](https://github.com/unification-com/mainchain/commit/5d893431df)] - cmd.und - plug in WRKChain/BEACON data dumper commands (Codegnosis)
+* [[`18c4f0fad6`](https://github.com/unification-com/mainchain/commit/18c4f0fad6)] - app - add dumper for individual BEACON/WRKChain data (Codegnosis)
+* [[`0c7d284833`](https://github.com/unification-com/mainchain/commit/0c7d284833)] - x.wrkchain - process selected WRKChain data exports (Codegnosis)
+* [[`89e3ed25a9`](https://github.com/unification-com/mainchain/commit/89e3ed25a9)] - x.beacon - process selected BEACONs data export (Codegnosis)
+* [[`e68ca006fc`](https://github.com/unification-com/mainchain/commit/e68ca006fc)] - cmd.und - add flags to allow selecting which WRKChain/BEACON data is included in state db export to new genesis (Codegnosis)
+* [[`519728d5f6`](https://github.com/unification-com/mainchain/commit/519728d5f6)] - Merge pull request #186 from unification-com/genesis\_export\_improved (Indica)
 * [[`6bce830be9`](https://github.com/unification-com/mainchain/commit/6bce830be9)] - scripts - quick script to export MainNet genesis and merge BEACON/WrkChain data with DevNet for import testing (Codegnosis)
 * [[`e41a1e5d55`](https://github.com/unification-com/mainchain/commit/e41a1e5d55)] - docker - tweak rest start script to allow for larger genesis files (Codegnosis)
 * [[`8f1f0be5a0`](https://github.com/unification-com/mainchain/commit/8f1f0be5a0)] - app - genesis export - do not panic on no commission error. Some validators have 0% commission (Codegnosis)

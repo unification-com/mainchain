@@ -39,6 +39,12 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 			if err != nil {
 				panic(err)
 			}
+
+			// also update NumBlocks!
+			err = keeper.SetNumBlocks(ctx, wrkChain.WrkChainID)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 	return []abci.ValidatorUpdate{}

@@ -2,12 +2,13 @@ package app
 
 import (
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain/x/beacon"
-	"github.com/unification-com/mainchain/x/wrkchain"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/unification-com/mainchain/x/beacon"
+	"github.com/unification-com/mainchain/x/wrkchain"
 )
 
 func (app *MainchainApp) ImportWrkchainAndBeaconData(ctx sdk.Context, nodeHome string) {

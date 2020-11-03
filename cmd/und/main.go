@@ -101,6 +101,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	}
 
 	return app.NewMainchainApp(logger, db, traceStore, true, invCheckPeriod,
+		viper.GetString(flags.FlagHome),
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
@@ -114,7 +115,7 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1))
+		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1), viper.GetString(flags.FlagHome))
 		err := undApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -122,7 +123,7 @@ func exportAppStateAndTMValidators(
 		return undApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1))
+	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1), viper.GetString(flags.FlagHome))
 
 	return undApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }
@@ -132,7 +133,7 @@ func dumpBeaconOrWrkchainData(
 ) (json.RawMessage, error) {
 
 	if height != -1 {
-		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1))
+		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1), viper.GetString(flags.FlagHome))
 		err := undApp.LoadHeight(height)
 		if err != nil {
 			return nil, err
@@ -140,7 +141,7 @@ func dumpBeaconOrWrkchainData(
 		return undApp.DumpWrkchainOrBeaconData(what, id)
 	}
 
-	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1))
+	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1), viper.GetString(flags.FlagHome))
 
 	return undApp.DumpWrkchainOrBeaconData(what, id)
 }

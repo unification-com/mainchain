@@ -75,8 +75,6 @@ func TestValidateGenesis(t *testing.T) {
 	}
 
 	state3.PurchaseOrders = append(state3.PurchaseOrders, po1)
-	err = ValidateGenesis(state3)
-
 	expectedErr = fmt.Errorf("invalid purchase order: PurchaseOrderID: 0. Error: Missing PurchaseOrderID")
 	err = ValidateGenesis(state3)
 	require.Equal(t, expectedErr.Error(), err.Error())
@@ -117,7 +115,6 @@ func TestValidateGenesis(t *testing.T) {
 	require.Equal(t, expectedErr.Error(), err.Error())
 
 	state3.PurchaseOrders[0].Status = StatusRaised
-	expectedErr = fmt.Errorf("invalid purchase order: Status: . Error: Invalid Status")
 	err = ValidateGenesis(state3)
 	require.NoError(t, err)
 
@@ -126,7 +123,6 @@ func TestValidateGenesis(t *testing.T) {
 	expectedErr = fmt.Errorf("invalid decision: Signer cannot be empty")
 	err = ValidateGenesis(state3)
 	require.Equal(t, expectedErr.Error(), err.Error())
-
 
 	state3.PurchaseOrders[0].Decisions[0].Signer = signerAddr
 	expectedErr = fmt.Errorf("invalid decision: Decision: . Error: Invalid Decision")

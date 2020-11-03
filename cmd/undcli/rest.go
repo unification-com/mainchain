@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -11,7 +10,7 @@ import (
 // RegisterQueryRestApiEndpoints registers the /api REST endpoint which outputs a simple list
 // of available REST endpoints
 func RegisterQueryRestApiEndpoints(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/api"), queryRestApiEndpoints(r)).Methods("GET")
+	r.HandleFunc("/api", queryRestApiEndpoints(r)).Methods("GET")
 }
 
 func queryRestApiEndpoints(rtr *mux.Router) http.HandlerFunc {

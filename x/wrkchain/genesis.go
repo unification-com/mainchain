@@ -25,14 +25,14 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 		for _, block := range record.WrkChainBlocks {
 			blk := WrkChainBlock{
 				WrkChainID: wrkChain.WrkChainID,
-				Height: block.Height,
-				BlockHash: block.BlockHash,
+				Height:     block.Height,
+				BlockHash:  block.BlockHash,
 				ParentHash: block.ParentHash,
-				Hash1: block.Hash1,
-				Hash2: block.Hash2,
-				Hash3: block.Hash3,
+				Hash1:      block.Hash1,
+				Hash2:      block.Hash2,
+				Hash3:      block.Hash3,
 				SubmitTime: block.SubmitTime,
-				Owner: wrkChain.Owner,
+				Owner:      wrkChain.Owner,
 			}
 			//logger.Info("Registering Block for WRKChain", "wc_id", wrkChain.WrkChainID, "h", block.Height)
 			err = keeper.SetWrkChainBlock(ctx, blk)

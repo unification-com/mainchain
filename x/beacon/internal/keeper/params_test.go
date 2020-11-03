@@ -8,7 +8,7 @@ import (
 	"github.com/unification-com/mainchain/x/beacon/internal/types"
 )
 
-var testParams = types.NewParams(1000,100, "nund")
+var testParams = types.NewParams(1000, 100, "nund")
 
 func TestSetGetParams(t *testing.T) {
 	ctx, _, keeper := createTestInput(t, false, 100, 0)

@@ -77,7 +77,6 @@ func handleMsgRegisterBeacon(ctx sdk.Context, keeper Keeper, msg MsgRegisterBeac
 // Handle a message to record a new BEACON timestamp
 func handleMsgRecordBeaconTimestamp(ctx sdk.Context, keeper Keeper, msg MsgRecordBeaconTimestamp) (*sdk.Result, error) {
 
-
 	if len(msg.Hash) > 66 {
 		return nil, sdkerrors.Wrap(ErrContentTooLarge, "hash too big. 66 character limit")
 	}

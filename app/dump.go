@@ -26,7 +26,7 @@ func (app *MainchainApp) DumpWrkchainOrBeaconData(what string,
 
 		dumpStateJson, err := codec.MarshalJSONIndent(app.cdc, dumpState)
 		if err != nil {
-			return nil,  err
+			return nil, err
 		}
 
 		return dumpStateJson, nil
@@ -35,13 +35,13 @@ func (app *MainchainApp) DumpWrkchainOrBeaconData(what string,
 		wrkchainHashState := app.wrkChainKeeper.GetAllWrkChainBlockHashesForGenesisExport(ctx, id)
 
 		dumpState := wrkchain.WrkChainExport{
-			WrkChain: wrkchainRegData,
+			WrkChain:       wrkchainRegData,
 			WrkChainBlocks: wrkchainHashState,
 		}
 
 		dumpStateJson, err := codec.MarshalJSONIndent(app.cdc, dumpState)
 		if err != nil {
-			return nil,  err
+			return nil, err
 		}
 
 		return dumpStateJson, nil

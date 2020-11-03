@@ -368,7 +368,7 @@ func (app *MainchainApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) a
 func (app *MainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 
-    ctx.Logger().Info("initial InitGenesis genesis.json import")
+	ctx.Logger().Info("initial InitGenesis genesis.json import")
 
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 

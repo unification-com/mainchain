@@ -90,7 +90,7 @@ func NewConfigFromFlags() simulation.Config {
 
 // ExportStateToJSON util function to export the app state to JSON
 func ExportStateToJSON(app *UndSimApp, filepath string) error {
-	fmt.Println(fmt.Sprintf("exporting app state to %s ...", filepath))
+	fmt.Printf("exporting app state to %s ...\n", filepath)
 	appState, _, err := app.ExportAppStateAndValidators(false, nil)
 	if err != nil {
 		return err
@@ -105,7 +105,7 @@ func ExportStateToGenesisJSON(app *UndSimApp, filepath string) error {
 	dir, _ := path.Split(filepath)
 	genesisPath := path.Join(dir, "genesis.json")
 
-	fmt.Println(fmt.Sprintf("exporting genesis to %s ...", genesisPath))
+	fmt.Printf("exporting genesis to %s ...\n", genesisPath)
 	appState, _, err := app.ExportAppStateAndValidators(true, nil)
 	if err != nil {
 		return err
@@ -116,7 +116,7 @@ func ExportStateToGenesisJSON(app *UndSimApp, filepath string) error {
 
 // ExportParamsToJSON util function to export the simulation parameters to JSON
 func ExportParamsToJSON(params simulation.Params, filepath string) error {
-	fmt.Println(fmt.Sprintf("exporting simulation params to %s ...", filepath))
+	fmt.Printf("exporting simulation params to %s ...\n", filepath)
 	paramsBz, err := json.MarshalIndent(params, "", " ")
 	if err != nil {
 		return err

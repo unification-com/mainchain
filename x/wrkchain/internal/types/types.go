@@ -109,13 +109,13 @@ Owner: %s`, w.WrkChainID, w.Height, w.BlockHash, w.ParentHash, w.Hash1, w.Hash2,
 
 // WrkChainBlockGenesisExport is a struct that contains a wrkchain's recorded blocks for genesis export
 type WrkChainBlockGenesisExport struct {
-	Height     uint64         `json:"he"`
-	BlockHash  string         `json:"bh"`
-	ParentHash string         `json:"ph"`
-	Hash1      string         `json:"h1"`
-	Hash2      string         `json:"h2"`
-	Hash3      string         `json:"h3"`
-	SubmitTime int64          `json:"st"`
+	Height     uint64 `json:"he"`
+	BlockHash  string `json:"bh"`
+	ParentHash string `json:"ph"`
+	Hash1      string `json:"h1"`
+	Hash2      string `json:"h2"`
+	Hash3      string `json:"h3"`
+	SubmitTime int64  `json:"st"`
 }
 
 // WrkChainBlocksGenesisExport is an array of WrkChainBlockGenesisExport

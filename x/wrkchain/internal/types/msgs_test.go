@@ -8,7 +8,6 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
-
 func TestMsgRegisterWrkChain_Route(t *testing.T) {
 	msg := MsgRegisterWrkChain{}
 	require.Equal(t, ModuleName, msg.Route())

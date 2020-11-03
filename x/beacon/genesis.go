@@ -32,11 +32,11 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 		for _, timestamp := range record.BeaconTimestamps {
 
 			bts := BeaconTimestamp{
-				BeaconID: beacon.BeaconID,
+				BeaconID:    beacon.BeaconID,
 				TimestampID: timestamp.TimestampID,
-				SubmitTime: timestamp.SubmitTime,
-				Hash: timestamp.Hash,
-				Owner: beacon.Owner,
+				SubmitTime:  timestamp.SubmitTime,
+				Hash:        timestamp.Hash,
+				Owner:       beacon.Owner,
 			}
 
 			err = keeper.SetBeaconTimestamp(ctx, bts)

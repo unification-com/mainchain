@@ -41,8 +41,6 @@ func (app *MainchainApp) ImportWrkchainAndBeaconData(ctx sdk.Context, nodeHome s
 	}
 
 	ctx.Logger().Info("genesis and data import complete!")
-
-	return
 }
 
 func getBytes(p string) ([]byte, error) {
@@ -109,11 +107,11 @@ func (app *MainchainApp) importBeaconData(ctx sdk.Context, p string) {
 	for _, timestamp := range timestamps {
 
 		bts := beacon.BeaconTimestamp{
-			BeaconID: beaconData.BeaconID,
+			BeaconID:    beaconData.BeaconID,
 			TimestampID: timestamp.TimestampID,
-			SubmitTime: timestamp.SubmitTime,
-			Hash: timestamp.Hash,
-			Owner: beaconData.Owner,
+			SubmitTime:  timestamp.SubmitTime,
+			Hash:        timestamp.Hash,
+			Owner:       beaconData.Owner,
 		}
 
 		err = app.beaconKeeper.SetBeaconTimestamp(ctx, bts)
@@ -121,8 +119,6 @@ func (app *MainchainApp) importBeaconData(ctx sdk.Context, p string) {
 			panic(err)
 		}
 	}
-
-	return
 }
 
 // importWrkchainData will import WRKChain block hashes from a given file.
@@ -155,25 +151,28 @@ func (app *MainchainApp) importWrkchainData(ctx sdk.Context, p string) {
 	ctx.Logger().Info("found state for wrkchain", "id", wrkchainData.WrkChainID,
 		"moniker", wrkchainData.Moniker)
 
-	if w.LastBlock > 0 || w.NumberBlocks < 0 {
+	if w.LastBlock > 0 || w.NumberBlocks > 0 {
 		panic("wrkchain LastBlock || NumberBlocks > 0 - was this already imported in genesis.json?")
 	}
 
 	// registration data has already been imported during InitGenesis.
 	// just need to set LastBlock and import the timestamps
 	err = app.wrkChainKeeper.SetLastBlock(ctx, wrkchainData.WrkChainID, wrkchainData.LastBlock)
+	if err != nil {
+		panic(err)
+	}
 
 	for _, block := range wrkchainBlocks {
 		blk := wrkchain.WrkChainBlock{
 			WrkChainID: wrkchainData.WrkChainID,
-			Height: block.Height,
-			BlockHash: block.BlockHash,
+			Height:     block.Height,
+			BlockHash:  block.BlockHash,
 			ParentHash: block.ParentHash,
-			Hash1: block.Hash1,
-			Hash2: block.Hash2,
-			Hash3: block.Hash3,
+			Hash1:      block.Hash1,
+			Hash2:      block.Hash2,
+			Hash3:      block.Hash3,
 			SubmitTime: block.SubmitTime,
-			Owner: wrkchainData.Owner,
+			Owner:      wrkchainData.Owner,
 		}
 
 		err = app.wrkChainKeeper.SetWrkChainBlock(ctx, blk)
@@ -187,6 +186,4 @@ func (app *MainchainApp) importWrkchainData(ctx sdk.Context, p string) {
 			panic(err)
 		}
 	}
-
-	return
 }

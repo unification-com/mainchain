@@ -66,6 +66,7 @@ func main() {
 		AddGenesisAccountCmd(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome),
 		flags.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(cdc),
+		DumpDataCmd(ctx, cdc, dumpBeaconOrWrkchainData),
 	)
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
@@ -74,6 +75,12 @@ func main() {
 	executor := cli.PrepareBaseCmd(rootCmd, "UND", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
+
+	rootCmd.PersistentFlags().IntSlice(undtypes.FlagExportIncludeWrkchainData, []int{},
+		"Comma separated list of WRKChain IDs for which data will also be exported")
+	rootCmd.PersistentFlags().IntSlice(undtypes.FlagExportIncludeBeaconData, []int{},
+		"Comma separated list of BEACON IDs for which data will also be exported")
+
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -94,6 +101,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	}
 
 	return app.NewMainchainApp(logger, db, traceStore, true, invCheckPeriod,
+		viper.GetString(flags.FlagHome),
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
@@ -107,7 +115,7 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1))
+		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1), viper.GetString(flags.FlagHome))
 		err := undApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -115,7 +123,25 @@ func exportAppStateAndTMValidators(
 		return undApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1))
+	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1), viper.GetString(flags.FlagHome))
 
 	return undApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+}
+
+func dumpBeaconOrWrkchainData(
+	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, what string, id uint64,
+) (json.RawMessage, error) {
+
+	if height != -1 {
+		undApp := app.NewMainchainApp(logger, db, traceStore, false, uint(1), viper.GetString(flags.FlagHome))
+		err := undApp.LoadHeight(height)
+		if err != nil {
+			return nil, err
+		}
+		return undApp.DumpWrkchainOrBeaconData(what, id)
+	}
+
+	undApp := app.NewMainchainApp(logger, db, traceStore, true, uint(1), viper.GetString(flags.FlagHome))
+
+	return undApp.DumpWrkchainOrBeaconData(what, id)
 }

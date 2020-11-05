@@ -46,7 +46,7 @@ func (msg MsgRegisterBeacon) ValidateBasic() error {
 	}
 
 	if len(msg.BeaconName) > 128 {
-        return sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+		return sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
 	}
 
 	if len(msg.Moniker) > 64 {

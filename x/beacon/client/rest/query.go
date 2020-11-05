@@ -15,9 +15,9 @@ import (
 
 // registerQueryRoutes - define REST query routes
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/beacon/params"), beaconParamsHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/beacon/params", beaconParamsHandler(cliCtx)).Methods("GET")
 
-	r.HandleFunc(fmt.Sprintf("/beacon/beacons"), beaconsWithParametersHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/beacon/beacons", beaconsWithParametersHandler(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/beacon/{%s}", RestBeaconId), beaconHandler(cliCtx)).Methods("GET")
 
 	// Timestamps

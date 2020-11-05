@@ -14,9 +14,9 @@ import (
 
 // registerQueryRoutes - define REST query routes
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/wrkchain/params"), wrkChainParamsHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/wrkchain/params", wrkChainParamsHandler(cliCtx)).Methods("GET")
 
-	r.HandleFunc(fmt.Sprintf("/wrkchain/wrkchains"), wrkChainsWithParametersHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/wrkchain/wrkchains", wrkChainsWithParametersHandler(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/wrkchain/{%s}", RestWrkchainId), wrkChainHandler(cliCtx)).Methods("GET")
 
 	// Block hashes

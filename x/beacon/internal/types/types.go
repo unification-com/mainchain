@@ -97,7 +97,7 @@ type BeaconTimestampsGenesisExport []BeaconTimestampGenesisExport
 // BeaconTimestampGenesisExport is a struct that contains the minimum data required for a BEACON timestamp export
 // to genesis
 type BeaconTimestampGenesisExport struct {
-	TimestampID uint64         `json:"id"`
-	SubmitTime  uint64         `json:"t"`
-	Hash        string         `json:"h"`
+	TimestampID uint64 `json:"id"`
+	SubmitTime  uint64 `json:"t"`
+	Hash        string `json:"h"`
 }

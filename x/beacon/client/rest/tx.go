@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -30,9 +29,9 @@ type recordBeaconTimestampReq struct {
 
 // registerTxRoutes - define REST Tx routes
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/beacon/reg"), registerBeaconHandler(cliCtx)).Methods("POST")
+	r.HandleFunc("/beacon/reg", registerBeaconHandler(cliCtx)).Methods("POST")
 
-	r.HandleFunc(fmt.Sprintf("/beacon/rec"), recordBeaconTimestampHandler(cliCtx)).Methods("POST")
+	r.HandleFunc("/beacon/rec", recordBeaconTimestampHandler(cliCtx)).Methods("POST")
 }
 
 func registerBeaconHandler(cliCtx context.CLIContext) http.HandlerFunc {

@@ -73,10 +73,11 @@ type (
 
 	GenesisState = types.GenesisState
 
-	Params          = types.Params
-	Beacon          = types.Beacon
-	BeaconTimestamp = types.BeaconTimestamp
-	BeaconExport    = types.BeaconExport
+	Params                        = types.Params
+	Beacon                        = types.Beacon
+	BeaconTimestamp               = types.BeaconTimestamp
+	BeaconExport                  = types.BeaconExport
+	BeaconTimestampsGenesisExport = types.BeaconTimestampsGenesisExport
 
 	QueryResBeacons               = types.QueryResBeacons
 	QueryResBeaconTimestampHashes = types.QueryResBeaconTimestampHashes

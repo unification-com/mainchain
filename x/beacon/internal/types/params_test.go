@@ -32,7 +32,7 @@ func TestParams_Validate(t *testing.T) {
 
 	params3 := Params{}
 	err = params3.Validate()
-    require.Equal(t, "fee denom cannot be blank", err.Error())
+	require.Equal(t, "fee denom cannot be blank", err.Error())
 
 	params3.Denom = "test"
 	err = params3.Validate()

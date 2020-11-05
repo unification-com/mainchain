@@ -4,6 +4,19 @@
 
 Unreleased changes have been merged into `master`
 
+* [[`1dec7ea69d`](https://github.com/unification-com/mainchain/commit/1dec7ea69d)] - scripts - new helper script to export genesis and dump data from DevNet (Codegnosis)
+* [[`2949409142`](https://github.com/unification-com/mainchain/commit/2949409142)] - scripts - improved script to populate a running DevNet with data (Codegnosis)
+* [[`c40d64a25d`](https://github.com/unification-com/mainchain/commit/c40d64a25d)] - docker - only one node with debug output (Codegnosis)
+* [[`d95aceacd1`](https://github.com/unification-com/mainchain/commit/d95aceacd1)] - app - plug in genesis data import (Codegnosis)
+* [[`8fc6d1406a`](https://github.com/unification-com/mainchain/commit/8fc6d1406a)] - cmd.und - pass home dir to app (Codegnosis)
+* [[`219f67596b`](https://github.com/unification-com/mainchain/commit/219f67596b)] - app - genesis data import functionality (Codegnosis)
+* [[`83edd65395`](https://github.com/unification-com/mainchain/commit/83edd65395)] - x.wrkchain - bug fix - NumBlocks needs incrementing with each hash import (Codegnosis)
+* [[`5d893431df`](https://github.com/unification-com/mainchain/commit/5d893431df)] - cmd.und - plug in WRKChain/BEACON data dumper commands (Codegnosis)
+* [[`18c4f0fad6`](https://github.com/unification-com/mainchain/commit/18c4f0fad6)] - app - add dumper for individual BEACON/WRKChain data (Codegnosis)
+* [[`0c7d284833`](https://github.com/unification-com/mainchain/commit/0c7d284833)] - x.wrkchain - process selected WRKChain data exports (Codegnosis)
+* [[`89e3ed25a9`](https://github.com/unification-com/mainchain/commit/89e3ed25a9)] - x.beacon - process selected BEACONs data export (Codegnosis)
+* [[`e68ca006fc`](https://github.com/unification-com/mainchain/commit/e68ca006fc)] - cmd.und - add flags to allow selecting which WRKChain/BEACON data is included in state db export to new genesis (Codegnosis)
+* [[`519728d5f6`](https://github.com/unification-com/mainchain/commit/519728d5f6)] - Merge pull request #186 from unification-com/genesis\_export\_improved (Indica)
 * [[`6bce830be9`](https://github.com/unification-com/mainchain/commit/6bce830be9)] - scripts - quick script to export MainNet genesis and merge BEACON/WrkChain data with DevNet for import testing (Codegnosis)
 * [[`e41a1e5d55`](https://github.com/unification-com/mainchain/commit/e41a1e5d55)] - docker - tweak rest start script to allow for larger genesis files (Codegnosis)
 * [[`8f1f0be5a0`](https://github.com/unification-com/mainchain/commit/8f1f0be5a0)] - app - genesis export - do not panic on no commission error. Some validators have 0% commission (Codegnosis)

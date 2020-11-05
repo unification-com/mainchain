@@ -87,10 +87,10 @@ func (k Keeper) GetAllBeaconTimestamps(ctx sdk.Context, beaconID uint64) (timest
 // the timestamp data is returned for genesis export
 func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64) (timestamps types.BeaconTimestampsGenesisExport) {
 	k.IterateBeaconTimestamps(ctx, beaconID, func(bts types.BeaconTimestamp) bool {
-		btsExp := types.BeaconTimestampGenesisExport {
+		btsExp := types.BeaconTimestampGenesisExport{
 			TimestampID: bts.TimestampID,
-			SubmitTime: bts.SubmitTime,
-			Hash: bts.Hash,
+			SubmitTime:  bts.SubmitTime,
+			Hash:        bts.Hash,
 		}
 		timestamps = append(timestamps, btsExp)
 		return false

@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -36,9 +35,9 @@ type recordWrkChainBlockReq struct {
 
 // registerTxRoutes - define REST Tx routes
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/wrkchain/reg"), registerWrkChainHandler(cliCtx)).Methods("POST")
+	r.HandleFunc("/wrkchain/reg", registerWrkChainHandler(cliCtx)).Methods("POST")
 
-	r.HandleFunc(fmt.Sprintf("/wrkchain/rec"), recordWrkChainBlockHandler(cliCtx)).Methods("POST")
+	r.HandleFunc("/wrkchain/rec", recordWrkChainBlockHandler(cliCtx)).Methods("POST")
 }
 
 func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {

@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -33,11 +32,11 @@ type processWhitelistActionReq struct {
 }
 
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/enterprise/purchase"), raisePurchaseOrderHandler(cliCtx)).Methods("POST")
+	r.HandleFunc("/enterprise/purchase", raisePurchaseOrderHandler(cliCtx)).Methods("POST")
 
-	r.HandleFunc(fmt.Sprintf("/enterprise/process"), processPurchaseOrderHandler(cliCtx)).Methods("POST")
+	r.HandleFunc("/enterprise/process", processPurchaseOrderHandler(cliCtx)).Methods("POST")
 
-	r.HandleFunc(fmt.Sprintf("/enterprise/whitelist"), processWhitelistActionHandler(cliCtx)).Methods("POST")
+	r.HandleFunc("/enterprise/whitelist", processWhitelistActionHandler(cliCtx)).Methods("POST")
 }
 
 func raisePurchaseOrderHandler(cliCtx context.CLIContext) http.HandlerFunc {

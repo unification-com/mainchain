@@ -17,29 +17,29 @@ import (
 
 // registerQueryRoutes - define REST query routes
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/enterprise/params"), enterpriseParamsHandler(cliCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/enterprise/locked"), enterpriseTotalLockedHandler(cliCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/enterprise/unlocked"), enterpriseTotalUnLockedHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/params", enterpriseParamsHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/locked", enterpriseTotalLockedHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/unlocked", enterpriseTotalUnLockedHandler(cliCtx)).Methods("GET")
 
-	r.HandleFunc(fmt.Sprintf("/enterprise/whitelist"), enterpriseWhitelistHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/whitelist", enterpriseWhitelistHandler(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/enterprise/whitelisted/{%s}", RestWhitelistAddr), enterpriseWhitelistedHandler(cliCtx)).Methods("GET")
 
-	r.HandleFunc(fmt.Sprintf("/enterprise/pos"), enterprisePosWithParametersHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/pos", enterprisePosWithParametersHandler(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/enterprise/po/{%s}", RestPurchaseOrderId), enterprisePurchaseOrderHandler(cliCtx)).Methods("GET")
 
 	r.HandleFunc(fmt.Sprintf("/enterprise/{%s}/locked", RestPurchaserAddr), enterpriseLockedForAddressHandler(cliCtx)).Methods("GET")
 }
 
 func registerEnterpriseAuthAccountOverride(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/auth/accounts/{address}"), EnterpriseAuthAccountOverride(cliCtx)).Methods("GET")
+	r.HandleFunc("/auth/accounts/{address}", EnterpriseAuthAccountOverride(cliCtx)).Methods("GET")
 }
 
 func registerEnterpriseTotalSupplyOverride(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/supply/total"), EnterpriseSupplyTotalOverride(cliCtx)).Methods("GET")
+	r.HandleFunc("/supply/total", EnterpriseSupplyTotalOverride(cliCtx)).Methods("GET")
 }
 
 func registerEnterpriseSupplyByDenomOverride(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc(fmt.Sprintf("/supply/total/{denom}"), EnterpriseSupplyByDenomOverride(cliCtx)).Methods("GET")
+	r.HandleFunc("/supply/total/{denom}", EnterpriseSupplyByDenomOverride(cliCtx)).Methods("GET")
 }
 
 func enterpriseParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {

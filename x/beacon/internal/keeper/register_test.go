@@ -34,7 +34,6 @@ func TestSetGetHighestBeaconIDNotSet(t *testing.T) {
 	keyParams := sdk.NewKVStoreKey(params.StoreKey)
 	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
 
-
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
 	ms.MountStoreWithDB(keyBeacon, sdk.StoreTypeIAVL, db)

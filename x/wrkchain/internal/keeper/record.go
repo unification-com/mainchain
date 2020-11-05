@@ -104,13 +104,13 @@ func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (w
 // format ready for genesis
 func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks types.WrkChainBlocksGenesisExport) {
 	k.IterateWrkChainBlockHashes(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
-		wcbExp := types.WrkChainBlockGenesisExport {
-			Height: wcb.Height,
-			BlockHash: wcb.BlockHash,
+		wcbExp := types.WrkChainBlockGenesisExport{
+			Height:     wcb.Height,
+			BlockHash:  wcb.BlockHash,
 			ParentHash: wcb.ParentHash,
-			Hash1: wcb.Hash1,
-			Hash2: wcb.Hash2,
-			Hash3: wcb.Hash3,
+			Hash1:      wcb.Hash1,
+			Hash2:      wcb.Hash2,
+			Hash3:      wcb.Hash3,
 			SubmitTime: wcb.SubmitTime,
 		}
 		wrkChainBlocks = append(wrkChainBlocks, wcbExp)

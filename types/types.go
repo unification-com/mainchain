@@ -5,6 +5,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/exported"
 )
 
+const FlagExportIncludeWrkchainData = "export-wrkchain-data"
+const FlagExportIncludeBeaconData = "export-beacon-data"
+
 type EnterpriseUnd struct {
 	Locked    sdk.Coin  `json:"locked"`
 	Available sdk.Coins `json:"available_for_wrkchain"`

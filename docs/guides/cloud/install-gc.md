@@ -34,13 +34,13 @@ Next, go to "Menu" and click on "APIs & Services". Click the "Enable APIs and Se
 ## Part 1: Create an SSH key pair
 An SSH key is required to log in to your GC VM - this can be created on your local PC, using the ssh-keygen command.
 
-Open a terminal on your local PC, and check if you have a $HOME/.ssh directory:
+Open a terminal on your local PC, and check if you have a `$HOME/.ssh` directory:
 
 ```bash
 ls -la $HOME/.ssh
 ```
 
-If you do not have a $HOME/.ssh directory, create it:
+If you do not have a `$HOME/.ssh` directory, create it:
 
 ```bash
 $ mkdir $HOME/.ssh
@@ -118,7 +118,7 @@ Give your VM instance a suitable name.
 2. For "Machine Type", select "`g1-small"`
 3. In the "Boot Disk" section click the "Change" button
 4. Select "CentOS" as the operating system, and "CentOS 7" as the version
-Leave the disk size as default, and select "SSD Persistent Disk" as the Boot Disk Type. Click the "Select" button.
+Leave the disk size as default. Click the "Select" button.
 5. Click the "Management, security, disks, networking, sole-tenancy" link (under "Firewall").
 6. Click the "Security" tab.
 7. Copy your SSH public key into the input "Enter public SSH key".
@@ -130,7 +130,9 @@ your public key will be in the format: `ssh-rsa PUBLIC_KEY username@host`. The "
 8. Click the "Networking" tab.
 9. Enter "`und-node`" in the "Network tags" input (this is the tag we selected to apply our firewall rules to earlier).
 10. Click the "Network Interface" option, and change the Network from "`default`" to "`und-vpc`" (or whatever you named your VPC earlier).
-11. Leave the rest of the options as their defaults, and click the "Create" button.
+11. Click in the "Disks" tab. Choose a suitable name, change the "Type" to "SSD Persistant",
+and set the size to 100Gb
+12. Leave the rest of the options as their defaults, and click the "Create" button.
 
 ## Part 4: Log in to VM and configure via SSH
 
@@ -148,7 +150,20 @@ Open a terminal on your PC, and run:
 ssh -i $HOME/.ssh/[gc_vmusername_id_rsa] [vmusername]@[vm_ip]
 ```
 
-### Part 4.1: Install the prerequisites
+### Part 4.1: Create and Mount the data drive
+
+The following commands will create a new partition and format it ready for the state db
+
+```bash
+sudo mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb
+sudo mkdir -p /mnt/disks/data
+sudo mount -o discard,defaults /dev/sdb /mnt/disks/data
+sudo chmod a+w /mnt/disks/data
+sudo cp /etc/fstab /etc/fstab.backup
+echo UUID=`sudo blkid -s UUID -o value /dev/sdb` /mnt/disks/data ext4 discard,defaults,nofail 0 2 | sudo tee -a /etc/fstab
+```
+
+### Part 4.2: Install the prerequisites
 
 Update the installed packages:
 
@@ -162,7 +177,7 @@ Install the following additional software:
 sudo yum install nano jq -y
 ```
 
-### Part 4.2: Install the `und` binary
+### Part 4.3: Install the `und` binary
 
 We have a shell [script](https://github.com/unification-com/mainchain/blob/master/scripts/cloud_install.sh) available in the [mainchain GitHub repository](https://github.com/unification-com/mainchain) which will automatically download and install the latest version of `und`. While still logged in to the VM instance via SSH, run the following:
 
@@ -206,7 +221,7 @@ We’ll now initialise and configure the `und` node itself. As previously, any t
 Once logged in, run:
 
 ```bash
-und init [your_node_tag]
+und init [your_node_tag] --home=/mnt/disks/data/.und_mainchain
 ```
 `[your_node_tag]` can be any ID you like but is restricted to ASCII characters.
 
@@ -217,25 +232,26 @@ The following command downloads the latest genesis for the respective network. C
 #### TestNet
 
 ```bash
-curl https://raw.githubusercontent.com/unification-com/testnet/master/latest/genesis.json > $HOME/.und_mainchain/config/genesis.json
+curl https://raw.githubusercontent.com/unification-com/testnet/master/latest/genesis.json > /mnt/disks/data/.und_mainchain/config/genesis.json
 ```
 
 #### MainNet
 
 ```bash
-curl https://raw.githubusercontent.com/unification-com/mainnet/master/latest/genesis.json > $HOME/.und_mainchain/config/genesis.json
+curl https://raw.githubusercontent.com/unification-com/mainnet/master/latest/genesis.json > /mnt/disks/data/.und_mainchain/config/genesis.json
 ```
 
 Get the current chain ID from genesis. Make a note of the output, it'll be required in commands later in the guide. Command is all on one line:
 
 ```bash
-$ jq --raw-output '.chain_id' $HOME/.und_mainchain/config/genesis.json
+$ jq --raw-output '.chain_id' /mnt/disks/data/.und_mainchain/.und_mainchain/config/genesis.json
 ```
 
 ### Get seed nodes
 
 ::: danger IMPORTANT
 Please ensure you get the correct seed node information for the network you would like to join! Remember to change the directory if you are using something other than the default `$HOME/.und_mainchain` directory!
+For this guide, we are using `/mnt/disks/data/.und_mainchain` for the node's home directory.
 :::
 
 Your node will need to know at least one seed node in order to join the network
@@ -250,7 +266,7 @@ Go to the repo for the network you are connecting to and copy one or more of the
 Edit your node configuration file using nano:
 
 ```bash
-nano $HOME/.und_mainchain/config/config.toml
+nano /mnt/disks/data/.und_mainchain/config/config.toml
 ```
 
 Hit <kbd>Ctrl</kbd>+<kbd>W</kbd>, type `[p2p]` (including the square brackets) and hit return - this will take you to the `[p2p]` section of the config file, which begins with:
@@ -303,10 +319,10 @@ once you have run the` create-validator` command. Broadcasting transactions can 
 
 **Gas Prices & Pruning**
 
-It is good practice to set the `minimum-gas-prices` value in `$HOME/.und_mainchain/config/app.toml`, in order to protect your full node from spam transactions. This should be set as a decimal value in `nund`, and the recommended value is currently **`0.25nund`**. This means your node will ignore any Txs with a gas price below this value. To do so, open up `$HOME/.und_mainchain/config/app.toml` in a text editor, and set `minimum-gas-prices`
+It is good practice to set the `minimum-gas-prices` value in `/mnt/disks/data/.und_mainchain/config/app.toml`, in order to protect your full node from spam transactions. This should be set as a decimal value in `nund`, and the recommended value is currently **`0.25nund`**. This means your node will ignore any Txs with a gas price below this value. To do so, open up `/mnt/disks/data/.und_mainchain/config/app.toml` in a text editor, and set `minimum-gas-prices`
 
 ```bash
-nano $HOME/.und_mainchain/config/app.toml
+nano /mnt/disks/data/.und_mainchain/config/app.toml
 ```
 
 Change:
@@ -322,7 +338,7 @@ minimum-gas-prices = "0.25nund"
 ```
 
 ::: danger IMPORTANT
-There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
+There is a known issue with the `syncable` pruning option in the Cosmos SDK. Since `pruning = "syncable"` is the default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `/mnt/disks/data/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
 :::
 
 Also, change the pruning configuration at the end of the file.
@@ -344,7 +360,7 @@ Hit <kbd>Ctrl</kbd>+<kbd>X</kbd> followed by `y` and then return to save the fil
 Finally, check that your node can connect to and sync with the network:
 
 ```bash
-und start
+und start --home=/mnt/disks/data/.und_mainchain
 ```
 
 The following output just means that the seed node has sent its peer address data to your node, and closed its connection:
@@ -357,7 +373,7 @@ After a few seconds, you should see your node start downloading the blocks.
 Hit <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop the node - it will be configured as a background service next.
 
 ::: danger IMPORTANT
-keep your `$HOME/.und_mainchain/config/node_key.json` and `$HOME/.und_mainchain/config/priv_validator_key.json` files safe! These are required for your node to propose and sign blocks. If you ever migrate your node to a different host/VM instance, you will need these.
+keep your `/mnt/disks/data/.und_mainchain/config/node_key.json` and `/mnt/disks/data/.und_mainchain/config/priv_validator_key.json` files safe! These are required for your node to propose and sign blocks. If you ever migrate your node to a different host/VM instance, you will need these.
 :::
 
 ## Part 6: Running und as a daemon
@@ -382,7 +398,7 @@ Description=Unification Mainchain Validator Node
 User=vmusername
 Group=vmusername
 WorkingDirectory=/home/vmusername
-ExecStart=/usr/local/bin/und start --home=/home/vmusername/.und_mainchain
+ExecStart=/usr/local/bin/und start --home=/mnt/disks/data/.und_mainchain
 LimitNOFILE=4096
 
 [Install]

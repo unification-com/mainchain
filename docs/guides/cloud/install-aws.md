@@ -123,7 +123,12 @@ port `26657` can be closed on your Validator node once you have registered your 
 
 **Next**, click on the **"4. Add Storage"** tab.
 
-1. Change the size from 10 to **30** Gb.
+::: tip Note
+As the state DB grows, the disk size requirements will grow. Check in our [Discord](https://discord.gg/SeB69w5)
+for the latest values
+:::
+
+1. Change the size from 10 to **100** Gb.
 2. Optionally, configure disk encryption.
 
 Click "Review and Launch"

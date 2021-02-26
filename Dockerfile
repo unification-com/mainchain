@@ -2,12 +2,12 @@
 # > docker build -t undd .
 # > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und init [node_name]
 # > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und start
-FROM golang:alpine AS build-env
+FROM golang:alpine3.12 AS build-env
 
 # Set up dependencies
-ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python curl --upgrade grep
+ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev py-pip curl --upgrade grep
 
-RUN apk add --no-cache $PACKAGES
+RUN apk add --update --no-cache $PACKAGES
 
 # Set working directory for the build
 WORKDIR /go/src/github.com/unification-com

@@ -118,6 +118,11 @@ Example commands, with mounted data directories:
 
 ```bash
 $ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und init [node_name]
+```
+
+Download the relevant genesis and seeds for the network you wish to join, and run:
+
+```bash
 $ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und start
 ```
 

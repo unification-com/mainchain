@@ -449,7 +449,7 @@ Once fully synced (check the downloaded height against the current clock in the 
 You will need your Validator node’s Tendermint public key in order to register it on the Mainchain network as a validator. Whilst still in the SSH session connected to your VM, run:
 
 ```bash
-und tendermint show-validator
+und tendermint show-validator --home=/mnt/disks/data/.und_mainchain
 ```
 
 Make a note of the output, as you will need this in later commands, where it will be referred to as `[your_validator_public_key]`.

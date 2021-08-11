@@ -15,6 +15,8 @@ const (
 	FeeDenom  = undtypes.DefaultDenomination // used in init genesis
 
 	DefaultStartingWrkChainID uint64 = 1 // used in init genesis
+
+	MaxBlockSubmissionsKeepInState = 20000
 )
 
 // WrkChains is an array of WrkChain

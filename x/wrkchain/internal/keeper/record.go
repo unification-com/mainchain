@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -18,25 +19,6 @@ func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlock types.WrkChainBl
 	store.Set(types.WrkChainBlockKey(wrkchainBlock.WrkChainID, wrkchainBlock.Height), k.cdc.MustMarshalBinaryLengthPrefixed(wrkchainBlock))
 
 	return nil
-}
-
-// QuickCheckHeightIsRecorded Checks if the given height can be recorded
-func (k Keeper) QuickCheckHeightIsRecorded(ctx sdk.Context, wrkchainId uint64, height uint64) bool {
-
-	wrkchain := k.GetWrkChain(ctx, wrkchainId)
-
-	// only check if height being submitted is <= last recorded height.
-	// Otherwise, no need to check entire db
-	if height <= wrkchain.LastBlock && height > 0 {
-		if height == wrkchain.LastBlock {
-			return true
-		} else {
-			store := ctx.KVStore(k.storeKey)
-			blockKey := types.WrkChainBlockKey(wrkchainId, height)
-			return store.Has(blockKey)
-		}
-	}
-	return false
 }
 
 // IsWrkChainBlockRecorded Check if the WrkChainBlock is present in the store or not
@@ -91,6 +73,23 @@ func (k Keeper) IterateWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64, c
 	}
 }
 
+// IterateWrkChainBlockHashesReverse iterates over the all the hashes for a wrkchain in reverse order
+// and performs a callback function
+func (k Keeper) IterateWrkChainBlockHashesReverse(ctx sdk.Context, wrkchainID uint64, cb func(wrkChain types.WrkChainBlock) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStoreReversePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var wcb types.WrkChainBlock
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &wcb)
+
+		if cb(wcb) {
+			break
+		}
+	}
+}
+
 // GetAllWrkChainBlockHashes returns all the wrkchain's hashes from store
 func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks types.WrkChainBlocks) {
 	k.IterateWrkChainBlockHashes(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
@@ -100,10 +99,18 @@ func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (w
 	return
 }
 
+func prependBlock(x types.WrkChainBlocksGenesisExport, y types.WrkChainBlockGenesisExport) types.WrkChainBlocksGenesisExport {
+	x = append(x, y)
+	copy(x[1:], x)
+	x[0] = y
+	return x
+}
+
 // GetAllWrkChainBlockHashesForGenesisExport returns all the wrkchain's hashes from store for export in an optimised
 // format ready for genesis
 func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks types.WrkChainBlocksGenesisExport) {
-	k.IterateWrkChainBlockHashes(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
+	count := 0
+	k.IterateWrkChainBlockHashesReverse(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
 		wcbExp := types.WrkChainBlockGenesisExport{
 			Height:     wcb.Height,
 			BlockHash:  wcb.BlockHash,
@@ -113,7 +120,11 @@ func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkch
 			Hash3:      wcb.Hash3,
 			SubmitTime: wcb.SubmitTime,
 		}
-		wrkChainBlocks = append(wrkChainBlocks, wcbExp)
+		wrkChainBlocks = prependBlock(wrkChainBlocks, wcbExp) // append(wrkChainBlocks, wcbExp)
+		count = count + 1
+		if count == types.MaxBlockSubmissionsKeepInState {
+			return true
+		}
 		return false
 	})
 	return
@@ -180,11 +191,40 @@ func (k Keeper) RecordWrkchainHashes(
 
 	logger := k.Logger(ctx)
 
-	// we're only ever adding new WRKChain data, never updating existing. Handler will have checked if height has
-	// previously been recorded.
-	wrkchainBlock := types.NewWrkChainBlock()
+	if len(blockHash) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit")
+	}
+	if len(parentHash) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit")
+	}
+	if len(hash1) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit")
+	}
+	if len(hash2) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit")
+	}
+	if len(hash3) > 66 {
+		return sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit")
+	}
 
-	wrkchainBlock.WrkChainID = wrkchainId
+	if !k.IsWrkChainRegistered(ctx, wrkchainId) {
+		// can't record hashes if WRKChain isn't registered
+		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))
+	}
+
+	wrkchain := k.GetWrkChain(ctx, wrkchainId)
+
+	if !k.IsAuthorisedToRecord(ctx, wrkchain.WrkChainID, owner) {
+		return sdkerrors.Wrap(types.ErrNotWrkChainOwner, "not authorised to record hashes for this wrkchain")
+	}
+
+	if k.IsWrkChainBlockRecorded(ctx, wrkchain.WrkChainID, height) {
+		return sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "Block hashes already recorded for this height")
+	}
+
+	wrkchainBlock := k.GetWrkChainBlock(ctx, wrkchain.WrkChainID, height)
+
+	wrkchainBlock.WrkChainID = wrkchain.WrkChainID
 	wrkchainBlock.Height = height
 	wrkchainBlock.BlockHash = blockHash
 	wrkchainBlock.ParentHash = parentHash
@@ -200,20 +240,20 @@ func (k Keeper) RecordWrkchainHashes(
 		return err
 	}
 
-	err = k.SetLastBlock(ctx, wrkchainId, height)
+	err = k.SetLastBlock(ctx, wrkchain.WrkChainID, height)
 
 	if err != nil {
 		return err
 	}
 
-	err = k.SetNumBlocks(ctx, wrkchainId)
+	err = k.SetNumBlocks(ctx, wrkchain.WrkChainID)
 
 	if err != nil {
 		return err
 	}
 
 	if !ctx.IsCheckTx() {
-		logger.Debug("wrkchain hashes recorded", "wcid", wrkchainId, "height", height, "hash", blockHash, "owner", owner.String())
+		logger.Debug("wrkchain hashes recorded", "wcid", wrkchain.WrkChainID, "height", height, "hash", blockHash, "owner", owner.String())
 	}
 	return nil
 }

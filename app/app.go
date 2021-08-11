@@ -71,8 +71,6 @@ var (
 		enterprise.ModuleName:     {supply.Minter, supply.Staking},
 		gov.ModuleName:            {supply.Burner},
 	}
-
-	NodeHomeDir = DefaultNodeHome
 )
 
 // MakeCodec generates the necessary codecs for Amino
@@ -121,10 +119,9 @@ type MainchainApp struct {
 // NewMainchainApp is a constructor function for MainchainApp
 func NewMainchainApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
-	invCheckPeriod uint, nodeHome string, baseAppOptions ...func(*bam.BaseApp),
+	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
 ) *MainchainApp {
 
-	NodeHomeDir = nodeHome
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
 
@@ -368,18 +365,9 @@ func (app *MainchainApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) a
 func (app *MainchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 
-	ctx.Logger().Info("initial InitGenesis genesis.json import")
-
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
-	validatorUpdates := app.mm.InitGenesis(ctx, genesisState)
-
-	ctx.Logger().Info("genesis.json import complete")
-
-	// import additional WRKChain/BEACON data if present
-	app.ImportWrkchainAndBeaconData(ctx, NodeHomeDir)
-
-	return validatorUpdates
+	return app.mm.InitGenesis(ctx, genesisState)
 }
 
 func (app *MainchainApp) LoadHeight(height int64) error {

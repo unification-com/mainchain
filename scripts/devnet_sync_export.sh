@@ -10,7 +10,7 @@
 #########################################################################
 
 UND_BIN="./build/und"
-UNDCLI_BIN="./build/undcli"
+UNDCLI_BIN="./build/und"
 UND_HOME_DIR="/tmp/.und_mainchain_DevNet"
 DEVNET_GENESIS="./Docker/assets/node1/config/genesis.json"
 CHAIN_ID="FUND-Mainchain-DevNet"

@@ -1,13 +1,16 @@
 package simulation
 
 import (
+	//"fmt"
+	//"math/rand"
+
+	"encoding/json"
 	"fmt"
+	"github.com/unification-com/mainchain/x/enterprise/types"
 	"math/rand"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/unification-com/mainchain/x/enterprise/internal/types"
 )
 
 // Simulation parameter constants
@@ -17,22 +20,24 @@ const (
 
 // RandomizedGenState generates a random GenesisState for enterprise
 func RandomizedGenState(simState *module.SimulationState) {
-	startingPurchaseOrderID := uint64(simState.Rand.Intn(100))
-
 	var entAddress sdk.AccAddress
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, EnterpriseSourceAddress, &entAddress, simState.Rand,
-		func(r *rand.Rand) { entAddress = GetEntSourceAddress() },
+		func(r *rand.Rand) { entAddress = simState.Accounts[0].Address },
 	)
 
 	// NOTE: for simulation, we're using sdk.DefaultBondDenom ("stake"), since "stake" is hard-coded
 	// into the SDK's module simulation functions
 	entGenesis := types.NewGenesisState(
 		types.NewParams(sdk.DefaultBondDenom, 1, 3600, entAddress.String()),
-		startingPurchaseOrderID,
+		uint64(1),
 		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 	)
 
-	fmt.Printf("Selected randomly generated enterprise parameters:\n%s\n", codec.MustMarshalJSONIndent(simState.Cdc, entGenesis))
+	bz, err := json.MarshalIndent(&entGenesis, "", " ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Selected randomly generated enterprise parameters:\n%s\n", bz)
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(entGenesis)
 }

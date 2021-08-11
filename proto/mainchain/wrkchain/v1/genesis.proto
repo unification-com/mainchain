@@ -1,0 +1,30 @@
+syntax = "proto3";
+package mainchain.wrkchain.v1;
+
+import "gogoproto/gogo.proto";
+import "mainchain/wrkchain/v1/wrkchain.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
+
+// GenesisState defines the beacon module's genesis state.
+message GenesisState {
+  // params defines all the paramaters of the module.
+  Params params = 1 [(gogoproto.nullable) = false];
+  uint64 starting_wrkchain_id = 2;
+  repeated WrkChainExport registered_wrkchains = 3 [(gogoproto.nullable) = false];
+}
+
+message WrkChainBlockGenesisExport {
+  uint64 he = 1;
+  string bh = 2;
+  string ph = 3;
+  string h1 = 4;
+  string h2 = 5;
+  string h3 = 6;
+  uint64 st = 7;
+}
+
+message WrkChainExport {
+  WrkChain wrkchain = 1;
+  repeated WrkChainBlockGenesisExport blocks = 2 [(gogoproto.nullable) = false];
+}

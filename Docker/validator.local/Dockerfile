@@ -1,4 +1,4 @@
-FROM golang:1.13.3-alpine
+FROM golang:alpine3.12
 
 RUN apk update && \
     apk upgrade && \
@@ -6,7 +6,7 @@ RUN apk update && \
 
 ENV GOPATH="/root/.go"
 ENV GOROOT="/usr/local/go"
-ENV GO111MODULE="on"
+#ENV GO111MODULE="on"
 ENV PATH="/usr/local/go/bin:/root/.go/bin:${PATH}"
 ENV LEDGER_ENABLED="false"
 

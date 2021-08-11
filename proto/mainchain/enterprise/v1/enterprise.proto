@@ -1,0 +1,77 @@
+syntax = "proto3";
+package mainchain.enterprise.v1;
+
+import "cosmos_sdk/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
+
+enum PurchaseOrderStatus {
+  option (gogoproto.goproto_enum_prefix) = false;
+  STATUS_NIL = 0 [ (gogoproto.enumvalue_customname) = "StatusNil" ];
+  STATUS_RAISED = 1 [ (gogoproto.enumvalue_customname) = "StatusRaised" ];
+  STATUS_ACCEPTED = 2 [ (gogoproto.enumvalue_customname) = "StatusAccepted" ];
+  STATUS_REJECTED = 3 [ (gogoproto.enumvalue_customname) = "StatusRejected" ];
+  STATUS_COMPLETED = 4 [ (gogoproto.enumvalue_customname) = "StatusCompleted" ];
+}
+
+enum WhitelistAction {
+  option (gogoproto.goproto_enum_prefix) = false;
+  WHITELIST_ACTION_NIL = 0
+      [ (gogoproto.enumvalue_customname) = "WhitelistActionNil" ];
+  WHITELIST_ACTION_ADD = 1
+      [ (gogoproto.enumvalue_customname) = "WhitelistActionAdd" ];
+  WHITELIST_ACTION_REMOVE = 2
+      [ (gogoproto.enumvalue_customname) = "WhitelistActionRemove" ];
+}
+
+message PurchaseOrderDecision {
+  string signer = 1;
+  PurchaseOrderStatus decision = 2;
+  uint64 decision_time = 3;
+}
+
+message EnterpriseUndPurchaseOrder {
+  uint64 id = 1;
+  string purchaser = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [ (gogoproto.nullable) = false ];
+  PurchaseOrderStatus status = 4;
+  uint64 raise_time = 5;
+  uint64 completion_time = 6;
+  repeated PurchaseOrderDecision decisions = 7;
+}
+
+message PurchaseOrders {
+  repeated EnterpriseUndPurchaseOrder purchase_orders = 1;
+}
+
+message LockedUnd {
+  string owner = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
+message LockedUnds { repeated LockedUnd locked_unds = 1; }
+
+//message TotalLockedUnd {
+//  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
+//}
+//
+//message TotalUnockedUnd {
+//  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
+//}
+
+message UndSupply {
+  string denom = 1;
+  uint64 amount = 2;
+  uint64 locked = 3;
+  uint64 total = 4;
+}
+
+message WhitelistAddresses { repeated string addresses = 1; }
+
+message Params {
+  string ent_signers = 1;
+  string denom = 2;
+  uint64 min_accepts = 3;
+  uint64 decision_time_limit = 4;
+}

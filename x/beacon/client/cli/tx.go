@@ -1,39 +1,32 @@
 package cli
 
 import (
-	"bufio"
+	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/spf13/viper"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	"github.com/spf13/cobra"
-	"github.com/unification-com/mainchain/x/beacon/internal/keeper"
-	"github.com/unification-com/mainchain/x/beacon/internal/types"
+
+	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
 const (
-	FlagNumLimit      = "limit"
-	FlagPage          = "page"
 	FlagMoniker       = "moniker"
 	FlagOwner         = "owner"
 	FlagTimestampHash = "hash"
-	FlagBeaconID      = "id"
 	FlagName          = "name"
 	FlagSubmitTime    = "subtime"
 )
 
-func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
+func GetTxCmd() *cobra.Command {
 	beaconTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Beacon transaction subcommands",
@@ -42,16 +35,16 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	beaconTxCmd.AddCommand(flags.PostCommands(
-		GetCmdRegisterBeacon(cdc),
-		GetCmdRecordBeaconTimestamp(cdc),
-	)...)
+	beaconTxCmd.AddCommand(
+		GetCmdRegisterBeacon(),
+		GetCmdRecordBeaconTimestamp(),
+	)
 
 	return beaconTxCmd
 }
 
 // GetCmdRegisterBeacon is the CLI command for sending a RegisterBeacon transaction
-func GetCmdRegisterBeacon(cdc *codec.Codec) *cobra.Command {
+func GetCmdRegisterBeacon() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "register",
 		Short: "register a new BEACON",
@@ -60,128 +53,138 @@ func GetCmdRegisterBeacon(cdc *codec.Codec) *cobra.Command {
 Example:
 $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 `,
-				version.ClientName, types.ModuleName,
+				version.AppName, types.ModuleName,
 			),
 		),
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			inBuf := bufio.NewReader(cmd.InOrStdin())
-
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			moniker := viper.GetString(FlagMoniker)
-			beaconName := viper.GetString(FlagName)
-
-			// first check if a BEACON exists with the same moniker.
-			// The moniker should be a unique string identifier for the BEACON
-			params := types.NewQueryBeaconParams(1, 1, moniker, sdk.AccAddress{})
-			bz, err := cdc.MarshalJSON(params)
-			if err != nil {
-				return err
-			}
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryBeacons), bz)
-			if err != nil {
-				return err
-			}
-			var matchingBeacons types.QueryResBeacons
-			err = cdc.UnmarshalJSON(res, &matchingBeacons)
-
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			// BEACON already registered with same moniker - output an error instead of broadcasting
-			// the Tx and therefore charging reg fees
-			if (len(matchingBeacons)) > 0 {
-				errMsg := fmt.Sprintf("beacon already registered with moniker '%s' - beacon id: %d, owner: %s", moniker, matchingBeacons[0].BeaconID, matchingBeacons[0].Owner)
-				return sdkerrors.Wrap(types.ErrBeaconAlreadyRegistered, errMsg)
+			// used for getting fees and checking beacon
+			queryClient := types.NewQueryClient(clientCtx)
+
+			from := clientCtx.GetFromAddress()
+
+			moniker, _ := cmd.Flags().GetString(FlagMoniker)
+			beaconName, _ := cmd.Flags().GetString(FlagName)
+
+			if len(moniker) == 0 {
+				return sdkerrors.Wrap(types.ErrMissingData, "please enter a moniker")
+			}
+			if len(beaconName) == 0 {
+				return sdkerrors.Wrap(types.ErrMissingData, "please enter a name")
 			}
 
-			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+			////check moniker doesn't exist
+			//pageReq, _ := client.ReadPageRequest(cmd.Flags())
+			//queryParams := &types.QueryBeaconsFilteredRequest{
+			//	Pagination: pageReq,
+			//	Moniker: moniker,
+			//}
+			//
+			//res, _ := queryClient.BeaconsFiltered(context.Background(), queryParams)
+			//// todo - check res
 
-			// automatically apply fees
-			paramsRetriever := keeper.NewParamsRetriever(cliCtx)
-			beaconParams, err := paramsRetriever.GetParams()
-			if err != nil {
+			params, err := queryClient.Params(
+				context.Background(),
+				&types.QueryParamsRequest{},
+			)
+
+			regFee := strconv.Itoa(int(params.Params.FeeRegister)) + params.Params.Denom
+
+			msg := types.NewMsgRegisterBeacon(moniker, beaconName, from)
+
+			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			txBldr = txBldr.WithFees(strconv.Itoa(int(beaconParams.FeeRegister)) + beaconParams.Denom)
-
-			msg := types.NewMsgRegisterBeacon(moniker, beaconName, cliCtx.GetFromAddress())
-			err = msg.ValidateBasic()
-			if err != nil {
+			// todo - check this works
+			if err := cmd.Flags().Set(flags.FlagFees, regFee); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagMoniker, "", "BEACON's moniker")
 	cmd.Flags().String(FlagName, "", "(optional) BEACON's name")
 	return cmd
 }
 
 // GetCmdRecordBeaconTimestamp is the CLI command for sending a RecordBeaconTimestamp transaction
-func GetCmdRecordBeaconTimestamp(cdc *codec.Codec) *cobra.Command {
+func GetCmdRecordBeaconTimestamp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "record [beacon id]",
+		Use:   "record [beacon_id]",
 		Short: "record a BEACON's timestamp hash",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Record a BEACON's' timestamp hash'
 Example:
 $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 `,
-				version.ClientName, types.ModuleName,
+				version.AppName, types.ModuleName,
 			),
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			inBuf := bufio.NewReader(cmd.InOrStdin())
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
-			hash := viper.GetString(FlagTimestampHash)
-			submitTime := viper.GetUint64(FlagSubmitTime)
+			// used for getting fees and checking beacon
+			queryClient := types.NewQueryClient(clientCtx)
+
+			from := clientCtx.GetFromAddress()
+
+			hash, _ := cmd.Flags().GetString(FlagTimestampHash)
+			submitTime, _ := cmd.Flags().GetUint64(FlagSubmitTime)
 
 			if len(hash) == 0 {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BEACON timestamp must have a Hash submitted")
-			}
-
-			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			// automatically apply fees
-			paramsRetriever := keeper.NewParamsRetriever(cliCtx)
-			beaconParams, err := paramsRetriever.GetParams()
-			if err != nil {
-				return err
-			}
-
-			txBldr = txBldr.WithFees(strconv.Itoa(int(beaconParams.FeeRecord)) + beaconParams.Denom)
-
-			beaconID, err := strconv.Atoi(args[0])
-
-			if err != nil {
-				return err
-			}
-
-			if beaconID == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BEACON id must be > 0")
 			}
 
 			if submitTime == 0 {
 				submitTime = uint64(time.Now().Unix())
 			}
 
-			msg := types.NewMsgRecordBeaconTimestamp(uint64(beaconID), hash, submitTime, cliCtx.GetFromAddress())
-			err = msg.ValidateBasic()
+			beaconId, err := strconv.Atoi(args[0])
+
 			if err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			if beaconId == 0 {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "beacon_id must be > 0")
+			}
+
+			params, err := queryClient.Params(
+				context.Background(),
+				&types.QueryParamsRequest{},
+			)
+
+			recFee := strconv.Itoa(int(params.Params.FeeRecord)) + params.Params.Denom
+
+			msg := types.NewMsgRecordBeaconTimestamp(uint64(beaconId), hash, submitTime, from)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			// todo - check this works
+			if err := cmd.Flags().Set(flags.FlagFees, recFee); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+
 		},
 	}
-
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagTimestampHash, "", "BEACON's timestamp hash")
 	cmd.Flags().Uint64(FlagSubmitTime, 0, "BEACON's timestamp submission time")
 	return cmd

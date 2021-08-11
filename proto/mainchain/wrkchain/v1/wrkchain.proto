@@ -1,0 +1,36 @@
+syntax = "proto3";
+package mainchain.wrkchain.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
+
+message WrkChain {
+    uint64 wrkchain_id = 1;
+    string moniker = 2;
+    string name = 3;
+    string genesis = 4;
+    string type = 5;
+    uint64 lastblock = 6;
+    uint64 num_blocks = 7;
+    uint64 reg_time = 8;
+    string owner = 9;
+}
+
+message WrkChainBlock {
+  uint64 wrkchain_id = 1;
+  uint64 height = 2;
+  string blockhash = 3;
+  string parenthash = 4;
+  string hash1 = 5;
+  string hash2 = 6;
+  string hash3 = 7;
+  uint64 sub_time = 8;
+  string owner = 9;
+}
+
+message Params {
+  uint64 fee_register = 1;
+  uint64 fee_record = 2;
+  string denom = 3;
+}

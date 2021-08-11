@@ -3,46 +3,46 @@ package rest
 import (
 	"errors"
 	"fmt"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/gorilla/mux"
+
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/gorilla/mux"
-	undtypes "github.com/unification-com/mainchain/types"
-	"github.com/unification-com/mainchain/x/enterprise/internal/keeper"
-	"github.com/unification-com/mainchain/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise/keeper"
+	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
 // registerQueryRoutes - define REST query routes
-func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc("/enterprise/params", enterpriseParamsHandler(cliCtx)).Methods("GET")
-	r.HandleFunc("/enterprise/locked", enterpriseTotalLockedHandler(cliCtx)).Methods("GET")
-	r.HandleFunc("/enterprise/unlocked", enterpriseTotalUnLockedHandler(cliCtx)).Methods("GET")
+func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
+	r.HandleFunc("/enterprise/params", enterpriseParamsHandler(clientCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/locked", enterpriseTotalLockedHandler(clientCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/unlocked", enterpriseTotalUnLockedHandler(clientCtx)).Methods("GET")
 
-	r.HandleFunc("/enterprise/whitelist", enterpriseWhitelistHandler(cliCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/enterprise/whitelisted/{%s}", RestWhitelistAddr), enterpriseWhitelistedHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/whitelist", enterpriseWhitelistHandler(clientCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/enterprise/whitelisted/{%s}", RestWhitelistAddr), enterpriseWhitelistedHandler(clientCtx)).Methods("GET")
 
-	r.HandleFunc("/enterprise/pos", enterprisePosWithParametersHandler(cliCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/enterprise/po/{%s}", RestPurchaseOrderId), enterprisePurchaseOrderHandler(cliCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/pos", enterprisePosWithParametersHandler(clientCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/enterprise/po/{%s}", RestPurchaseOrderId), enterprisePurchaseOrderHandler(clientCtx)).Methods("GET")
 
-	r.HandleFunc(fmt.Sprintf("/enterprise/{%s}/locked", RestPurchaserAddr), enterpriseLockedForAddressHandler(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/enterprise/{%s}/locked", RestPurchaserAddr), enterpriseLockedForAddressHandler(clientCtx)).Methods("GET")
 }
 
-func registerEnterpriseAuthAccountOverride(cliCtx context.CLIContext, r *mux.Router) {
+func registerEnterpriseAuthAccountOverride(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/auth/accounts/{address}", EnterpriseAuthAccountOverride(cliCtx)).Methods("GET")
 }
 
-func registerEnterpriseTotalSupplyOverride(cliCtx context.CLIContext, r *mux.Router) {
+func registerEnterpriseTotalSupplyOverride(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/supply/total", EnterpriseSupplyTotalOverride(cliCtx)).Methods("GET")
 }
 
-func registerEnterpriseSupplyByDenomOverride(cliCtx context.CLIContext, r *mux.Router) {
+func registerEnterpriseSupplyByDenomOverride(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/supply/total/{denom}", EnterpriseSupplyByDenomOverride(cliCtx)).Methods("GET")
 }
 
-func enterpriseParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func enterpriseParamsHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryParameters)
@@ -58,7 +58,7 @@ func enterpriseParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func enterpriseTotalLockedHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func enterpriseTotalLockedHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryTotalLocked)
@@ -74,7 +74,7 @@ func enterpriseTotalLockedHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func enterpriseTotalUnLockedHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func enterpriseTotalUnLockedHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryTotalUnlocked)
@@ -90,7 +90,7 @@ func enterpriseTotalUnLockedHandler(cliCtx context.CLIContext) http.HandlerFunc 
 	}
 }
 
-func enterprisePosWithParametersHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func enterprisePosWithParametersHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 0)
 		if err != nil {
@@ -126,7 +126,7 @@ func enterprisePosWithParametersHandler(cliCtx context.CLIContext) http.HandlerF
 
 		params := types.NewQueryPurchaseOrdersParams(page, limit, status, purchaserAddr)
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -145,7 +145,7 @@ func enterprisePosWithParametersHandler(cliCtx context.CLIContext) http.HandlerF
 	}
 }
 
-func enterprisePurchaseOrderHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func enterprisePurchaseOrderHandler(cliCtx client.Context) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -178,7 +178,7 @@ func enterprisePurchaseOrderHandler(cliCtx context.CLIContext) http.HandlerFunc 
 	}
 }
 
-func enterpriseLockedForAddressHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func enterpriseLockedForAddressHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		strPurchaserAddr := vars[RestPurchaserAddr]
@@ -211,7 +211,7 @@ func enterpriseLockedForAddressHandler(cliCtx context.CLIContext) http.HandlerFu
 	}
 }
 
-func enterpriseWhitelistHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func enterpriseWhitelistHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryWhitelist)
@@ -227,7 +227,7 @@ func enterpriseWhitelistHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func enterpriseWhitelistedHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func enterpriseWhitelistedHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
@@ -259,7 +259,7 @@ func enterpriseWhitelistedHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func EnterpriseAuthAccountOverride(cliCtx context.CLIContext) http.HandlerFunc {
+func EnterpriseAuthAccountOverride(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		bech32addr := vars["address"]
@@ -275,14 +275,15 @@ func EnterpriseAuthAccountOverride(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		accGetter := auth.NewAccountRetriever(cliCtx)
-		lockedUndGetter := keeper.NewLockedUndRetriever(cliCtx)
+		accGetter := auth.AccountRetriever{}
 
-		account, height, err := accGetter.GetAccountWithHeight(addr)
+		_, height, err := accGetter.GetAccountWithHeight(cliCtx, addr)
+		lockedUndGetter := types.LockedRetriever{}
+
 		if err != nil {
 			// TODO: Handle more appropriately based on the error type.
 			// Ref: https://github.com/cosmos/cosmos-sdk/issues/4923
-			if err := accGetter.EnsureExists(addr); err != nil {
+			if err := accGetter.EnsureExists(cliCtx, addr); err != nil {
 				cliCtx = cliCtx.WithHeight(height)
 				rest.PostProcessResponse(w, cliCtx, auth.BaseAccount{})
 				return
@@ -292,62 +293,64 @@ func EnterpriseAuthAccountOverride(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		lockedUnd, err := lockedUndGetter.GetLockedUnd(addr)
+		lockedUnd, _, err := lockedUndGetter.GetLockedWithHeight(cliCtx, addr)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		// todo - this is a bit hackey
-		accountWithLocked := undtypes.NewAccountWithLocked()
-		entUnd := undtypes.NewEnterpriseUnd()
-
-		entUnd.Locked = lockedUnd.Amount
-		entUnd.Available = account.GetCoins().Add(lockedUnd.Amount)
-
-		accountWithLocked.Account = account
-		accountWithLocked.Enterprise = entUnd
+		//accountWithLocked := undtypes.NewAccountWithLocked()
+		//entUnd := undtypes.NewEnterpriseUnd()
+		//
+		//entUnd.Locked = lockedUnd.Amount
+		////entUnd.Available = account.GetCoins().Add(lockedUnd.Amount)
+		//
+		//accountWithLocked.Account = account
+		//accountWithLocked.Enterprise = entUnd
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, accountWithLocked)
+		rest.PostProcessResponse(w, cliCtx, lockedUnd)
 	}
 }
 
-func EnterpriseSupplyTotalOverride(cliCtx context.CLIContext) http.HandlerFunc {
+func EnterpriseSupplyTotalOverride(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		totalSupplyGetter := keeper.NewTotalSupplyRetriever(cliCtx)
-
-		totalSupply, height, err := totalSupplyGetter.GetTotalSupplyHeight()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, totalSupply)
+		//totalSupplyGetter := keeper.NewTotalSupplyRetriever(cliCtx)
+		//
+		//totalSupply, height, err := totalSupplyGetter.GetTotalSupplyHeight()
+		//if err != nil {
+		//	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		//	return
+		//}
+		//cliCtx = cliCtx.WithHeight(height)
+		//rest.PostProcessResponse(w, cliCtx, totalSupply)
+		rest.PostProcessResponse(w, cliCtx, nil)
 	}
 }
 
-func EnterpriseSupplyByDenomOverride(cliCtx context.CLIContext) http.HandlerFunc {
+func EnterpriseSupplyByDenomOverride(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		denom := mux.Vars(r)["denom"]
-
-		// todo - get from params
-		if denom != types.DefaultDenomination {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, "unknown denomination "+denom)
-			return
-		}
-
-		totalSupplyGetter := keeper.NewTotalSupplyRetriever(cliCtx)
-
-		totalSupply, height, err := totalSupplyGetter.GetTotalSupplyHeight()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, totalSupply.Amount)
+		//denom := mux.Vars(r)["denom"]
+		//
+		//// todo - get from params
+		//if denom != types.DefaultDenomination {
+		//	rest.WriteErrorResponse(w, http.StatusInternalServerError, "unknown denomination "+denom)
+		//	return
+		//}
+		//
+		//totalSupplyGetter := keeper.NewTotalSupplyRetriever(cliCtx)
+		//
+		//totalSupply, height, err := totalSupplyGetter.GetTotalSupplyHeight()
+		//if err != nil {
+		//	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		//	return
+		//}
+		//
+		//cliCtx = cliCtx.WithHeight(height)
+		//rest.PostProcessResponse(w, cliCtx, totalSupply.Amount)
+		rest.PostProcessResponse(w, cliCtx, nil)
 	}
 }

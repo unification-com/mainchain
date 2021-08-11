@@ -1,0 +1,66 @@
+syntax = "proto3";
+package mainchain.beacon.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos_sdk/base/query/v1beta1/pagination.proto";
+import "mainchain/beacon/v1/beacon.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/beacon/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/mainchain/beacon/v1/params";
+  }
+
+  rpc Beacon(QueryBeaconRequest) returns (QueryBeaconResponse) {
+    option (google.api.http).get = "/mainchain/beacon/v1/beacon/{beacon_id}";
+  }
+
+  rpc BeaconTimestamp(QueryBeaconTimestampRequest) returns (QueryBeaconTimestampResponse) {
+    option (google.api.http).get = "/mainchain/beacon/v1/beacon/{beacon_id}/timestamp/{timestamp_id}";
+  }
+
+  rpc BeaconsFiltered(QueryBeaconsFilteredRequest) returns (QueryBeaconsFilteredResponse) {
+    option (google.api.http).get = "/mainchain/beacon/v1/beacons";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryBeaconRequest {
+  uint64 beacon_id = 1;
+}
+
+message QueryBeaconResponse {
+  Beacon beacon = 1;
+}
+
+message QueryBeaconTimestampRequest {
+  uint64 beacon_id = 1;
+  uint64 timestamp_id = 2;
+}
+
+message QueryBeaconTimestampResponse {
+  BeaconTimestamp timestamp = 1;
+}
+
+message QueryBeaconsFilteredRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string moniker = 1;
+  string owner = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryBeaconsFilteredResponse {
+  repeated Beacon beacons = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

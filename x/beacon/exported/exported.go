@@ -2,25 +2,40 @@ package exported
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
 // FeeTx defines the interface to be implemented by Tx to use the FeeDecorators
-type FeeTx interface {
-	sdk.Tx
-	GetGas() uint64
-	GetFee() sdk.Coins
-	FeePayer() sdk.AccAddress
-}
+//type FeeTx interface {
+//	sdk.Tx
+//	GetGas() uint64
+//	GetFee() sdk.Coins
+//	FeePayer() sdk.AccAddress
+//}
 
-func CheckIsBeaconTx(tx FeeTx) bool {
+const (
+	RouterKey = types.RouterKey
+	RegisterAction = types.RegisterAction
+	RecordAction   = types.RecordAction
+)
+
+var (
+	ErrIncorrectFeeDenomination = types.ErrIncorrectFeeDenomination
+	ErrInsufficientBeaconFee = types.ErrInsufficientBeaconFee
+	ErrTooMuchBeaconFee = types.ErrTooMuchBeaconFee
+)
+
+// Todo - check msg.Route() is also this module
+func CheckIsBeaconTx(tx sdk.Tx) bool {
 	msgs := tx.GetMsgs()
 	for _, msg := range msgs {
-		switch msg.(type) {
-		case types.MsgRegisterBeacon:
-			return true
-		case types.MsgRecordBeaconTimestamp:
-			return true
+		if msg.Route() == types.RouterKey {
+			switch msg.Type() {
+			case types.RecordAction:
+				return true
+			case types.RegisterAction:
+				return true
+			}
 		}
 	}
 	return false

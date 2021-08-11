@@ -2,7 +2,6 @@ package wrkchain
 
 import (
 	"fmt"
-	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -32,10 +31,6 @@ func handleMsgRegisterWrkChain(ctx sdk.Context, keeper Keeper, msg MsgRegisterWr
 
 	if len(msg.Moniker) > 64 {
 		return nil, sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
-	}
-
-	if len(msg.Moniker) == 0 {
-		return nil, sdkerrors.Wrap(types.ErrMissingData, "unable to set WRKChain - must have a moniker")
 	}
 
 	if len(msg.GenesisHash) > 66 {
@@ -106,7 +101,7 @@ func handleMsgRecordWrkChainBlock(ctx sdk.Context, keeper Keeper, msg MsgRecordW
 		return nil, sdkerrors.Wrap(ErrNotWrkChainOwner, "you are not the owner of this WRKChain")
 	}
 
-	if keeper.QuickCheckHeightIsRecorded(ctx, msg.WrkChainID, msg.Height) {
+	if keeper.IsWrkChainBlockRecorded(ctx, msg.WrkChainID, msg.Height) {
 		return nil, sdkerrors.Wrap(ErrWrkChainBlockAlreadyRecorded, "WRKChain block hashes have already been recorded for this height")
 	}
 

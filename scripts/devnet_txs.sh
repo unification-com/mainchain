@@ -17,25 +17,22 @@ DEVNET_RPC_HTTP="http://${DEVNET_RPC_IP}:${DEVNET_RPC_PORT}"
 CHAIN_ID="FUND-Mainchain-DevNet"
 BROADCAST_MODE="sync"
 GAS_PRICES="0.25nund"
-NUM_TO_SUB=200
+NUM_TO_SUB=20000
 UPPER_CASE_HASH=0
 
 # Account names as imported into undcli keys
-NODE1_ACC="node1"
-NODE2_ACC="node2"
-NODE3_ACC="node3"
 ENT_ACC="ent"
-T1_ACC="t1"
-T2_ACC="t2"
-T3_ACC="t3"
-T4_ACC="t4"
+ENT_ACC_SEQ=0
+USER_ACCS=( "t1" "t2" "t3" "t4" )
+TYPES=( "wrkchain" "beacon" "wrkchain" "beacon" )
+ACC_SEQUENCESS=( 0 0 0 0 )
 
 gen_hash() {
-  UPPER_CASE_HASH=${1:-$UPPER_CASE_HASH}
-  UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-  HASH=$(echo "${UUID}" | openssl dgst -sha256)
-  SHA_HASH_ARR=($HASH)
-  SHA_HASH=${SHA_HASH_ARR[1]}
+  local UPPER_CASE_HASH=${1:-$UPPER_CASE_HASH}
+  local UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+  local HASH=$(echo "${UUID}" | openssl dgst -sha256)
+  local SHA_HASH_ARR=($HASH)
+  local SHA_HASH=${SHA_HASH_ARR[1]}
   if [ $UPPER_CASE_HASH -eq 1 ]
   then
     echo "${SHA_HASH^^}"
@@ -45,18 +42,18 @@ gen_hash() {
 }
 
 get_addr() {
-  ADDR=$(${UNDCLI_BIN} keys show $1 -a)
+  local ADDR=$(${UNDCLI_BIN} keys show $1 -a)
   echo "${ADDR}"
 }
 
 get_base_flags() {
-  BROADCAST=${1:-$BROADCAST_MODE}
-  FLAGS="--broadcast-mode=${BROADCAST} --chain-id=${CHAIN_ID} --node=${DEVNET_RPC_TCP} --gas=auto --gas-adjustment=1.5 -y"
+  local BROADCAST=${1:-$BROADCAST_MODE}
+  local FLAGS="--broadcast-mode=${BROADCAST} --chain-id=${CHAIN_ID} --node=${DEVNET_RPC_TCP} --gas=auto --gas-adjustment=1.5 -y"
   echo "${FLAGS}"
 }
 
 get_gas_flags() {
-  FLAGS="--gas-prices=${GAS_PRICES}"
+  local FLAGS="--gas-prices=${GAS_PRICES}"
   echo "${FLAGS}"
 }
 
@@ -69,14 +66,19 @@ check_accounts_exist() {
   fi
 }
 
-check_accounts_exist ${NODE1_ACC}
-check_accounts_exist ${NODE2_ACC}
-check_accounts_exist ${NODE3_ACC}
+get_curr_acc_sequence() {
+  local ACC=$1
+  local CURR=$(${UNDCLI_BIN} query account $(get_addr ${ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} | jq --raw-output '.account.value.sequence')
+  local CURR_INT=$(awk "BEGIN {print $CURR}")
+  echo "${CURR_INT}"
+}
+
 check_accounts_exist ${ENT_ACC}
-check_accounts_exist ${T1_ACC}
-check_accounts_exist ${T2_ACC}
-check_accounts_exist ${T3_ACC}
-check_accounts_exist ${T4_ACC}
+
+for i in ${!USER_ACCS[@]}
+do
+  check_accounts_exist "${USER_ACCS[$i]}"
+done
 
 # Wait for Node1 to come online
 echo "Waiting for DevNet Node1 to come online"
@@ -100,78 +102,131 @@ echo "Running transactions"
 
 START_TIME=$(date +%s)
 
-${UNDCLI_BIN} tx send $(get_addr ${NODE1_ACC}) $(get_addr ${T1_ACC}) 100000000000nund $(get_base_flags) $(get_gas_flags) --sequence=0
+ENT_ACC_SEQ=$(get_curr_acc_sequence "${ENT_ACC}")
 
-echo "Whitelist  ${T1_ACC}, ${T2_ACC}, ${T3_ACC}, ${T4_ACC} for Enterprise POs"
-${UNDCLI_BIN} tx enterprise whitelist add $(get_addr ${T1_ACC}) --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=0
-${UNDCLI_BIN} tx enterprise whitelist add $(get_addr ${T2_ACC}) --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=1
-${UNDCLI_BIN} tx enterprise whitelist add $(get_addr ${T3_ACC}) --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=2
-${UNDCLI_BIN} tx enterprise whitelist add $(get_addr ${T4_ACC}) --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=3
+for i in ${!USER_ACCS[@]}
+do
+  ACC=${USER_ACCS[$i]}
+  ACC_SEQUENCESS[$i]=$(get_curr_acc_sequence "${ACC}")
+done
+
+for i in ${!USER_ACCS[@]}
+do
+  ACC=${USER_ACCS[$i]}
+  IS_WHITELISTED=$(${UNDCLI_BIN} query enterprise whitelisted $(get_addr ${ACC}) --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
+  if [ "$IS_WHITELISTED" = "true" ]; then
+    echo "${ACC} already whitelisted"
+  else
+    echo "Whitelist  ${ACC} for Enterprise POs"
+    ${UNDCLI_BIN} tx enterprise whitelist add $(get_addr ${ACC}) --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=${ENT_ACC_SEQ}
+    ENT_ACC_SEQ=$(awk "BEGIN {print $ENT_ACC_SEQ+1}")
+  fi
+done
+
 echo "Done. Wait for approx. 1 block"
 sleep 6s
 
-echo "${T1_ACC}, ${T2_ACC}, ${T3_ACC}, ${T4_ACC} raise Enterprise POs"
-${UNDCLI_BIN} tx enterprise purchase 1000000000000000nund --from=${T1_ACC} $(get_base_flags) $(get_gas_flags) --sequence=0
-${UNDCLI_BIN} tx enterprise purchase 1000000000000000nund --from=${T2_ACC} $(get_base_flags) $(get_gas_flags) --sequence=0
-${UNDCLI_BIN} tx enterprise purchase 1000000000000000nund --from=${T3_ACC} $(get_base_flags) $(get_gas_flags) --sequence=0
-${UNDCLI_BIN} tx enterprise purchase 1000000000000000nund --from=${T4_ACC} $(get_base_flags) $(get_gas_flags) --sequence=0
+for i in ${!USER_ACCS[@]}
+do
+  ACC=${USER_ACCS[$i]}
+  ACC_SEQ=${ACC_SEQUENCESS[$i]}
+  echo "${ACC} raise Enterprise POs"
+  ${UNDCLI_BIN} tx enterprise purchase 1000000000000000nund --from=${ACC} $(get_base_flags) $(get_gas_flags) --sequence="${ACC_SEQ}"
+  ACC_SEQUENCESS[$i]=$(awk "BEGIN {print $ACC_SEQ+1}")
+done
+
 echo "Done. Wait for approx. 1 block"
 sleep 6s
 
-echo "Process Enterprise POs"
-${UNDCLI_BIN} tx enterprise process 1 accept --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=4
-${UNDCLI_BIN} tx enterprise process 2 accept --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=5
-${UNDCLI_BIN} tx enterprise process 3 accept --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=6
-${UNDCLI_BIN} tx enterprise process 4 accept --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=7
+RAISED_POS=$(${UNDCLI_BIN} query enterprise orders --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
+
+for row in $(echo "${RAISED_POS}" | jq -r ".[] | @base64"); do
+  _jq() {
+    echo ${row} | base64 --decode | jq -r ${1}
+  }
+  POID=$(_jq '.id')
+  PO_STATUS=$(_jq '.status')
+  echo "Process Enterprise PO ${POID} - status=${PO_STATUS}"
+  if [ "$PO_STATUS" = "raised" ]; then
+    ${UNDCLI_BIN} tx enterprise process ${POID} accept --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=${ENT_ACC_SEQ}
+    ENT_ACC_SEQ=$(awk "BEGIN {print $ENT_ACC_SEQ+1}")
+  fi
+done
+
 echo "Done. Wait for approx. 1 block"
 sleep 6s
 
-WC1_GEN_HASH="0x$(gen_hash)"
-WC2_GEN_HASH="$(gen_hash 1)"
+for i in ${!USER_ACCS[@]}
+do
+  ACC=${USER_ACCS[$i]}
+  ACC_SEQ=${ACC_SEQUENCESS[$i]}
+  TYPE=${TYPES[$i]}
+  MONIKER="${TYPE}_${ACC}"
+  GEN_HASH="0x$(gen_hash)"
+  THING_EXISTS=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
+  if [ "$THING_EXISTS" = "null" ]; then
+    echo "Register ${TYPE} for ${ACC}"
+    if [ "$TYPE" = "wrkchain" ]; then
+      ${UNDCLI_BIN} tx wrkchain register --moniker="${MONIKER}" --genesis="${GEN_HASH}" --name="${MONIKER}" --base="geth" --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ}
+    else
+      ${UNDCLI_BIN} tx beacon register --moniker="${MONIKER}" --name="${MONIKER}" --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ}
+    fi
+    ACC_SEQUENCESS[$i]=$(awk "BEGIN {print $ACC_SEQ+1}")
+  else
+    echo "${TYPE} ${MONIKER} already registered"
+  fi
+done
 
-echo "${T1_ACC}, ${T2_ACC}, ${T3_ACC}, ${T4_ACC} register WRKChain and BEACONs"
-${UNDCLI_BIN} tx wrkchain register --moniker="wrkchain1" --genesis="${WC1_GEN_HASH}" --name="Wrkchain 1: geth" --base="geth" --from=${T1_ACC} $(get_base_flags) --sequence=1
-${UNDCLI_BIN} tx beacon register --moniker="beacon1" --name="Beacon 1" --from=${T2_ACC} $(get_base_flags) --sequence=1
-${UNDCLI_BIN} tx beacon register --moniker="beacon2" --name="Beacon 2" --from=${T3_ACC} $(get_base_flags) --sequence=1
-${UNDCLI_BIN} tx wrkchain register --moniker="wrkchain2" --genesis="${WC2_GEN_HASH}" --name="Wrkchain 2: tendermint" --base="tendermint" --from=${T4_ACC} $(get_base_flags) --sequence=1
 echo "Done. Wait for approx. 1 block"
-sleep 6s
+sleep 7s
 
-CURRENT_SEQUENCE_ACC_1=$(${UNDCLI_BIN} query account $(get_addr ${T1_ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} | jq --raw-output '.account.value.sequence')
-CURRENT_SEQUENCE_ACC_2=$(${UNDCLI_BIN} query account $(get_addr ${T2_ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} | jq --raw-output '.account.value.sequence')
-CURRENT_SEQUENCE_ACC_3=$(${UNDCLI_BIN} query account $(get_addr ${T3_ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} | jq --raw-output '.account.value.sequence')
-CURRENT_SEQUENCE_ACC_4=$(${UNDCLI_BIN} query account $(get_addr ${T4_ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} | jq --raw-output '.account.value.sequence')
-
-CURRENT_SEQUENCE_INT_ACC_1=$(awk "BEGIN {print $CURRENT_SEQUENCE_ACC_1}")
-CURRENT_SEQUENCE_INT_ACC_2=$(awk "BEGIN {print $CURRENT_SEQUENCE_ACC_2}")
-CURRENT_SEQUENCE_INT_ACC_3=$(awk "BEGIN {print $CURRENT_SEQUENCE_ACC_3}")
-CURRENT_SEQUENCE_INT_ACC_4=$(awk "BEGIN {print $CURRENT_SEQUENCE_ACC_4}")
-
-WC1_P_HASH=${WC1_GEN_HASH}
-WC2_P_HASH=${WC2_GEN_HASH}
+for i in ${!USER_ACCS[@]}
+do
+  ACC=${USER_ACCS[$i]}
+  ACC_SEQUENCESS[$i]=$(get_curr_acc_sequence "${ACC}")
+done
 
 for (( i=0; i<$NUM_TO_SUB; i++ ))
 do
-  SUB_NUM_OF=$(awk "BEGIN {print $i+1}")
-  NEXT_SEQ_ACC_1=$(awk "BEGIN {print $CURRENT_SEQUENCE_INT_ACC_1+$i}")
-  NEXT_SEQ_ACC_2=$(awk "BEGIN {print $CURRENT_SEQUENCE_INT_ACC_2+$i}")
-  NEXT_SEQ_ACC_3=$(awk "BEGIN {print $CURRENT_SEQUENCE_INT_ACC_3+$i}")
-  NEXT_SEQ_ACC_4=$(awk "BEGIN {print $CURRENT_SEQUENCE_INT_ACC_4+$i}")
+  for j in ${!USER_ACCS[@]}
+  do
+    ACC=${USER_ACCS[$j]}
+    ACC_SEQ=${ACC_SEQUENCESS[$j]}
+    TYPE=${TYPES[$j]}
+    MONIKER="${TYPE}_${ACC}"
+    RES=""
+    TX_HASH=""
+    RAW_LOG=""
+    ID=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json | jq -r ".[0].${TYPE}_id")
+    if [ "$TYPE" = "wrkchain" ]; then
+      WC_HASH="0x$(gen_hash)"
+      WC_HEIGHT=$(awk "BEGIN {print $i+1}")
+      echo "record wrkchain block ${WC_HEIGHT} / ${NUM_TO_SUB} for ${MONIKER}"
+      RES=$(${UNDCLI_BIN} tx wrkchain record ${ID} --wc_height=${WC_HEIGHT} --block_hash="${WC_HASH}" --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ})
+      RAW_LOG=$(echo ${RES} | jq -r ".raw_log")
+      TX_HASH=$(echo ${RES} | jq -r ".txhash")
+    else
+      B_HASH="$(gen_hash)"
+      TS=$(awk "BEGIN {print $i+1}")
+      echo "record beacon timestamp block ${TS} / ${NUM_TO_SUB} for ${MONIKER}"
+      RES=$(${UNDCLI_BIN} tx beacon record ${ID} --hash="$(gen_hash)" --subtime=$(date +%s) --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ})
+      RAW_LOG=$(echo ${RES} | jq -r ".raw_log")
+      TX_HASH=$(echo ${RES} | jq -r ".txhash")
+    fi
 
-  WC_HEIGHT=$(awk "BEGIN {print $i+1}")
-
-  WC1_HASH="0x$(gen_hash)"
-  echo "${T1_ACC} submit WC ${WC_HEIGHT} - ${WC1_HASH}"
-  ${UNDCLI_BIN} tx wrkchain record 1 --wc_height=${WC_HEIGHT} --block_hash="${WC1_HASH}" --parent_hash="${WC1_P_HASH}" --hash1="0x$(gen_hash)" --hash2="0x$(gen_hash)" --hash3="0x$(gen_hash)" --from=${T1_ACC} $(get_base_flags) --sequence=${NEXT_SEQ_ACC_1}
-  WC1_P_HASH=${WC1_HASH}
-  echo "${T2_ACC} submit BEACON hash ${SUB_NUM_OF} / ${NUM_TO_SUB}"
-  ${UNDCLI_BIN} tx beacon record 1 --hash="$(gen_hash)" --subtime=$(date +%s) --from=${T2_ACC} $(get_base_flags sync) --sequence=${NEXT_SEQ_ACC_2}
-  echo "${T3_ACC} submit BEACON hash ${SUB_NUM_OF} / ${NUM_TO_SUB}"
-  ${UNDCLI_BIN} tx beacon record 2 --hash="$(gen_hash)" --subtime=$(date +%s) --from=${T3_ACC} $(get_base_flags sync) --sequence=${NEXT_SEQ_ACC_3}
-  WC2_HASH="$(gen_hash 1)"
-  echo "${T4_ACC} submit WC ${WC_HEIGHT} - ${WC2_HASH}"
-  ${UNDCLI_BIN} tx wrkchain record 2 --wc_height=${WC_HEIGHT} --block_hash="${WC2_HASH}" --parent_hash="${WC2_P_HASH}" --from=${T4_ACC} $(get_base_flags) --sequence=${NEXT_SEQ_ACC_4}
-  WC2_P_HASH=${WC2_HASH}
+    if [ "$RAW_LOG" = "unauthorized: signature verification failed; verify correct account sequence and chain-id" ]; then
+      echo "ERROR:"
+      echo "${RAW_LOG}"
+      CURR_ACC_SEQ=$(get_curr_acc_sequence "${ACC}")
+      echo "ACC_SEQ=${ACC_SEQ}"
+      echo "CURR_ACC_SEQ=${CURR_ACC_SEQ}"
+      ACC_SEQUENCESS[$j]=$(get_curr_acc_sequence "${ACC}")
+    else
+      echo "Submitted in tx ${TX_HASH}"
+      ACC_SEQUENCESS[$j]=$(awk "BEGIN {print $ACC_SEQ+1}")
+    fi
+  done
+#  sleep 1s
 done
 
 echo "Done. Wait for approx. 1 block and query"

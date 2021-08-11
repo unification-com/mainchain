@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -163,12 +164,32 @@ func (k Keeper) RegisterBeacon(ctx sdk.Context, moniker string, beaconName strin
 
 	logger := k.Logger(ctx)
 
+	//must have a moniker
+	if len(moniker) == 0 {
+		return 0, sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
+	}
+	if len(beaconName) > 128 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit")
+	}
+
+	if len(moniker) > 64 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit")
+	}
+
 	beaconID, err := k.GetHighestBeaconID(ctx)
 	if err != nil {
 		return 0, err
 	}
 
-	beacon := types.NewBeacon()
+	params := types.NewQueryBeaconParams(1, 1, moniker, sdk.AccAddress{})
+	beacons := k.GetBeaconsFiltered(ctx, params)
+
+	if (len(beacons)) > 0 {
+		errMsg := fmt.Sprintf("beacon already registered with moniker '%s' - id: %d, owner: %s", moniker, beacons[0].BeaconID, beacons[0].Owner)
+		return 0, sdkerrors.Wrap(types.ErrBeaconAlreadyRegistered, errMsg)
+	}
+
+	beacon := k.GetBeacon(ctx, beaconID)
 
 	beacon.BeaconID = beaconID
 	beacon.Moniker = moniker

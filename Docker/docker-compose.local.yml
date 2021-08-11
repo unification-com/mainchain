@@ -8,7 +8,12 @@ services:
       args:
         WITH_DELVE: "no"
     container_name: node1
-    command: /root/.go/bin/und start --home /root/.und_mainchain/node1 --p2p.laddr=tcp://0.0.0.0:26651 --rpc.laddr=tcp://0.0.0.0:26661 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
+#    command: /root/.go/bin/und start --home /root/.und_mainchain/node1 --p2p.laddr=tcp://0.0.0.0:26651 --rpc.laddr=tcp://0.0.0.0:26661 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
+    command: >
+      /bin/sh -c "
+        /root/.go/bin/und start --home /root/.und_mainchain/node1 --p2p.laddr=tcp://0.0.0.0:26651 --rpc.laddr=tcp://0.0.0.0:26661 --halt-time 0 & \
+        tail -f /root/.und_mainchain/node1/config/genesis.json
+      "
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.3
@@ -24,7 +29,12 @@ services:
       args:
         WITH_DELVE: "no"
     container_name: node2
-    command: /root/.go/bin/und start --home /root/.und_mainchain/node2 --p2p.laddr=tcp://0.0.0.0:26652 --rpc.laddr=tcp://0.0.0.0:26662
+#    command: /root/.go/bin/und start --home /root/.und_mainchain/node2 --p2p.laddr=tcp://0.0.0.0:26652 --rpc.laddr=tcp://0.0.0.0:26662
+    command: >
+      /bin/sh -c "
+        /root/.go/bin/und start --home /root/.und_mainchain/node2 --p2p.laddr=tcp://0.0.0.0:26652 --rpc.laddr=tcp://0.0.0.0:26662 --halt-time 0 & \
+        tail -f /root/.und_mainchain/node2/config/genesis.json
+      "
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.4
@@ -40,13 +50,34 @@ services:
       args:
         WITH_DELVE: "no"
     container_name: node3
-    command: /root/.go/bin/und start --home /root/.und_mainchain/node3 --p2p.laddr=tcp://0.0.0.0:26653 --rpc.laddr=tcp://0.0.0.0:26663
+#    command: /root/.go/bin/und start --home /root/.und_mainchain/node3 --p2p.laddr=tcp://0.0.0.0:26653 --rpc.laddr=tcp://0.0.0.0:26663
+    command: >
+      /bin/sh -c "
+        /root/.go/bin/und start --home /root/.und_mainchain/node3 --p2p.laddr=tcp://0.0.0.0:26653 --rpc.laddr=tcp://0.0.0.0:26663 --halt-time 0 & \
+        tail -f /root/.und_mainchain/node3/config/genesis.json
+      "
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.5
     ports:
       - "26663:26663"
       - "26653:26653"
+
+  dummy:
+    hostname: dummy
+    build:
+      context: ..
+      dockerfile: ./Docker/validator.local/Dockerfile
+      args:
+        WITH_DELVE: "no"
+    container_name: dummy
+    command: /root/.go/bin/und start --home /root/.und_mainchain/dummy --p2p.laddr=tcp://0.0.0.0:26654 --rpc.laddr=tcp://0.0.0.0:26664
+    networks:
+      mainchain_devnet:
+        ipv4_address: 172.25.0.8
+    ports:
+      - "26664:26664"
+      - "26654:26654"
 
   rest-server:
     hostname: rest-server

@@ -72,6 +72,22 @@ func (k Keeper) IterateBeaconTimestamps(ctx sdk.Context, beaconID uint64, cb fun
 	}
 }
 
+// IterateBeaconTimestampsReverse iterates over the all the BEACON's timestamps in reverse order and performs a callback function
+func (k Keeper) IterateBeaconTimestampsReverse(ctx sdk.Context, beaconID uint64, cb func(beaconTimestamp types.BeaconTimestamp) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStoreReversePrefixIterator(store, types.BeaconAllTimestampsKey(beaconID))
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var bts types.BeaconTimestamp
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &bts)
+
+		if cb(bts) {
+			break
+		}
+	}
+}
+
 // GetAllBeaconTimestamps Get an iterator over all a Beacon's timestamps in which the keys are the beaconID
 // and the values are the BeaconTimestamps
 func (k Keeper) GetAllBeaconTimestamps(ctx sdk.Context, beaconID uint64) (timestamps types.BeaconTimestamps) {
@@ -83,16 +99,29 @@ func (k Keeper) GetAllBeaconTimestamps(ctx sdk.Context, beaconID uint64) (timest
 	return
 }
 
+func prependTimestamp(x types.BeaconTimestampsGenesisExport, y types.BeaconTimestampGenesisExport) types.BeaconTimestampsGenesisExport {
+	x = append(x, y)
+	copy(x[1:], x)
+	x[0] = y
+	return x
+}
+
 // GetAllBeaconTimestampsForExport Get an iterator over all a Beacon's timestamps in which an optimised version of
 // the timestamp data is returned for genesis export
 func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64) (timestamps types.BeaconTimestampsGenesisExport) {
-	k.IterateBeaconTimestamps(ctx, beaconID, func(bts types.BeaconTimestamp) bool {
+
+	count := 0
+	k.IterateBeaconTimestampsReverse(ctx, beaconID, func(bts types.BeaconTimestamp) bool {
 		btsExp := types.BeaconTimestampGenesisExport{
 			TimestampID: bts.TimestampID,
 			SubmitTime:  bts.SubmitTime,
 			Hash:        bts.Hash,
 		}
-		timestamps = append(timestamps, btsExp)
+		timestamps = prependTimestamp(timestamps, btsExp) // append(timestamps, btsExp)
+		count = count + 1
+		if count == types.MaxHashSubmissionsKeepInState {
+			return true
+		}
 		return false
 	})
 	return
@@ -140,13 +169,24 @@ func (k Keeper) RecordBeaconTimestamp(
 
 	logger := k.Logger(ctx)
 
+	if len(hash) > 66 {
+		return 0, sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit")
+	}
+
+	if !k.IsBeaconRegistered(ctx, beaconID) {
+		// can't record hashes if BEACON isn't registered
+		return 0, types.ErrBeaconDoesNotExist
+	}
+
 	beacon := k.GetBeacon(ctx, beaconID)
+
+	if !k.IsAuthorisedToRecord(ctx, beacon.BeaconID, owner) {
+		return 0, sdkerrors.Wrapf(types.ErrNotBeaconOwner, "%s not authorised to record hashes for this beacon", owner)
+	}
 
 	timestampID := beacon.LastTimestampID + 1
 
-	// we're only ever recording new BEACON hashes, never updating existing. Handler has already run
-	// checks for authorisation etc.
-	beaconTimestamp := types.NewBeaconTimestamp()
+	beaconTimestamp := k.GetBeaconTimestampByID(ctx, beacon.BeaconID, timestampID)
 
 	beaconTimestamp.BeaconID = beacon.BeaconID
 	beaconTimestamp.TimestampID = timestampID

@@ -15,6 +15,8 @@ const (
 	FeeDenom  = undtypes.DefaultDenomination // used in init genesis
 
 	DefaultStartingBeaconID uint64 = 1 // used in init genesis
+
+	MaxHashSubmissionsKeepInState = 20000
 )
 
 // Beacons is an array of Beacon

@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/gorilla/mux"
+
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/gorilla/mux"
-	"github.com/unification-com/mainchain/x/beacon/internal/keeper"
-	"github.com/unification-com/mainchain/x/beacon/internal/types"
+	"github.com/unification-com/mainchain/x/beacon/keeper"
+	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
 // registerQueryRoutes - define REST query routes
-func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/beacon/params", beaconParamsHandler(cliCtx)).Methods("GET")
 
 	r.HandleFunc("/beacon/beacons", beaconsWithParametersHandler(cliCtx)).Methods("GET")
@@ -24,7 +25,7 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/beacon/{%s}/timestamp/{%s}", RestBeaconId, RestBeaconTimestampId), beaconTimestampHandler(cliCtx)).Methods("GET")
 }
 
-func beaconParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func beaconParamsHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryParameters)
@@ -40,7 +41,7 @@ func beaconParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func beaconsWithParametersHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func beaconsWithParametersHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 0)
 		if err != nil {
@@ -72,7 +73,7 @@ func beaconsWithParametersHandler(cliCtx context.CLIContext) http.HandlerFunc {
 
 		params := types.NewQueryBeaconParams(page, limit, moniker, ownerAddr)
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -91,7 +92,7 @@ func beaconsWithParametersHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func beaconHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func beaconHandler(cliCtx client.Context) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -124,7 +125,7 @@ func beaconHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func beaconTimestampHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func beaconTimestampHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		strBeaconID := vars[RestBeaconId]

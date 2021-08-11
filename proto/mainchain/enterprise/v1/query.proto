@@ -1,0 +1,147 @@
+syntax = "proto3";
+package mainchain.enterprise.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos_sdk/base/query/v1beta1/pagination.proto";
+import "mainchain/enterprise/v1/enterprise.proto";
+import "cosmos_sdk/base/v1beta1/coin.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/params";
+  }
+
+  // Purchase Order queries proposal details based on PurchaseOrderId.
+  rpc EnterpriseUndPurchaseOrder(QueryEnterpriseUndPurchaseOrderRequest) returns (QueryEnterpriseUndPurchaseOrderResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/pos/{purchase_order_id}";
+  }
+
+  // Purchase Order queries proposal details based on PurchaseOrderId.
+  rpc EnterpriseUndPurchaseOrders(QueryEnterpriseUndPurchaseOrdersRequest) returns (QueryEnterpriseUndPurchaseOrdersResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/pos";
+  }
+
+  // Queries an account address for their locked FUND
+  rpc LockedUndByAddress(QueryLockedUndByAddressRequest) returns (QueryLockedUndByAddressResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/locked/{owner}";
+  }
+
+  // Get total locked FUND
+  rpc TotalLocked(QueryTotalLockedRequest) returns (QueryTotalLockedResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/locked";
+  }
+
+  // Get total Unlocked FUND
+  rpc TotalUnlocked(QueryTotalUnlockedRequest) returns (QueryTotalUnlockedResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/unlocked";
+  }
+
+  // Get total supply, including Ent. locked FUND (overrides bank's total supply query)
+  rpc TotalSupply(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/supply";
+  }
+
+  rpc TotalSupplyOverride(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
+    option (google.api.http).get = "/cosmos/bank/v1beta1/supply";
+  }
+
+  // SupplyOf queries the supply of a single coin.
+  rpc SupplyOfOverride(QuerySupplyOfOverrideOfRequest) returns (QueryTotalSupplyResponse) {
+    option (google.api.http).get = "/cosmos/bank/v1beta1/supply/{denom}";
+  }
+
+  // Query whitelisted addresses
+  rpc Whitelist(QueryWhitelistRequest) returns(QueryWhitelistResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/whitelist";
+  }
+
+  rpc Whitelisted(QueryWhitelistedRequest) returns(QueryWhitelistedResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/whitelist/{address}";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryEnterpriseUndPurchaseOrderRequest is the request type for the Query/PO RPC method.
+message QueryEnterpriseUndPurchaseOrderRequest {
+  // purchase_order_id defines the PO to query for.
+  uint64 purchase_order_id = 1;
+}
+
+// QueryEnterpriseUndPurchaseOrderResponse is the response type for the Query/PO RPC method.
+message QueryEnterpriseUndPurchaseOrderResponse {
+  EnterpriseUndPurchaseOrder purchase_order = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryEnterpriseUndPurchaseOrdersRequest is the request type for the Query/PurchaseOrders RPC
+// method
+message QueryEnterpriseUndPurchaseOrdersRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  string purchaser = 2;
+  PurchaseOrderStatus status = 3;
+}
+
+// QueryEnterpriseUndPurchaseOrdersResponse is the response type for the Query/PurchaseOrders RPC
+// method
+message QueryEnterpriseUndPurchaseOrdersResponse {
+  // info is the signing info of all validators
+  repeated EnterpriseUndPurchaseOrder purchase_orders = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse                pagination = 2;
+}
+
+message QueryLockedUndByAddressRequest {
+  string owner = 1;
+}
+
+message QueryLockedUndByAddressResponse {
+  string owner = 1;
+  LockedUnd locked_und = 2;
+}
+
+message QueryTotalLockedRequest { }
+
+message QueryTotalLockedResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryTotalUnlockedRequest {}
+
+message QueryTotalUnlockedResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryTotalSupplyRequest {}
+
+message QueryTotalSupplyResponse {
+    UndSupply supply = 1 [(gogoproto.nullable) = false];
+}
+
+// QuerySupplyOfOverrideRequest is the request type for the Query/SupplyOf RPC method.
+message QuerySupplyOfOverrideOfRequest {
+  // denom is the coin denom to query balances for.
+  string denom = 1;
+}
+
+message QueryWhitelistRequest {}
+
+message QueryWhitelistResponse {
+    repeated string addresses = 1;
+}
+
+message QueryWhitelistedRequest {
+  string address = 1;
+}
+
+message QueryWhitelistedResponse {
+  string address = 1;
+  bool whitelisted = 2;
+}

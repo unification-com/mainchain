@@ -3,43 +3,57 @@ package wrkchain
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+
+	"github.com/unification-com/mainchain/x/wrkchain/keeper"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
-func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
+func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState) []abci.ValidatorUpdate {
 	keeper.SetParams(ctx, data.Params)
-	keeper.SetHighestWrkChainID(ctx, data.StartingWrkChainID)
+	keeper.SetHighestWrkChainID(ctx, data.StartingWrkchainId)
 
 	logger := keeper.Logger(ctx)
 
-	for _, record := range data.WrkChains {
-		wrkChain := record.WrkChain
+	for _, record := range data.RegisteredWrkchains {
+		wrkChain := types.WrkChain{
+			WrkchainId: record.Wrkchain.WrkchainId,
+			Moniker: record.Wrkchain.Moniker,
+			Name: record.Wrkchain.Name,
+			Genesis: record.Wrkchain.Genesis,
+			Type: record.Wrkchain.Type,
+			Lastblock: record.Wrkchain.Lastblock,
+			NumBlocks: record.Wrkchain.NumBlocks,
+			RegTime: record.Wrkchain.RegTime,
+			Owner: record.Wrkchain.Owner,
+		}
+
 		err := keeper.SetWrkChain(ctx, wrkChain)
 		if err != nil {
 			panic(err)
 		}
 
-		logger.Info("Registering WRKChain", "wc_id", wrkChain.WrkChainID)
+		logger.Debug("Registering WRKChain", "wc_id", wrkChain.WrkchainId)
 
-		for _, block := range record.WrkChainBlocks {
-			blk := WrkChainBlock{
-				WrkChainID: wrkChain.WrkChainID,
-				Height:     block.Height,
-				BlockHash:  block.BlockHash,
-				ParentHash: block.ParentHash,
-				Hash1:      block.Hash1,
-				Hash2:      block.Hash2,
-				Hash3:      block.Hash3,
-				SubmitTime: block.SubmitTime,
+		for _, block := range record.Blocks {
+			blk := types.WrkChainBlock{
+				WrkchainId: wrkChain.WrkchainId,
+				Height:     block.He,
+				Blockhash:  block.Bh,
+				Parenthash: block.Ph,
+				Hash1:      block.H1,
+				Hash2:      block.H2,
+				Hash3:      block.H3,
+				SubTime:    block.St,
 				Owner:      wrkChain.Owner,
 			}
-			//logger.Info("Registering Block for WRKChain", "wc_id", wrkChain.WrkChainID, "h", block.Height)
+
 			err = keeper.SetWrkChainBlock(ctx, blk)
 			if err != nil {
 				panic(err)
 			}
 
 			// also update NumBlocks!
-			err = keeper.SetNumBlocks(ctx, wrkChain.WrkChainID)
+			err = keeper.SetNumBlocks(ctx, wrkChain.WrkchainId)
 			if err != nil {
 				panic(err)
 			}
@@ -48,32 +62,33 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.Valid
 	return []abci.ValidatorUpdate{}
 }
 
-func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	params := k.GetParams(ctx)
-	var records []WrkChainExport
+	var records []types.WrkChainExport
 	initialWrkChainID, _ := k.GetHighestWrkChainID(ctx)
 
 	wrkChains := k.GetAllWrkChains(ctx)
 
 	if len(wrkChains) == 0 {
-		return GenesisState{
-			Params:             params,
-			StartingWrkChainID: initialWrkChainID,
-			WrkChains:          nil,
+		return types.GenesisState{
+			Params:              params,
+			StartingWrkchainId:  initialWrkChainID,
+			RegisteredWrkchains: records,
 		}
 	}
 
 	for _, wc := range wrkChains {
-		wrkchainId := wc.WrkChainID
+		wrkchainId := wc.WrkchainId
 		blockHashList := k.GetAllWrkChainBlockHashesForGenesisExport(ctx, wrkchainId)
 		if blockHashList == nil {
-			blockHashList = WrkChainBlocksGenesisExport{}
+			blockHashList = []types.WrkChainBlockGenesisExport{}
 		}
-		records = append(records, WrkChainExport{WrkChain: wc, WrkChainBlocks: blockHashList})
+		records = append(records, types.WrkChainExport{Wrkchain: &wc, Blocks: blockHashList})
 	}
-	return GenesisState{
-		Params:             params,
-		StartingWrkChainID: initialWrkChainID,
-		WrkChains:          records,
+
+	return types.GenesisState{
+		Params:              params,
+		StartingWrkchainId:  initialWrkChainID,
+		RegisteredWrkchains: records,
 	}
 }

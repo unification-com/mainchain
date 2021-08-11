@@ -3,17 +3,20 @@ package rest
 import (
 	"errors"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"net/http"
+
+	"github.com/gorilla/mux"
+
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/gorilla/mux"
-	"github.com/unification-com/mainchain/x/wrkchain/internal/keeper"
-	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
-	"net/http"
+
+	"github.com/unification-com/mainchain/x/wrkchain/keeper"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 // registerQueryRoutes - define REST query routes
-func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/wrkchain/params", wrkChainParamsHandler(cliCtx)).Methods("GET")
 
 	r.HandleFunc("/wrkchain/wrkchains", wrkChainsWithParametersHandler(cliCtx)).Methods("GET")
@@ -23,7 +26,7 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/wrkchain/{%s}/block/{%s}", RestWrkchainId, RestBlockHeight), wrkChainBlockHandler(cliCtx)).Methods("GET")
 }
 
-func wrkChainParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func wrkChainParamsHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryParameters)
@@ -39,7 +42,7 @@ func wrkChainParamsHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func wrkChainsWithParametersHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func wrkChainsWithParametersHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 0)
 		if err != nil {
@@ -71,7 +74,7 @@ func wrkChainsWithParametersHandler(cliCtx context.CLIContext) http.HandlerFunc 
 
 		params := types.NewQueryWrkChainParams(page, limit, moniker, ownerAddr)
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -90,7 +93,7 @@ func wrkChainsWithParametersHandler(cliCtx context.CLIContext) http.HandlerFunc 
 	}
 }
 
-func wrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func wrkChainHandler(cliCtx client.Context) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -123,7 +126,7 @@ func wrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func wrkChainBlockHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func wrkChainBlockHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		strWrkchainID := vars[RestWrkchainId]

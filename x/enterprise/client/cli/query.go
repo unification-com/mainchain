@@ -1,23 +1,24 @@
 package cli
 
 import (
+	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
+	"strconv"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+
 	entutils "github.com/unification-com/mainchain/x/enterprise/client/utils"
-	"github.com/unification-com/mainchain/x/enterprise/internal/keeper"
-	"github.com/unification-com/mainchain/x/enterprise/internal/types"
+	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
-func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
+// GetQueryCmd returns the cli query commands for this module
+func GetQueryCmd() *cobra.Command {
 	enterpriseQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the enterprise module",
@@ -25,47 +26,62 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	enterpriseQueryCmd.AddCommand(flags.GetCommands(
-		GetCmdQueryParams(cdc),
-		GetCmdGetPurchaseOrders(storeKey, cdc),
-		GetCmdGetPurchaseOrderByID(storeKey, cdc),
-		GetCmdGetLockedUndByAddress(storeKey, cdc),
-		GetCmdQueryTotalLocked(storeKey, cdc),
-		GetCmdQueryTotalUnlocked(storeKey, cdc),
-		GetCmdGetWhitelistedAddresses(storeKey, cdc),
-		GetCmdGetAddresIsWhitelisted(storeKey, cdc),
-	)...)
+
+	enterpriseQueryCmd.AddCommand(
+		GetCmdQueryParams(),
+		GetCmdGetPurchaseOrders(),
+		GetCmdGetPurchaseOrderByID(),
+		GetCmdGetLockedUndByAddress(),
+		GetCmdQueryTotalLocked(),
+		GetCmdQueryTotalUnlocked(),
+		GetCmdGetWhitelistedAddresses(),
+		GetCmdGetAddresIsWhitelisted(),
+	)
+
 	return enterpriseQueryCmd
 }
 
-// GetCmdQueryParams implements a command to return the current enterprise und
+// GetCmdQueryParams implements a command to return the current enterprise FUND
 // parameters.
-func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdQueryParams() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "params",
 		Short: "Query the current enterprise FUND parameters",
-		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query all the current enterprise FUND parameters.
 
-			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryParameters)
-			res, _, err := cliCtx.QueryWithData(route, nil)
+Example:
+$ %s query enterprise params
+`,
+				version.AppName,
+			),
+		),
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
+			queryClient := types.NewQueryClient(clientCtx)
 
-			var params types.Params
-			if err := cdc.UnmarshalJSON(res, &params); err != nil {
-				return err
-			}
+			// Query store for all params
+			params, err := queryClient.Params(
+				context.Background(),
+				&types.QueryParamsRequest{},
+			)
 
-			return cliCtx.PrintOutput(params)
+			return clientCtx.PrintObjectLegacy(params)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
+
 // GetCmdGetPurchaseOrders queries a list of all purchase orders
-func GetCmdGetPurchaseOrders(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdGetPurchaseOrders() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "orders",
 		Short: "Query Enterprise FUND purchase orders with optional filters",
@@ -77,199 +93,226 @@ $ %s query enterprise orders --status (raised|accept|reject|complete)
 $ %s query enterprise orders --purchaser und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
 $ %s query enterprise orders --page=2 --limit=100
 `,
-				version.ClientName, version.ClientName, version.ClientName,
+				version.AppName, version.AppName, version.AppName,
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			strProposalStatus := viper.GetString(FlagPurchaseOrderStatus)
-			bechPurchaserAddr := viper.GetString(FlagPurchaser)
-			page := viper.GetInt(FlagPage)
-			limit := viper.GetInt(FlagNumLimit)
+			strProposalStatus, _ := cmd.Flags().GetString(FlagPurchaseOrderStatus)
+			purchaserAddr, _ := cmd.Flags().GetString(FlagPurchaser)
 
-			var purchaseOrderStatus types.PurchaseOrderStatus
-			var purchaserAddr sdk.AccAddress
+			statusNorm := entutils.NormalisePurchaseOrderStatus(strProposalStatus)
+			status, err := types.PurchaseOrderStatusFromString(statusNorm)
 
-			params := types.NewQueryPurchaseOrdersParams(page, limit, purchaseOrderStatus, purchaserAddr)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
 
-			if len(strProposalStatus) != 0 {
-				purchaseOrderStatus, err := types.PurchaseOrderStatusFromString(entutils.NormalisePurchaseOrderStatus(strProposalStatus))
-				if err != nil {
-					return err
-				}
-				params.PurchaseOrderStatus = purchaseOrderStatus
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+
+			params := &types.QueryEnterpriseUndPurchaseOrdersRequest{
+				Pagination: pageReq,
 			}
 
-			if len(bechPurchaserAddr) != 0 {
-				purchaserAddr, err := sdk.AccAddressFromBech32(bechPurchaserAddr)
-				if err != nil {
-					return err
-				}
+			if status != types.StatusNil {
+				params.Status = status
+			}
+
+			if len(purchaserAddr) > 0 {
 				params.Purchaser = purchaserAddr
 			}
 
-			bz, err := cdc.MarshalJSON(params)
+			res, err := queryClient.EnterpriseUndPurchaseOrders(context.Background(), params)
 			if err != nil {
 				return err
 			}
 
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryPurchaseOrders), bz)
-			if err != nil {
-				return err
-			}
-
-			var matchingOrders types.QueryResPurchaseOrders
-			err = cdc.UnmarshalJSON(res, &matchingOrders)
-
-			if err != nil {
-				return err
-			}
-
-			if len(matchingOrders) == 0 {
-				return fmt.Errorf("no matching purchase orders found")
-			}
-
-			return cliCtx.PrintOutput(matchingOrders)
+			return clientCtx.PrintProto(res)
 		},
 	}
 
-	cmd.Flags().Int(FlagPage, 1, "pagination page of purchase orders to to query for")
-	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of purchase orders to query for")
 	cmd.Flags().String(FlagPurchaseOrderStatus, "", "(optional) filter purchase orders by status, status: raised/accept/reject/complete")
 	cmd.Flags().String(FlagPurchaser, "", "(optional) filter purchase orders raised by address")
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "purchase orders")
 	return cmd
 }
 
 // GetCmdGetPurchaseOrderByID queries a purchase order given an ID
-func GetCmdGetPurchaseOrderByID(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdGetPurchaseOrderByID() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "order [purchase_order_id]",
 		Short: "get a purchase order by ID",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryGetPurchaseOrder, args[0]), nil)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
-				fmt.Printf("could not get query purchase order: ID %s\n", args[0])
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			// validate that the proposal id is a uint
+			purchaseOrderId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("purchase_order_id %s not a valid int, please input a valid purchase_order_id", args[0])
+			}
+
+			res, err := queryClient.EnterpriseUndPurchaseOrder(context.Background(), &types.QueryEnterpriseUndPurchaseOrderRequest{
+				PurchaseOrderId: purchaseOrderId,
+			})
+			if err != nil {
 				return err
 			}
 
-			var out types.EnterpriseUndPurchaseOrder
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			return clientCtx.PrintProto(res)
+
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdGetLockedUndByAddress queries locked FUND for a given address
-func GetCmdGetLockedUndByAddress(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdGetLockedUndByAddress() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "locked [address]",
 		Short: "get locked FUND for an address",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryGetLocked, args[0]), nil)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
-				fmt.Printf("could not get query locked FUND for address %s\n", args[0])
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			// validate that the proposal id is a uint
+			purchaser, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
 				return err
 			}
 
-			var out types.LockedUnd
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			res, err := queryClient.LockedUndByAddress(context.Background(), &types.QueryLockedUndByAddressRequest{
+				Owner: purchaser.String(),
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdQueryTotalLocked implements a command to return the current total locked enterprise und
-func GetCmdQueryTotalLocked(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdQueryTotalLocked() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "total-locked",
 		Short: "Query the current total locked enterprise FUND",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryTotalLocked), nil)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
-				fmt.Printf("could not get query total locked enterprise FUND\n")
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.TotalLocked(context.Background(), &types.QueryTotalLockedRequest{})
+			if err != nil {
 				return err
 			}
 
-			var out sdk.Coin
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdQueryTotalUnlocked implements a command to return the current total locked enterprise und
-func GetCmdQueryTotalUnlocked(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdQueryTotalUnlocked() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "total-unlocked",
 		Short: "Query the current total unlocked und in circulation",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryTotalUnlocked), nil)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
-				fmt.Printf("could not get query total unlocked FUND\n")
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.TotalUnlocked(context.Background(), &types.QueryTotalUnlockedRequest{})
+			if err != nil {
 				return err
 			}
 
-			var out sdk.Coin
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdGetWhitelistedAddresses queries all addresses whitelisted for raising enterprise und purchase orders
-func GetCmdGetWhitelistedAddresses(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdGetWhitelistedAddresses() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "whitelist",
 		Short: "get addresses whitelisted for raising enterprise purchase orders",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryWhitelist), nil)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
-				fmt.Printf("could not get query for whitelisted addresses")
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.Whitelist(context.Background(), &types.QueryWhitelistRequest{})
+			if err != nil {
 				return err
 			}
 
-			var out types.WhitelistAddresses
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdGetLockedUndByAddress queries locked FUND for a given address
-func GetCmdGetAddresIsWhitelisted(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdGetAddresIsWhitelisted() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "whitelisted [address]",
 		Short: "check if given address is whitelested for purchase orders",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryWhitelisted, args[0]), nil)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
-				fmt.Printf("could not get query whitelisted address %s\n", args[0])
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			address, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
 				return err
 			}
 
-			var out bool
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			res, err := queryClient.Whitelisted(context.Background(), &types.QueryWhitelistedRequest{
+				Address: address.String(),
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }

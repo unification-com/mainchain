@@ -1,0 +1,47 @@
+syntax = "proto3";
+package mainchain.beacon.v1;
+
+import "gogoproto/gogo.proto";
+import "mainchain/beacon/v1/beacon.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/beacon/types";
+
+service Msg {
+  // UndPurchaseOrder defines a method to create new purchase order.
+  rpc RegisterBeacon(MsgRegisterBeacon)
+      returns (MsgRegisterBeaconResponse);
+
+  rpc RecordBeaconTimestamp(MsgRecordBeaconTimestamp)
+      returns (MsgRecordBeaconTimestampResponse);
+
+}
+
+message MsgRegisterBeacon {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string moniker = 1;
+  string name = 2;
+  string owner = 3;
+}
+
+// MsgRegisterBeaconResponse defines the Msg/RegisterBeacon response type.
+message MsgRegisterBeaconResponse {
+  uint64 beacon_id = 1;
+}
+
+
+message MsgRecordBeaconTimestamp {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 beacon_id = 1;
+  string hash = 2;
+  uint64 submit_time = 3;
+  string owner = 4;
+}
+
+message MsgRecordBeaconTimestampResponse {
+  uint64 beacon_id = 1;
+  uint64 timestamp_id = 2;
+}

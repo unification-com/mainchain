@@ -1,0 +1,28 @@
+syntax = "proto3";
+package mainchain.beacon.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/beacon/types";
+
+message Beacon {
+  uint64 beacon_id = 1;
+  string moniker = 2;
+  string name = 3;
+  uint64 last_timestamp_id = 4;
+  string owner = 5;
+}
+
+message BeaconTimestamp {
+  uint64 beacon_id = 1;
+  uint64 timestamp_id = 2;
+  uint64 submit_time = 3;
+  string hash = 4;
+  string owner = 5;
+}
+
+message Params {
+  uint64 fee_register = 1;
+  uint64 fee_record = 2;
+  string denom = 3;
+}

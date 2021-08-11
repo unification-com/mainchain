@@ -1,0 +1,52 @@
+syntax = "proto3";
+package mainchain.beacon.v1;
+
+import "gogoproto/gogo.proto";
+import "mainchain/wrkchain/v1/wrkchain.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
+
+service Msg {
+  // UndPurchaseOrder defines a method to create new purchase order.
+  rpc RegisterWrkChain(MsgRegisterWrkChain)
+      returns (MsgRegisterWrkChainResponse);
+
+  rpc RecordWrkChainBlock(MsgRecordWrkChainBlock)
+      returns (MsgRecordWrkChainBlockResponse);
+
+}
+
+message MsgRegisterWrkChain {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string moniker = 2;
+  string name = 3;
+  string genesis_hash = 4 [(gogoproto.jsontag) = "genesis", (gogoproto.moretags) = "yaml:\"genesis\""];
+  string base_type = 5 [(gogoproto.jsontag) = "type", (gogoproto.moretags) = "yaml:\"type\""];
+  string owner = 6;
+}
+
+// MsgRegisterBeaconResponse defines the Msg/RegisterBeacon response type.
+message MsgRegisterWrkChainResponse {
+  uint64 wrkchain_id = 1;
+}
+
+message MsgRecordWrkChainBlock {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 wrkchain_id = 1;
+  uint64 height = 2;
+  string block_hash = 3 [(gogoproto.jsontag) = "blockhash", (gogoproto.moretags) = "yaml:\"blockhash\""];
+  string parent_hash = 4 [(gogoproto.jsontag) = "parenthash", (gogoproto.moretags) = "yaml:\"parenthash\""];
+  string hash1 = 5;
+  string hash2 = 6;
+  string hash3 = 7;
+  string owner = 8;
+}
+
+message MsgRecordWrkChainBlockResponse {
+  uint64 wrkchain_id = 1;
+  uint64 height = 2;
+}

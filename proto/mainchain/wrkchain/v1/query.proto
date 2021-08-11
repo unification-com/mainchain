@@ -1,0 +1,67 @@
+syntax = "proto3";
+package mainchain.wrkchain.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos_sdk/base/query/v1beta1/pagination.proto";
+import "mainchain/wrkchain/v1/wrkchain.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/mainchain/wrkchain/v1/params";
+  }
+
+  rpc WrkChain(QueryWrkChainRequest) returns (QueryWrkChainResponse) {
+    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}";
+  }
+
+  rpc WrkChainBlock(QueryWrkChainBlockRequest) returns (QueryWrkChainBlockResponse) {
+    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{height}";
+  }
+
+  rpc WrkChainsFiltered(QueryWrkChainsFilteredRequest) returns (QueryWrkChainsFilteredResponse) {
+    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchains";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryWrkChainRequest {
+  uint64 wrkchain_id = 1;
+}
+
+message QueryWrkChainResponse {
+  WrkChain wrkchain = 1;
+}
+
+message QueryWrkChainBlockRequest {
+  uint64 wrkchain_id = 1;
+  uint64 height = 2;
+}
+
+message QueryWrkChainBlockResponse {
+  WrkChainBlock block = 1;
+}
+
+message QueryWrkChainsFilteredRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string moniker = 1;
+  string owner = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryWrkChainsFilteredResponse {
+  repeated WrkChain wrkchains = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+

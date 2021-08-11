@@ -3,13 +3,14 @@ package rest
 import (
 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/gorilla/mux"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	"github.com/gorilla/mux"
-	"github.com/unification-com/mainchain/x/beacon/internal/keeper"
-	"github.com/unification-com/mainchain/x/beacon/internal/types"
+	
+	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
 type registerBeaconReq struct {
@@ -28,32 +29,32 @@ type recordBeaconTimestampReq struct {
 }
 
 // registerTxRoutes - define REST Tx routes
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/beacon/reg", registerBeaconHandler(cliCtx)).Methods("POST")
 
 	r.HandleFunc("/beacon/rec", recordBeaconTimestampHandler(cliCtx)).Methods("POST")
 }
 
-func registerBeaconHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func registerBeaconHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req registerBeaconReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
 			return
 		}
 
 		baseReq := req.BaseReq.Sanitize()
 
-		// automatically apply fees
-		paramsRetriever := keeper.NewParamsRetriever(cliCtx)
-		beaconParams, err := paramsRetriever.GetParams()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		}
-
-		fees := sdk.NewCoins(sdk.NewInt64Coin(beaconParams.Denom, int64(beaconParams.FeeRegister)))
-
-		baseReq.Fees = fees
+		// Todo -  automatically apply fees
+		//paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+		//beaconParams, err := paramsRetriever.GetParams()
+		//if err != nil {
+		//	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		//}
+		//
+		//fees := sdk.NewCoins(sdk.NewInt64Coin(beaconParams.Denom, int64(beaconParams.FeeRegister)))
+		//
+		//baseReq.Fees = fees
 
 		if !baseReq.ValidateBasic(w) {
 			return
@@ -73,30 +74,30 @@ func registerBeaconHandler(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
+		tx.WriteGeneratedTxResponse(cliCtx, w, baseReq, msg)
 	}
 }
 
-func recordBeaconTimestampHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func recordBeaconTimestampHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req recordBeaconTimestampReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
 			return
 		}
 
 		baseReq := req.BaseReq.Sanitize()
 
-		// automatically apply fees
-		paramsRetriever := keeper.NewParamsRetriever(cliCtx)
-		beaconParams, err := paramsRetriever.GetParams()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		}
-
-		fees := sdk.NewCoins(sdk.NewInt64Coin(beaconParams.Denom, int64(beaconParams.FeeRecord)))
-
-		baseReq.Fees = fees
+		// Todo - automatically apply fees
+		//paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+		//beaconParams, err := paramsRetriever.GetParams()
+		//if err != nil {
+		//	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		//}
+		//
+		//fees := sdk.NewCoins(sdk.NewInt64Coin(beaconParams.Denom, int64(beaconParams.FeeRecord)))
+		//
+		//baseReq.Fees = fees
 
 		if !baseReq.ValidateBasic(w) {
 			return
@@ -116,6 +117,6 @@ func recordBeaconTimestampHandler(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
+		tx.WriteGeneratedTxResponse(cliCtx, w, baseReq, msg)
 	}
 }

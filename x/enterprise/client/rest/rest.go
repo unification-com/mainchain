@@ -1,8 +1,10 @@
 package rest
 
 import (
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/gorilla/mux"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/rest"
 )
 
 // nolint
@@ -13,19 +15,26 @@ const (
 	RestWhitelistAddr   = "address"
 )
 
-// RegisterRoutes - Central function to define routes that get registered by the main application
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	registerQueryRoutes(cliCtx, r)
-	registerTxRoutes(cliCtx, r)
+// RegisterLegacyRESTRoutes - Central function to define routes that get registered by the main application
+func RegisterLegacyRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
+	r := rest.WithHTTPDeprecationHeaders(rtr)
+
+	registerQueryRoutes(clientCtx, r)
+	registerTxRoutes(clientCtx, r)
+
+	// legacy overrides
+	registerEnterpriseAuthAccountOverride(clientCtx, r)
+	registerEnterpriseTotalSupplyOverride(clientCtx, r)
+	registerEnterpriseSupplyByDenomOverride(clientCtx, r)
 }
 
 // RegisterAuthAccountOverride registers a REST route to override the default /auth/accounts/{address} path
 // and additionally return Enterprise Locked FUND data
-func RegisterAuthAccountOverride(cliCtx context.CLIContext, r *mux.Router) {
-	registerEnterpriseAuthAccountOverride(cliCtx, r)
-}
-
-func RegisterTotalSupplyOverride(cliCtx context.CLIContext, r *mux.Router) {
-	registerEnterpriseTotalSupplyOverride(cliCtx, r)
-	registerEnterpriseSupplyByDenomOverride(cliCtx, r)
-}
+//func RegisterAuthAccountOverride(cliCtx client.Context, r *mux.Router) {
+//	registerEnterpriseAuthAccountOverride(cliCtx, r)
+//}
+//
+//func RegisterTotalSupplyOverride(cliCtx client.Context, r *mux.Router) {
+//	registerEnterpriseTotalSupplyOverride(cliCtx, r)
+//	registerEnterpriseSupplyByDenomOverride(cliCtx, r)
+//}

@@ -1,20 +1,26 @@
 package mint
 
 import (
+	"time"
+
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain/x/enterprise"
-	"github.com/unification-com/mainchain/x/mint/internal/types"
+	"github.com/unification-com/mainchain/x/mint/keeper"
+	"github.com/unification-com/mainchain/x/mint/types"
 )
 
 // BeginBlocker mints new tokens for the previous block.
-func BeginBlocker(ctx sdk.Context, k Keeper, keeper enterprise.Keeper) {
+func BeginBlocker(ctx sdk.Context, k keeper.Keeper, entKeeper types.EnterpriseKeeper) {
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+
 	// fetch stored minter & params
 	minter := k.GetMinter(ctx)
 	params := k.GetParams(ctx)
 
 	// recalculate inflation rate
-	totalUNDSupply := keeper.GetTotalUndSupply(ctx)
-	totalLockedUND := keeper.GetTotalLockedUnd(ctx)
+	//totalStakingSupply := k.StakingTokenSupply(ctx)
+	totalUNDSupply := entKeeper.GetTotalUndSupply(ctx)
+	totalLockedUND := entKeeper.GetTotalLockedUnd(ctx)
 	liquidUND := totalUNDSupply.Sub(totalLockedUND)
 
 	bondedRatio := k.BondedRatio(ctx)
@@ -35,6 +41,10 @@ func BeginBlocker(ctx sdk.Context, k Keeper, keeper enterprise.Keeper) {
 	err = k.AddCollectedFees(ctx, mintedCoins)
 	if err != nil {
 		panic(err)
+	}
+
+	if mintedCoin.Amount.IsInt64() {
+		defer telemetry.ModuleSetGauge(types.ModuleName, float32(mintedCoin.Amount.Int64()), "minted_tokens")
 	}
 
 	ctx.EventManager().EmitEvent(

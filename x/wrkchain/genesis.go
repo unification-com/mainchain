@@ -78,8 +78,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	}
 
 	for _, wc := range wrkChains {
-		wrkchainId := wc.WrkchainId
-		blockHashList := k.GetAllWrkChainBlockHashesForGenesisExport(ctx, wrkchainId)
+		blockHashList := k.GetAllWrkChainBlockHashesForGenesisExport(ctx, wc.WrkchainId)
 		if blockHashList == nil {
 			blockHashList = []types.WrkChainBlockGenesisExport{}
 		}

@@ -96,7 +96,7 @@ func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, k
 
 func queryWrkChainsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
 
-	var queryParams types.QueryWrkChainParams
+	var queryParams types.QueryWrkChainsFilteredRequest
 
 	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &queryParams)
 
@@ -104,19 +104,12 @@ func queryWrkChainsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, 
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	// todo
-	return nil, nil
+	filteredWrkChains := k.GetWrkChainsFiltered(ctx, queryParams)
 
-	//filteredWrkChains := k.GetWrkChainsFiltered(ctx, queryParams)
-	//
-	//if filteredWrkChains == nil {
-	//	filteredWrkChains = types.WrkChains{}
-	//}
-	//
-	//res, err := codec.MarshalJSONIndent(k.cdc, filteredWrkChains)
-	//if err != nil {
-	//	return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	//}
-	//
-	//return res, nil
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, filteredWrkChains)
+	if err != nil {
+		panic("could not marshal result to JSON")
+	}
+
+	return res, nil
 }

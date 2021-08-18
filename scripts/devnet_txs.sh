@@ -17,8 +17,12 @@ DEVNET_RPC_HTTP="http://${DEVNET_RPC_IP}:${DEVNET_RPC_PORT}"
 CHAIN_ID="FUND-Mainchain-DevNet"
 BROADCAST_MODE="sync"
 GAS_PRICES="0.25nund"
-NUM_TO_SUB=200
 UPPER_CASE_HASH=0
+
+NUM_TO_SUB=$1
+if [ -z "$NUM_TO_SUB" ]; then
+  NUM_TO_SUB=200
+fi
 
 # Account names as imported into undcli keys
 ENT_ACC="ent"
@@ -27,7 +31,7 @@ USER_ACCS=( "t1" "t2" "t3" "t4" )
 TYPES=( "wrkchain" "beacon" "wrkchain" "beacon" )
 ACC_SEQUENCESS=( 0 0 0 0 )
 
-gen_hash() {
+function gen_hash() {
   local UPPER_CASE_HASH=${1:-$UPPER_CASE_HASH}
   local UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
   local HASH=$(echo "${UUID}" | openssl dgst -sha256)
@@ -41,23 +45,23 @@ gen_hash() {
   fi
 }
 
-get_addr() {
+function get_addr() {
   local ADDR=$(${UNDCLI_BIN} keys show $1 -a)
   echo "${ADDR}"
 }
 
-get_base_flags() {
+function get_base_flags() {
   local BROADCAST=${1:-$BROADCAST_MODE}
   local FLAGS="--broadcast-mode=${BROADCAST} --chain-id=${CHAIN_ID} --node=${DEVNET_RPC_TCP} --gas=auto --gas-adjustment=1.5 -y"
   echo "${FLAGS}"
 }
 
-get_gas_flags() {
+function get_gas_flags() {
   local FLAGS="--gas-prices=${GAS_PRICES}"
   echo "${FLAGS}"
 }
 
-check_accounts_exist() {
+function check_accounts_exist() {
   if { ${UNDCLI_BIN} keys show $1 2>&1 >&3 3>&- | grep '^' >&2; } 3>&1; then
     echo "${1} does not seem to exist in keyring. Exiting"
     exit 1
@@ -66,11 +70,21 @@ check_accounts_exist() {
   fi
 }
 
-get_curr_acc_sequence() {
+function get_curr_acc_sequence() {
   local ACC=$1
   local CURR=$(${UNDCLI_BIN} query account $(get_addr ${ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output=json | jq --raw-output '.sequence')
   local CURR_INT=$(awk "BEGIN {print $CURR}")
   echo "${CURR_INT}"
+}
+
+function update_account_sequences() {
+  ENT_ACC_SEQ=$(get_curr_acc_sequence "${ENT_ACC}")
+
+  for i in ${!USER_ACCS[@]}
+  do
+    ACC=${USER_ACCS[$i]}
+    ACC_SEQUENCESS[$i]=$(get_curr_acc_sequence "${ACC}")
+  done
 }
 
 check_accounts_exist ${ENT_ACC}
@@ -102,13 +116,7 @@ echo "Running transactions"
 
 START_TIME=$(date +%s)
 
-ENT_ACC_SEQ=$(get_curr_acc_sequence "${ENT_ACC}")
-
-for i in ${!USER_ACCS[@]}
-do
-  ACC=${USER_ACCS[$i]}
-  ACC_SEQUENCESS[$i]=$(get_curr_acc_sequence "${ACC}")
-done
+update_account_sequences
 
 for i in ${!USER_ACCS[@]}
 do
@@ -126,6 +134,8 @@ done
 echo "Done. Wait for approx. 1 block"
 sleep 6s
 
+update_account_sequences
+
 for i in ${!USER_ACCS[@]}
 do
   ACC=${USER_ACCS[$i]}
@@ -138,6 +148,8 @@ done
 echo "Done. Wait for approx. 1 block"
 sleep 6s
 
+update_account_sequences
+
 RAISED_POS=$(${UNDCLI_BIN} query enterprise orders --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
 
 for row in $(echo "${RAISED_POS}" | jq -r ".purchase_orders[] | @base64"); do
@@ -147,14 +159,20 @@ for row in $(echo "${RAISED_POS}" | jq -r ".purchase_orders[] | @base64"); do
   POID=$(_jq '.id')
   PO_STATUS=$(_jq '.status')
   echo "Process Enterprise PO ${POID} - status=${PO_STATUS}"
-  if [ "$PO_STATUS" = "raised" ]; then
+  if [ "$PO_STATUS" = "STATUS_RAISED" ]; then
     ${UNDCLI_BIN} tx enterprise process ${POID} accept --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=${ENT_ACC_SEQ}
     ENT_ACC_SEQ=$(awk "BEGIN {print $ENT_ACC_SEQ+1}")
   fi
 done
 
-echo "Done. Wait for approx. 1 block"
-sleep 6s
+echo "Done. Wait for approx. 2 blocks"
+sleep 15s
+
+update_account_sequences
+
+POS=$(${UNDCLI_BIN} query enterprise orders --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
+
+echo ${POS} | jq
 
 for i in ${!USER_ACCS[@]}
 do
@@ -180,11 +198,7 @@ done
 echo "Done. Wait for approx. 1 block"
 sleep 7s
 
-for i in ${!USER_ACCS[@]}
-do
-  ACC=${USER_ACCS[$i]}
-  ACC_SEQUENCESS[$i]=$(get_curr_acc_sequence "${ACC}")
-done
+update_account_sequences
 
 for (( i=0; i<$NUM_TO_SUB; i++ ))
 do

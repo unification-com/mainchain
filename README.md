@@ -157,14 +157,14 @@ For example, the following command will simulate 500 blocks, each with 200 rando
 The parameters used to generate the chain, along with the final chain state export and simulation statistics will be saved to the specified `ExportParamsPath`, `ExportStatePath` and `ExportStatsPath` paths respectively.
 
 ```
-go test -mod=readonly ./simapp \
+go test -mod=readonly ./app \
     -run=TestFullAppSimulation \
     -Enabled=true \
     -NumBlocks=500 \
     -BlockSize=200 \
     -Commit=true \
     -Seed=24 \
-    -Period=1 \
+    -Period=10 \
     -PrintAllInvariants=true \
     -ExportParamsPath=/path/to/.simapp/params.json \
     -ExportStatePath=/path/to/.simapp/state.json \

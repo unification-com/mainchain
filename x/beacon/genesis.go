@@ -72,8 +72,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	}
 
 	for _, b := range beacons {
-		beaconID := b.BeaconId
-		timestamps := k.GetAllBeaconTimestampsForExport(ctx, beaconID)
+		timestamps := k.GetAllBeaconTimestampsForExport(ctx, b.BeaconId)
 		if timestamps == nil {
 			timestamps = []types.BeaconTimestampGenesisExport{}
 		}

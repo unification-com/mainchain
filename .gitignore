@@ -18,6 +18,9 @@ profile.out
 cpuprofile.out
 memprofile.out
 simapp.test
+app.test
+cpu.out
+mem.out
 
 # Graphviz
 dependency-graph.png

@@ -75,7 +75,7 @@ func (k Keeper) IterateBeaconTimestampsReverse(ctx sdk.Context, beaconID uint64,
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &bts)
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &bts)
 
 		if cb(bts) {
 			break
@@ -162,6 +162,8 @@ func (k Keeper) RecordNewBeaconTimestamp(
 	submitTime uint64,
 	owner string) (uint64, error) {
 
+	logger := k.Logger(ctx)
+
 	beacon, _ := k.GetBeacon(ctx, beaconId)
 
 	timestampId := beacon.LastTimestampId + 1
@@ -186,6 +188,10 @@ func (k Keeper) RecordNewBeaconTimestamp(
 
 	if err != nil {
 		return 0, err
+	}
+
+	if !ctx.IsCheckTx() {
+		logger.Debug("beacon timestamp recorded", "id", beaconId, "hash", hash, "time", submitTime)
 	}
 
 	return timestampId, nil

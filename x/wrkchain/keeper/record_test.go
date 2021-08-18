@@ -3,11 +3,11 @@ package keeper_test
 import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain/x/wrkchain/types"
-	"testing"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/unification-com/mainchain/app/test_helpers"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
+	"testing"
 	"time"
 )
 
@@ -184,6 +184,10 @@ func TestRecordWrkchainHashes(t *testing.T) {
 		// hackery
 		expectedBlock.SubTime = blockDb.SubTime
 		require.True(t, WRKChainBlockEqual(blockDb, expectedBlock))
+
+		wrkChainDb, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
+
+		require.True(t, wrkChainDb.Lastblock == h)
 	}
 
 }

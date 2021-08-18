@@ -94,7 +94,7 @@ func (k Keeper) IterateWrkChainBlockHashesReverse(ctx sdk.Context, wrkchainID ui
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wcb types.WrkChainBlock
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &wcb)
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &wcb)
 
 		if cb(wcb) {
 			break
@@ -201,6 +201,8 @@ func (k Keeper) RecordNewWrkchainHashes(
 	hash3 string,
 	owner sdk.AccAddress) error {
 
+	logger := k.Logger(ctx)
+
 	// we're only ever adding new WRKChain data, never updating existing. Handler will have checked if height has
 	// previously been recorded.
 	wrkchainBlock := types.WrkChainBlock{}
@@ -231,6 +233,10 @@ func (k Keeper) RecordNewWrkchainHashes(
 
 	if err != nil {
 		return err
+	}
+
+	if !ctx.IsCheckTx() {
+		logger.Debug("wrkchain block recorded", "id", wrkchainId, "height", height, "hash", blockHash)
 	}
 
 	return nil

@@ -6,7 +6,7 @@ services:
         WITH_DELVE: "yes"
     security_opt:
       - seccomp:unconfined # required for running through delve
-    command: /root/.go/bin/dlv --listen=:40000 --headless=true --api-version=2 exec /root/.go/bin/und start -- --home /root/.und_mainchain/node1 --p2p.laddr=tcp://0.0.0.0:26651
+    command: /root/.go/bin/dlv --listen=:40000 --headless=true --api-version=2 exec /root/.go/bin/und start -- --home /root/.und_mainchain/node1 --p2p.laddr=tcp://0.0.0.0:26651 --rpc.laddr=tcp://0.0.0.0:26661
     ports:
       - "26661:26661"
       - "26651:26651"

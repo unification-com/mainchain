@@ -9,7 +9,7 @@
 #       has been run.                                                   #
 #########################################################################
 
-UNDCLI_BIN="./build/undcli"
+UNDCLI_BIN="./build/und"
 DEVNET_RPC_IP="localhost"
 DEVNET_RPC_PORT="26661"
 DEVNET_RPC_TCP="tcp://${DEVNET_RPC_IP}:${DEVNET_RPC_PORT}"
@@ -17,7 +17,7 @@ DEVNET_RPC_HTTP="http://${DEVNET_RPC_IP}:${DEVNET_RPC_PORT}"
 CHAIN_ID="FUND-Mainchain-DevNet"
 BROADCAST_MODE="sync"
 GAS_PRICES="0.25nund"
-NUM_TO_SUB=20000
+NUM_TO_SUB=200
 UPPER_CASE_HASH=0
 
 # Account names as imported into undcli keys
@@ -68,7 +68,7 @@ check_accounts_exist() {
 
 get_curr_acc_sequence() {
   local ACC=$1
-  local CURR=$(${UNDCLI_BIN} query account $(get_addr ${ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} | jq --raw-output '.account.value.sequence')
+  local CURR=$(${UNDCLI_BIN} query account $(get_addr ${ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output=json | jq --raw-output '.sequence')
   local CURR_INT=$(awk "BEGIN {print $CURR}")
   echo "${CURR_INT}"
 }
@@ -140,7 +140,7 @@ sleep 6s
 
 RAISED_POS=$(${UNDCLI_BIN} query enterprise orders --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
 
-for row in $(echo "${RAISED_POS}" | jq -r ".[] | @base64"); do
+for row in $(echo "${RAISED_POS}" | jq -r ".purchase_orders[] | @base64"); do
   _jq() {
     echo ${row} | base64 --decode | jq -r ${1}
   }
@@ -163,8 +163,8 @@ do
   TYPE=${TYPES[$i]}
   MONIKER="${TYPE}_${ACC}"
   GEN_HASH="0x$(gen_hash)"
-  THING_EXISTS=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
-  if [ "$THING_EXISTS" = "null" ]; then
+  THING_EXISTS=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json | jq ".${TYPE}s[]")
+  if [ "$THING_EXISTS" = "" ]; then
     echo "Register ${TYPE} for ${ACC}"
     if [ "$TYPE" = "wrkchain" ]; then
       ${UNDCLI_BIN} tx wrkchain register --moniker="${MONIKER}" --genesis="${GEN_HASH}" --name="${MONIKER}" --base="geth" --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ}
@@ -197,7 +197,7 @@ do
     RES=""
     TX_HASH=""
     RAW_LOG=""
-    ID=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json | jq -r ".[0].${TYPE}_id")
+    ID=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json | jq -r ".${TYPE}s[0].${TYPE}_id")
     if [ "$TYPE" = "wrkchain" ]; then
       WC_HASH="0x$(gen_hash)"
       WC_HEIGHT=$(awk "BEGIN {print $i+1}")

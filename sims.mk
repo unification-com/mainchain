@@ -57,4 +57,9 @@ test-sim-profile:
 	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkFullAppSimulation$$ \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -cpuprofile cpu.out -memprofile mem.out
 
-.PHONY: test-sim-profile test-sim-benchmark
+test-sim-simple:
+	@echo "Running simple test..."
+	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Enabled=true \
+		-NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -Period=10 -v -timeout 24h -Verbose=true
+
+.PHONY: test-sim-profile test-sim-benchmark test-sim-simple

@@ -15,14 +15,14 @@ func NewDecodeStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 		switch {
 		case bytes.Equal(kvA.Key[:1], types.RegisteredWrkChainPrefix):
 			var wcA, wcB types.WrkChain
-			cdc.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &wcA)
-			cdc.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &wcB)
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &wcA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &wcB)
 			return fmt.Sprintf("%v\n%v", wcA, wcB)
 
 		case bytes.Equal(kvA.Key[:1], types.RecordedWrkChainBlockHashPrefix):
 			var wcbA, wcbB types.WrkChainBlock
-			cdc.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &wcbA)
-			cdc.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &wcbB)
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &wcbA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &wcbB)
 			return fmt.Sprintf("%v\n%v", wcbA, wcbB)
 
 		default:

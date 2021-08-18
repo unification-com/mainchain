@@ -95,7 +95,7 @@ func queryBeaconTimestamp(ctx sdk.Context, path []string, req abci.RequestQuery,
 
 func queryBeaconsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
 
-	var queryParams types.QueryBeaconParams
+	var queryParams types.QueryBeaconsFilteredRequest
 
 	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &queryParams)
 
@@ -103,19 +103,13 @@ func queryBeaconsFiltered(ctx sdk.Context, _ []string, req abci.RequestQuery, k 
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	// todo
-	return nil, nil
+	filteredBeacons := k.GetBeaconsFiltered(ctx, queryParams)
 
-	//filteredBeacons := k.GetBeaconsFiltered(ctx, queryParams)
-	//
-	////if filteredBeacons == nil {
-	////	filteredBeacons = types.Beacons{}
-	////}
-	//
-	//res, err := codec.MarshalJSONIndent(legacyQuerierCdc, filteredBeacons)
-	//if err != nil {
-	//	return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
-	//}
-	//
-	//return res, nil
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, filteredBeacons)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
+
 }

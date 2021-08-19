@@ -13,8 +13,8 @@ type GenesisState struct {
 }
 
 type BeaconExport struct {
-	Beacon           Beacon                         `json:"beacon" yaml:"beacon"`
-	BeaconTimestamps []BeaconTimestampGenesisExport `json:"timestamps" yaml:"timestamps"`
+	Beacon           Beacon            `json:"beacon" yaml:"beacon"`
+	BeaconTimestamps []BeaconTimestamp `json:"timestamps" yaml:"timestamps"`
 }
 
 // NewGenesisState creates a new GenesisState object

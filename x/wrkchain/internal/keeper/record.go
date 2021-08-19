@@ -99,7 +99,7 @@ func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (w
 	return
 }
 
-func prependBlock(x types.WrkChainBlocksGenesisExport, y types.WrkChainBlockGenesisExport) types.WrkChainBlocksGenesisExport {
+func prependBlock(x []types.WrkChainBlock, y types.WrkChainBlock) []types.WrkChainBlock {
 	x = append(x, y)
 	copy(x[1:], x)
 	x[0] = y
@@ -108,19 +108,10 @@ func prependBlock(x types.WrkChainBlocksGenesisExport, y types.WrkChainBlockGene
 
 // GetAllWrkChainBlockHashesForGenesisExport returns all the wrkchain's hashes from store for export in an optimised
 // format ready for genesis
-func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks types.WrkChainBlocksGenesisExport) {
+func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks []types.WrkChainBlock) {
 	count := 0
 	k.IterateWrkChainBlockHashesReverse(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
-		wcbExp := types.WrkChainBlockGenesisExport{
-			Height:     wcb.Height,
-			BlockHash:  wcb.BlockHash,
-			ParentHash: wcb.ParentHash,
-			Hash1:      wcb.Hash1,
-			Hash2:      wcb.Hash2,
-			Hash3:      wcb.Hash3,
-			SubmitTime: wcb.SubmitTime,
-		}
-		wrkChainBlocks = prependBlock(wrkChainBlocks, wcbExp) // append(wrkChainBlocks, wcbExp)
+		wrkChainBlocks = prependBlock(wrkChainBlocks, wcb)
 		count = count + 1
 		if count == types.MaxBlockSubmissionsKeepInState {
 			return true

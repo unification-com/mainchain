@@ -99,7 +99,7 @@ func (k Keeper) GetAllBeaconTimestamps(ctx sdk.Context, beaconID uint64) (timest
 	return
 }
 
-func prependTimestamp(x types.BeaconTimestampsGenesisExport, y types.BeaconTimestampGenesisExport) types.BeaconTimestampsGenesisExport {
+func prependTimestamp(x []types.BeaconTimestamp, y types.BeaconTimestamp) []types.BeaconTimestamp {
 	x = append(x, y)
 	copy(x[1:], x)
 	x[0] = y
@@ -108,16 +108,11 @@ func prependTimestamp(x types.BeaconTimestampsGenesisExport, y types.BeaconTimes
 
 // GetAllBeaconTimestampsForExport Get an iterator over all a Beacon's timestamps in which an optimised version of
 // the timestamp data is returned for genesis export
-func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64) (timestamps types.BeaconTimestampsGenesisExport) {
+func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64) (timestamps []types.BeaconTimestamp) {
 
 	count := 0
 	k.IterateBeaconTimestampsReverse(ctx, beaconID, func(bts types.BeaconTimestamp) bool {
-		btsExp := types.BeaconTimestampGenesisExport{
-			TimestampID: bts.TimestampID,
-			SubmitTime:  bts.SubmitTime,
-			Hash:        bts.Hash,
-		}
-		timestamps = prependTimestamp(timestamps, btsExp) // append(timestamps, btsExp)
+		timestamps = prependTimestamp(timestamps, bts)
 		count = count + 1
 		if count == types.MaxHashSubmissionsKeepInState {
 			return true

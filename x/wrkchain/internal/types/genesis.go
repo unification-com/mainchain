@@ -13,8 +13,8 @@ type GenesisState struct {
 }
 
 type WrkChainExport struct {
-	WrkChain       WrkChain                     `json:"wrkchain" yaml:"wrkchain"`
-	WrkChainBlocks []WrkChainBlockGenesisExport `json:"blocks" yaml:"blocks"`
+	WrkChain       WrkChain        `json:"wrkchain" yaml:"wrkchain"`
+	WrkChainBlocks []WrkChainBlock `json:"blocks" yaml:"blocks"`
 }
 
 // NewGenesisState creates a new GenesisState object

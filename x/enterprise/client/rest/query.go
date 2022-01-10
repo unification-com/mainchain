@@ -313,7 +313,7 @@ func EnterpriseAuthAccountOverride(cliCtx client.Context) http.HandlerFunc {
 func EnterpriseSupplyTotalOverride(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", types.ModuleName, keeper.QueryTotalSupply), nil)
+		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.ModuleName, keeper.QueryTotalSupply), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return

@@ -1,4 +1,5 @@
 package types
+
 //
 //import (
 //	undtypes "github.com/unification-com/mainchain/types"

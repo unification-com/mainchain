@@ -21,4 +21,3 @@ var (
 	AttributeKeyWhitelistAction = "action"
 	AttributeWhitelistAddress   = "address"
 )
-

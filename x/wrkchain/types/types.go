@@ -10,8 +10,8 @@ const (
 	RecordFee = 1000000000                   // 1 FUND - used in init genesis
 	FeeDenom  = undtypes.DefaultDenomination // used in init genesis
 
-	DefaultStartingWrkChainID uint64 = 1 // used in init genesis
-	MaxBlockSubmissionsKeepInState = 10000
+	DefaultStartingWrkChainID      uint64 = 1 // used in init genesis
+	MaxBlockSubmissionsKeepInState        = 10000
 )
 
 // WrkChains is an array of WrkChain

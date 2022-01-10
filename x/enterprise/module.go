@@ -34,8 +34,8 @@ var (
 )
 
 // AppModuleBasic defines the basic application module used by the enterprise module.
-type AppModuleBasic struct{
-	cdc              codec.Marshaler
+type AppModuleBasic struct {
+	cdc codec.Marshaler
 }
 
 // Name returns the enterprise module's name.
@@ -104,9 +104,9 @@ type AppModule struct {
 func NewAppModule(cdc codec.Marshaler, keeper keeper.Keeper, bankKeeper types.BankKeeper, accountKeeper types.AccountKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
-		keeper: keeper,
-		bankKeeper: bankKeeper,
-		accountKeeper:     accountKeeper,
+		keeper:         keeper,
+		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
 	}
 }
 
@@ -200,5 +200,3 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		am.keeper, am.bankKeeper, am.accountKeeper,
 	)
 }
-
-

@@ -87,7 +87,6 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 		moniker := simtypes.RandStringOfLength(r, 64)
 		name := simtypes.RandStringOfLength(r, 128)
 
-
 		msg := types.NewMsgRegisterBeacon(moniker, name, account.GetAddress())
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
@@ -119,7 +118,6 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 		return opMsg, nil, nil
 	}
 }
-
 
 func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
@@ -186,7 +184,7 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 }
 
 func getRandomBeacon(r *rand.Rand, k keeper.Keeper,
-	ctx sdk.Context) (beacon types.Beacon, err error){
+	ctx sdk.Context) (beacon types.Beacon, err error) {
 	beacons := k.GetAllBeacons(ctx)
 	if len(beacons) == 0 {
 		return types.Beacon{}, errors.New("no beacons")

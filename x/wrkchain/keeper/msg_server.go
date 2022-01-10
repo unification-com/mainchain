@@ -156,7 +156,7 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 
 	return &types.MsgRecordWrkChainBlockResponse{
 		WrkchainId: msg.WrkchainId,
-		Height: msg.Height,
+		Height:     msg.Height,
 	}, nil
 
 }

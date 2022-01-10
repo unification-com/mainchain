@@ -16,11 +16,11 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 
 	for _, record := range data.RegisteredBeacons {
 		beacon := types.Beacon{
-			BeaconId: record.Beacon.BeaconId,
-			Moniker: record.Beacon.Moniker,
-			Name: record.Beacon.Name,
+			BeaconId:        record.Beacon.BeaconId,
+			Moniker:         record.Beacon.Moniker,
+			Name:            record.Beacon.Name,
 			LastTimestampId: record.Beacon.LastTimestampId,
-			Owner: record.Beacon.Owner,
+			Owner:           record.Beacon.Owner,
 		}
 
 		err := keeper.SetBeacon(ctx, beacon)

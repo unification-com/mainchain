@@ -134,10 +134,7 @@ func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkch
 		}
 		wrkChainBlocks = prependBlock(wrkChainBlocks, wcbExp) // append(wrkChainBlocks, wcbExp)
 		count = count + 1
-		if count == types.MaxBlockSubmissionsKeepInState {
-			return true
-		}
-		return false
+		return count == types.MaxBlockSubmissionsKeepInState
 	})
 	return
 }

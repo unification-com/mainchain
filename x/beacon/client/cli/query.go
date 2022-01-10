@@ -51,6 +51,10 @@ func GetCmdQueryParams() *cobra.Command {
 				&types.QueryParamsRequest{},
 			)
 
+			if err != nil {
+				return err
+			}
+
 			return clientCtx.PrintObjectLegacy(params)
 		},
 	}
@@ -173,7 +177,7 @@ func GetCmdBeaconTimestamp() *cobra.Command {
 			}
 
 			res, err := queryClient.BeaconTimestamp(context.Background(), &types.QueryBeaconTimestampRequest{
-				BeaconId: beaconId,
+				BeaconId:    beaconId,
 				TimestampId: timestampId,
 			})
 

@@ -30,18 +30,18 @@ import (
 //
 // If any of the checks fail, a suitable error is returned.
 type CorrectWrkChainFeeDecorator struct {
-	bankKeeper BankKeeper
-	accKeeper AccountKeeper
+	bankKeeper     BankKeeper
+	accKeeper      AccountKeeper
 	wrkchainKeeper WrkchainKeeper
-	entKeeper  EnterpriseKeeper
+	entKeeper      EnterpriseKeeper
 }
 
 func NewCorrectWrkChainFeeDecorator(bankKeeper BankKeeper, accKeeper AccountKeeper, wrkchainKeeper WrkchainKeeper, enterpriseKeeper EnterpriseKeeper) CorrectWrkChainFeeDecorator {
 	return CorrectWrkChainFeeDecorator{
-		bankKeeper: bankKeeper,
-		accKeeper: accKeeper,
+		bankKeeper:     bankKeeper,
+		accKeeper:      accKeeper,
 		wrkchainKeeper: wrkchainKeeper,
-		entKeeper:  enterpriseKeeper,
+		entKeeper:      enterpriseKeeper,
 	}
 }
 

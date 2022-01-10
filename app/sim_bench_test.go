@@ -60,7 +60,6 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	}
 }
 
-
 func BenchmarkInvariants(b *testing.B) {
 	fmt.Println("Running BenchmarkInvariants on und_app")
 	config, db, dir, logger, _, err := simapp.SetupSimulation("leveldb-app-invariant-bench", "Simulation")

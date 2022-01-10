@@ -141,7 +141,7 @@ func TestRegisterWrkChain(t *testing.T) {
 		wcDb, found := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
 		require.True(t, found)
 
-			// hackery for reg time, otherwise following test fails
+		// hackery for reg time, otherwise following test fails
 		expectedWc.RegTime = wcDb.RegTime
 		require.True(t, WRKChainEqual(wcDb, expectedWc))
 

@@ -274,10 +274,10 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 				suite.Require().Equal(uint64(1), bID)
 
 				expectedTs := types.BeaconTimestamp{
-					BeaconId: bID,
-					Hash: test_helpers.GenerateRandomString(32),
-					SubmitTime: uint64(time.Now().Unix()),
-					Owner: addrs[0].String(),
+					BeaconId:    bID,
+					Hash:        test_helpers.GenerateRandomString(32),
+					SubmitTime:  uint64(time.Now().Unix()),
+					Owner:       addrs[0].String(),
 					TimestampId: 1,
 				}
 

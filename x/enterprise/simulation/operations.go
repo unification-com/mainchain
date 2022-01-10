@@ -153,7 +153,6 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 			break
 		case 3:
 			blocksInFuture = int64(5)
-			break
 		}
 
 		// generate future operations for decisions
@@ -163,7 +162,7 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 			signer, _ := sdk.AccAddressFromBech32(entSignerArray[i])
 			fops[i] = simtypes.FutureOperation{
 				BlockHeight: int(whenDecide),
-				Op:        operationSimulateMsgProcessUndPurchaseOrder(k, bk, ak, signer, int64(poId - 1)),
+				Op:          operationSimulateMsgProcessUndPurchaseOrder(k, bk, ak, signer, int64(poId-1)),
 			}
 		}
 

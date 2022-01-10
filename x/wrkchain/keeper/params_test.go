@@ -10,7 +10,6 @@ import (
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
-
 var testParams = types.NewParams(24, 2, test_helpers.TestDenomination)
 
 func TestSetGetParams(t *testing.T) {

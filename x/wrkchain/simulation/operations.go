@@ -121,7 +121,6 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 	}
 }
 
-
 func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
@@ -192,7 +191,7 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 }
 
 func getRandomWrkChain(r *rand.Rand, k keeper.Keeper,
-	ctx sdk.Context) (beacon types.WrkChain, err error){
+	ctx sdk.Context) (beacon types.WrkChain, err error) {
 	wrkChains := k.GetAllWrkChains(ctx)
 	if len(wrkChains) == 0 {
 		return types.WrkChain{}, errors.New("no wrkChains")

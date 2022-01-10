@@ -38,11 +38,11 @@ func TestValidMsgRegisterWrkChain(t *testing.T) {
 	h := wrkchain.NewHandler(app.WrkchainKeeper)
 
 	msg := &types.MsgRegisterWrkChain{
-		Moniker: "moniker",
-		Name: "name",
+		Moniker:     "moniker",
+		Name:        "name",
 		GenesisHash: "lhvviuvi",
-		BaseType: "tendermint",
-		Owner: testAddrs[0].String(),
+		BaseType:    "tendermint",
+		Owner:       testAddrs[0].String(),
 	}
 
 	res, err := h(ctx, msg)
@@ -70,55 +70,55 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 		msg           *types.MsgRegisterWrkChain
 	}{
 		{
-			name:          "empty owner address",
-			msg:           &types.MsgRegisterWrkChain{
+			name: "empty owner address",
+			msg: &types.MsgRegisterWrkChain{
 				Moniker: "moniker",
-				Name: "name",
+				Name:    "name",
 			},
 			expectedError: errors.New("empty address string is not allowed"),
 		},
 		{
-			name:          "invalid owner address",
-			msg:           &types.MsgRegisterWrkChain{
+			name: "invalid owner address",
+			msg: &types.MsgRegisterWrkChain{
 				Moniker: "moniker",
-				Name: "name",
-				Owner: "rubbish",
+				Name:    "name",
+				Owner:   "rubbish",
 			},
 			expectedError: errors.New("decoding bech32 failed: invalid bech32 string length 7"),
 		},
 		{
-			name:          "name too big",
-			msg:           &types.MsgRegisterWrkChain{
+			name: "name too big",
+			msg: &types.MsgRegisterWrkChain{
 				Moniker: "moniker",
-				Name: test_helpers.GenerateRandomString(129),
-				Owner: testAddrs[0].String(),
+				Name:    test_helpers.GenerateRandomString(129),
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"),
 		},
 		{
-			name:          "moniker too big",
-			msg:           &types.MsgRegisterWrkChain{
+			name: "moniker too big",
+			msg: &types.MsgRegisterWrkChain{
 				Moniker: test_helpers.GenerateRandomString(65),
-				Name: "name",
-				Owner: testAddrs[0].String(),
+				Name:    "name",
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit"),
 		},
 		{
-			name:          "zero length moniker",
-			msg:           &types.MsgRegisterWrkChain{
+			name: "zero length moniker",
+			msg: &types.MsgRegisterWrkChain{
 				Moniker: "",
-				Name: "name",
-				Owner: testAddrs[0].String(),
+				Name:    "name",
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker"),
 		},
 		{
-			name:          "wrkchain exists with moniker",
-			msg:           &types.MsgRegisterWrkChain{
+			name: "wrkchain exists with moniker",
+			msg: &types.MsgRegisterWrkChain{
 				Moniker: existsMoniker,
-				Name: "name",
-				Owner: testAddrs[0].String(),
+				Name:    "name",
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrapf(
 				types.ErrWrkChainAlreadyRegistered,
@@ -127,11 +127,11 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 			),
 		},
 		{
-			name:          "successful",
-			msg:           &types.MsgRegisterWrkChain{
+			name: "successful",
+			msg: &types.MsgRegisterWrkChain{
 				Moniker: test_helpers.GenerateRandomString(24),
-				Name: test_helpers.GenerateRandomString(24),
-				Owner: testAddrs[0].String(),
+				Name:    test_helpers.GenerateRandomString(24),
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: nil,
 		},
@@ -164,14 +164,14 @@ func TestValidMsgRecordWrkChainBlock(t *testing.T) {
 		"boiob",
 		"tendermint",
 		testAddrs[0],
-		)
+	)
 	require.Nil(t, err)
 
 	msg := &types.MsgRecordWrkChainBlock{
 		WrkchainId: 1,
-		BlockHash: test_helpers.GenerateRandomString(64),
-		Owner: testAddrs[0].String(),
-		Height: 1,
+		BlockHash:  test_helpers.GenerateRandomString(64),
+		Owner:      testAddrs[0].String(),
+		Height:     1,
 	}
 
 	res, err := h(ctx, msg)
@@ -205,119 +205,118 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 		msg           *types.MsgRecordWrkChainBlock
 	}{
 		{
-			name: "empty owner address",
-			msg: &types.MsgRecordWrkChainBlock{
-			},
+			name:          "empty owner address",
+			msg:           &types.MsgRecordWrkChainBlock{},
 			expectedError: errors.New("empty address string is not allowed"),
 		},
 		{
-			name:          "invalid owner address",
-			msg:           &types.MsgRecordWrkChainBlock{
+			name: "invalid owner address",
+			msg: &types.MsgRecordWrkChainBlock{
 				Owner: "rubbish",
 			},
 			expectedError: errors.New("decoding bech32 failed: invalid bech32 string length 7"),
 		},
 		{
-			name:          "zero height",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
+			name: "zero height",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:     testAddrs[0].String(),
 				BlockHash: test_helpers.GenerateRandomString(66),
-				Height: 0,
+				Height:    0,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrInvalidData, "height must be > 0"),
 		},
 		{
-			name:          "blockhash too large",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
+			name: "blockhash too large",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:     testAddrs[0].String(),
 				BlockHash: test_helpers.GenerateRandomString(67),
-				Height: 1,
+				Height:    1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit"),
 		},
 		{
-			name:          "parenthash too large",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(64),
+			name: "parenthash too large",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:      testAddrs[0].String(),
+				BlockHash:  test_helpers.GenerateRandomString(64),
 				ParentHash: test_helpers.GenerateRandomString(67),
-				Height: 1,
+				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit"),
 		},
 		{
-			name:          "hash1 too large",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(64),
+			name: "hash1 too large",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:      testAddrs[0].String(),
+				BlockHash:  test_helpers.GenerateRandomString(64),
 				ParentHash: test_helpers.GenerateRandomString(66),
-				Hash1: test_helpers.GenerateRandomString(67),
-				Height: 1,
+				Hash1:      test_helpers.GenerateRandomString(67),
+				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit"),
 		},
 		{
-			name:          "hash2 too large",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(64),
+			name: "hash2 too large",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:      testAddrs[0].String(),
+				BlockHash:  test_helpers.GenerateRandomString(64),
 				ParentHash: test_helpers.GenerateRandomString(66),
-				Hash1: test_helpers.GenerateRandomString(66),
-				Hash2: test_helpers.GenerateRandomString(67),
-				Height: 1,
+				Hash1:      test_helpers.GenerateRandomString(66),
+				Hash2:      test_helpers.GenerateRandomString(67),
+				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit"),
 		},
 		{
-			name:          "hash3 too large",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(64),
+			name: "hash3 too large",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:      testAddrs[0].String(),
+				BlockHash:  test_helpers.GenerateRandomString(64),
 				ParentHash: test_helpers.GenerateRandomString(66),
-				Hash1: test_helpers.GenerateRandomString(66),
-				Hash2: test_helpers.GenerateRandomString(66),
-				Hash3: test_helpers.GenerateRandomString(67),
-				Height: 1,
+				Hash1:      test_helpers.GenerateRandomString(66),
+				Hash2:      test_helpers.GenerateRandomString(66),
+				Hash3:      test_helpers.GenerateRandomString(67),
+				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit"),
 		},
 		{
-			name:          "wrkchain not registered",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(24),
+			name: "wrkchain not registered",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:      testAddrs[0].String(),
+				BlockHash:  test_helpers.GenerateRandomString(24),
 				WrkchainId: 2,
-				Height: 1,
+				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet"),
 		},
 		{
-			name:          "not wrkchain owner",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[1].String(),
-				BlockHash: test_helpers.GenerateRandomString(24),
+			name: "not wrkchain owner",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:      testAddrs[1].String(),
+				BlockHash:  test_helpers.GenerateRandomString(24),
 				WrkchainId: 1,
-				Height: 1,
+				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain"),
 		},
 		{
-			name:          "successful",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(24),
+			name: "successful",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:      testAddrs[0].String(),
+				BlockHash:  test_helpers.GenerateRandomString(24),
 				WrkchainId: 1,
-				Height: 1,
+				Height:     1,
 			},
 			expectedError: nil,
 		},
 		{
-			name:          "height already recorded",
-			msg:           &types.MsgRecordWrkChainBlock{
-				Owner: testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(24),
+			name: "height already recorded",
+			msg: &types.MsgRecordWrkChainBlock{
+				Owner:      testAddrs[0].String(),
+				BlockHash:  test_helpers.GenerateRandomString(24),
 				WrkchainId: 1,
-				Height: 1,
+				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "wrkchain block hashes have already been recorded for this height"),
 		},

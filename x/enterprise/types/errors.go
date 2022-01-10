@@ -37,4 +37,3 @@ var (
 	ErrAddressNotWhitelisted         = sdkerrors.Register(ModuleName, CodeAddressNotWhitelisted, "address not whitelisted")
 	ErrNotAuthorisedToRaisePO        = sdkerrors.Register(ModuleName, CodeNotAuthorisedToRaisePO, "address not authorised to raise purchase orders")
 )
-

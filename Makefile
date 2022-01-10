@@ -49,6 +49,10 @@ lint:
 	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -w -s
 	go mod verify
 
+gofmt:
+	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -w -s
+	go mod verify
+
 include sims.mk
 
 test: test-unit

@@ -81,7 +81,7 @@ func (k Keeper) ProcessWhitelistAction(ctx sdk.Context, address sdk.AccAddress, 
 			}
 			logger.Debug("added address to purchase order whitelist", "address", address, "signer", signer)
 		} else {
-			return sdkerrors.Wrapf(types.ErrAlreadyWhitelisted,"%s already whitelisted", address)
+			return sdkerrors.Wrapf(types.ErrAlreadyWhitelisted, "%s already whitelisted", address)
 		}
 	}
 	if action == types.WhitelistActionRemove {

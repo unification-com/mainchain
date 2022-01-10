@@ -294,7 +294,6 @@ func TestAcceptedQueue(t *testing.T) {
 	}
 }
 
-
 func TestAcceptedQueueIterator(t *testing.T) {
 	app := test_helpers.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})

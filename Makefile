@@ -151,12 +151,10 @@ proto-swagger-gen:
 proto-check-breaking:
 	@$(DOCKER_BUF) buf breaking --against-input $(HTTPS_GIT)#branch=stargate
 
-TM_URL              = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.1/proto/tendermint
+TM_URL              = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.0-rc6/proto/tendermint
 GOGO_PROTO_URL      = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
 COSMOS_PROTO_URL    = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
-COSMOS_SDK_PROTO_URL= https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.40.0/proto
 CONFIO_URL          = https://raw.githubusercontent.com/confio/ics23/v0.6.3
-GOOGLE_URL          = https://raw.githubusercontent.com/googleapis/googleapis/master/google
 
 TM_CRYPTO_TYPES     = third_party/proto/tendermint/crypto
 TM_ABCI_TYPES       = third_party/proto/tendermint/abci
@@ -168,10 +166,6 @@ TM_P2P              = third_party/proto/tendermint/p2p
 GOGO_PROTO_TYPES    = third_party/proto/gogoproto
 COSMOS_PROTO_TYPES  = third_party/proto/cosmos_proto
 CONFIO_TYPES        = third_party/proto/confio
-COSMOS_SDK_BASE     = third_party/proto/cosmos_sdk/base
-
-GOOGLE_API_TYPES    = third_party/proto/google/api
-GOOGLE_PB_TYPES     = third_party/proto/google/protobuf
 
 proto-update-deps:
 	@mkdir -p $(GOGO_PROTO_TYPES)
@@ -179,12 +173,6 @@ proto-update-deps:
 
 	@mkdir -p $(COSMOS_PROTO_TYPES)
 	@curl -sSL $(COSMOS_PROTO_URL)/cosmos.proto > $(COSMOS_PROTO_TYPES)/cosmos.proto
-
-	@mkdir -p $(COSMOS_SDK_BASE)/v1beta1
-	@curl -sSL $(COSMOS_SDK_PROTO_URL)/cosmos/base/v1beta1/coin.proto > $(COSMOS_SDK_BASE)/v1beta1/coin.proto
-
-	@mkdir -p $(COSMOS_SDK_BASE)/query/v1beta1
-	@curl -sSL $(COSMOS_SDK_PROTO_URL)/cosmos/base/query/v1beta1/pagination.proto > $(COSMOS_SDK_BASE)/query/v1beta1/pagination.proto
 
 ## Importing of tendermint protobuf definitions currently requires the
 ## use of `sed` in order to build properly with cosmos-sdk's proto file layout
@@ -215,14 +203,6 @@ proto-update-deps:
 
 	@mkdir -p $(CONFIO_TYPES)
 	@curl -sSL $(CONFIO_URL)/proofs.proto > $(CONFIO_TYPES)/proofs.proto
-
-	@mkdir -p $(GOOGLE_API_TYPES)
-	@curl -sSL $(GOOGLE_URL)/api/http.proto > $(GOOGLE_API_TYPES)/http.proto
-	@curl -sSL $(GOOGLE_URL)/api/annotations.proto > $(GOOGLE_API_TYPES)/annotations.proto
-	@curl -sSL $(GOOGLE_URL)/api/httpbody.proto > $(GOOGLE_API_TYPES)/httpbody.proto
-
-	@mkdir -p $(GOOGLE_PB_TYPES)
-	@curl -sSL $(GOOGLE_URL)/protobuf/any.proto > $(GOOGLE_PB_TYPES)/any.proto
 ## insert go package option into proofs.proto file
 ## Issue link: https://github.com/confio/ics23/issues/32
 	@sed -i '4ioption go_package = "github.com/confio/ics23/go";' $(CONFIO_TYPES)/proofs.proto

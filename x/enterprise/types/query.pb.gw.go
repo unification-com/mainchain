@@ -230,7 +230,7 @@ func local_request_Query_TotalUnlocked_0(ctx context.Context, marshaler runtime.
 }
 
 func request_Query_TotalSupply_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalSupplyRequest
+	var protoReq QueryTotalSupplyEnterpriseRequest
 	var metadata runtime.ServerMetadata
 
 	msg, err := client.TotalSupply(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -239,7 +239,7 @@ func request_Query_TotalSupply_0(ctx context.Context, marshaler runtime.Marshale
 }
 
 func local_request_Query_TotalSupply_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalSupplyRequest
+	var protoReq QueryTotalSupplyEnterpriseRequest
 	var metadata runtime.ServerMetadata
 
 	msg, err := server.TotalSupply(ctx, &protoReq)
@@ -248,7 +248,7 @@ func local_request_Query_TotalSupply_0(ctx context.Context, marshaler runtime.Ma
 }
 
 func request_Query_TotalSupplyOverride_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalSupplyRequest
+	var protoReq QueryTotalSupplyOverrideRequest
 	var metadata runtime.ServerMetadata
 
 	msg, err := client.TotalSupplyOverride(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -257,7 +257,7 @@ func request_Query_TotalSupplyOverride_0(ctx context.Context, marshaler runtime.
 }
 
 func local_request_Query_TotalSupplyOverride_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalSupplyRequest
+	var protoReq QueryTotalSupplyOverrideRequest
 	var metadata runtime.ServerMetadata
 
 	msg, err := server.TotalSupplyOverride(ctx, &protoReq)
@@ -266,7 +266,7 @@ func local_request_Query_TotalSupplyOverride_0(ctx context.Context, marshaler ru
 }
 
 func request_Query_SupplyOfOverride_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QuerySupplyOfOverrideOfRequest
+	var protoReq QuerySupplyOfOverrideRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -293,7 +293,7 @@ func request_Query_SupplyOfOverride_0(ctx context.Context, marshaler runtime.Mar
 }
 
 func local_request_Query_SupplyOfOverride_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QuerySupplyOfOverrideOfRequest
+	var protoReq QuerySupplyOfOverrideRequest
 	var metadata runtime.ServerMetadata
 
 	var (

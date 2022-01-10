@@ -39,17 +39,18 @@ service Query {
     option (google.api.http).get = "/mainchain/enterprise/v1/unlocked";
   }
 
-  // Get total supply, including Ent. locked FUND (overrides bank's total supply query)
-  rpc TotalSupply(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
+  // Get total supply, including locked Ent. FUND
+  rpc TotalSupply(QueryTotalSupplyEnterpriseRequest) returns (QueryTotalSupplyEnterpriseResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/supply";
   }
 
-  rpc TotalSupplyOverride(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
+  // Overrides the default Cosmos total supply in order to subtract any locked enterprise FUND
+  rpc TotalSupplyOverride(QueryTotalSupplyOverrideRequest) returns (QueryTotalSupplyOverrideResponse) {
     option (google.api.http).get = "/cosmos/bank/v1beta1/supply";
   }
 
-  // SupplyOf queries the supply of a single coin.
-  rpc SupplyOfOverride(QuerySupplyOfOverrideOfRequest) returns (QueryTotalSupplyResponse) {
+  // Overrides the default Cosmos total supply in order to subtract any locked enterprise FUND
+  rpc SupplyOfOverride(QuerySupplyOfOverrideRequest) returns (QuerySupplyOfOverrideResponse) {
     option (google.api.http).get = "/cosmos/bank/v1beta1/supply/{denom}";
   }
 
@@ -119,16 +120,29 @@ message QueryTotalUnlockedResponse {
   cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 }
 
-message QueryTotalSupplyRequest {}
+message QueryTotalSupplyEnterpriseRequest {}
 
-message QueryTotalSupplyResponse {
-    UndSupply supply = 1 [(gogoproto.nullable) = false];
+message QueryTotalSupplyEnterpriseResponse {
+  UndSupply supply = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryTotalSupplyOverrideRequest {}
+
+message QueryTotalSupplyOverrideResponse {
+  repeated cosmos.base.v1beta1.Coin supply = 1
+  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
 }
 
 // QuerySupplyOfOverrideRequest is the request type for the Query/SupplyOf RPC method.
-message QuerySupplyOfOverrideOfRequest {
+message QuerySupplyOfOverrideRequest {
   // denom is the coin denom to query balances for.
   string denom = 1;
+}
+
+// QuerySupplyOfResponse is the response type for the Query/SupplyOf RPC method.
+message QuerySupplyOfOverrideResponse {
+  // amount is the supply of the coin.
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryWhitelistRequest {}

@@ -104,16 +104,16 @@ func (suite *KeeperTestSuite) TestIsLocked() {
 	)
 
 	testCases := []struct {
-		msg          string
-		malleate     func()
-		expIsLocked  bool
+		msg         string
+		malleate    func()
+		expIsLocked bool
 	}{
 		{
 			"zero value",
 			func() {
 				addr = addrs[0]
 				l = types.LockedUnd{
-					Owner: addr.String(),
+					Owner:  addr.String(),
 					Amount: sdk.NewInt64Coin(denom, 0),
 				}
 			},
@@ -124,7 +124,7 @@ func (suite *KeeperTestSuite) TestIsLocked() {
 			func() {
 				addr = addrs[2]
 				l = types.LockedUnd{
-					Owner: addr.String(),
+					Owner:  addr.String(),
 					Amount: sdk.NewInt64Coin(denom, 100),
 				}
 			},
@@ -236,4 +236,38 @@ func TestUnlockCoinsForFees(t *testing.T) {
 	entAccFromAccK := app.AccountKeeper.GetModuleAccount(ctx, types.ModuleName)
 	entAccFromSkCoins := app.BankKeeper.GetAllBalances(ctx, entAccFromAccK.GetAddress())
 	require.True(t, entAccFromSkCoins.IsEqual(totalLockedCoins))
+}
+
+func TestGetTotalSupplyWithLockedNundRemoved(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+
+	totalSupply := sdk.NewCoins(sdk.NewInt64Coin(test_helpers.TestDenomination, 0))
+	totalMinted := sdk.NewCoins(sdk.NewInt64Coin(test_helpers.TestDenomination, 0))
+
+	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
+
+	for _, addr := range testAddresses {
+		amountToMint := int64(test_helpers.RandInBetween(1000, 100000))
+		amountToUnlock := int64(test_helpers.RandInBetween(1, 999))
+
+		toMint := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToMint)
+		toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToUnlock)
+		toUnlockCoins := sdk.NewCoins(toUnlock)
+
+		_ = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, toMint)
+
+		err := app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addr, toUnlockCoins)
+		require.NoError(t, err)
+
+		totalSupply = totalSupply.Add(toUnlock)
+		totalMinted = totalMinted.Add(toMint)
+
+		totalSupplyDb := app.EnterpriseKeeper.GetTotalSupplyWithLockedNundRemoved(ctx)
+		require.True(t, totalSupplyDb.IsEqual(totalSupply))
+
+		totalMintedDb := app.BankKeeper.GetSupply(ctx).GetTotal()
+		require.True(t, totalMintedDb.IsEqual(totalMinted))
+	}
 }

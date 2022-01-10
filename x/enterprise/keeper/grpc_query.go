@@ -137,7 +137,7 @@ func (q Keeper) SupplyOfOverride(c context.Context, req *types.QuerySupplyOfOver
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	supply := q.GetSupplyOfWithLockedNundRemoved(ctx, req)
+	supply := q.GetSupplyOfWithLockedNundRemoved(ctx, req.Denom)
 
 	return &types.QuerySupplyOfOverrideResponse{Amount: sdk.NewCoin(req.Denom, supply)}, nil
 }

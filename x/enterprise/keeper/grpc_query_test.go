@@ -117,7 +117,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
 	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
 
 	testPos := []types.EnterpriseUndPurchaseOrder{}
-	
+
 	var (
 		req    *types.QueryEnterpriseUndPurchaseOrdersRequest
 		expRes *types.QueryEnterpriseUndPurchaseOrdersResponse
@@ -141,8 +141,8 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
 				// create 5 test pos
 				for i := 0; i < 5; i++ {
 					newPo := types.EnterpriseUndPurchaseOrder{
-						Purchaser:      addrs[0].String(),
-						Amount:         sdk.NewInt64Coin(test_helpers.TestDenomination, int64(i) + 1),
+						Purchaser: addrs[0].String(),
+						Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, int64(i)+1),
 					}
 
 					poId, err := app.EnterpriseKeeper.RaiseNewPurchaseOrder(ctx, newPo)
@@ -333,10 +333,10 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
 	total := baseSupply.Add(toLock)
 
 	expectedTotalSupply := types.UndSupply{
-		Denom: test_helpers.TestDenomination,
+		Denom:  test_helpers.TestDenomination,
 		Locked: locked.Amount.Uint64(),
 		Amount: unlocked.Amount.Uint64(),
-		Total: total.Amount.Uint64(),
+		Total:  total.Amount.Uint64(),
 	}
 
 	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
@@ -345,9 +345,9 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
 	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
 	suite.Require().NoError(err)
 
-	req := &types.QueryTotalSupplyRequest{}
+	req := &types.QueryTotalSupplyEnterpriseRequest{}
 
-	expectedRes := &types.QueryTotalSupplyResponse{
+	expectedRes := &types.QueryTotalSupplyEnterpriseResponse{
 		Supply: expectedTotalSupply,
 	}
 

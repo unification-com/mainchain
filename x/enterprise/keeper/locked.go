@@ -76,10 +76,10 @@ func (k Keeper) GetTotalSupplyWithLockedNundRemoved(ctx sdk.Context) sdk.Coins {
 	return supplyCoins
 }
 
-func (k Keeper) GetSupplyOfWithLockedNundRemoved(ctx sdk.Context, req *types.QuerySupplyOfOverrideRequest) sdk.Int {
-	supply := k.bankKeeper.GetSupply(ctx).GetTotal().AmountOf(req.Denom)
-	
-	if req.Denom == k.GetParamDenom(ctx) {
+func (k Keeper) GetSupplyOfWithLockedNundRemoved(ctx sdk.Context, denom string) sdk.Int {
+	supply := k.bankKeeper.GetSupply(ctx).GetTotal().AmountOf(denom)
+
+	if denom == k.GetParamDenom(ctx) {
 		locked := k.GetTotalLockedUnd(ctx)
 		unlocked := supply.Sub(locked.Amount)
 		return unlocked

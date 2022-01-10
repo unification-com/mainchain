@@ -115,5 +115,4 @@ func (q Keeper) WrkChainsFiltered(c context.Context, req *types.QueryWrkChainsFi
 	return &types.QueryWrkChainsFilteredResponse{
 		Wrkchains: wrkchains, Pagination: pageRes,
 	}, nil
-	return &types.QueryWrkChainsFilteredResponse{}, nil
 }

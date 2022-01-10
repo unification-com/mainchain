@@ -3,7 +3,6 @@ package rest
 import (
 	"errors"
 	"fmt"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -252,61 +251,6 @@ func enterpriseWhitelistedHandler(cliCtx client.Context) http.HandlerFunc {
 
 		cliCtx = cliCtx.WithHeight(height)
 		rest.PostProcessResponse(w, cliCtx, res)
-	}
-}
-
-func EnterpriseAuthAccountOverride(cliCtx client.Context) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		bech32addr := vars["address"]
-
-		addr, err := sdk.AccAddressFromBech32(bech32addr)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		if !ok {
-			return
-		}
-
-		accGetter := auth.AccountRetriever{}
-
-		_, height, err := accGetter.GetAccountWithHeight(cliCtx, addr)
-		lockedUndGetter := types.LockedRetriever{}
-
-		if err != nil {
-			// TODO: Handle more appropriately based on the error type.
-			// Ref: https://github.com/cosmos/cosmos-sdk/issues/4923
-			if err := accGetter.EnsureExists(cliCtx, addr); err != nil {
-				cliCtx = cliCtx.WithHeight(height)
-				rest.PostProcessResponse(w, cliCtx, auth.BaseAccount{})
-				return
-			}
-
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		lockedUnd, _, err := lockedUndGetter.GetLockedWithHeight(cliCtx, addr)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		// todo - this is a bit hackey
-		//accountWithLocked := undtypes.NewAccountWithLocked()
-		//entUnd := undtypes.NewEnterpriseUnd()
-		//
-		//entUnd.Locked = lockedUnd.Amount
-		////entUnd.Available = account.GetCoins().Add(lockedUnd.Amount)
-		//
-		//accountWithLocked.Account = account
-		//accountWithLocked.Enterprise = entUnd
-
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, lockedUnd)
 	}
 }
 

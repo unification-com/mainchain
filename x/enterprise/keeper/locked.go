@@ -6,6 +6,25 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
+// __ACCOUNT_QUERIES_____________________________________________________
+
+func (k Keeper) GetEnterpriseUserAccount(ctx sdk.Context, owner sdk.AccAddress) types.EnterpriseUserAccount {
+	locked := k.GetLockedUndForAccount(ctx, owner)
+	unlocked := k.bankKeeper.GetBalance(ctx, owner, k.GetParamDenom(ctx))
+	lockedCoin := locked.Amount
+
+	total := unlocked.Add(lockedCoin)
+
+	userAccount := types.EnterpriseUserAccount{
+		Owner:    owner.String(),
+		Locked:   lockedCoin,
+		Unlocked: unlocked,
+		Total:    total,
+	}
+
+	return userAccount
+}
+
 // __TOTAL_LOCKED_FUND___________________________________________________
 
 // GetTotalLockedUnd returns the total locked FUND

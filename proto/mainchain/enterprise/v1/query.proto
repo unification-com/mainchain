@@ -62,6 +62,11 @@ service Query {
   rpc Whitelisted(QueryWhitelistedRequest) returns(QueryWhitelistedResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/whitelist/{address}";
   }
+
+  // Queries an account address for their locked FUND
+  rpc EnterpriseAccount(QueryEnterpriseAccountRequest) returns (QueryEnterpriseAccountResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/account/{address}";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method
@@ -158,4 +163,12 @@ message QueryWhitelistedRequest {
 message QueryWhitelistedResponse {
   string address = 1;
   bool whitelisted = 2;
+}
+
+message QueryEnterpriseAccountRequest {
+  string address = 1;
+}
+
+message QueryEnterpriseAccountResponse {
+  EnterpriseUserAccount account = 1 [(gogoproto.nullable) = false];
 }

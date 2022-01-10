@@ -170,3 +170,26 @@ func (q Keeper) Whitelisted(c context.Context, req *types.QueryWhitelistedReques
 
 	return &types.QueryWhitelistedResponse{Address: req.Address, Whitelisted: isWhilelisted}, nil
 }
+
+func (q Keeper) EnterpriseAccount(c context.Context, req *types.QueryEnterpriseAccountRequest) (*types.QueryEnterpriseAccountResponse, error) {
+	if req == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	if req.Address == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid request")
+	}
+
+	addr, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	userAcc := q.GetEnterpriseUserAccount(ctx, addr)
+
+	return &types.QueryEnterpriseAccountResponse{
+		Account: userAcc,
+	}, nil
+}

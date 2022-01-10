@@ -22,19 +22,7 @@ func RegisterLegacyRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
 	registerQueryRoutes(clientCtx, r)
 	registerTxRoutes(clientCtx, r)
 
-	// legacy overrides
-	registerEnterpriseAuthAccountOverride(clientCtx, r)
+	// legacy REST overrides
 	registerEnterpriseTotalSupplyOverride(clientCtx, r)
 	registerEnterpriseSupplyByDenomOverride(clientCtx, r)
 }
-
-// RegisterAuthAccountOverride registers a REST route to override the default /auth/accounts/{address} path
-// and additionally return Enterprise Locked FUND data
-//func RegisterAuthAccountOverride(cliCtx client.Context, r *mux.Router) {
-//	registerEnterpriseAuthAccountOverride(cliCtx, r)
-//}
-//
-//func RegisterTotalSupplyOverride(cliCtx client.Context, r *mux.Router) {
-//	registerEnterpriseTotalSupplyOverride(cliCtx, r)
-//	registerEnterpriseSupplyByDenomOverride(cliCtx, r)
-//}

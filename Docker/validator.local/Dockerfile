@@ -6,21 +6,22 @@ RUN apk update && \
 
 ENV GOPATH="/root/.go"
 ENV GOROOT="/usr/local/go"
-#ENV GO111MODULE="on"
 ENV PATH="/usr/local/go/bin:/root/.go/bin:${PATH}"
 ENV LEDGER_ENABLED="false"
 
-RUN mkdir -p $GOPATH/src/github.com/unification-com && \
-    rm -rf $GOPATH/src/github.com/unification-com/mainchain
-RUN export GO111MODULE=off && go get -u github.com/go-delve/delve/cmd/dlv
+RUN mkdir -p /root/src/mainchain && \
+    export GO111MODULE=off && go get -u github.com/go-delve/delve/cmd/dlv
 
-COPY . $GOPATH/src/github.com/unification-com/mainchain
+WORKDIR /root/src/mainchain
 
-WORKDIR $GOPATH/src/github.com/unification-com/mainchain
+COPY ./go.mod ./go.sum ./
+RUN cd /root/src/mainchain && go mod download -x
+
+COPY . ./
 
 ARG WITH_DELVE="no"
 ENV WITH_DELVE=$WITH_DELVE
-RUN export WITH_DELVE=$WITH_DELVE && make install
+RUN export WITH_DELVE=$WITH_DELVE && make install && /root/.go/bin/und version
 
 COPY Docker/assets /root/.und_mainchain
 

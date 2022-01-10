@@ -1,0 +1,14 @@
+# VCS
+.github
+
+# OS
+.DS_Store
+
+# IDEs
+.vscode
+.idea
+
+# Build
+build
+dist
+docs/.vuepress/dist

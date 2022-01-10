@@ -52,6 +52,13 @@ message LockedUnd {
 
 message LockedUnds { repeated LockedUnd locked_unds = 1; }
 
+message EnterpriseUserAccount {
+  string owner = 1;
+  cosmos.base.v1beta1.Coin locked = 2 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin unlocked = 3 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin total = 4 [ (gogoproto.nullable) = false ];
+}
+
 //message TotalLockedUnd {
 //  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 //}

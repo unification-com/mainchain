@@ -17,6 +17,7 @@ const (
 	QueryTotalLocked      = "total-locked"
 	QueryTotalUnlocked    = "total-unlocked"
 	QueryTotalSupply      = "total-supply"
+	QueryTotalSupplyOf    = "total-supply-of"
 	QueryWhitelist        = "whitelist"
 	QueryWhitelisted      = "whitelisted"
 )
@@ -39,6 +40,8 @@ func NewLegacyQuerier(keeper Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Qu
 			return queryTotalUnlocked(ctx, keeper, legacyQuerierCdc)
 		case QueryTotalSupply:
 			return queryTotalSupply(ctx, keeper, legacyQuerierCdc)
+		case QueryTotalSupplyOf:
+			return queryTotalSupplyOf(ctx, path[1:], keeper, legacyQuerierCdc)
 		case QueryWhitelist:
 			return queryWhitelist(ctx, keeper, legacyQuerierCdc)
 		case QueryWhitelisted:
@@ -48,6 +51,7 @@ func NewLegacyQuerier(keeper Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Qu
 		}
 	}
 }
+
 // DONE
 func queryParams(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
 	params := k.GetParams(ctx)
@@ -148,9 +152,21 @@ func queryTotalUnlocked(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.Legac
 
 // DONE
 func queryTotalSupply(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
-	totalSupply := k.GetTotalSupplyIncludingLockedUnd(ctx)
+	totalSupply := k.GetTotalSupplyWithLockedNundRemoved(ctx)
 
 	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, totalSupply)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
+}
+
+func queryTotalSupplyOf(ctx sdk.Context, path []string, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	denom := path[0]
+	supply := k.GetSupplyOfWithLockedNundRemoved(ctx, denom)
+	supplyOf := sdk.NewCoin(denom, supply)
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, supplyOf)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

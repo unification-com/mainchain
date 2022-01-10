@@ -3,7 +3,6 @@ package rest
 import (
 	"errors"
 	"fmt"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -30,16 +29,12 @@ func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/enterprise/{%s}/locked", RestPurchaserAddr), enterpriseLockedForAddressHandler(clientCtx)).Methods("GET")
 }
 
-func registerEnterpriseAuthAccountOverride(cliCtx client.Context, r *mux.Router) {
-	r.HandleFunc("/auth/accounts/{address}", EnterpriseAuthAccountOverride(cliCtx)).Methods("GET")
-}
-
 func registerEnterpriseTotalSupplyOverride(cliCtx client.Context, r *mux.Router) {
-	r.HandleFunc("/supply/total", EnterpriseSupplyTotalOverride(cliCtx)).Methods("GET")
+	r.HandleFunc("/bank/total", EnterpriseSupplyTotalOverride(cliCtx)).Methods("GET")
 }
 
 func registerEnterpriseSupplyByDenomOverride(cliCtx client.Context, r *mux.Router) {
-	r.HandleFunc("/supply/total/{denom}", EnterpriseSupplyByDenomOverride(cliCtx)).Methods("GET")
+	r.HandleFunc("/bank/total/{denom}", EnterpriseSupplyByDenomOverride(cliCtx)).Methods("GET")
 }
 
 func enterpriseParamsHandler(cliCtx client.Context) http.HandlerFunc {
@@ -259,98 +254,37 @@ func enterpriseWhitelistedHandler(cliCtx client.Context) http.HandlerFunc {
 	}
 }
 
-func EnterpriseAuthAccountOverride(cliCtx client.Context) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		bech32addr := vars["address"]
-
-		addr, err := sdk.AccAddressFromBech32(bech32addr)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		if !ok {
-			return
-		}
-
-		accGetter := auth.AccountRetriever{}
-
-		_, height, err := accGetter.GetAccountWithHeight(cliCtx, addr)
-		lockedUndGetter := types.LockedRetriever{}
-
-		if err != nil {
-			// TODO: Handle more appropriately based on the error type.
-			// Ref: https://github.com/cosmos/cosmos-sdk/issues/4923
-			if err := accGetter.EnsureExists(cliCtx, addr); err != nil {
-				cliCtx = cliCtx.WithHeight(height)
-				rest.PostProcessResponse(w, cliCtx, auth.BaseAccount{})
-				return
-			}
-
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		lockedUnd, _, err := lockedUndGetter.GetLockedWithHeight(cliCtx, addr)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		// todo - this is a bit hackey
-		//accountWithLocked := undtypes.NewAccountWithLocked()
-		//entUnd := undtypes.NewEnterpriseUnd()
-		//
-		//entUnd.Locked = lockedUnd.Amount
-		////entUnd.Available = account.GetCoins().Add(lockedUnd.Amount)
-		//
-		//accountWithLocked.Account = account
-		//accountWithLocked.Enterprise = entUnd
-
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, lockedUnd)
-	}
-}
-
 func EnterpriseSupplyTotalOverride(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		//totalSupplyGetter := keeper.NewTotalSupplyRetriever(cliCtx)
-		//
-		//totalSupply, height, err := totalSupplyGetter.GetTotalSupplyHeight()
-		//if err != nil {
-		//	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		//	return
-		//}
-		//cliCtx = cliCtx.WithHeight(height)
-		//rest.PostProcessResponse(w, cliCtx, totalSupply)
-		rest.PostProcessResponse(w, cliCtx, nil)
+		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.ModuleName, keeper.QueryTotalSupply), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
 func EnterpriseSupplyByDenomOverride(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		//denom := mux.Vars(r)["denom"]
-		//
-		//// todo - get from params
-		//if denom != types.DefaultDenomination {
-		//	rest.WriteErrorResponse(w, http.StatusInternalServerError, "unknown denomination "+denom)
-		//	return
-		//}
-		//
-		//totalSupplyGetter := keeper.NewTotalSupplyRetriever(cliCtx)
-		//
-		//totalSupply, height, err := totalSupplyGetter.GetTotalSupplyHeight()
-		//if err != nil {
-		//	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		//	return
-		//}
-		//
-		//cliCtx = cliCtx.WithHeight(height)
-		//rest.PostProcessResponse(w, cliCtx, totalSupply.Amount)
-		rest.PostProcessResponse(w, cliCtx, nil)
+		denom := mux.Vars(r)["denom"]
+
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+
+		if !ok {
+			return
+		}
+
+		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", types.ModuleName, keeper.QueryTotalSupplyOf, denom), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }

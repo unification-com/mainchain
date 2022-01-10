@@ -36,6 +36,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryTotalUnlocked(),
 		GetCmdGetWhitelistedAddresses(),
 		GetCmdGetAddresIsWhitelisted(),
+		GetCmdGetEnterpriseUserAccount(),
 	)
 
 	return enterpriseQueryCmd
@@ -78,7 +79,6 @@ $ %s query enterprise params
 
 	return cmd
 }
-
 
 // GetCmdGetPurchaseOrders queries a list of all purchase orders
 func GetCmdGetPurchaseOrders() *cobra.Command {
@@ -304,6 +304,38 @@ func GetCmdGetAddresIsWhitelisted() *cobra.Command {
 			}
 
 			res, err := queryClient.Whitelisted(context.Background(), &types.QueryWhitelistedRequest{
+				Address: address.String(),
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdGetLockedUndByAddress queries locked FUND for a given address
+func GetCmdGetEnterpriseUserAccount() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "account [address]",
+		Short: "get data about an address - locked, unlocked and total FUND",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			address, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.EnterpriseAccount(context.Background(), &types.QueryEnterpriseAccountRequest{
 				Address: address.String(),
 			})
 			if err != nil {

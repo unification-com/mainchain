@@ -6,6 +6,25 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
+// __ACCOUNT_QUERIES_____________________________________________________
+
+func (k Keeper) GetEnterpriseUserAccount(ctx sdk.Context, owner sdk.AccAddress) types.EnterpriseUserAccount {
+	locked := k.GetLockedUndForAccount(ctx, owner)
+	unlocked := k.bankKeeper.GetBalance(ctx, owner, k.GetParamDenom(ctx))
+	lockedCoin := locked.Amount
+
+	total := unlocked.Add(lockedCoin)
+
+	userAccount := types.EnterpriseUserAccount{
+		Owner:    owner.String(),
+		Locked:   lockedCoin,
+		Unlocked: unlocked,
+		Total:    total,
+	}
+
+	return userAccount
+}
+
 // __TOTAL_LOCKED_FUND___________________________________________________
 
 // GetTotalLockedUnd returns the total locked FUND
@@ -53,13 +72,39 @@ func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSuppl
 	denom := k.GetParamDenom(ctx)
 
 	totalSupply := types.UndSupply{
-		Denom: denom,
+		Denom:  denom,
 		Locked: locked.Amount.Uint64(),
 		Amount: unlocked.Amount.Uint64(),
-		Total: total.Amount.Uint64(),
+		Total:  total.Amount.Uint64(),
 	}
 
 	return totalSupply
+}
+
+func (k Keeper) GetTotalSupplyWithLockedNundRemoved(ctx sdk.Context) sdk.Coins {
+	supplyCoins := k.bankKeeper.GetSupply(ctx).GetTotal()
+	locked := k.GetTotalLockedUnd(ctx)
+
+	for i, c := range supplyCoins {
+		if c.Denom == k.GetParamDenom(ctx) {
+			unlocked := c.Sub(locked)
+			supplyCoins[i] = unlocked
+		}
+	}
+
+	return supplyCoins
+}
+
+func (k Keeper) GetSupplyOfWithLockedNundRemoved(ctx sdk.Context, denom string) sdk.Int {
+	supply := k.bankKeeper.GetSupply(ctx).GetTotal().AmountOf(denom)
+
+	if denom == k.GetParamDenom(ctx) {
+		locked := k.GetTotalLockedUnd(ctx)
+		unlocked := supply.Sub(locked.Amount)
+		return unlocked
+	} else {
+		return supply
+	}
 }
 
 // SetTotalLockedUnd sets the total locked FUND
@@ -218,7 +263,7 @@ func (k Keeper) GetLockedUndForAccount(ctx sdk.Context, address sdk.AccAddress) 
 	if !k.AccountHasLockedUnd(ctx, address) {
 		// return a new empty EnterpriseUndPurchaseOrder struct
 		return types.LockedUnd{
-			Owner: address.String(),
+			Owner:  address.String(),
 			Amount: sdk.NewInt64Coin(k.GetParamDenom(ctx), 0),
 		}
 	}

@@ -357,6 +357,64 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
 	suite.Require().Equal(expectedRes, lRes)
 }
 
+func (suite *KeeperTestSuite) TestGRPCQueryTotalSupplyOverride() {
+	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+
+	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
+	toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
+
+	supply := app.BankKeeper.GetSupply(ctx).GetTotal().AmountOf(test_helpers.TestDenomination)
+	baseSupply := sdk.NewCoin(test_helpers.TestDenomination, supply)
+	expectedTotalSupply := baseSupply.Add(toUnlock)
+
+	expectedResponse := &types.QueryTotalSupplyOverrideResponse{
+		Supply: sdk.NewCoins(
+			expectedTotalSupply,
+		),
+	}
+
+	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
+	suite.Require().NoError(err)
+
+	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
+	suite.Require().NoError(err)
+
+	req := &types.QueryTotalSupplyOverrideRequest{}
+
+	lRes, err := queryClient.TotalSupplyOverride(gocontext.Background(), req)
+
+	suite.Require().NoError(err)
+	suite.Require().Equal(expectedResponse, lRes)
+}
+
+func (suite *KeeperTestSuite) TestGRPCQuerySupplyOfOverride() {
+	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+
+	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
+	toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
+
+	supply := app.BankKeeper.GetSupply(ctx).GetTotal().AmountOf(test_helpers.TestDenomination)
+	baseSupply := sdk.NewCoin(test_helpers.TestDenomination, supply)
+	expectedTotalSupply := baseSupply.Add(toUnlock)
+
+	expectedResponse := &types.QuerySupplyOfOverrideResponse{
+		Amount: expectedTotalSupply,
+	}
+
+	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
+	suite.Require().NoError(err)
+
+	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
+	suite.Require().NoError(err)
+
+	req := &types.QuerySupplyOfOverrideRequest{Denom: test_helpers.TestDenomination}
+
+	lRes, err := queryClient.SupplyOfOverride(gocontext.Background(), req)
+
+	suite.Require().NoError(err)
+	suite.Require().Equal(expectedResponse, lRes)
+}
+
 func (suite *KeeperTestSuite) TestGRPCQueryWhitelist() {
 	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
 

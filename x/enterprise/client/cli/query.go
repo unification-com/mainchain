@@ -71,6 +71,10 @@ $ %s query enterprise params
 				&types.QueryParamsRequest{},
 			)
 
+			if err != nil {
+				return err
+			}
+
 			return clientCtx.PrintObjectLegacy(params)
 		},
 	}

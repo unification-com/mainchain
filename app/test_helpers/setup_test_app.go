@@ -42,10 +42,10 @@ import (
 
 // SimAppChainID hardcoded chainID for simulation
 const (
-	DefaultGenTxGas = 1000000
+	DefaultGenTxGas  = 1000000
 	TestDenomination = sdk.DefaultBondDenom
-	SimAppChainID   = "simulation-app"
-	charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+	SimAppChainID    = "simulation-app"
+	charset          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
@@ -68,7 +68,7 @@ var (
 		},
 	}
 	EncodingConfig = params.EncodingConfig{}
-	seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	seededRand     = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
 func setup(withGenesis bool, invCheckPeriod uint) (*app.App, app.GenesisState) {
@@ -119,11 +119,10 @@ func SetKeeperTestParamsAndDefaultValues(app *app.App, ctx sdk.Context) {
 	app.BeaconKeeper.SetParams(ctx, beacontypes.NewParams(24, 2, TestDenomination))
 	app.WrkchainKeeper.SetParams(ctx, wrkchaintypes.NewParams(24, 2, TestDenomination))
 	app.EnterpriseKeeper.SetParams(ctx, enttypes.Params{
-		EntSigners:        sdk.AccAddress( ed25519.GenPrivKey().PubKey().Address()).String(),
+		EntSigners:        sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String(),
 		Denom:             TestDenomination,
 		MinAccepts:        1,
 		DecisionTimeLimit: 1000,
-
 	})
 	_ = app.EnterpriseKeeper.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(TestDenomination, 0))
 	app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, 1)

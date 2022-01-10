@@ -38,8 +38,8 @@ func NewGenesisState(params Params, startingBeaconID uint64) *GenesisState {
 // DefaultGenesisState creates a default GenesisState object
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
-		Params:           DefaultParams(),
-		StartingBeaconId: DefaultStartingBeaconID,
+		Params:            DefaultParams(),
+		StartingBeaconId:  DefaultStartingBeaconID,
 		RegisteredBeacons: nil,
 	}
 }

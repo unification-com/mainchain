@@ -14,15 +14,15 @@ import (
 //}
 
 const (
-	RouterKey = types.RouterKey
+	RouterKey      = types.RouterKey
 	RegisterAction = types.RegisterAction
 	RecordAction   = types.RecordAction
 )
 
 var (
 	ErrIncorrectFeeDenomination = types.ErrIncorrectFeeDenomination
-	ErrInsufficientBeaconFee = types.ErrInsufficientBeaconFee
-	ErrTooMuchBeaconFee = types.ErrTooMuchBeaconFee
+	ErrInsufficientBeaconFee    = types.ErrInsufficientBeaconFee
+	ErrTooMuchBeaconFee         = types.ErrTooMuchBeaconFee
 )
 
 // Todo - check msg.Route() is also this module

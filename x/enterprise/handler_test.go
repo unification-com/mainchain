@@ -67,47 +67,46 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 		msg           *types.MsgUndPurchaseOrder
 	}{
 		{
-			name: "empty purchaser address",
-			msg: &types.MsgUndPurchaseOrder{
-			},
+			name:          "empty purchaser address",
+			msg:           &types.MsgUndPurchaseOrder{},
 			expectedError: errors.New("empty address string is not allowed"),
 		},
 		{
 			name: "invalid purchaser address",
 			msg: &types.MsgUndPurchaseOrder{
-				Purchaser:   "rubbish",
+				Purchaser: "rubbish",
 			},
 			expectedError: errors.New("decoding bech32 failed: invalid bech32 string length 7"),
 		},
 		{
 			name: "invalid denomination",
 			msg: &types.MsgUndPurchaseOrder{
-				Purchaser:   testAddrs[0].String(),
-				Amount: sdk.NewInt64Coin("rubbish", 100),
+				Purchaser: testAddrs[0].String(),
+				Amount:    sdk.NewInt64Coin("rubbish", 100),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", test_helpers.TestDenomination)),
 		},
 		{
 			name: "invalid amount",
 			msg: &types.MsgUndPurchaseOrder{
-				Purchaser:   testAddrs[0].String(),
-				Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, 0),
+				Purchaser: testAddrs[0].String(),
+				Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, 0),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrInvalidData, "amount must be > 0"),
 		},
 		{
 			name: "purchaser not whitelisted",
 			msg: &types.MsgUndPurchaseOrder{
-				Purchaser:   testAddrs[1].String(),
-				Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+				Purchaser: testAddrs[1].String(),
+				Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", testAddrs[1].String())),
 		},
 		{
 			name: "successful",
 			msg: &types.MsgUndPurchaseOrder{
-				Purchaser:   testAddrs[0].String(),
-				Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+				Purchaser: testAddrs[0].String(),
+				Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
 			},
 			expectedError: nil,
 		},
@@ -208,9 +207,8 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 		msg           *types.MsgProcessUndPurchaseOrder
 	}{
 		{
-			name: "empty signer address",
-			msg: &types.MsgProcessUndPurchaseOrder{
-			},
+			name:          "empty signer address",
+			msg:           &types.MsgProcessUndPurchaseOrder{},
 			expectedError: errors.New("empty address string is not allowed"),
 		},
 		{
@@ -230,7 +228,7 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 		{
 			name: "purchase order does not exist",
 			msg: &types.MsgProcessUndPurchaseOrder{
-				Signer: entSignerAddr.String(),
+				Signer:          entSignerAddr.String(),
 				PurchaseOrderId: 99,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrPurchaseOrderDoesNotExist, "id: 99"),
@@ -238,36 +236,36 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 		{
 			name: "invalid decision",
 			msg: &types.MsgProcessUndPurchaseOrder{
-				Signer: entSignerAddr.String(),
+				Signer:          entSignerAddr.String(),
 				PurchaseOrderId: 1,
-				Decision: types.StatusNil,
+				Decision:        types.StatusNil,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject"),
 		},
 		{
 			name: "po current status should only be raised",
 			msg: &types.MsgProcessUndPurchaseOrder{
-				Signer: entSignerAddr.String(),
+				Signer:          entSignerAddr.String(),
 				PurchaseOrderId: 2,
-				Decision: types.StatusAccepted,
+				Decision:        types.StatusAccepted,
 			},
 			expectedError: sdkerrors.Wrapf(types.ErrPurchaseOrderAlreadyProcessed, "id %d already processed: %s", 2, types.StatusCompleted),
 		},
 		{
 			name: "success - accept",
 			msg: &types.MsgProcessUndPurchaseOrder{
-				Signer: entSignerAddr.String(),
+				Signer:          entSignerAddr.String(),
 				PurchaseOrderId: 1,
-				Decision: types.StatusAccepted,
+				Decision:        types.StatusAccepted,
 			},
 			expectedError: nil,
 		},
 		{
 			name: "success - reject",
 			msg: &types.MsgProcessUndPurchaseOrder{
-				Signer: entSignerAddr.String(),
+				Signer:          entSignerAddr.String(),
 				PurchaseOrderId: 3,
-				Decision: types.StatusRejected,
+				Decision:        types.StatusRejected,
 			},
 			expectedError: nil,
 		},
@@ -275,9 +273,9 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 		{
 			name: "signer cannot make more than one decision",
 			msg: &types.MsgProcessUndPurchaseOrder{
-				Signer: entSignerAddr.String(),
+				Signer:          entSignerAddr.String(),
 				PurchaseOrderId: 3,
-				Decision: types.StatusAccepted,
+				Decision:        types.StatusAccepted,
 			},
 			expectedError: sdkerrors.Wrapf(types.ErrSignerAlreadyMadeDecision, "signer %s already decided: %s", entSignerAddr.String(), types.StatusRejected),
 		},
@@ -335,9 +333,8 @@ func TestInvalidMsgWhitelistAddress(t *testing.T) {
 		msg           *types.MsgWhitelistAddress
 	}{
 		{
-			name: "empty signer address",
-			msg: &types.MsgWhitelistAddress{
-			},
+			name:          "empty signer address",
+			msg:           &types.MsgWhitelistAddress{},
 			expectedError: errors.New("signer address: empty address string is not allowed"),
 		},
 		{
@@ -357,7 +354,7 @@ func TestInvalidMsgWhitelistAddress(t *testing.T) {
 		{
 			name: "invalid whitelist address",
 			msg: &types.MsgWhitelistAddress{
-				Signer: entSignerAddr.String(),
+				Signer:  entSignerAddr.String(),
 				Address: "rubbish",
 			},
 			expectedError: errors.New("whitelist address: decoding bech32 failed: invalid bech32 string length 7"),
@@ -365,7 +362,7 @@ func TestInvalidMsgWhitelistAddress(t *testing.T) {
 		{
 			name: "signer not authorised",
 			msg: &types.MsgWhitelistAddress{
-				Signer: testAddrs[0].String(),
+				Signer:  testAddrs[0].String(),
 				Address: testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer modifying whitelist"),
@@ -373,36 +370,36 @@ func TestInvalidMsgWhitelistAddress(t *testing.T) {
 		{
 			name: "invalid action",
 			msg: &types.MsgWhitelistAddress{
-				Signer: entSignerAddr.String(),
+				Signer:  entSignerAddr.String(),
 				Address: testAddrs[0].String(),
-				Action: 99,
+				Action:  99,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrInvalidDecision, "action should be add or remove"),
 		},
 		{
 			name: "cannot remove non-existing address",
 			msg: &types.MsgWhitelistAddress{
-				Signer: entSignerAddr.String(),
+				Signer:  entSignerAddr.String(),
 				Address: testAddrs[0].String(),
-				Action: types.WhitelistActionRemove,
+				Action:  types.WhitelistActionRemove,
 			},
 			expectedError: sdkerrors.Wrapf(types.ErrAddressNotWhitelisted, "%s not whitelisted", testAddrs[0].String()),
 		},
 		{
 			name: "success",
 			msg: &types.MsgWhitelistAddress{
-				Signer: entSignerAddr.String(),
+				Signer:  entSignerAddr.String(),
 				Address: testAddrs[0].String(),
-				Action: types.WhitelistActionAdd,
+				Action:  types.WhitelistActionAdd,
 			},
 			expectedError: nil,
 		},
 		{
 			name: "cannot add address more than once",
 			msg: &types.MsgWhitelistAddress{
-				Signer: entSignerAddr.String(),
+				Signer:  entSignerAddr.String(),
 				Address: testAddrs[0].String(),
-				Action: types.WhitelistActionAdd,
+				Action:  types.WhitelistActionAdd,
 			},
 			expectedError: sdkerrors.Wrapf(types.ErrAlreadyWhitelisted, "%s already whitelisted", testAddrs[0].String()),
 		},

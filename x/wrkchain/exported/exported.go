@@ -14,15 +14,15 @@ import (
 //}
 
 const (
-	RouterKey = types.RouterKey
+	RouterKey      = types.RouterKey
 	RegisterAction = types.RegisterAction
 	RecordAction   = types.RecordAction
 )
 
 var (
 	ErrIncorrectFeeDenomination = types.ErrIncorrectFeeDenomination
-	ErrInsufficientWrkChainFee = types.ErrInsufficientWrkChainFee
-	ErrTooMuchWrkChainFee = types.ErrTooMuchWrkChainFee
+	ErrInsufficientWrkChainFee  = types.ErrInsufficientWrkChainFee
+	ErrTooMuchWrkChainFee       = types.ErrTooMuchWrkChainFee
 )
 
 func CheckIsWrkChainTx(tx sdk.Tx) bool {

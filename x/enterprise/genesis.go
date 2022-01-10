@@ -38,14 +38,14 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 	}
 
 	for _, po := range data.PurchaseOrders {
-		epo := types.EnterpriseUndPurchaseOrder {
-			Id: po.Id,
-			Purchaser: po.Purchaser,
-			Amount: po.Amount,
-			Status: po.Status,
-			RaiseTime: po.RaiseTime,
+		epo := types.EnterpriseUndPurchaseOrder{
+			Id:             po.Id,
+			Purchaser:      po.Purchaser,
+			Amount:         po.Amount,
+			Status:         po.Status,
+			RaiseTime:      po.RaiseTime,
 			CompletionTime: po.CompletionTime,
-			Decisions: po.Decisions,
+			Decisions:      po.Decisions,
 		}
 		err = keeper.SetPurchaseOrder(ctx, epo)
 		if err != nil {
@@ -55,7 +55,7 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 
 	for _, lund := range data.LockedUnd {
 		locked := types.LockedUnd{
-			Owner: lund.Owner,
+			Owner:  lund.Owner,
 			Amount: lund.Amount,
 		}
 		err = keeper.SetLockedUndForAccount(ctx, locked)

@@ -30,8 +30,8 @@ import (
 //
 // If any of the checks fail, a suitable error is returned.
 type CorrectBeaconFeeDecorator struct {
-	bankKeeper BankKeeper
-	accKeeper AccountKeeper
+	bankKeeper   BankKeeper
+	accKeeper    AccountKeeper
 	beaconKeeper BeaconKeeper
 	entKeeper    EnterpriseKeeper
 }

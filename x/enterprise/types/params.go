@@ -25,9 +25,9 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 func NewParams(denom string, minAccepts uint64, decisionLimit uint64, entSigners string) Params {
 	return Params{
-		EntSigners:    entSigners,
-		Denom:         denom,
-		MinAccepts:    minAccepts,
+		EntSigners:        entSigners,
+		Denom:             denom,
+		MinAccepts:        minAccepts,
 		DecisionTimeLimit: decisionLimit,
 	}
 }
@@ -35,9 +35,9 @@ func NewParams(denom string, minAccepts uint64, decisionLimit uint64, entSigners
 // default enterprise FUND module parameters
 func DefaultParams() Params {
 	return Params{
-		EntSigners:    "und1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq5x8kpm", // default to 0000000000000000000000000000000000000000
-		Denom:         undtypes.DefaultDenomination,
-		MinAccepts:    1,
+		EntSigners:        "und1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq5x8kpm", // default to 0000000000000000000000000000000000000000
+		Denom:             undtypes.DefaultDenomination,
+		MinAccepts:        1,
 		DecisionTimeLimit: 84600,
 	}
 }

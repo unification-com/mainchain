@@ -8,6 +8,7 @@ import (
 func WRKChainEqual(wcA types.WrkChain, wcB types.WrkChain) bool {
 	return wcA == wcB
 }
+
 //
 //// ParamsEqual checks params are equal
 //func ParamsEqual(paramsA, paramsB types.Params) bool {

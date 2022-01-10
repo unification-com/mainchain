@@ -49,6 +49,10 @@ lint:
 	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -w -s
 	go mod verify
 
+gofmt:
+	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -w -s
+	go mod verify
+
 include sims.mk
 
 test: test-unit
@@ -106,13 +110,6 @@ devnet-master:
 
 devnet-master-down:
 	docker-compose -f Docker/docker-compose.upstream.yml down
-
-devnet-systemtest:
-	docker-compose -f Docker/docker-compose.systemtest.yml down --remove-orphans
-	docker-compose -f Docker/docker-compose.systemtest.yml up --build
-
-devnet-systemtest-down:
-	docker-compose -f Docker/docker-compose.systemtest.yml down
 
 # Used during active development
 

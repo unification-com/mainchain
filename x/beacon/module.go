@@ -34,8 +34,8 @@ var (
 )
 
 // app module Basics object
-type AppModuleBasic struct{
-	cdc              codec.Marshaler
+type AppModuleBasic struct {
+	cdc codec.Marshaler
 }
 
 func (AppModuleBasic) Name() string {
@@ -47,7 +47,7 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 }
 
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
-    return cdc.MustMarshalJSON(types.DefaultGenesisState())
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
 // Validation check of the Genesis
@@ -87,7 +87,7 @@ func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) 
 
 type AppModule struct {
 	AppModuleBasic
-	keeper       keeper.Keeper
+	keeper        keeper.Keeper
 	bankKeeper    types.BankKeeper
 	accountKeeper types.AccountKeeper
 }

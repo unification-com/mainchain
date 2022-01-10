@@ -18,11 +18,11 @@ var _ sdk.Msg = &MsgRegisterWrkChain{}
 // NewMsgRegisterWrkChain is a constructor function for MsgRegisterWrkChain
 func NewMsgRegisterWrkChain(moniker string, genesisHash string, wrkchainName string, baseType string, owner sdk.AccAddress) *MsgRegisterWrkChain {
 	return &MsgRegisterWrkChain{
-		Moniker:      moniker,
-		Name:         wrkchainName,
-		GenesisHash:  genesisHash,
-		BaseType:     baseType,
-		Owner:        owner.String(),
+		Moniker:     moniker,
+		Name:        wrkchainName,
+		GenesisHash: genesisHash,
+		BaseType:    baseType,
+		Owner:       owner.String(),
 	}
 }
 

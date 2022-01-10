@@ -50,6 +50,10 @@ func GetCmdQueryParams() *cobra.Command {
 				&types.QueryParamsRequest{},
 			)
 
+			if err != nil {
+				return err
+			}
+
 			return clientCtx.PrintObjectLegacy(params)
 		},
 	}
@@ -170,13 +174,14 @@ func GetCmdWrkChainBlock() *cobra.Command {
 
 			// validate that the height is a uint
 			height, err := strconv.ParseUint(args[1], 10, 64)
+
 			if err != nil {
 				return fmt.Errorf("height %s not a valid int, please input a valid height", args[1])
 			}
 
 			res, err := queryClient.WrkChainBlock(context.Background(), &types.QueryWrkChainBlockRequest{
 				WrkchainId: wrkchainId,
-				Height: height,
+				Height:     height,
 			})
 
 			if err != nil {

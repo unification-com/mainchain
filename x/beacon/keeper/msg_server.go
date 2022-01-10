@@ -55,9 +55,9 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 	}
 
 	beacon := types.Beacon{
-		Moniker:         msg.Moniker,
-		Name:            msg.Name,
-		Owner:           ownerAddr.String(),
+		Moniker: msg.Moniker,
+		Name:    msg.Name,
+		Owner:   ownerAddr.String(),
 	}
 
 	beaconID, err := k.RegisterNewBeacon(ctx, beacon) // register the BEACON
@@ -144,7 +144,7 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 	)
 
 	return &types.MsgRecordBeaconTimestampResponse{
-		BeaconId: msg.BeaconId,
+		BeaconId:    msg.BeaconId,
 		TimestampId: tsID,
 	}, nil
 

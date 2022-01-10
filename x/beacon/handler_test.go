@@ -39,8 +39,8 @@ func TestValidMsgRegisterBeacon(t *testing.T) {
 
 	msg := &types.MsgRegisterBeacon{
 		Moniker: "moniker",
-		Name: "name",
-		Owner: testAddrs[0].String(),
+		Name:    "name",
+		Owner:   testAddrs[0].String(),
 	}
 
 	res, err := h(ctx, msg)
@@ -59,9 +59,9 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 
 	existsMoniker := test_helpers.GenerateRandomString(24)
 	beacon := types.Beacon{
-		Moniker:         existsMoniker,
-		Name:            "this exists",
-		Owner:           testAddrs[1].String(),
+		Moniker: existsMoniker,
+		Name:    "this exists",
+		Owner:   testAddrs[1].String(),
 	}
 
 	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, beacon)
@@ -73,68 +73,68 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 		msg           *types.MsgRegisterBeacon
 	}{
 		{
-			name:          "empty owner address",
-			msg:           &types.MsgRegisterBeacon{
+			name: "empty owner address",
+			msg: &types.MsgRegisterBeacon{
 				Moniker: "moniker",
-				Name: "name",
+				Name:    "name",
 			},
 			expectedError: errors.New("empty address string is not allowed"),
 		},
 		{
-			name:          "invalid owner address",
-			msg:           &types.MsgRegisterBeacon{
+			name: "invalid owner address",
+			msg: &types.MsgRegisterBeacon{
 				Moniker: "moniker",
-				Name: "name",
-				Owner: "rubbish",
+				Name:    "name",
+				Owner:   "rubbish",
 			},
 			expectedError: errors.New("decoding bech32 failed: invalid bech32 string length 7"),
 		},
 		{
-			name:          "name too big",
-			msg:           &types.MsgRegisterBeacon{
+			name: "name too big",
+			msg: &types.MsgRegisterBeacon{
 				Moniker: "moniker",
-				Name: test_helpers.GenerateRandomString(129),
-				Owner: testAddrs[0].String(),
+				Name:    test_helpers.GenerateRandomString(129),
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"),
 		},
 		{
-			name:          "moniker too big",
-			msg:           &types.MsgRegisterBeacon{
+			name: "moniker too big",
+			msg: &types.MsgRegisterBeacon{
 				Moniker: test_helpers.GenerateRandomString(65),
-				Name: "name",
-				Owner: testAddrs[0].String(),
+				Name:    "name",
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit"),
 		},
 		{
-			name:          "zero length moniker",
-			msg:           &types.MsgRegisterBeacon{
+			name: "zero length moniker",
+			msg: &types.MsgRegisterBeacon{
 				Moniker: "",
-				Name: "name",
-				Owner: testAddrs[0].String(),
+				Name:    "name",
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker"),
 		},
 		{
-			name:          "beacon exists with moniker",
-			msg:           &types.MsgRegisterBeacon{
+			name: "beacon exists with moniker",
+			msg: &types.MsgRegisterBeacon{
 				Moniker: existsMoniker,
-				Name: "name",
-				Owner: testAddrs[0].String(),
+				Name:    "name",
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrapf(
 				types.ErrBeaconAlreadyRegistered,
 				"beacon already registered with moniker '%s' - id: %d, owner: %s",
 				existsMoniker, 1, testAddrs[1].String(),
-				),
+			),
 		},
 		{
-			name:          "successful",
-			msg:           &types.MsgRegisterBeacon{
+			name: "successful",
+			msg: &types.MsgRegisterBeacon{
 				Moniker: test_helpers.GenerateRandomString(24),
-				Name: test_helpers.GenerateRandomString(24),
-				Owner: testAddrs[0].String(),
+				Name:    test_helpers.GenerateRandomString(24),
+				Owner:   testAddrs[0].String(),
 			},
 			expectedError: nil,
 		},
@@ -161,9 +161,9 @@ func TestValidMsgRecordBeaconTimestamp(t *testing.T) {
 	h := beacon.NewHandler(app.BeaconKeeper)
 
 	beacon := types.Beacon{
-		Moniker:         test_helpers.GenerateRandomString(24),
-		Name:            "new beacon",
-		Owner:           testAddrs[0].String(),
+		Moniker: test_helpers.GenerateRandomString(24),
+		Name:    "new beacon",
+		Owner:   testAddrs[0].String(),
 	}
 
 	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, beacon)
@@ -171,8 +171,8 @@ func TestValidMsgRecordBeaconTimestamp(t *testing.T) {
 
 	msg := &types.MsgRecordBeaconTimestamp{
 		BeaconId: 1,
-		Hash: test_helpers.GenerateRandomString(64),
-		Owner: testAddrs[0].String(),
+		Hash:     test_helpers.GenerateRandomString(64),
+		Owner:    testAddrs[0].String(),
 	}
 
 	res, err := h(ctx, msg)
@@ -191,9 +191,9 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 	h := beacon.NewHandler(app.BeaconKeeper)
 
 	beacon := types.Beacon{
-		Moniker:         test_helpers.GenerateRandomString(24),
-		Name:            "new beacon",
-		Owner:           testAddrs[0].String(),
+		Moniker: test_helpers.GenerateRandomString(24),
+		Name:    "new beacon",
+		Owner:   testAddrs[0].String(),
 	}
 
 	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, beacon)
@@ -205,49 +205,48 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 		msg           *types.MsgRecordBeaconTimestamp
 	}{
 		{
-			name: "empty owner address",
-			msg: &types.MsgRecordBeaconTimestamp{
-			},
+			name:          "empty owner address",
+			msg:           &types.MsgRecordBeaconTimestamp{},
 			expectedError: errors.New("empty address string is not allowed"),
 		},
 		{
-			name:          "invalid owner address",
-			msg:           &types.MsgRecordBeaconTimestamp{
+			name: "invalid owner address",
+			msg: &types.MsgRecordBeaconTimestamp{
 				Owner: "rubbish",
 			},
 			expectedError: errors.New("decoding bech32 failed: invalid bech32 string length 7"),
 		},
 		{
-			name:          "hash too large",
-			msg:           &types.MsgRecordBeaconTimestamp{
+			name: "hash too large",
+			msg: &types.MsgRecordBeaconTimestamp{
 				Owner: testAddrs[0].String(),
-				Hash: test_helpers.GenerateRandomString(67),
+				Hash:  test_helpers.GenerateRandomString(67),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit"),
 		},
 		{
-			name:          "beacon not registered",
-			msg:           &types.MsgRecordBeaconTimestamp{
-				Owner: testAddrs[0].String(),
-				Hash: test_helpers.GenerateRandomString(24),
+			name: "beacon not registered",
+			msg: &types.MsgRecordBeaconTimestamp{
+				Owner:    testAddrs[0].String(),
+				Hash:     test_helpers.GenerateRandomString(24),
 				BeaconId: 2,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet"),
 		},
 		{
-			name:          "not beacon owner",
-			msg:           &types.MsgRecordBeaconTimestamp{
-				Owner: testAddrs[1].String(),
-				Hash: test_helpers.GenerateRandomString(24),
+			name: "not beacon owner",
+			msg: &types.MsgRecordBeaconTimestamp{
+				Owner:    testAddrs[1].String(),
+				Hash:     test_helpers.GenerateRandomString(24),
 				BeaconId: 1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon"),
 		},
 		{
-			name:          "successful",
-			msg:           &types.MsgRecordBeaconTimestamp{
-				Owner: testAddrs[0].String(),
-				Hash: test_helpers.GenerateRandomString(24),
+			name: "successful",
+			msg: &types.MsgRecordBeaconTimestamp{
+				Owner:    testAddrs[0].String(),
+				Hash:     test_helpers.GenerateRandomString(24),
 				BeaconId: 1,
 			},
 			expectedError: nil,

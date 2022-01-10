@@ -45,7 +45,7 @@ func (k msgServer) UndPurchaseOrder(goCtx context.Context, msg *types.MsgUndPurc
 
 	po := types.EnterpriseUndPurchaseOrder{
 		Purchaser: msg.Purchaser,
-		Amount: msg.Amount,
+		Amount:    msg.Amount,
 	}
 
 	purchaseOrderId, err := k.RaiseNewPurchaseOrder(ctx, po)

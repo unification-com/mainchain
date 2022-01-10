@@ -137,7 +137,6 @@ func (k Keeper) PurchaseOrderExists(ctx sdk.Context, purchaseOrderID uint64) boo
 	return store.Has(purchaseOrderIDbz)
 }
 
-
 // Gets a purchase order for a given purchaseOrderID
 func (k Keeper) GetPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) (types.EnterpriseUndPurchaseOrder, bool) {
 	store := ctx.KVStore(k.storeKey)
@@ -307,8 +306,8 @@ func (k Keeper) ProcessPurchaseOrderDecision(ctx sdk.Context, purchaseOrderID ui
 	purchaseOrder, _ := k.GetPurchaseOrder(ctx, purchaseOrderID)
 
 	poDecision := types.PurchaseOrderDecision{
-		Signer: signer.String(),
-		Decision: decision,
+		Signer:       signer.String(),
+		Decision:     decision,
 		DecisionTime: uint64(ctx.BlockHeader().Time.Unix()),
 	}
 	purchaseOrder.Decisions = append(purchaseOrder.Decisions, &poDecision)
@@ -325,7 +324,6 @@ func (k Keeper) ProcessPurchaseOrderDecision(ctx sdk.Context, purchaseOrderID ui
 	}
 	return nil
 }
-
 
 //func (k Keeper) MarshalEnterpriseUndPurchaseOrder(po types.EnterpriseUndPurchaseOrder) ([]byte, error) {
 //	bz, err := k.cdc.MarshalBinaryBare(&po)

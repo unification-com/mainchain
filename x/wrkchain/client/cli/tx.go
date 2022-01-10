@@ -86,7 +86,6 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain must have a name")
 			}
 
-
 			// todo - check moniker doesn't exist
 
 			params, err := queryClient.Params(
@@ -105,7 +104,6 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
-
 
 			// todo - check this works
 			if err := cmd.Flags().Set(flags.FlagFees, regFee); err != nil {

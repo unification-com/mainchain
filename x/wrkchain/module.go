@@ -34,8 +34,8 @@ var (
 )
 
 // app module Basics object
-type AppModuleBasic struct{
-	cdc              codec.Marshaler
+type AppModuleBasic struct {
+	cdc codec.Marshaler
 }
 
 func (AppModuleBasic) Name() string {
@@ -87,7 +87,7 @@ func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) 
 
 type AppModule struct {
 	AppModuleBasic
-	keeper       keeper.Keeper
+	keeper        keeper.Keeper
 	bankKeeper    types.BankKeeper
 	accountKeeper types.AccountKeeper
 }
@@ -186,4 +186,3 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		am.keeper, am.bankKeeper, am.accountKeeper,
 	)
 }
-

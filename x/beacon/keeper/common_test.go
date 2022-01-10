@@ -8,6 +8,7 @@ import (
 func BeaconEqual(wcA types.Beacon, wcB types.Beacon) bool {
 	return wcA == wcB
 }
+
 //
 //// ParamsEqual checks params are equal
 //func ParamsEqual(paramsA, paramsB types.Params) bool {

@@ -34,6 +34,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/unification-com/mainchain/app"
+
+	bankcli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 )
 
 var ChainID string
@@ -69,7 +71,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	initRootCmd(rootCmd, encodingConfig)
 	overwriteFlagDefaults(rootCmd, map[string]string{
-		flags.FlagChainID:        ChainID,
+		flags.FlagChainID: ChainID,
 	})
 
 	return rootCmd, encodingConfig
@@ -124,6 +126,14 @@ func queryCommand() *cobra.Command {
 	)
 
 	app.ModuleBasics.AddQueryCommands(cmd)
+
+	// Todo - fixme - need to replace 'query bank total' cmd
+	cmd.RemoveCommand(bankcli.GetQueryCmd())
+
+	cmd.AddCommand(
+		GetBankQueryOverrideCmd(),
+	)
+
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd

@@ -3,6 +3,7 @@ package rest
 import (
 	"errors"
 	"fmt"
+	sdkquery "github.com/cosmos/cosmos-sdk/types/query"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -72,7 +73,14 @@ func wrkChainsWithParametersHandler(cliCtx client.Context) http.HandlerFunc {
 			}
 		}
 
-		params := types.NewQueryWrkChainParams(page, limit, moniker, ownerAddr)
+		params := types.QueryWrkChainsFilteredRequest{
+			Moniker: moniker,
+			Owner:   ownerAddr.String(),
+			Pagination: &sdkquery.PageRequest{
+				Limit:  uint64(limit),
+				Offset: uint64(page),
+			},
+		}
 
 		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 		if err != nil {

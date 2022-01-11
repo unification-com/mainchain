@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 	"time"
@@ -42,16 +41,6 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 
 	if len(msg.Moniker) == 0 {
 		return nil, sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
-	}
-
-	params := types.QueryBeaconsFilteredRequest{
-		Moniker: msg.Moniker,
-	}
-	beacons := k.GetBeaconsFiltered(ctx, params)
-
-	if (len(beacons)) > 0 {
-		errMsg := fmt.Sprintf("beacon already registered with moniker '%s' - id: %d, owner: %s", msg.Moniker, beacons[0].BeaconId, beacons[0].Owner)
-		return nil, sdkerrors.Wrap(types.ErrBeaconAlreadyRegistered, errMsg)
 	}
 
 	beacon := types.Beacon{

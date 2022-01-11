@@ -43,15 +43,6 @@ func (k msgServer) RegisterWrkChain(goCtx context.Context, msg *types.MsgRegiste
 		return nil, sdkerrors.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker")
 	}
 
-	params := types.QueryWrkChainsFilteredRequest{
-		Moniker: msg.Moniker,
-	}
-	wrkchains := k.GetWrkChainsFiltered(ctx, params)
-
-	if (len(wrkchains)) > 0 {
-		return nil, sdkerrors.Wrapf(types.ErrWrkChainAlreadyRegistered, "wrkchain already registered with moniker '%s' - id: %d, owner: %s", msg.Moniker, wrkchains[0].WrkchainId, wrkchains[0].Owner)
-	}
-
 	wrkchainId, err := k.RegisterNewWrkChain(ctx, msg.Moniker, msg.Name, msg.GenesisHash, msg.BaseType, ownerAddr) // register the WrkChain
 
 	if err != nil {

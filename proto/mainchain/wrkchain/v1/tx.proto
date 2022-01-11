@@ -1,5 +1,5 @@
 syntax = "proto3";
-package mainchain.beacon.v1;
+package mainchain.wrkchain.v1;
 
 import "gogoproto/gogo.proto";
 import "mainchain/wrkchain/v1/wrkchain.proto";

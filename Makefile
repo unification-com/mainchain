@@ -38,7 +38,7 @@ install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/und
 
 build: clean go.sum
-	go build  $(BUILD_FLAGS) -o build/und ./cmd/und
+	go build -mod=readonly $(BUILD_FLAGS) -o build/und ./cmd/und
 
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"

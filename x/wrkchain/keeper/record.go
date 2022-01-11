@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
@@ -137,53 +136,6 @@ func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkch
 		return count == types.MaxBlockSubmissionsKeepInState
 	})
 	return
-}
-
-// GetWrkChainBlockHashesFiltered retrieves wrkchains filtered by a given set of params which
-// include pagination parameters along a moniker and owner address.
-//
-// NOTE: If no filters are provided, all WRKChains will be returned in paginated
-// form.
-func (k Keeper) GetWrkChainBlockHashesFiltered(ctx sdk.Context, wrkchainID uint64, params types.QueryWrkChainBlockParams) []types.WrkChainBlock {
-	wrkChainHashes := k.GetAllWrkChainBlockHashes(ctx, wrkchainID)
-	filteredWrkChainHashes := make([]types.WrkChainBlock, 0, len(wrkChainHashes))
-
-	for _, wcb := range wrkChainHashes {
-		matchMinHeight, matchMaxHeight, matchMinDate, matchMaxDate, matchHash := true, true, true, true, true
-
-		if params.MinHeight > 0 {
-			matchMinHeight = wcb.Height >= params.MinHeight
-		}
-
-		if params.MaxHeight > 0 {
-			matchMaxHeight = wcb.Height <= params.MaxHeight
-		}
-
-		if params.MinDate > 0 {
-			matchMinDate = wcb.SubTime >= params.MinDate
-		}
-
-		if params.MaxDate > 0 {
-			matchMaxDate = wcb.SubTime <= params.MaxDate
-		}
-
-		if len(params.BlockHash) > 0 {
-			matchHash = wcb.Blockhash == params.BlockHash
-		}
-
-		if matchMinHeight && matchMaxHeight && matchMinDate && matchMaxDate && matchHash {
-			filteredWrkChainHashes = append(filteredWrkChainHashes, wcb)
-		}
-	}
-
-	start, end := client.Paginate(len(filteredWrkChainHashes), params.Page, params.Limit, 100)
-	if start < 0 || end < 0 {
-		filteredWrkChainHashes = []types.WrkChainBlock{}
-	} else {
-		filteredWrkChainHashes = filteredWrkChainHashes[start:end]
-	}
-
-	return filteredWrkChainHashes
 }
 
 // RecordNewWrkchainHashes records a WRKChain block has for a registered WRKChain

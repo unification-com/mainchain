@@ -191,28 +191,34 @@ func TestWrkChainIsRegisteredAfterRegister(t *testing.T) {
 	}
 }
 
-//func TestGetWrkChainFilter(t *testing.T) {
-//	app := test_helpers.Setup(false)
-//	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-//	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
-//	numToReg := 100
-//	lastMoniker := ""
-//
-//	for i := 0; i < numToReg; i++ {
-//		name := test_helpers.GenerateRandomString(20)
-//		moniker := test_helpers.GenerateRandomString(12)
-//		genesisHash := test_helpers.GenerateRandomString(32)
-//		owner := testAddrs[1]
-//
-//		_, _ = app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", owner)
-//		lastMoniker = moniker
-//	}
-//
-//	params := types.NewQueryWrkChainParams(1, 1000, "", testAddrs[1])
-//	results := app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
-//	require.True(t, len(results) == numToReg)
-//
-//	params = types.NewQueryWrkChainParams(1, 1000, lastMoniker, sdk.AccAddress{})
-//	results = app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
-//	require.True(t, len(results) == 1)
-//}
+func TestGetWrkChainFilter(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	numToReg := 100
+	lastMoniker := ""
+
+	for i := 0; i < numToReg; i++ {
+		name := test_helpers.GenerateRandomString(20)
+		moniker := test_helpers.GenerateRandomString(12)
+		genesisHash := test_helpers.GenerateRandomString(32)
+		owner := testAddrs[1]
+
+		_, _ = app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", owner)
+		lastMoniker = moniker
+	}
+
+	params := types.QueryWrkChainsFilteredRequest{
+		Owner: testAddrs[1].String(),
+	}
+
+	results := app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
+	require.True(t, len(results) == numToReg)
+
+	params = types.QueryWrkChainsFilteredRequest{
+		Moniker: lastMoniker,
+	}
+	
+	results = app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
+	require.True(t, len(results) == 1)
+}

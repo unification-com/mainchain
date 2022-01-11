@@ -5,14 +5,6 @@ import (
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
-//// FeeTx defines the interface to be implemented by Tx to use the FeeDecorators
-//type FeeTx interface {
-//	sdk.Tx
-//	GetGas() uint64
-//	GetFee() sdk.Coins
-//	FeePayer() sdk.AccAddress
-//}
-
 const (
 	RouterKey      = types.RouterKey
 	RegisterAction = types.RegisterAction

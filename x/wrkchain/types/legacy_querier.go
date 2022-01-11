@@ -6,25 +6,7 @@ import (
 
 // QueryResWrkChainBlockHashes Queries Result Payload for a WRKChain Block Hashes query
 type QueryResWrkChainBlockHashes []WrkChainBlock
-
-// implement fmt.Stringer
-//func (h QueryResWrkChainBlockHashes) String() (out string) {
-//	for _, val := range h {
-//		out += val.String() + "\n"
-//	}
-//	return strings.TrimSpace(out)
-//}
-//
-//// QueryResWrkChains Queries wrkchains
-//type QueryResWrkChains []WrkChain
-//
-//// implement fmt.Stringer
-//func (wc QueryResWrkChains) String() (out string) {
-//	for _, val := range wc {
-//		out += val.String() + "\n"
-//	}
-//	return strings.TrimSpace(out)
-//}
+type QueryResWrkChains []WrkChain
 
 // QueryWrkChainParams Params for query 'custom/wrkchain/registered'
 type QueryWrkChainParams struct {

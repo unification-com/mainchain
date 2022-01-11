@@ -114,19 +114,6 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 			expectedError: sdkerrors.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker"),
 		},
 		{
-			name: "wrkchain exists with moniker",
-			msg: &types.MsgRegisterWrkChain{
-				Moniker: existsMoniker,
-				Name:    "name",
-				Owner:   testAddrs[0].String(),
-			},
-			expectedError: sdkerrors.Wrapf(
-				types.ErrWrkChainAlreadyRegistered,
-				"wrkchain already registered with moniker '%s' - id: %d, owner: %s",
-				existsMoniker, 1, testAddrs[1].String(),
-			),
-		},
-		{
 			name: "successful",
 			msg: &types.MsgRegisterWrkChain{
 				Moniker: test_helpers.GenerateRandomString(24),

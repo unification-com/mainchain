@@ -109,9 +109,7 @@ func TestQueryParams(t *testing.T) {
 	testApp.BeaconKeeper.SetParams(ctx, paramsNew)
 
 	params := getQueriedParams(t, ctx, legacyQuerierCdc, querier)
-	require.True(t, params.Denom == paramsNew.Denom)
-	require.True(t, params.FeeRegister == paramsNew.FeeRegister)
-	require.True(t, params.FeeRecord == paramsNew.FeeRecord)
+	require.True(t, ParamsEqual(paramsNew, params))
 }
 
 func TestInvalidQuerier(t *testing.T) {

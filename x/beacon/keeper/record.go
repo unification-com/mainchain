@@ -108,7 +108,7 @@ func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64
 		timestamps = prependTimestamp(timestamps, btsExp) // append(timestamps, btsExp)
 		count = count + 1
 
-		return count == types.MaxHashSubmissionsKeepInState
+		return count == types.MaxHashSubmissionsToExport
 	})
 	return
 }
@@ -120,8 +120,6 @@ func (k Keeper) RecordNewBeaconTimestamp(
 	hash string,
 	submitTime uint64,
 	owner string) (uint64, error) {
-
-	logger := k.Logger(ctx)
 
 	beacon, _ := k.GetBeacon(ctx, beaconId)
 
@@ -147,10 +145,6 @@ func (k Keeper) RecordNewBeaconTimestamp(
 
 	if err != nil {
 		return 0, err
-	}
-
-	if !ctx.IsCheckTx() {
-		logger.Debug("beacon timestamp recorded", "id", beaconId, "hash", hash, "time", submitTime)
 	}
 
 	return timestampId, nil

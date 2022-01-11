@@ -48,7 +48,7 @@ func TestSetGetBeaconTimestamp(t *testing.T) {
 	}
 }
 
-func TestGetWrkChainBlockHashes(t *testing.T) {
+func TestGetBeaconTimestamp(t *testing.T) {
 	app := test_helpers.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)

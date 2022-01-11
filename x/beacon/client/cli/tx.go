@@ -78,16 +78,6 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 				return sdkerrors.Wrap(types.ErrMissingData, "please enter a name")
 			}
 
-			////check moniker doesn't exist
-			//pageReq, _ := client.ReadPageRequest(cmd.Flags())
-			//queryParams := &types.QueryBeaconsFilteredRequest{
-			//	Pagination: pageReq,
-			//	Moniker: moniker,
-			//}
-			//
-			//res, _ := queryClient.BeaconsFiltered(context.Background(), queryParams)
-			//// todo - check res
-
 			params, err := queryClient.Params(
 				context.Background(),
 				&types.QueryParamsRequest{},
@@ -175,7 +165,6 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 				return err
 			}
 
-			// todo - check this works
 			if err := cmd.Flags().Set(flags.FlagFees, recFee); err != nil {
 				return err
 			}

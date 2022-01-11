@@ -1,28 +1,53 @@
 package keeper_test
 
 import (
+	"math/rand"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto/ed25519"
+
 	"github.com/unification-com/mainchain/app/test_helpers"
 	"github.com/unification-com/mainchain/x/enterprise/types"
-	"math/rand"
 )
 
-//// PurchaseOrderEqual checks if two purchase orders are equal
+// PurchaseOrderEqual checks if two purchase orders are equal
 //func PurchaseOrderEqual(poA types.EnterpriseUndPurchaseOrder, poB types.EnterpriseUndPurchaseOrder) bool {
-//	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(poA),
-//		types.ModuleCdc.MustMarshalBinaryBare(poB))
+//	return poA == poB
 //}
-//
-//func ParamsEqual(paramsA, paramsB types.Params) bool {
-//	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(paramsA),
-//		types.ModuleCdc.MustMarshalBinaryBare(paramsB))
-//}
-//
-//func LockedUndEqual(lA, lB types.LockedUnd) bool {
-//	return bytes.Equal(types.ModuleCdc.MustMarshalBinaryBare(lA),
-//		types.ModuleCdc.MustMarshalBinaryBare(lB))
-//}
-//
+
+const (
+	charsetForRand   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+	TestDenomination = "nund"
+)
+
+var (
+	TestAddrs  = createRandomAccounts(10)
+	seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+)
+
+func GenerateRandomAccounts(num int) []sdk.AccAddress {
+	return createRandomAccounts(num)
+}
+
+func createRandomAccounts(accNum int) []sdk.AccAddress {
+	testAddrs := make([]sdk.AccAddress, accNum)
+	for i := 0; i < accNum; i++ {
+		pk := ed25519.GenPrivKey().PubKey()
+		testAddrs[i] = sdk.AccAddress(pk.Address())
+	}
+
+	return testAddrs
+}
+
+func ParamsEqual(paramsA, paramsB types.Params) bool {
+	return paramsA == paramsB
+}
+
+func LockedUndEqual(lA, lB types.LockedUnd) bool {
+	return lA == lB
+}
+
 func RandomDecision() types.PurchaseOrderStatus {
 	rnd := rand.Intn(100)
 	if rnd >= 50 {
@@ -32,7 +57,7 @@ func RandomDecision() types.PurchaseOrderStatus {
 }
 
 func RandomStatus() types.PurchaseOrderStatus {
-	rnd := test_helpers.RandInBetween(1, 4)
+	rnd := test_helpers.RandInBetween(1, 5)
 	switch rnd {
 	case 1:
 		return types.StatusRaised

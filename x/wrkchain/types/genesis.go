@@ -4,18 +4,6 @@ import (
 	"fmt"
 )
 
-// GenesisState - wrkchain state
-//type GenesisState struct {
-//	Params             Params           `json:"params" yaml:"params"`                             // wrkchain params
-//	StartingWrkChainID uint64           `json:"starting_wrkchain_id" yaml:"starting_wrkchain_id"` // should be 1
-//	WrkChains          []WrkChainExport `json:"registered_wrkchains" yaml:"registered_wrkchains"`
-//}
-//
-//type WrkChainExport struct {
-//	WrkChain       WrkChain                     `json:"wrkchain" yaml:"wrkchain"`
-//	WrkChainBlocks []WrkChainBlockGenesisExport `json:"blocks" yaml:"blocks"`
-//}
-
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(params Params, startingWrkChainID uint64) *GenesisState {
 	return &GenesisState{
@@ -33,18 +21,6 @@ func DefaultGenesisState() *GenesisState {
 		RegisteredWrkchains: nil,
 	}
 }
-
-//// Equal checks whether two wrkchain GenesisState structs are equivalent
-//func (data GenesisState) Equal(data2 GenesisState) bool {
-//	b1 := ModuleCdc.MustMarshalBinaryBare(data)
-//	b2 := ModuleCdc.MustMarshalBinaryBare(data2)
-//	return bytes.Equal(b1, b2)
-//}
-//
-//// IsEmpty returns true if a GenesisState is empty
-//func (data GenesisState) IsEmpty() bool {
-//	return data.Equal(GenesisState{})
-//}
 
 // ValidateGenesis validates the provided genesis state to ensure the
 // expected invariants holds.

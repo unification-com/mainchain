@@ -324,34 +324,3 @@ func (k Keeper) ProcessPurchaseOrderDecision(ctx sdk.Context, purchaseOrderID ui
 	}
 	return nil
 }
-
-//func (k Keeper) MarshalEnterpriseUndPurchaseOrder(po types.EnterpriseUndPurchaseOrder) ([]byte, error) {
-//	bz, err := k.cdc.MarshalBinaryBare(&po)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return bz, nil
-//}
-//
-//func (k Keeper) UnmarshalEnterpriseUndPurchaseOrder(bz []byte, po *types.EnterpriseUndPurchaseOrder) error {
-//	err := k.cdc.UnmarshalBinaryBare(bz, po)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
-//func (k Keeper) MustMarshalEnterpriseUndPurchaseOrder(po types.EnterpriseUndPurchaseOrder) []byte {
-//	bz, err := k.MarshalEnterpriseUndPurchaseOrder(po)
-//	if err != nil {
-//		panic(err)
-//	}
-//	return bz
-//}
-//
-//func (k Keeper) MustUnmarshalEnterpriseUndPurchaseOrder(bz []byte, po *types.EnterpriseUndPurchaseOrder) {
-//	err := k.UnmarshalEnterpriseUndPurchaseOrder(bz, po)
-//	if err != nil {
-//		panic(err)
-//	}
-//}

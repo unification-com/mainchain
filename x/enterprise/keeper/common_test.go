@@ -11,13 +11,7 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
-// PurchaseOrderEqual checks if two purchase orders are equal
-//func PurchaseOrderEqual(poA types.EnterpriseUndPurchaseOrder, poB types.EnterpriseUndPurchaseOrder) bool {
-//	return poA == poB
-//}
-
 const (
-	charsetForRand   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
 	TestDenomination = "nund"
 )
 

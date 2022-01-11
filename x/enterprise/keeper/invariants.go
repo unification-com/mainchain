@@ -39,9 +39,6 @@ func ModuleAccountInvariant(keeper Keeper) sdk.Invariant {
 
 		broken := !maccCoins.IsEqual(totalLocked) || !maccCoins.IsEqual(sdk.NewCoins(lockedByAccount)) || !totalLocked.IsEqual(sdk.NewCoins(lockedByAccount))
 
-		logger := keeper.Logger(ctx)
-		logger.Debug("ModuleAccountInvariant - enterprise", "is_broken", broken, "maccCoins", maccCoins, "totalLocked", totalLocked, "lockedByAccount", lockedByAccount)
-
 		return sdk.FormatInvariant(types.ModuleName, "locked",
 			fmt.Sprintf("\tenterprise ModuleAccount coins: %s\n\ttotal locked: %s\n\t sum of locked: %s\n",
 				maccCoins, totalLocked, lockedByAccount)), broken

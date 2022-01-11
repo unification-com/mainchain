@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
@@ -21,12 +20,6 @@ func (k Keeper) IsBeaconTimestampRecordedByID(ctx sdk.Context, beaconID uint64, 
 	store := ctx.KVStore(k.storeKey)
 	timestampKey := types.BeaconTimestampKey(beaconID, timestampID)
 	return store.Has(timestampKey)
-}
-
-func (k Keeper) IsBeaconTimestampRecordedByHashTime(ctx sdk.Context, beaconID uint64, hash string, subTime uint64) bool {
-	params := types.NewQueryBeaconTimestampParams(1, 1, beaconID, hash, subTime)
-	timestamps := k.GetBeaconTimestampsFiltered(ctx, params)
-	return len(timestamps) > 0
 }
 
 // IsAuthorisedToRecord ensures only the BEACON owner is recording hashes
@@ -115,41 +108,9 @@ func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64
 		timestamps = prependTimestamp(timestamps, btsExp) // append(timestamps, btsExp)
 		count = count + 1
 
-		return count == types.MaxHashSubmissionsKeepInState
+		return count == types.MaxHashSubmissionsToExport
 	})
 	return
-}
-
-// GetBeaconTimestampsFiltered retrieves a BEACON's timestamps filtered by
-// submit time, or the hash itself
-func (k Keeper) GetBeaconTimestampsFiltered(ctx sdk.Context, params types.QueryBeaconTimestampParams) []types.BeaconTimestamp {
-	timestamps := k.GetAllBeaconTimestamps(ctx, params.BeaconID)
-	filteredTimestamps := make([]types.BeaconTimestamp, 0, len(timestamps))
-
-	for _, bts := range timestamps {
-		matchHash, matchSubmitTime := true, true
-
-		if len(params.Hash) > 0 {
-			matchHash = bts.Hash == params.Hash
-		}
-
-		if params.SubmitTime > 0 {
-			matchSubmitTime = bts.SubmitTime == params.SubmitTime
-		}
-
-		if matchHash && matchSubmitTime {
-			filteredTimestamps = append(filteredTimestamps, bts)
-		}
-	}
-
-	start, end := client.Paginate(len(filteredTimestamps), params.Page, params.Limit, 100)
-	if start < 0 || end < 0 {
-		filteredTimestamps = []types.BeaconTimestamp{}
-	} else {
-		filteredTimestamps = filteredTimestamps[start:end]
-	}
-
-	return filteredTimestamps
 }
 
 // RecordBeaconTimestamp records a BEACON timestamp hash for a registered BEACON
@@ -159,8 +120,6 @@ func (k Keeper) RecordNewBeaconTimestamp(
 	hash string,
 	submitTime uint64,
 	owner string) (uint64, error) {
-
-	logger := k.Logger(ctx)
 
 	beacon, _ := k.GetBeacon(ctx, beaconId)
 
@@ -186,10 +145,6 @@ func (k Keeper) RecordNewBeaconTimestamp(
 
 	if err != nil {
 		return 0, err
-	}
-
-	if !ctx.IsCheckTx() {
-		logger.Debug("beacon timestamp recorded", "id", beaconId, "hash", hash, "time", submitTime)
 	}
 
 	return timestampId, nil

@@ -59,7 +59,11 @@ test-sim-profile:
 
 test-sim-simple:
 	@echo "Running simple test..."
+	@mkdir -p $(HOME)/.und_simapp
 	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Enabled=true \
-		-NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -Period=100 -v -timeout 24h -Verbose=true
+		-NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -Period=100 -v -timeout 24h -Verbose=true \
+		-ExportParamsPath=$(HOME)/.und_simapp/params.json \
+        -ExportStatePath=$(HOME)/.und_simapp/state.json \
+        -ExportStatsPath=$(HOME)/.und_simapp/statistics.json
 
 .PHONY: test-sim-profile test-sim-benchmark test-sim-simple

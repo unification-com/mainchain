@@ -48,53 +48,7 @@ func TestSetGetBeaconTimestamp(t *testing.T) {
 	}
 }
 
-func TestIsBeaconTimestampRecorded(t *testing.T) {
-	app := test_helpers.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
-	numToRecord := uint64(100)
-
-	for _, addr := range testAddrs {
-		name := test_helpers.GenerateRandomString(20)
-		moniker := test_helpers.GenerateRandomString(12)
-
-		expectedB := types.Beacon{}
-		expectedB.Owner = addr.String()
-		expectedB.Moniker = moniker
-		expectedB.Name = name
-
-		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
-		require.NoError(t, err)
-
-		for tsID := uint64(1); tsID <= numToRecord; tsID++ {
-			hash := test_helpers.GenerateRandomString(32)
-			subTime := uint64(time.Now().Unix())
-			timestamp := types.BeaconTimestamp{}
-			timestamp.BeaconId = bID
-			timestamp.Owner = addr.String()
-			timestamp.TimestampId = tsID
-			timestamp.Hash = hash
-			timestamp.SubmitTime = subTime
-
-			err := app.BeaconKeeper.SetBeaconTimestamp(ctx, timestamp)
-			require.NoError(t, err)
-
-			isRecorded := app.BeaconKeeper.IsBeaconTimestampRecordedByID(ctx, bID, tsID)
-			require.True(t, isRecorded)
-
-			isRecorded1 := app.BeaconKeeper.IsBeaconTimestampRecordedByHashTime(ctx, bID, hash, 0)
-			require.True(t, isRecorded1)
-
-			isRecorded2 := app.BeaconKeeper.IsBeaconTimestampRecordedByHashTime(ctx, bID, "", subTime)
-			require.True(t, isRecorded2)
-
-			isRecorded3 := app.BeaconKeeper.IsBeaconTimestampRecordedByHashTime(ctx, bID, hash, subTime)
-			require.True(t, isRecorded3)
-		}
-	}
-}
-
-func TestGetWrkChainBlockHashes(t *testing.T) {
+func TestGetBeaconTimestamp(t *testing.T) {
 	app := test_helpers.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)

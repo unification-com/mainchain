@@ -14,18 +14,6 @@ const (
 	DefaultStartingBeaconID uint64 = 1 // used in init genesis
 )
 
-//// GenesisState - beacon state
-//type GenesisState struct {
-//	Params           Params         `json:"params" yaml:"params"`                         // beacon params
-//	StartingBeaconID uint64         `json:"starting_beacon_id" yaml:"starting_beacon_id"` // should be 1
-//	Beacons          []BeaconExport `json:"registered_beacons" yaml:"registered_beacons"`
-//}
-//
-//type BeaconExport struct {
-//	Beacon           Beacon                         `json:"beacon" yaml:"beacon"`
-//	BeaconTimestamps []BeaconTimestampGenesisExport `json:"timestamps" yaml:"timestamps"`
-//}
-
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(params Params, startingBeaconID uint64) *GenesisState {
 	return &GenesisState{
@@ -43,18 +31,6 @@ func DefaultGenesisState() *GenesisState {
 		RegisteredBeacons: nil,
 	}
 }
-
-//// Equal checks whether two beacon GenesisState structs are equivalent
-//func (data GenesisState) Equal(data2 GenesisState) bool {
-//	b1 := ModuleCdc.MustMarshalBinaryBare(data)
-//	b2 := ModuleCdc.MustMarshalBinaryBare(data2)
-//	return bytes.Equal(b1, b2)
-//}
-//
-//// IsEmpty returns true if a GenesisState is empty
-//func (data GenesisState) IsEmpty() bool {
-//	return data.Equal(GenesisState{})
-//}
 
 // ValidateGenesis validates the provided genesis state to ensure the
 // expected invariants holds.

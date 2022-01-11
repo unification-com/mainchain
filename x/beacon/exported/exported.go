@@ -5,14 +5,6 @@ import (
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
-// FeeTx defines the interface to be implemented by Tx to use the FeeDecorators
-//type FeeTx interface {
-//	sdk.Tx
-//	GetGas() uint64
-//	GetFee() sdk.Coins
-//	FeePayer() sdk.AccAddress
-//}
-
 const (
 	RouterKey      = types.RouterKey
 	RegisterAction = types.RegisterAction
@@ -25,7 +17,6 @@ var (
 	ErrTooMuchBeaconFee         = types.ErrTooMuchBeaconFee
 )
 
-// Todo - check msg.Route() is also this module
 func CheckIsBeaconTx(tx sdk.Tx) bool {
 	msgs := tx.GetMsgs()
 	for _, msg := range msgs {

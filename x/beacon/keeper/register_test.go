@@ -205,25 +205,36 @@ func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
 	}
 }
 
-//func TestGetBeaconFilter(t *testing.T) {
-//	ctx, _, keeper := createTestInput(t, false, 100, 0)
-//	numToReg := 100
-//	lastMoniker := ""
-//
-//	for i := 0; i < numToReg; i++ {
-//		name := GenerateRandomString(20)
-//		moniker := GenerateRandomString(12)
-//		owner := TestAddrs[1]
-//
-//		_, _ = keeper.RegisterBeacon(ctx, moniker, name, owner)
-//		lastMoniker = moniker
-//	}
-//
-//	params := types.NewQueryBeaconParams(1, 1000, "", TestAddrs[1])
-//	results := keeper.GetBeaconsFiltered(ctx, params)
-//	require.True(t, len(results) == numToReg)
-//
-//	params = types.NewQueryBeaconParams(1, 1000, lastMoniker, sdk.AccAddress{})
-//	results = keeper.GetBeaconsFiltered(ctx, params)
-//	require.True(t, len(results) == 1)
-//}
+func TestGetBeaconFilter(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	numToReg := 100
+	lastMoniker := ""
+
+	for i := 0; i < numToReg; i++ {
+		name := GenerateRandomString(20)
+		moniker := GenerateRandomString(12)
+		owner := TestAddrs[1]
+		expectedB := types.Beacon{}
+		expectedB.Owner = owner.String()
+		expectedB.Moniker = moniker
+		expectedB.Name = name
+
+		_, _ = app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
+		lastMoniker = moniker
+	}
+
+	params := types.QueryBeaconsFilteredRequest{
+		Owner: TestAddrs[1].String(),
+	}
+
+	results := app.BeaconKeeper.GetBeaconsFiltered(ctx, params)
+	require.True(t, len(results) == numToReg)
+
+	params = types.QueryBeaconsFilteredRequest{
+		Moniker: lastMoniker,
+	}
+
+	results = app.BeaconKeeper.GetBeaconsFiltered(ctx, params)
+	require.True(t, len(results) == 1)
+}

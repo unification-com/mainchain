@@ -9,6 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkquery "github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/unification-com/mainchain/x/beacon/keeper"
 	"github.com/unification-com/mainchain/x/beacon/types"
@@ -71,7 +72,14 @@ func beaconsWithParametersHandler(cliCtx client.Context) http.HandlerFunc {
 			}
 		}
 
-		params := types.NewQueryBeaconParams(page, limit, moniker, ownerAddr)
+		params := types.QueryBeaconsFilteredRequest{
+			Moniker: moniker,
+			Owner:   ownerAddr.String(),
+			Pagination: &sdkquery.PageRequest{
+				Limit:  uint64(limit),
+				Offset: uint64(page),
+			},
+		}
 
 		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 		if err != nil {

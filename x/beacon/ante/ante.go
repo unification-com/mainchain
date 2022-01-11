@@ -7,18 +7,6 @@ import (
 	"github.com/unification-com/mainchain/x/beacon/exported"
 )
 
-//var (
-//	_ FeeTx = (*auth.StdTx)(nil) // assert StdTx implements FeeTx
-//)
-//
-//// FeeTx defines the interface to be implemented by Tx to use the FeeDecorators
-//type FeeTx interface {
-//	sdk.Tx
-//	GetGas() uint64
-//	GetFee() sdk.Coins
-//	FeePayer() sdk.AccAddress
-//}
-
 // CorrectBeaconFeeDecorator checks if the correct fees have been sent to pay for a
 // BEACON register/record hash Tx, and if the fee paying account has sufficient funds to pay.
 // It first checks if the Tx contains any BEACON Msgs, and if not, continues on to the next

@@ -58,13 +58,13 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 	h := beacon.NewHandler(app.BeaconKeeper)
 
 	existsMoniker := test_helpers.GenerateRandomString(24)
-	beacon := types.Beacon{
+	b := types.Beacon{
 		Moniker: existsMoniker,
 		Name:    "this exists",
 		Owner:   testAddrs[1].String(),
 	}
 
-	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, beacon)
+	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
 	require.Nil(t, err)
 
 	tests := []struct {
@@ -117,19 +117,6 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 			expectedError: sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker"),
 		},
 		{
-			name: "beacon exists with moniker",
-			msg: &types.MsgRegisterBeacon{
-				Moniker: existsMoniker,
-				Name:    "name",
-				Owner:   testAddrs[0].String(),
-			},
-			expectedError: sdkerrors.Wrapf(
-				types.ErrBeaconAlreadyRegistered,
-				"beacon already registered with moniker '%s' - id: %d, owner: %s",
-				existsMoniker, 1, testAddrs[1].String(),
-			),
-		},
-		{
 			name: "successful",
 			msg: &types.MsgRegisterBeacon{
 				Moniker: test_helpers.GenerateRandomString(24),
@@ -160,13 +147,13 @@ func TestValidMsgRecordBeaconTimestamp(t *testing.T) {
 
 	h := beacon.NewHandler(app.BeaconKeeper)
 
-	beacon := types.Beacon{
+	b := types.Beacon{
 		Moniker: test_helpers.GenerateRandomString(24),
 		Name:    "new beacon",
 		Owner:   testAddrs[0].String(),
 	}
 
-	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, beacon)
+	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
 	require.Nil(t, err)
 
 	msg := &types.MsgRecordBeaconTimestamp{
@@ -190,13 +177,13 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 
 	h := beacon.NewHandler(app.BeaconKeeper)
 
-	beacon := types.Beacon{
+	b := types.Beacon{
 		Moniker: test_helpers.GenerateRandomString(24),
 		Name:    "new beacon",
 		Owner:   testAddrs[0].String(),
 	}
 
-	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, beacon)
+	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
 	require.Nil(t, err)
 
 	tests := []struct {

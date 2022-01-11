@@ -33,12 +33,6 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&MsgWhitelistAddress{},
 	)
 
-	//registry.RegisterInterface(
-	//	"cosmos.bank.v1beta1.SupplyI",
-	//	(*exported.SupplyI)(nil),
-	//	&Supply{},
-	//)
-
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 

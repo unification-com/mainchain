@@ -4,17 +4,9 @@ import sdk "github.com/cosmos/cosmos-sdk/types"
 
 // NOTE: Will be deprecated. Used for legacy REST queries
 
-//// QueryResPurchaseOrders Queries raised Enterprise FUND purchase orders
-//type QueryResPurchaseOrders []EnterpriseUndPurchaseOrder
-//
-//// implement fmt.Stringer
-//func (po QueryResPurchaseOrders) String() (out string) {
-//	for _, val := range po {
-//		out += val.String() + "\n"
-//	}
-//	return strings.TrimSpace(out)
-//}
-//
+// QueryResPurchaseOrders Queries raised Enterprise FUND purchase orders
+type QueryResPurchaseOrders []EnterpriseUndPurchaseOrder
+
 // QueryPurchaseOrdersParams Params for query 'custom/enterprise/pos'
 type QueryPurchaseOrdersParams struct {
 	Page                int

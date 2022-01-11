@@ -7,18 +7,6 @@ import (
 	wrkchain "github.com/unification-com/mainchain/x/wrkchain/exported"
 )
 
-//var (
-//	_ FeeTx = (*sdk.StdTx)(nil) // assert StdTx implements FeeTx
-//)
-//
-//// FeeTx defines the interface to be implemented by Tx to use the FeeDecorators
-//type FeeTx interface {
-//	sdk.Tx
-//	GetGas() uint64
-//	GetFee() sdk.Coins
-//	FeePayer() sdk.AccAddress
-//}
-
 type CheckLockedUndDecorator struct {
 	entk EnterpriseKeeper
 }

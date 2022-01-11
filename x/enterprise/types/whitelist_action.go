@@ -28,29 +28,3 @@ func ValidWhitelistAction(action WhitelistAction) bool {
 	}
 	return false
 }
-
-//// StringNice outputs the action for logs/queries etc. in a nicer readable way.
-//func (action WhitelistAction) StringNice() string {
-//	switch action {
-//	case WhitelistActionAdd:
-//		return "add"
-//
-//	case WhitelistActionRemove:
-//		return "remove"
-//
-//	default:
-//		return ""
-//	}
-//}
-//
-//// Format implements the fmt.Formatter interface.
-//// nolint: errcheck
-//func (action WhitelistAction) Format(s fmt.State, verb rune) {
-//	switch verb {
-//	case 's':
-//		s.Write([]byte(action.String()))
-//	default:
-//		// TODO: Do this conversion more directly
-//		s.Write([]byte(fmt.Sprintf("%v", byte(action))))
-//	}
-//}

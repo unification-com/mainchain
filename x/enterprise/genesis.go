@@ -75,14 +75,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 
 		accountKeeper.SetModuleAccount(ctx, moduleAcc)
 	}
-	//if moduleAcc.GetCoins().IsZero() {
-	//	var moduleHoldings sdk.Coins
-	//	moduleHoldings = moduleHoldings.Add(data.TotalLocked)
-	//	if err := moduleAcc.SetCoins(moduleHoldings); err != nil {
-	//		panic(err)
-	//	}
-	//	bankKeeper.SetModuleAccount(ctx, moduleAcc)
-	//}
 
 	return []abci.ValidatorUpdate{}
 }

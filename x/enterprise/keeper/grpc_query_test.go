@@ -320,7 +320,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalUnlocked() {
 	suite.Require().Equal(expectedRes, lRes)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
+func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseSupply() {
 	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
 
 	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
@@ -345,19 +345,19 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
 	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
 	suite.Require().NoError(err)
 
-	req := &types.QueryTotalSupplyEnterpriseRequest{}
+	req := &types.QueryEnterpriseSupplyRequest{}
 
-	expectedRes := &types.QueryTotalSupplyEnterpriseResponse{
+	expectedRes := &types.QueryEnterpriseSupplyResponse{
 		Supply: expectedTotalSupply,
 	}
 
-	lRes, err := queryClient.TotalSupply(gocontext.Background(), req)
+	lRes, err := queryClient.EnterpriseSupply(gocontext.Background(), req)
 
 	suite.Require().NoError(err)
 	suite.Require().Equal(expectedRes, lRes)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryTotalSupplyOverride() {
+func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
 	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
 
 	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
@@ -367,7 +367,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupplyOverride() {
 	baseSupply := sdk.NewCoin(test_helpers.TestDenomination, supply)
 	expectedTotalSupply := baseSupply.Add(toUnlock)
 
-	expectedResponse := &types.QueryTotalSupplyOverrideResponse{
+	expectedResponse := &types.QueryTotalSupplyResponse{
 		Supply: sdk.NewCoins(
 			expectedTotalSupply,
 		),
@@ -379,15 +379,15 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupplyOverride() {
 	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
 	suite.Require().NoError(err)
 
-	req := &types.QueryTotalSupplyOverrideRequest{}
+	req := &types.QueryTotalSupplyRequest{}
 
-	lRes, err := queryClient.TotalSupplyOverride(gocontext.Background(), req)
+	lRes, err := queryClient.TotalSupply(gocontext.Background(), req)
 
 	suite.Require().NoError(err)
 	suite.Require().Equal(expectedResponse, lRes)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQuerySupplyOfOverride() {
+func (suite *KeeperTestSuite) TestGRPCQuerySupplyOf() {
 	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
 
 	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
@@ -397,7 +397,7 @@ func (suite *KeeperTestSuite) TestGRPCQuerySupplyOfOverride() {
 	baseSupply := sdk.NewCoin(test_helpers.TestDenomination, supply)
 	expectedTotalSupply := baseSupply.Add(toUnlock)
 
-	expectedResponse := &types.QuerySupplyOfOverrideResponse{
+	expectedResponse := &types.QuerySupplyOfResponse{
 		Amount: expectedTotalSupply,
 	}
 
@@ -407,9 +407,9 @@ func (suite *KeeperTestSuite) TestGRPCQuerySupplyOfOverride() {
 	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
 	suite.Require().NoError(err)
 
-	req := &types.QuerySupplyOfOverrideRequest{Denom: test_helpers.TestDenomination}
+	req := &types.QuerySupplyOfRequest{Denom: test_helpers.TestDenomination}
 
-	lRes, err := queryClient.SupplyOfOverride(gocontext.Background(), req)
+	lRes, err := queryClient.SupplyOf(gocontext.Background(), req)
 
 	suite.Require().NoError(err)
 	suite.Require().Equal(expectedResponse, lRes)

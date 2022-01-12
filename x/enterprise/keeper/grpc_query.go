@@ -108,25 +108,27 @@ func (q Keeper) TotalUnlocked(c context.Context, req *types.QueryTotalUnlockedRe
 	return &types.QueryTotalUnlockedResponse{Amount: amount}, nil
 }
 
-func (q Keeper) TotalSupply(c context.Context, req *types.QueryTotalSupplyEnterpriseRequest) (*types.QueryTotalSupplyEnterpriseResponse, error) {
+func (q Keeper) EnterpriseSupply(c context.Context, req *types.QueryEnterpriseSupplyRequest) (*types.QueryEnterpriseSupplyResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-	totalSupply := q.GetTotalSupplyIncludingLockedUnd(ctx)
+	totalSupply := q.GetEnterpriseSupplyIncludingLockedUnd(ctx)
 
-	return &types.QueryTotalSupplyEnterpriseResponse{Supply: totalSupply}, nil
+	return &types.QueryEnterpriseSupplyResponse{Supply: totalSupply}, nil
 }
 
-// TotalSupplyOverride Overrides the Cosmos SDK bank keeper's TotalSupply to return nund with locked enterprise nund subtracted
-func (q Keeper) TotalSupplyOverride(c context.Context, req *types.QueryTotalSupplyOverrideRequest) (*types.QueryTotalSupplyOverrideResponse, error) {
+// TotalSupply Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
+// with locked eFUND removed from total for nund
+func (q Keeper) TotalSupply(c context.Context, req *types.QueryTotalSupplyRequest) (*types.QueryTotalSupplyResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
 	totalSupply := q.GetTotalSupplyWithLockedNundRemoved(ctx)
 
-	return &types.QueryTotalSupplyOverrideResponse{Supply: totalSupply}, nil
+	return &types.QueryTotalSupplyResponse{Supply: totalSupply}, nil
 }
 
-// SupplyOfOverride Overrides the Cosmos SDK bank keeper's SupplyOf to return nund with locked enterprise nund subtracted
-func (q Keeper) SupplyOfOverride(c context.Context, req *types.QuerySupplyOfOverrideRequest) (*types.QuerySupplyOfOverrideResponse, error) {
+// SupplyOf Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
+// with locked eFUND removed from total for nund
+func (q Keeper) SupplyOf(c context.Context, req *types.QuerySupplyOfRequest) (*types.QuerySupplyOfResponse, error) {
 
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
@@ -139,7 +141,7 @@ func (q Keeper) SupplyOfOverride(c context.Context, req *types.QuerySupplyOfOver
 	ctx := sdk.UnwrapSDKContext(c)
 	supply := q.GetSupplyOfWithLockedNundRemoved(ctx, req.Denom)
 
-	return &types.QuerySupplyOfOverrideResponse{Amount: sdk.NewCoin(req.Denom, supply)}, nil
+	return &types.QuerySupplyOfResponse{Amount: sdk.NewCoin(req.Denom, supply)}, nil
 }
 
 func (q Keeper) Whitelist(c context.Context, req *types.QueryWhitelistRequest) (*types.QueryWhitelistResponse, error) {

@@ -16,6 +16,7 @@ const (
 	QueryGetLocked        = "locked"
 	QueryTotalLocked      = "total-locked"
 	QueryTotalUnlocked    = "total-unlocked"
+	QueryEnterpriseSupply = "ent-supply"
 	QueryTotalSupply      = "total-supply"
 	QueryTotalSupplyOf    = "total-supply-of"
 	QueryWhitelist        = "whitelist"
@@ -38,6 +39,8 @@ func NewLegacyQuerier(keeper Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Qu
 			return queryTotalLocked(ctx, keeper, legacyQuerierCdc)
 		case QueryTotalUnlocked:
 			return queryTotalUnlocked(ctx, keeper, legacyQuerierCdc)
+		case QueryEnterpriseSupply:
+			return queryEnterpriseSupply(ctx, keeper, legacyQuerierCdc)
 		case QueryTotalSupply:
 			return queryTotalSupply(ctx, keeper, legacyQuerierCdc)
 		case QueryTotalSupplyOf:
@@ -143,6 +146,17 @@ func queryTotalUnlocked(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.Legac
 	totalUnlocked := k.GetTotalUnLockedUnd(ctx)
 
 	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, totalUnlocked)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
+}
+
+func queryEnterpriseSupply(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	entSupply := k.GetEnterpriseSupplyIncludingLockedUnd(ctx)
+
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, entSupply)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

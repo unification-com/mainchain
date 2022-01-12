@@ -77,7 +77,7 @@ clean:
 	rm -rf build/
 
 update-swagger-docs: statik
-	$(BINDIR)/statik -src=client/lcd/swagger-ui -dest=client/lcd -f -m
+	$(BINDIR)/statik -src=client/docs/swagger-ui -dest=client/docs -f -m
 	@if [ -n "$(git status --porcelain)" ]; then \
         echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
         exit 1;\
@@ -113,6 +113,11 @@ devnet-master-down:
 
 # Used during active development
 
+go-mod-cache: go.sum
+	@echo "--> Download go modules to local cache"
+	@go mod download
+PHONY: go-mod-cache
+
 check-updates:
 	@echo "checking for module updates"
 	@go list -u -f '{{if (and (not (or .Main .Indirect)) .Update)}}{{.Path}}: {{.Version}} -> {{.Update.Version}}{{end}}' -m all 2> /dev/null
@@ -130,6 +135,7 @@ release: goreleaser
 ###############################################################################
 
 HTTPS_GIT = https://github.com/unification-com/mainchain
+COSMOS_SDK_PATH := $(shell go list -m -f '{{.Dir}}' github.com/cosmos/cosmos-sdk)
 
 proto-gen:
 	@echo "Generating Protobuf files"
@@ -203,5 +209,8 @@ proto-update-deps:
 ## insert go package option into proofs.proto file
 ## Issue link: https://github.com/confio/ics23/issues/32
 	@sed -i '4ioption go_package = "github.com/confio/ics23/go";' $(CONFIO_TYPES)/proofs.proto
+
+	@mkdir -p client/docs
+	@cp $(COSMOS_SDK_PATH)/client/docs/swagger-ui/swagger.yaml client/docs/cosmos-swagger.yml
 
 .PHONY: proto-all proto-gen proto-gen-any proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps

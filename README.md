@@ -206,3 +206,10 @@ using, for example, the following `pprof` commands:
 (pprof) web
 (pprof) quit
 ```
+
+### Swagger UI
+
+```bash
+make proto-swagger-gen
+make update-swagger-docs
+```

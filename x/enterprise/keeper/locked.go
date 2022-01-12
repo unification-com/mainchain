@@ -61,8 +61,8 @@ func (k Keeper) GetTotalUndSupply(ctx sdk.Context) sdk.Coin {
 	return total
 }
 
-// GetTotalSupplyIncludingLockedUnd returns information including total FUND supply, total locked and unlocked
-func (k Keeper) GetTotalSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSupply {
+// GetEnterpriseSupplyIncludingLockedUnd returns information including total FUND supply, total locked and unlocked
+func (k Keeper) GetEnterpriseSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSupply {
 	supply := k.bankKeeper.GetSupply(ctx).GetTotal().AmountOf(k.GetParamDenom(ctx))
 	total := sdk.NewCoin(k.GetParamDenom(ctx), supply)
 	locked := k.GetTotalLockedUnd(ctx)

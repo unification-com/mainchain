@@ -82,6 +82,22 @@ func getQueriedTotalSupply(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino
 	return totalLocked
 }
 
+func getQueriedEnterpriseSupply(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier) types.UndSupply {
+	query := abci.RequestQuery{
+		Path: strings.Join([]string{custom, types.QuerierRoute, keeper.QueryEnterpriseSupply}, "/"),
+		Data: []byte{},
+	}
+
+	bz, err := querier(ctx, []string{keeper.QueryEnterpriseSupply}, query)
+	require.NoError(t, err)
+	require.NotNil(t, bz)
+
+	var totalLocked types.UndSupply
+	require.NoError(t, cdc.UnmarshalJSON(bz, &totalLocked))
+
+	return totalLocked
+}
+
 func getQueriedPurchaseOrder(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, poID uint64) types.EnterpriseUndPurchaseOrder {
 
 	query := abci.RequestQuery{
@@ -193,14 +209,8 @@ func TestLegacyQueryTotalUnLocked(t *testing.T) {
 	locked := sdk.NewInt64Coin(denom, amount)
 	toUnlock := sdk.NewInt64Coin(denom, int64(500))
 
-	//origCoins := sdk.NewCoins(sdk.NewInt64Coin(denom, amount))
-	//acc := testApp.AccountKeeper.NewAccountWithAddress(ctx, TestAddrs[0])
-	//testApp.AccountKeeper.SetAccount(ctx, acc)
-	//testApp.BankKeeper.SetBalances(ctx, acc.GetAddress(), origCoins)
-
 	_ = testApp.EnterpriseKeeper.MintCoinsAndLock(ctx, TestAddrs[0], locked)
 	_ = testApp.EnterpriseKeeper.UnlockCoinsForFees(ctx, TestAddrs[0], sdk.NewCoins(toUnlock))
-	//totalSupply := testApp.BankKeeper.GetSupply(ctx).GetTotal()
 
 	totalUnLocked := getQueriedTotalUnLocked(t, ctx, legacyQuerierCdc, querier)
 
@@ -220,6 +230,24 @@ func TestLegacyQueryTotalSupply(t *testing.T) {
 
 	totalSupplyFromEnt := getQueriedTotalSupply(t, ctx, legacyQuerierCdc, querier)
 	require.Equal(t, sdk.Coins{toUnlock}, totalSupplyFromEnt)
+}
+
+func TestLegacyQueryEnterpriseSupply(t *testing.T) {
+	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+
+	denom := TestDenomination
+	amount := int64(1000)
+	toMint := sdk.NewInt64Coin(denom, amount)
+	toUnlock := sdk.NewInt64Coin(denom, int64(500))
+	stillLockedAfterUnlock := toMint.Sub(toUnlock)
+
+	_ = testApp.EnterpriseKeeper.MintCoinsAndLock(ctx, TestAddrs[0], toMint)
+	_ = testApp.EnterpriseKeeper.UnlockCoinsForFees(ctx, TestAddrs[0], sdk.NewCoins(toUnlock))
+
+	totalSupplyFromEnt := getQueriedEnterpriseSupply(t, ctx, legacyQuerierCdc, querier)
+	require.Equal(t, toUnlock.Amount.Uint64(), totalSupplyFromEnt.Amount)
+	require.Equal(t, stillLockedAfterUnlock.Amount.Uint64(), totalSupplyFromEnt.Locked)
+	require.Equal(t, toMint.Amount.Uint64(), totalSupplyFromEnt.Total)
 }
 
 func TestLegacyQueryPurchaseOrder(t *testing.T) {

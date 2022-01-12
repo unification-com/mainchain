@@ -177,7 +177,7 @@ func TestMintCoinsAndLock(t *testing.T) {
 	totalLockedDb := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
 	require.True(t, totalLockedDb.IsEqual(totalLocked))
 
-	totalSupplyDb := app.EnterpriseKeeper.GetTotalSupplyIncludingLockedUnd(ctx)
+	totalSupplyDb := app.EnterpriseKeeper.GetEnterpriseSupplyIncludingLockedUnd(ctx)
 	require.True(t, totalSupplyDb.Locked == totalLocked.Amount.Uint64())
 
 	entAccount := app.EnterpriseKeeper.GetEnterpriseAccount(ctx)
@@ -226,7 +226,7 @@ func TestUnlockCoinsForFees(t *testing.T) {
 	totalLockedDb := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
 	require.True(t, totalLockedDb.IsEqual(totalLocked))
 
-	totalSupplyDb := app.EnterpriseKeeper.GetTotalSupplyIncludingLockedUnd(ctx)
+	totalSupplyDb := app.EnterpriseKeeper.GetEnterpriseSupplyIncludingLockedUnd(ctx)
 	require.True(t, totalSupplyDb.Locked == totalLocked.Amount.Uint64())
 
 	entAccount := app.EnterpriseKeeper.GetEnterpriseAccount(ctx)

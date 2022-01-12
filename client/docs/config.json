@@ -1,0 +1,49 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "FUND - gRPC Gateway docs",
+    "description": "A REST interface for state queries",
+    "version": "1.0.0"
+  },
+  "apis": [
+    {
+      "url": "./tmp-swagger-gen/mainchain/enterprise/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "EnterpriseParams",
+          "TotalSupply": "EnterpriseTotalSupply",
+          "SupplyOf": "EnterpriseSupplyOf"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/mainchain/beacon/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "BeaconParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/mainchain/wrkchain/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "WrkchainParams"
+        }
+      }
+    },
+    {
+      "url": "./client/docs/cosmos-swagger.yml",
+      "dereference": {
+        "circular": "ignore"
+      },
+      "paths": {
+        "exclude": [
+          "^/cosmos/authz/.*",
+          "^/cosmos/feegrant/.*",
+          "^/cosmos/ibc/.*"
+        ]
+      }
+    }
+  ]
+}

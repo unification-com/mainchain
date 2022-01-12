@@ -135,6 +135,7 @@ release: goreleaser
 ###############################################################################
 
 HTTPS_GIT = https://github.com/unification-com/mainchain
+COSMOS_SDK_PATH := $(shell go list -m -f '{{.Dir}}' github.com/cosmos/cosmos-sdk)
 
 proto-gen:
 	@echo "Generating Protobuf files"
@@ -168,8 +169,6 @@ TM_P2P              = third_party/proto/tendermint/p2p
 GOGO_PROTO_TYPES    = third_party/proto/gogoproto
 COSMOS_PROTO_TYPES  = third_party/proto/cosmos_proto
 CONFIO_TYPES        = third_party/proto/confio
-
-COSMOS_SDK_PATH := $(shell go list -m -f '{{.Dir}}' github.com/cosmos/cosmos-sdk)
 
 proto-update-deps:
 	@mkdir -p $(GOGO_PROTO_TYPES)

@@ -37,6 +37,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdGetWhitelistedAddresses(),
 		GetCmdGetAddresIsWhitelisted(),
 		GetCmdGetEnterpriseUserAccount(),
+		GetCmdGetEnterpriseSupply(),
 	)
 
 	return enterpriseQueryCmd
@@ -342,6 +343,31 @@ func GetCmdGetEnterpriseUserAccount() *cobra.Command {
 			res, err := queryClient.EnterpriseAccount(context.Background(), &types.QueryEnterpriseAccountRequest{
 				Address: address.String(),
 			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdGetEnterpriseSupply queries eFUND data, including locked, unlocked and total chain supply
+func GetCmdGetEnterpriseSupply() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "ent-supply",
+		Short: "get eFUND data, including locked, unlocked and chain total supply",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.EnterpriseSupply(context.Background(), &types.QueryEnterpriseSupplyRequest{})
 			if err != nil {
 				return err
 			}

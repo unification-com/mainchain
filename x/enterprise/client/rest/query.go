@@ -19,6 +19,7 @@ func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/enterprise/params", enterpriseParamsHandler(clientCtx)).Methods("GET")
 	r.HandleFunc("/enterprise/locked", enterpriseTotalLockedHandler(clientCtx)).Methods("GET")
 	r.HandleFunc("/enterprise/unlocked", enterpriseTotalUnLockedHandler(clientCtx)).Methods("GET")
+	r.HandleFunc("/enterprise/ent_supply", enterpriseEnterpriseSupplyHandler(clientCtx)).Methods("GET")
 
 	r.HandleFunc("/enterprise/whitelist", enterpriseWhitelistHandler(clientCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/enterprise/whitelisted/{%s}", RestWhitelistAddr), enterpriseWhitelistedHandler(clientCtx)).Methods("GET")
@@ -30,11 +31,11 @@ func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
 }
 
 func registerEnterpriseTotalSupplyOverride(cliCtx client.Context, r *mux.Router) {
-	r.HandleFunc("/bank/total", EnterpriseSupplyTotalOverride(cliCtx)).Methods("GET")
+	r.HandleFunc("/supply/total", EnterpriseSupplyTotalOverride(cliCtx)).Methods("GET")
 }
 
 func registerEnterpriseSupplyByDenomOverride(cliCtx client.Context, r *mux.Router) {
-	r.HandleFunc("/bank/total/{denom}", EnterpriseSupplyByDenomOverride(cliCtx)).Methods("GET")
+	r.HandleFunc("/supply/total/{denom}", EnterpriseSupplyByDenomOverride(cliCtx)).Methods("GET")
 }
 
 func enterpriseParamsHandler(cliCtx client.Context) http.HandlerFunc {
@@ -73,6 +74,22 @@ func enterpriseTotalUnLockedHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryTotalUnlocked)
+		res, height, err := cliCtx.QueryWithData(route, nil)
+
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}
+
+func enterpriseEnterpriseSupplyHandler(cliCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, _ := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryEnterpriseSupply)
 		res, height, err := cliCtx.QueryWithData(route, nil)
 
 		if err != nil {

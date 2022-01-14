@@ -12,8 +12,8 @@ message GenesisState {
   // params defines all the paramaters of the module.
   Params params = 1 [(gogoproto.nullable) = false];
   uint64 starting_purchase_order_id = 2;
-  repeated EnterpriseUndPurchaseOrder purchase_orders = 3 [(gogoproto.nullable) = false];
-  repeated LockedUnd locked_und = 4 [(gogoproto.nullable) = false];
+  repeated EnterpriseUndPurchaseOrder purchase_orders = 3 [(gogoproto.castrepeated) = "EnterpriseUndPurchaseOrders", (gogoproto.nullable) = false];
+  repeated LockedUnd locked_und = 4 [(gogoproto.castrepeated) = "LockedUnds", (gogoproto.nullable) = false];
   cosmos.base.v1beta1.Coin total_locked = 5 [(gogoproto.nullable) = false];
-  repeated string whitelist = 6;
+  repeated string whitelist = 6 [(gogoproto.castrepeated) = "Whitelists"];
 }

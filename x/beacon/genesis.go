@@ -12,8 +12,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 	keeper.SetParams(ctx, data.Params)
 	keeper.SetHighestBeaconID(ctx, data.StartingBeaconId)
 
-	logger := keeper.Logger(ctx)
-
 	for _, record := range data.RegisteredBeacons {
 		beacon := types.Beacon{
 			BeaconId:        record.Beacon.BeaconId,
@@ -27,15 +25,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 		if err != nil {
 			panic(err)
 		}
-
-		if beacon.LastTimestampId > 0 {
-			err = keeper.SetLastTimestampID(ctx, beacon.BeaconId, beacon.LastTimestampId)
-			if err != nil {
-				panic(err)
-			}
-		}
-
-		logger.Debug("setting beacon", "bid", beacon.BeaconId)
 
 		for _, timestamp := range record.Timestamps {
 
@@ -56,31 +45,30 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 	return []abci.ValidatorUpdate{}
 }
 
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	params := k.GetParams(ctx)
-	var records []types.BeaconExport
+	var records types.BeaconExports
 	initialBeaconID, _ := k.GetHighestBeaconID(ctx)
 
 	beacons := k.GetAllBeacons(ctx)
 
 	if len(beacons) == 0 {
-		return types.GenesisState{
-			Params:            params,
-			StartingBeaconId:  initialBeaconID,
-			RegisteredBeacons: nil,
-		}
+		return types.NewGenesisState(params, initialBeaconID, nil)
 	}
 
 	for _, b := range beacons {
 		timestamps := k.GetAllBeaconTimestampsForExport(ctx, b.BeaconId)
-		if timestamps == nil {
-			timestamps = []types.BeaconTimestampGenesisExport{}
-		}
-		records = append(records, types.BeaconExport{Beacon: &b, Timestamps: timestamps})
+
+		records = append(records, types.BeaconExport{
+			Beacon: types.Beacon{
+				BeaconId:        b.BeaconId,
+				Moniker:         b.Moniker,
+				Name:            b.Name,
+				LastTimestampId: b.LastTimestampId,
+				Owner:           b.Owner,
+			},
+			Timestamps: timestamps,
+		})
 	}
-	return types.GenesisState{
-		Params:            params,
-		StartingBeaconId:  initialBeaconID,
-		RegisteredBeacons: records,
-	}
+	return types.NewGenesisState(params, initialBeaconID, records)
 }

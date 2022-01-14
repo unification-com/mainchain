@@ -87,7 +87,7 @@ func (k Keeper) GetAllBeaconTimestamps(ctx sdk.Context, beaconID uint64) (timest
 	return
 }
 
-func prependTimestamp(x []types.BeaconTimestampGenesisExport, y types.BeaconTimestampGenesisExport) []types.BeaconTimestampGenesisExport {
+func prependTimestamp(x types.BeaconTimestampGenesisExports, y types.BeaconTimestampGenesisExport) types.BeaconTimestampGenesisExports {
 	x = append(x, y)
 	copy(x[1:], x)
 	x[0] = y
@@ -96,7 +96,7 @@ func prependTimestamp(x []types.BeaconTimestampGenesisExport, y types.BeaconTime
 
 // GetAllBeaconTimestampsForExport Get an iterator over all a Beacon's timestamps in which an optimised version of
 // the timestamp data is returned for genesis export
-func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64) (timestamps []types.BeaconTimestampGenesisExport) {
+func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64) (timestamps types.BeaconTimestampGenesisExports) {
 
 	count := 0
 	k.IterateBeaconTimestampsReverse(ctx, beaconID, func(bts types.BeaconTimestamp) bool {

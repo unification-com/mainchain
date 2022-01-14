@@ -110,7 +110,7 @@ func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (w
 	return
 }
 
-func prependBlock(x []types.WrkChainBlockGenesisExport, y types.WrkChainBlockGenesisExport) []types.WrkChainBlockGenesisExport {
+func prependBlock(x types.WrkChainBlockGenesisExports, y types.WrkChainBlockGenesisExport) types.WrkChainBlockGenesisExports {
 	x = append(x, y)
 	copy(x[1:], x)
 	x[0] = y
@@ -119,7 +119,7 @@ func prependBlock(x []types.WrkChainBlockGenesisExport, y types.WrkChainBlockGen
 
 // GetAllWrkChainBlockHashesForGenesisExport returns all the wrkchain's hashes from store for export in an optimised
 // format ready for genesis
-func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks []types.WrkChainBlockGenesisExport) {
+func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkchainID uint64) (wrkChainBlocks types.WrkChainBlockGenesisExports) {
 	count := 0
 	k.IterateWrkChainBlockHashesReverse(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
 		wcbExp := types.WrkChainBlockGenesisExport{

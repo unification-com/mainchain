@@ -1,18 +1,9 @@
 package types
 
-import (
-	undtypes "github.com/unification-com/mainchain/types"
-)
+const MaxBlockSubmissionsKeepInState = 20000
 
-const (
-	// WRKChain fees, in nano FUND
-	RegFee    = 1000000000000                // 1000 FUND - used in init genesis
-	RecordFee = 1000000000                   // 1 FUND - used in init genesis
-	FeeDenom  = undtypes.DefaultDenomination // used in init genesis
-
-	DefaultStartingWrkChainID      uint64 = 1 // used in init genesis
-	MaxBlockSubmissionsKeepInState        = 20000
-)
+type WrkChainExports []WrkChainExport
+type WrkChainBlockGenesisExports []WrkChainBlockGenesisExport
 
 func NewWrkchain(wrkchainId uint64, moniker, name, genesis, wcType string,
 	lastBlock, numBlocks, regTime uint64, owner string) (WrkChain, error) {

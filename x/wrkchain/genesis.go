@@ -12,8 +12,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 	keeper.SetParams(ctx, data.Params)
 	keeper.SetHighestWrkChainID(ctx, data.StartingWrkchainId)
 
-	logger := keeper.Logger(ctx)
-
 	for _, record := range data.RegisteredWrkchains {
 		wrkChain := types.WrkChain{
 			WrkchainId: record.Wrkchain.WrkchainId,
@@ -32,8 +30,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 			panic(err)
 		}
 
-		logger.Debug("Registering WRKChain", "wc_id", wrkChain.WrkchainId)
-
 		for _, block := range record.Blocks {
 			blk := types.WrkChainBlock{
 				WrkchainId: wrkChain.WrkchainId,
@@ -51,43 +47,40 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 			if err != nil {
 				panic(err)
 			}
-
-			// also update NumBlocks!
-			err = keeper.SetNumBlocks(ctx, wrkChain.WrkchainId)
-			if err != nil {
-				panic(err)
-			}
 		}
 	}
 	return []abci.ValidatorUpdate{}
 }
 
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	params := k.GetParams(ctx)
-	var records []types.WrkChainExport
+	var records types.WrkChainExports
 	initialWrkChainID, _ := k.GetHighestWrkChainID(ctx)
 
 	wrkChains := k.GetAllWrkChains(ctx)
 
 	if len(wrkChains) == 0 {
-		return types.GenesisState{
-			Params:              params,
-			StartingWrkchainId:  initialWrkChainID,
-			RegisteredWrkchains: records,
-		}
+		return types.NewGenesisState(params, initialWrkChainID, nil)
 	}
 
 	for _, wc := range wrkChains {
 		blockHashList := k.GetAllWrkChainBlockHashesForGenesisExport(ctx, wc.WrkchainId)
-		if blockHashList == nil {
-			blockHashList = []types.WrkChainBlockGenesisExport{}
-		}
-		records = append(records, types.WrkChainExport{Wrkchain: &wc, Blocks: blockHashList})
+
+		records = append(records, types.WrkChainExport{
+			Wrkchain: types.WrkChain{
+				WrkchainId: wc.WrkchainId,
+				Moniker:    wc.Moniker,
+				Name:       wc.Name,
+				Genesis:    wc.Genesis,
+				Type:       wc.Type,
+				Lastblock:  wc.Lastblock,
+				NumBlocks:  wc.NumBlocks,
+				RegTime:    wc.RegTime,
+				Owner:      wc.Owner,
+			},
+			Blocks: blockHashList,
+		})
 	}
 
-	return types.GenesisState{
-		Params:              params,
-		StartingWrkchainId:  initialWrkChainID,
-		RegisteredWrkchains: records,
-	}
+	return types.NewGenesisState(params, initialWrkChainID, records)
 }

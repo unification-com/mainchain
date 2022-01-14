@@ -66,14 +66,9 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 		accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
-		wrkchainOwnerAddr, _ := simtypes.RandomAcc(r, accs)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
 
-		simAccount, found := simtypes.FindAccount(accs, wrkchainOwnerAddr.Address)
-		if !found {
-			return simtypes.NoOpMsg(types.ModuleName, types.RegisterAction, "unable to find account"), nil, nil // skip
-		}
-
-		account := ak.GetAccount(ctx, wrkchainOwnerAddr.Address)
+		account := ak.GetAccount(ctx, simAccount.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
 		fees := k.GetRegistrationFeeAsCoins(ctx)
@@ -108,10 +103,10 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, res, err := app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, errors.New(res.Log)
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
 		// submit the PO
@@ -177,10 +172,10 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, res, err := app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, errors.New(res.Log)
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
 		// submit the PO

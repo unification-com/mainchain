@@ -2,14 +2,24 @@ package types
 
 import (
 	"fmt"
+	undtypes "github.com/unification-com/mainchain/types"
+)
+
+const (
+	// WRKChain fees, in nano FUND
+	RegFee    = 1000000000000                // 1000 FUND - used in init genesis
+	RecordFee = 1000000000                   // 1 FUND - used in init genesis
+	FeeDenom  = undtypes.DefaultDenomination // used in init genesis
+
+	DefaultStartingWrkChainID uint64 = 1 // used in init genesis
 )
 
 // NewGenesisState creates a new GenesisState object
-func NewGenesisState(params Params, startingWrkChainID uint64) *GenesisState {
+func NewGenesisState(params Params, startingWrkChainID uint64, wrkChains WrkChainExports) *GenesisState {
 	return &GenesisState{
 		Params:              params,
 		StartingWrkchainId:  startingWrkChainID,
-		RegisteredWrkchains: nil,
+		RegisteredWrkchains: wrkChains,
 	}
 }
 

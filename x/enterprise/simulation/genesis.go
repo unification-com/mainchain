@@ -35,7 +35,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	var minAccepts uint64
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, EnterpriseDecisionTimeLimit, &minAccepts, simState.Rand,
+		simState.Cdc, EnterpriseMinAccepts, &minAccepts, simState.Rand,
 		func(r *rand.Rand) {
 			minAccepts = uint64(simtypes.RandIntBetween(r, 1, 3))
 		},
@@ -70,7 +70,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	entGenesis := types.NewGenesisState(
 		types.NewParams(sdk.DefaultBondDenom, minAccepts, decisionLimit, entAddress),
 		uint64(1),
-		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0), nil, nil, nil,
 	)
 
 	bz, err := json.MarshalIndent(&entGenesis, "", " ")

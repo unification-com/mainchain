@@ -11,13 +11,13 @@ import (
 
 // InitGenesis new enterprise FUND genesis
 func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKeeper, accountKeeper types.AccountKeeper, data types.GenesisState) []abci.ValidatorUpdate {
-	keeper.SetParams(ctx, data.Params)
-	keeper.SetHighestPurchaseOrderID(ctx, data.StartingPurchaseOrderId)
-
 	moduleAcc := keeper.GetEnterpriseAccount(ctx)
 	if moduleAcc == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
+
+	keeper.SetParams(ctx, data.Params)
+	keeper.SetHighestPurchaseOrderID(ctx, data.StartingPurchaseOrderId)
 
 	if data.Whitelist != nil {
 		for _, wlAddr := range data.Whitelist {
@@ -50,6 +50,15 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 		err = keeper.SetPurchaseOrder(ctx, epo)
 		if err != nil {
 			panic(err)
+		}
+
+		// if export occured during decision making, needs to be
+		// set in keeper
+		if po.Status == types.StatusRaised {
+			keeper.AddPoToRaisedQueue(ctx, po.Id)
+		}
+		if po.Status == types.StatusAccepted {
+			keeper.AddPoToAcceptedQueue(ctx, po.Id)
 		}
 	}
 

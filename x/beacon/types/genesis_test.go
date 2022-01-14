@@ -42,7 +42,7 @@ func TestValidateGenesis(t *testing.T) {
 
 	state3 := DefaultGenesisState()
 	beacon1 := BeaconExport{
-		Beacon: &Beacon{
+		Beacon: Beacon{
 			BeaconId: 0,
 		},
 	}

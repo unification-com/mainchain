@@ -24,10 +24,10 @@ func TestEqualPurchaseOrderID(t *testing.T) {
 
 func TestNewGenesisState(t *testing.T) {
 	params1 := NewParams(1000, 100, "nund")
-	state1 := NewGenesisState(params1, 1)
+	state1 := NewGenesisState(params1, 1, nil)
 
 	params2 := NewParams(1000, 100, "nund")
-	state2 := NewGenesisState(params2, 1)
+	state2 := NewGenesisState(params2, 1, nil)
 
 	require.Equal(t, state1, state2)
 }
@@ -50,7 +50,7 @@ func TestValidateGenesis(t *testing.T) {
 
 	state3 := DefaultGenesisState()
 	wrkchain1 := WrkChainExport{
-		Wrkchain: &WrkChain{
+		Wrkchain: WrkChain{
 			WrkchainId: 0,
 		},
 	}

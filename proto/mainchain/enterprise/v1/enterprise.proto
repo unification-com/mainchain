@@ -50,8 +50,6 @@ message LockedUnd {
   cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
 }
 
-message LockedUnds { repeated LockedUnd locked_unds = 1; }
-
 message EnterpriseUserAccount {
   string owner = 1;
   cosmos.base.v1beta1.Coin locked = 2 [ (gogoproto.nullable) = false ];

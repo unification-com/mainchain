@@ -15,11 +15,11 @@ const (
 )
 
 // NewGenesisState creates a new GenesisState object
-func NewGenesisState(params Params, startingBeaconID uint64) *GenesisState {
+func NewGenesisState(params Params, startingBeaconID uint64, beacons BeaconExports) *GenesisState {
 	return &GenesisState{
 		Params:            params,
 		StartingBeaconId:  startingBeaconID,
-		RegisteredBeacons: nil,
+		RegisteredBeacons: beacons,
 	}
 }
 

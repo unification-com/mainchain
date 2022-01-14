@@ -182,9 +182,9 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[paramtypes.StoreKey], newApp.keys[paramtypes.StoreKey], [][]byte{}},
 		{app.keys[govtypes.StoreKey], newApp.keys[govtypes.StoreKey], [][]byte{}},
 		{app.keys[evidencetypes.StoreKey], newApp.keys[evidencetypes.StoreKey], [][]byte{}},
-		{app.keys[enttypes.StoreKey], newApp.keys[enttypes.StoreKey], [][]byte{}},
 		{app.keys[beacontypes.StoreKey], newApp.keys[beacontypes.StoreKey], [][]byte{}},
 		{app.keys[wrkchaintypes.StoreKey], newApp.keys[wrkchaintypes.StoreKey], [][]byte{}},
+		{app.keys[enttypes.StoreKey], newApp.keys[enttypes.StoreKey], [][]byte{}},
 
 		// ToDo: uncomment when enabled in App
 		//{app.keys[capabilitytypes.StoreKey], newApp.keys[capabilitytypes.StoreKey], [][]byte{}},

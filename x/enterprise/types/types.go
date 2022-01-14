@@ -2,6 +2,10 @@ package types
 
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
+type EnterpriseUndPurchaseOrders []EnterpriseUndPurchaseOrder
+type LockedUnds []LockedUnd
+type Whitelists []string
+
 // NewEnterpriseUndPurchaseOrder is currently only used in the simulation decoder unit tests
 func NewEnterpriseUndPurchaseOrder(poId uint64, purchaser string, amount sdk.Coin, status PurchaseOrderStatus, raisedTime, completionTime uint64) (EnterpriseUndPurchaseOrder, error) {
 	po := EnterpriseUndPurchaseOrder{

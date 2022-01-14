@@ -50,11 +50,15 @@ func ValidateGenesis(data GenesisState) error {
 }
 
 // NewGenesisState creates a new GenesisState object
-func NewGenesisState(params Params, startingPurchaseOrderId uint64, totalLocked sdk.Coin) *GenesisState {
+func NewGenesisState(params Params, startingPurchaseOrderId uint64, totalLocked sdk.Coin,
+	purchaseOrders EnterpriseUndPurchaseOrders, locked LockedUnds, whitelist Whitelists) *GenesisState {
 	return &GenesisState{
 		Params:                  params,
 		StartingPurchaseOrderId: startingPurchaseOrderId,
+		PurchaseOrders:          purchaseOrders,
+		LockedUnd:               locked,
 		TotalLocked:             totalLocked,
+		Whitelist:               whitelist,
 	}
 }
 
@@ -64,5 +68,6 @@ func DefaultGenesisState() *GenesisState {
 		DefaultParams(),
 		1,
 		sdk.NewInt64Coin(undtypes.DefaultDenomination, 0),
+		nil, nil, nil,
 	)
 }

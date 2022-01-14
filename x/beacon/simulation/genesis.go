@@ -35,7 +35,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, BeaconFeeRegister, &feeRegister, simState.Rand,
 		func(r *rand.Rand) {
-			feeRegister = uint64(simtypes.RandIntBetween(r, 10, 1000))
+			feeRegister = uint64(simtypes.RandIntBetween(r, 1, 10))
 		},
 	)
 
@@ -51,6 +51,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	beaconGenesis := types.NewGenesisState(
 		types.NewParams(feeRegister, feeRecord, sdk.DefaultBondDenom),
 		startId,
+		nil,
 	)
 
 	bz, err := json.MarshalIndent(&beaconGenesis, "", " ")

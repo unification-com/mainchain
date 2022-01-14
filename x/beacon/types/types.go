@@ -2,6 +2,9 @@ package types
 
 const MaxHashSubmissionsToExport = 20000
 
+type BeaconExports []BeaconExport
+type BeaconTimestampGenesisExports []BeaconTimestampGenesisExport
+
 func NewBeacon(beaconId uint64, moniker string, name string, lastTimeStampId uint64, owner string) (Beacon, error) {
 	b := Beacon{
 		BeaconId:        beaconId,

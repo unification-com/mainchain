@@ -24,7 +24,7 @@ test-sim-after-import: runsim
 
 test-sim-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
-	@echo "By default, ${HOME}/.gaund_mainchainia/config/genesis.json will be used."
+	@echo "By default, ${HOME}/.und_mainchain/config/genesis.json will be used."
 	@$(BINDIR)/runsim -Genesis=${HOME}/.und_mainchain/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
 
 test-sim-multi-seed-long: runsim

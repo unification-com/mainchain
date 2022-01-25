@@ -38,7 +38,7 @@ message EnterpriseUndPurchaseOrder {
   PurchaseOrderStatus status = 4;
   uint64 raise_time = 5;
   uint64 completion_time = 6;
-  repeated PurchaseOrderDecision decisions = 7;
+  repeated PurchaseOrderDecision decisions = 7 [(gogoproto.castrepeated) = "PurchaseOrderDecisions", (gogoproto.nullable) = false];
 }
 
 message PurchaseOrders {

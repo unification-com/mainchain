@@ -147,10 +147,18 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 		}
 
 		hash := simtypes.RandStringOfLength(r, 64)
-		ph := simtypes.RandStringOfLength(r, 64)
-		h1 := simtypes.RandStringOfLength(r, 64)
-		h2 := simtypes.RandStringOfLength(r, 64)
-		h3 := simtypes.RandStringOfLength(r, 64)
+		ph := ""
+		h1 := ""
+		h2 := ""
+		h3 := ""
+
+		if wrkChain.WrkchainId%2 == 0 {
+			ph = simtypes.RandStringOfLength(r, 64)
+			h1 = simtypes.RandStringOfLength(r, 64)
+			h2 = simtypes.RandStringOfLength(r, 64)
+			h3 = simtypes.RandStringOfLength(r, 64)
+		}
+
 		height := wrkChain.Lastblock + 1
 
 		msg := types.NewMsgRecordWrkChainBlock(wrkChain.WrkchainId, height, hash, ph, h1, h2, h3, account.GetAddress())

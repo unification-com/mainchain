@@ -310,7 +310,7 @@ func (k Keeper) ProcessPurchaseOrderDecision(ctx sdk.Context, purchaseOrderID ui
 		Decision:     decision,
 		DecisionTime: uint64(ctx.BlockHeader().Time.Unix()),
 	}
-	purchaseOrder.Decisions = append(purchaseOrder.Decisions, &poDecision)
+	purchaseOrder.Decisions = append(purchaseOrder.Decisions, poDecision)
 
 	// update the status
 	err := k.SetPurchaseOrder(ctx, purchaseOrder)

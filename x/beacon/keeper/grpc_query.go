@@ -61,13 +61,23 @@ func (q Keeper) BeaconTimestamp(c context.Context, req *types.QueryBeaconTimesta
 
 	ctx := sdk.UnwrapSDKContext(c)
 
+	beacon, found := q.GetBeacon(ctx, req.BeaconId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "beacon %d doesn't exist in state", req.BeaconId)
+	}
+
 	beaconTimestamp, found := q.GetBeaconTimestampByID(ctx, req.BeaconId, req.TimestampId)
 
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "timestamp %d doesn't exist in state for beacon %d", req.TimestampId, req.BeaconId)
 	}
 
-	return &types.QueryBeaconTimestampResponse{Timestamp: &beaconTimestamp}, nil
+	return &types.QueryBeaconTimestampResponse{
+		Timestamp: &beaconTimestamp,
+		BeaconId:  beacon.BeaconId,
+		Owner:     beacon.Owner,
+	}, nil
 }
 
 func (q Keeper) BeaconsFiltered(c context.Context, req *types.QueryBeaconsFilteredRequest) (*types.QueryBeaconsFilteredResponse, error) {

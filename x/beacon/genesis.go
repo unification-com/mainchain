@@ -29,14 +29,12 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 		for _, timestamp := range record.Timestamps {
 
 			bts := types.BeaconTimestamp{
-				BeaconId:    beacon.BeaconId,
 				TimestampId: timestamp.Id,
 				SubmitTime:  timestamp.T,
 				Hash:        timestamp.H,
-				Owner:       beacon.Owner,
 			}
 
-			err = keeper.SetBeaconTimestamp(ctx, bts)
+			err = keeper.SetBeaconTimestamp(ctx, beacon.BeaconId, bts)
 			if err != nil {
 				panic(err)
 			}

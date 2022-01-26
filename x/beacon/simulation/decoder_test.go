@@ -29,7 +29,7 @@ func TestDecodeStore(t *testing.T) {
 	beacon, err := types.NewBeacon(1, "beacon1", "Test BEACON 1", 0, bAddr1.String())
 	require.NoError(t, err)
 
-	beaconTs, err := types.NewBeaconTimestamp(1, 1, uint64(time.Now().Unix()), "arbitraryblockhashvalue", bAddr1.String())
+	beaconTs, err := types.NewBeaconTimestamp(1, uint64(time.Now().Unix()), "arbitraryblockhashvalue")
 	require.NoError(t, err)
 
 	beaconBz, err := cdc.MarshalBinaryBare(&beacon)

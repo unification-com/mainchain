@@ -49,6 +49,8 @@ message QueryBeaconTimestampRequest {
 
 message QueryBeaconTimestampResponse {
   BeaconTimestamp timestamp = 1;
+  uint64 beacon_id = 2;
+  string owner = 3;
 }
 
 message QueryBeaconsFilteredRequest {

@@ -28,7 +28,7 @@ func TestDecodeStore(t *testing.T) {
 	wc, err := types.NewWrkchain(1, "beacon1", "Test BEACON 1", "gen", "test", 0, 0, uint64(time.Now().Unix()), bAddr1.String())
 	require.NoError(t, err)
 
-	block, err := types.NewWrkchainBlock(1, 1, "bhash", "phash", "h1", "h2", "h3", uint64(time.Now().Unix()), bAddr1.String())
+	block, err := types.NewWrkchainBlock(1, "bhash", "phash", "h1", "h2", "h3", uint64(time.Now().Unix()))
 	require.NoError(t, err)
 
 	wcBz, err := cdc.MarshalBinaryBare(&wc)

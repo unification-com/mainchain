@@ -55,6 +55,11 @@ func BeaconTimestampEqual(lA, lB types.BeaconTimestamp) bool {
 	return lA == lB
 }
 
+// BeaconTimestampLegacyEqual checks if two BeaconTimestampLegacy are equal
+func BeaconTimestampLegacyEqual(lA, lB types.BeaconTimestampLegacy) bool {
+	return lA == lB
+}
+
 // RandInBetween generates a random number between two given values
 func RandInBetween(min, max int) int {
 	return rand.Intn(max-min) + min

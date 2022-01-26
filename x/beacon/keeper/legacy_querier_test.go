@@ -54,7 +54,7 @@ func getQueriedBeacon(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, que
 	return b
 }
 
-func getQueriedBeaconTimestamp(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, bID, tsID uint64) types.BeaconTimestamp {
+func getQueriedBeaconTimestamp(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, bID, tsID uint64) types.BeaconTimestampLegacy {
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, keeper.QueryBeaconTimestamp, strconv.FormatUint(bID, 10), strconv.FormatUint(tsID, 10)}, "/"),
 		Data: nil,
@@ -64,7 +64,7 @@ func getQueriedBeaconTimestamp(t *testing.T, ctx sdk.Context, cdc *codec.LegacyA
 	require.NoError(t, err)
 	require.NotNil(t, bz)
 
-	var bts types.BeaconTimestamp
+	var bts types.BeaconTimestampLegacy
 	require.NoError(t, cdc.UnmarshalJSON(bz, &bts))
 
 	return bts
@@ -158,7 +158,7 @@ func TestQueryBeaconByID(t *testing.T) {
 func TestQueryBeaconTimestampByID(t *testing.T) {
 	testApp, ctx, legacyQuerierCdc, querier := setupTest()
 
-	var testBeaconTs []types.BeaconTimestamp
+	var testBeaconTs []types.BeaconTimestampLegacy
 	numTimestamps := uint64(100)
 	bID := uint64(1)
 	addr := TestAddrs[0]
@@ -175,21 +175,28 @@ func TestQueryBeaconTimestampByID(t *testing.T) {
 
 	for tsID := uint64(1); tsID <= numTimestamps; tsID++ {
 		ts := types.BeaconTimestamp{}
-		ts.BeaconId = bID
-		ts.Owner = addr.String()
 		ts.TimestampId = tsID
 		ts.Hash = GenerateRandomString(32)
 		ts.SubmitTime = uint64(time.Now().Unix())
 
-		err := testApp.BeaconKeeper.SetBeaconTimestamp(ctx, ts)
+		err := testApp.BeaconKeeper.SetBeaconTimestamp(ctx, bID, ts)
 		require.NoError(t, err)
-		testBeaconTs = append(testBeaconTs, ts)
+
+		expectedTsRes := types.BeaconTimestampLegacy{
+			BeaconID:    bID,
+			TimestampID: tsID,
+			SubmitTime:  ts.SubmitTime,
+			Hash:        ts.Hash,
+			Owner:       addr.String(),
+		}
+
+		testBeaconTs = append(testBeaconTs, expectedTsRes)
 	}
 
 	for i, tBts := range testBeaconTs {
 		tsID := uint64(i + 1)
-		block := getQueriedBeaconTimestamp(t, ctx, legacyQuerierCdc, querier, bID, tsID)
-		require.True(t, BeaconTimestampEqual(tBts, block))
+		ts := getQueriedBeaconTimestamp(t, ctx, legacyQuerierCdc, querier, bID, tsID)
+		require.True(t, BeaconTimestampLegacyEqual(tBts, ts))
 	}
 }
 

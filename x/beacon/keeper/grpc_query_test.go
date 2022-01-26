@@ -229,7 +229,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 
 	var (
 		req    *types.QueryBeaconTimestampRequest
-		expRes types.BeaconTimestamp
+		expRes types.QueryBeaconTimestampResponse
 	)
 
 	testCases := []struct {
@@ -274,17 +274,19 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 				suite.Require().Equal(uint64(1), bID)
 
 				expectedTs := types.BeaconTimestamp{
-					BeaconId:    bID,
 					Hash:        test_helpers.GenerateRandomString(32),
 					SubmitTime:  uint64(time.Now().Unix()),
-					Owner:       addrs[0].String(),
 					TimestampId: 1,
 				}
 
-				err = app.BeaconKeeper.SetBeaconTimestamp(ctx, expectedTs)
+				err = app.BeaconKeeper.SetBeaconTimestamp(ctx, bID, expectedTs)
 				suite.Require().NoError(err)
 
-				expRes = expectedTs
+				expRes = types.QueryBeaconTimestampResponse{
+					Timestamp: &expectedTs,
+					Owner:     addrs[0].String(),
+					BeaconId:  bID,
+				}
 
 			},
 			true,
@@ -299,7 +301,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 
 			if testCase.expPass {
 				suite.Require().NoError(err)
-				suite.Require().Equal(&expRes, timestampRes.Timestamp)
+				suite.Require().Equal(&expRes, timestampRes)
 			} else {
 				suite.Require().Error(err)
 				suite.Require().Nil(timestampRes)

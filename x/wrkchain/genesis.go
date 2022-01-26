@@ -32,7 +32,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 
 		for _, block := range record.Blocks {
 			blk := types.WrkChainBlock{
-				WrkchainId: wrkChain.WrkchainId,
 				Height:     block.He,
 				Blockhash:  block.Bh,
 				Parenthash: block.Ph,
@@ -40,10 +39,9 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 				Hash2:      block.H2,
 				Hash3:      block.H3,
 				SubTime:    block.St,
-				Owner:      wrkChain.Owner,
 			}
 
-			err = keeper.SetWrkChainBlock(ctx, blk)
+			err = keeper.SetWrkChainBlock(ctx, wrkChain.WrkchainId, blk)
 			if err != nil {
 				panic(err)
 			}

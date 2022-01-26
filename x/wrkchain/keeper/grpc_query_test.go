@@ -223,7 +223,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 
 	var (
 		req    *types.QueryWrkChainBlockRequest
-		expRes types.WrkChainBlock
+		expRes types.QueryWrkChainBlockResponse
 	)
 
 	testCases := []struct {
@@ -262,17 +262,19 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 				suite.Require().Equal(uint64(1), wcID)
 
 				expectedBlock := types.WrkChainBlock{
-					WrkchainId: wcID,
-					Blockhash:  test_helpers.GenerateRandomString(32),
-					SubTime:    uint64(time.Now().Unix()),
-					Owner:      addrs[0].String(),
-					Height:     1,
+					Blockhash: test_helpers.GenerateRandomString(32),
+					SubTime:   uint64(time.Now().Unix()),
+					Height:    1,
 				}
 
-				err = app.WrkchainKeeper.SetWrkChainBlock(ctx, expectedBlock)
+				err = app.WrkchainKeeper.SetWrkChainBlock(ctx, wcID, expectedBlock)
 				suite.Require().NoError(err)
 
-				expRes = expectedBlock
+				expRes = types.QueryWrkChainBlockResponse{
+					Block:      &expectedBlock,
+					WrkchainId: wcID,
+					Owner:      addrs[0].String(),
+				}
 
 			},
 			true,
@@ -287,7 +289,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 
 			if testCase.expPass {
 				suite.Require().NoError(err)
-				suite.Require().Equal(&expRes, blockRes.Block)
+				suite.Require().Equal(&expRes, blockRes)
 			} else {
 				suite.Require().Error(err)
 				suite.Require().Nil(blockRes)

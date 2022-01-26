@@ -83,9 +83,28 @@ func queryBeaconTimestamp(ctx sdk.Context, path []string, req abci.RequestQuery,
 		timestampID = 0
 	}
 
-	timestamp, _ := keeper.GetBeaconTimestampByID(ctx, uint64(beaconID), uint64(timestampID))
+	beacon, found := keeper.GetBeacon(ctx, uint64(beaconID))
 
-	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, timestamp)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrBeaconDoesNotExist, "beacon %d not found", beaconID)
+	}
+
+	timestamp, found := keeper.GetBeaconTimestampByID(ctx, uint64(beaconID), uint64(timestampID))
+
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrBeaconDoesNotExist, "timestamp %d not found for beacon %d", timestampID, beaconID)
+	}
+
+	legactTs := types.BeaconTimestampLegacy{
+		BeaconID:    beacon.BeaconId,
+		TimestampID: timestamp.TimestampId,
+		SubmitTime:  timestamp.SubmitTime,
+		Hash:        timestamp.Hash,
+		Owner:       beacon.Owner,
+	}
+
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, legactTs)
+
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

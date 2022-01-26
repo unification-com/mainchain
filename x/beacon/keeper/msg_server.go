@@ -106,7 +106,7 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		subtime = uint64(time.Now().Unix())
 	}
 
-	tsID, err := k.RecordNewBeaconTimestamp(ctx, msg.BeaconId, msg.Hash, subtime, msg.Owner)
+	tsID, err := k.RecordNewBeaconTimestamp(ctx, msg.BeaconId, msg.Hash, subtime)
 
 	if err != nil {
 		return nil, err

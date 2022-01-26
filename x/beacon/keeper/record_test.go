@@ -32,13 +32,11 @@ func TestSetGetBeaconTimestamp(t *testing.T) {
 
 		for tsID := uint64(1); tsID <= numToRecord; tsID++ {
 			beaconTimestamp := types.BeaconTimestamp{}
-			beaconTimestamp.BeaconId = bID
-			beaconTimestamp.Owner = addr.String()
 			beaconTimestamp.TimestampId = tsID
 			beaconTimestamp.Hash = test_helpers.GenerateRandomString(32)
 			beaconTimestamp.SubmitTime = uint64(time.Now().Unix())
 
-			err := app.BeaconKeeper.SetBeaconTimestamp(ctx, beaconTimestamp)
+			err := app.BeaconKeeper.SetBeaconTimestamp(ctx, bID, beaconTimestamp)
 			require.NoError(t, err)
 
 			btsDb, found := app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsID)
@@ -74,15 +72,13 @@ func TestGetBeaconTimestamp(t *testing.T) {
 			hash := test_helpers.GenerateRandomString(32)
 
 			timestamp := types.BeaconTimestamp{}
-			timestamp.BeaconId = bID
-			timestamp.Owner = addr.String()
 			timestamp.TimestampId = tsID
 			timestamp.Hash = hash
 			timestamp.SubmitTime = subTime
 
 			testTimestamps = append(testTimestamps, timestamp)
 
-			err := app.BeaconKeeper.SetBeaconTimestamp(ctx, timestamp)
+			err := app.BeaconKeeper.SetBeaconTimestamp(ctx, bID, timestamp)
 			require.NoError(t, err)
 		}
 
@@ -145,13 +141,11 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 		hash := test_helpers.GenerateRandomString(32)
 
 		expectedTs := types.BeaconTimestamp{}
-		expectedTs.BeaconId = bID
-		expectedTs.Owner = testAddrs[0].String()
 		expectedTs.TimestampId = tsID
 		expectedTs.Hash = hash
 		expectedTs.SubmitTime = subTime
 
-		retTsID, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, testAddrs[0].String())
+		retTsID, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
 		require.NoError(t, err)
 		require.True(t, retTsID == expectedTs.TimestampId)
 

@@ -66,7 +66,7 @@ func RandomStatus() types.PurchaseOrderStatus {
 	}
 }
 
-func AddressInDecisions(addr sdk.AccAddress, decisions []*types.PurchaseOrderDecision) bool {
+func AddressInDecisions(addr sdk.AccAddress, decisions types.PurchaseOrderDecisions) bool {
 	for _, d := range decisions {
 		if d.Signer == addr.String() {
 			return true

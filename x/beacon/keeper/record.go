@@ -6,10 +6,10 @@ import (
 )
 
 // SetBeaconTimestamp Sets the Beacon timestamp struct for a beaconID + timestampID
-func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconTimestamp types.BeaconTimestamp) error {
+func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconId uint64, beaconTimestamp types.BeaconTimestamp) error {
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.BeaconTimestampKey(beaconTimestamp.BeaconId, beaconTimestamp.TimestampId), k.cdc.MustMarshalBinaryBare(&beaconTimestamp))
+	store.Set(types.BeaconTimestampKey(beaconId, beaconTimestamp.TimestampId), k.cdc.MustMarshalBinaryBare(&beaconTimestamp))
 
 	return nil
 }
@@ -118,8 +118,7 @@ func (k Keeper) RecordNewBeaconTimestamp(
 	ctx sdk.Context,
 	beaconId uint64,
 	hash string,
-	submitTime uint64,
-	owner string) (uint64, error) {
+	submitTime uint64) (uint64, error) {
 
 	beacon, _ := k.GetBeacon(ctx, beaconId)
 
@@ -128,14 +127,12 @@ func (k Keeper) RecordNewBeaconTimestamp(
 	// we're only ever recording new BEACON hashes, never updating existing. Handler has already run
 	// checks for authorisation etc.
 	beaconTimestamp := types.BeaconTimestamp{
-		BeaconId:    beaconId,
 		TimestampId: timestampId,
 		SubmitTime:  submitTime,
 		Hash:        hash,
-		Owner:       owner,
 	}
 
-	err := k.SetBeaconTimestamp(ctx, beaconTimestamp)
+	err := k.SetBeaconTimestamp(ctx, beacon.BeaconId, beaconTimestamp)
 
 	if err != nil {
 		return 0, err

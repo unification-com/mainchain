@@ -67,15 +67,16 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 		records = append(records, types.WrkChainExport{
 			Wrkchain: types.WrkChain{
-				WrkchainId: wc.WrkchainId,
-				Moniker:    wc.Moniker,
-				Name:       wc.Name,
-				Genesis:    wc.Genesis,
-				Type:       wc.Type,
-				Lastblock:  wc.Lastblock,
-				NumBlocks:  wc.NumBlocks,
-				RegTime:    wc.RegTime,
-				Owner:      wc.Owner,
+				WrkchainId:   wc.WrkchainId,
+				Moniker:      wc.Moniker,
+				Name:         wc.Name,
+				Genesis:      wc.Genesis,
+				Type:         wc.Type,
+				Lastblock:    wc.Lastblock,
+				NumBlocks:    wc.NumBlocks,
+				LowestHeight: wc.LowestHeight,
+				RegTime:      wc.RegTime,
+				Owner:        wc.Owner,
 			},
 			Blocks: blockHashList,
 		})

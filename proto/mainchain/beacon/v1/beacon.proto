@@ -10,7 +10,9 @@ message Beacon {
   string moniker = 2;
   string name = 3;
   uint64 last_timestamp_id = 4;
-  string owner = 5;
+  uint64 first_id_in_state = 5;
+  uint64 num_in_state = 6;
+  string owner = 7;
 }
 
 message BeaconTimestamp {

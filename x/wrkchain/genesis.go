@@ -14,15 +14,16 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 
 	for _, record := range data.RegisteredWrkchains {
 		wrkChain := types.WrkChain{
-			WrkchainId: record.Wrkchain.WrkchainId,
-			Moniker:    record.Wrkchain.Moniker,
-			Name:       record.Wrkchain.Name,
-			Genesis:    record.Wrkchain.Genesis,
-			Type:       record.Wrkchain.Type,
-			Lastblock:  record.Wrkchain.Lastblock,
-			NumBlocks:  record.Wrkchain.NumBlocks,
-			RegTime:    record.Wrkchain.RegTime,
-			Owner:      record.Wrkchain.Owner,
+			WrkchainId:   record.Wrkchain.WrkchainId,
+			Moniker:      record.Wrkchain.Moniker,
+			Name:         record.Wrkchain.Name,
+			Genesis:      record.Wrkchain.Genesis,
+			Type:         record.Wrkchain.Type,
+			Lastblock:    record.Wrkchain.Lastblock,
+			NumBlocks:    record.Wrkchain.NumBlocks,
+			LowestHeight: record.Wrkchain.LowestHeight,
+			RegTime:      record.Wrkchain.RegTime,
+			Owner:        record.Wrkchain.Owner,
 		}
 
 		err := keeper.SetWrkChain(ctx, wrkChain)

@@ -68,45 +68,6 @@ func TestSetGetWrkChain(t *testing.T) {
 	}
 }
 
-func TestSetLastBlock(t *testing.T) {
-	app := test_helpers.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
-
-	lastBlock := uint64(0)
-	wcID := uint64(1)
-	wc := types.WrkChain{}
-	wc.Owner = testAddrs[0].String()
-	wc.WrkchainId = wcID
-	wc.Lastblock = lastBlock
-	wc.RegTime = uint64(time.Now().Unix())
-	wc.Moniker = test_helpers.GenerateRandomString(12)
-	wc.Name = test_helpers.GenerateRandomString(20)
-	wc.Genesis = test_helpers.GenerateRandomString(32)
-
-	err := app.WrkchainKeeper.SetWrkChain(ctx, wc)
-	require.NoError(t, err)
-
-	for i := uint64(1); i <= 1000; i++ {
-		err := app.WrkchainKeeper.SetLastBlock(ctx, wcID, i)
-		require.NoError(t, err)
-
-		wcDb, found := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
-		require.True(t, found)
-		require.True(t, wcDb.Lastblock == i)
-		lastBlock = i
-	}
-
-	// check can't set last block to < current last block
-	oldBlock := lastBlock - 1
-	err = app.WrkchainKeeper.SetLastBlock(ctx, wcID, oldBlock)
-	require.NoError(t, err)
-	wcDb, found := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
-	require.True(t, found)
-	require.True(t, wcDb.Lastblock == lastBlock)
-
-}
-
 // Tests for Registering a new WRKChain
 
 func TestRegisterWrkChain(t *testing.T) {
@@ -218,7 +179,7 @@ func TestGetWrkChainFilter(t *testing.T) {
 	params = types.QueryWrkChainsFilteredRequest{
 		Moniker: lastMoniker,
 	}
-	
+
 	results = app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
 	require.True(t, len(results) == 1)
 }

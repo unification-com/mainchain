@@ -151,6 +151,8 @@ func (k Keeper) RecordNewWrkchainHashes(
 
 	logger := k.Logger(ctx)
 
+	wrkchain, _ := k.GetWrkChain(ctx, wrkchainId)
+
 	// we're only ever adding new WRKChain data, never updating existing. Handler will have checked if height has
 	// previously been recorded.
 	wrkchainBlock := types.WrkChainBlock{
@@ -169,13 +171,18 @@ func (k Keeper) RecordNewWrkchainHashes(
 		return err
 	}
 
-	err = k.SetLastBlock(ctx, wrkchainId, height)
-
-	if err != nil {
-		return err
+	// update wrkchain metadata
+	if height > wrkchain.Lastblock {
+		wrkchain.Lastblock = height
 	}
 
-	err = k.SetNumBlocks(ctx, wrkchainId)
+	if wrkchain.LowestHeight == 0 || height < wrkchain.LowestHeight {
+		wrkchain.LowestHeight = height
+	}
+
+	wrkchain.NumBlocks = wrkchain.NumBlocks + 1
+
+	err = k.SetWrkChain(ctx, wrkchain)
 
 	if err != nil {
 		return err

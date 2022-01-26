@@ -19,6 +19,9 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 			Name:            record.Beacon.Name,
 			LastTimestampId: record.Beacon.LastTimestampId,
 			Owner:           record.Beacon.Owner,
+			NumInState:      record.Beacon.NumInState,
+			FirstIdInState:  record.Beacon.FirstIdInState,
+			RegTime:         record.Beacon.RegTime,
 		}
 
 		err := keeper.SetBeacon(ctx, beacon)
@@ -64,6 +67,9 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 				Name:            b.Name,
 				LastTimestampId: b.LastTimestampId,
 				Owner:           b.Owner,
+				NumInState:      b.NumInState,
+				FirstIdInState:  b.FirstIdInState,
+				RegTime:         b.RegTime,
 			},
 			Timestamps: timestamps,
 		})

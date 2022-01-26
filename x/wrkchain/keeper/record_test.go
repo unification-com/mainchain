@@ -152,6 +152,8 @@ func TestRecordWrkchainHashes(t *testing.T) {
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(100)
+	startHeight := uint64(24)
+	endHeight := startHeight + numToRecord
 
 	name := test_helpers.GenerateRandomString(128)
 	moniker := test_helpers.GenerateRandomString(64)
@@ -160,7 +162,7 @@ func TestRecordWrkchainHashes(t *testing.T) {
 	wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", testAddrs[0])
 	require.NoError(t, err)
 
-	for h := uint64(1); h <= numToRecord; h++ {
+	for h := startHeight; h < endHeight; h++ {
 		expectedBlock := types.WrkChainBlock{}
 		expectedBlock.Height = h
 		expectedBlock.Blockhash = test_helpers.GenerateRandomString(66)
@@ -182,6 +184,27 @@ func TestRecordWrkchainHashes(t *testing.T) {
 		wrkChainDb, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
 
 		require.True(t, wrkChainDb.Lastblock == h)
+		require.True(t, wrkChainDb.LowestHeight == startHeight)
 	}
+
+	wrkChainDb, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
+	require.True(t, wrkChainDb.LowestHeight == startHeight)
+	require.True(t, wrkChainDb.NumBlocks == numToRecord)
+
+	expectedBlock := types.WrkChainBlock{}
+	expectedBlock.Height = 20
+	expectedBlock.Blockhash = test_helpers.GenerateRandomString(66)
+	expectedBlock.Parenthash = test_helpers.GenerateRandomString(66)
+	expectedBlock.Hash1 = test_helpers.GenerateRandomString(66)
+	expectedBlock.Hash2 = test_helpers.GenerateRandomString(66)
+	expectedBlock.Hash3 = test_helpers.GenerateRandomString(66)
+	expectedBlock.SubTime = uint64(time.Now().Unix())
+
+	err = app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcID, expectedBlock.Height, expectedBlock.Blockhash, expectedBlock.Parenthash, expectedBlock.Hash1, expectedBlock.Hash2, expectedBlock.Hash3)
+	require.NoError(t, err)
+
+	wrkChainDb, _ = app.WrkchainKeeper.GetWrkChain(ctx, wcID)
+	require.True(t, wrkChainDb.LowestHeight == 20)
+	require.True(t, wrkChainDb.NumBlocks == numToRecord+1)
 
 }

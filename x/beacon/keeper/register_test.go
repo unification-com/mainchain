@@ -70,44 +70,6 @@ func TestSetGetBeacon(t *testing.T) {
 	}
 }
 
-func TestSetLastTimestampID(t *testing.T) {
-	app := test_helpers.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
-
-	lastTimestampID := uint64(0)
-	bID := uint64(1)
-
-	b := types.Beacon{}
-	b.Owner = testAddrs[0].String()
-	b.BeaconId = bID
-	b.LastTimestampId = lastTimestampID
-	b.Moniker = test_helpers.GenerateRandomString(12)
-	b.Name = test_helpers.GenerateRandomString(20)
-
-	err := app.BeaconKeeper.SetBeacon(ctx, b)
-	require.NoError(t, err)
-
-	for i := uint64(1); i <= 1000; i++ {
-		err := app.BeaconKeeper.SetLastTimestampID(ctx, bID, i)
-		require.NoError(t, err)
-
-		bDb, found := app.BeaconKeeper.GetBeacon(ctx, bID)
-		require.True(t, found)
-		require.True(t, bDb.LastTimestampId == i)
-		lastTimestampID = i
-	}
-
-	// check can't set last block to < current last block
-	oldTsID := lastTimestampID - 1
-	err = app.BeaconKeeper.SetLastTimestampID(ctx, bID, oldTsID)
-	require.NoError(t, err)
-	wcDb, found := app.BeaconKeeper.GetBeacon(ctx, bID)
-	require.True(t, found)
-	require.True(t, wcDb.LastTimestampId == lastTimestampID)
-
-}
-
 // Tests for Registering a new BEACON
 
 func TestRegisterBeacon(t *testing.T) {
@@ -127,6 +89,7 @@ func TestRegisterBeacon(t *testing.T) {
 		expectedB.LastTimestampId = 0
 		expectedB.Moniker = moniker
 		expectedB.Name = name
+		expectedB.RegTime = uint64(ctx.BlockTime().Unix())
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)
@@ -145,14 +108,6 @@ func TestRegisterBeacon(t *testing.T) {
 
 		i = i + 1
 	}
-}
-
-func TestFailSetLastTimestampId(t *testing.T) {
-	app := test_helpers.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-	err := app.BeaconKeeper.SetLastTimestampID(ctx, 1, 1)
-	require.Error(t, err)
 }
 
 func TestHighestBeaconIdAfterRegister(t *testing.T) {

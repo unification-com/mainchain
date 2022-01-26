@@ -132,6 +132,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
 					expectedB.LastTimestampId = 0
 					expectedB.Moniker = test_helpers.GenerateRandomString(12)
 					expectedB.Name = test_helpers.GenerateRandomString(24)
+					expectedB.RegTime = uint64(ctx.BlockTime().Unix())
 
 					bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 					suite.Require().NoError(err)

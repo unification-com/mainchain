@@ -9,8 +9,14 @@ func Migrate(oldWrkchainState v038.GenesisState) *v040.GenesisState {
 	newWrkchains := make(v040.WrkChainExports, len(oldWrkchainState.WrkChains))
 
 	for i, oldWrkchain := range oldWrkchainState.WrkChains {
+		lowestHeight := uint64(0)
 		newWrkchainBlocks := make(v040.WrkChainBlockGenesisExports, len(oldWrkchain.WrkChainBlocks))
 		for j, oldWrkchainBlock := range oldWrkchain.WrkChainBlocks {
+
+			if lowestHeight == 0 || oldWrkchainBlock.Height < lowestHeight {
+				lowestHeight = oldWrkchainBlock.Height
+			}
+
 			newWrkchainBlocks[j] = v040.WrkChainBlockGenesisExport{
 				He: oldWrkchainBlock.Height,
 				Bh: oldWrkchainBlock.BlockHash,
@@ -24,20 +30,21 @@ func Migrate(oldWrkchainState v038.GenesisState) *v040.GenesisState {
 
 		newWrkchains[i] = v040.WrkChainExport{
 			Wrkchain: v040.WrkChain{
-				WrkchainId: oldWrkchain.WrkChain.WrkChainID,
-				Moniker:    oldWrkchain.WrkChain.Moniker,
-				Name:       oldWrkchain.WrkChain.Name,
-				Genesis:    oldWrkchain.WrkChain.GenesisHash,
-				Type:       oldWrkchain.WrkChain.BaseType,
-				Lastblock:  oldWrkchain.WrkChain.LastBlock,
-				NumBlocks:  oldWrkchain.WrkChain.NumberBlocks,
-				RegTime:    uint64(oldWrkchain.WrkChain.RegisterTime),
-				Owner:      oldWrkchain.WrkChain.Owner.String(),
+				WrkchainId:   oldWrkchain.WrkChain.WrkChainID,
+				Moniker:      oldWrkchain.WrkChain.Moniker,
+				Name:         oldWrkchain.WrkChain.Name,
+				Genesis:      oldWrkchain.WrkChain.GenesisHash,
+				Type:         oldWrkchain.WrkChain.BaseType,
+				Lastblock:    oldWrkchain.WrkChain.LastBlock,
+				NumBlocks:    uint64(len(oldWrkchain.WrkChainBlocks)),
+				LowestHeight: lowestHeight,
+				RegTime:      uint64(oldWrkchain.WrkChain.RegisterTime),
+				Owner:        oldWrkchain.WrkChain.Owner.String(),
 			},
 			Blocks: newWrkchainBlocks,
 		}
 	}
-	
+
 	return &v040.GenesisState{
 		Params: v040.Params{
 			FeeRegister: oldWrkchainState.Params.FeeRegister,

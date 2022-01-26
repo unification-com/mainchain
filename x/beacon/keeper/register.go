@@ -39,21 +39,6 @@ func (k Keeper) SetBeacon(ctx sdk.Context, beacon types.Beacon) error {
 	return nil
 }
 
-// SetLastTimestampID - sets the last timestamp ID submitted
-func (k Keeper) SetLastTimestampID(ctx sdk.Context, beaconID uint64, timestampID uint64) error {
-	beacon, found := k.GetBeacon(ctx, beaconID)
-
-	if !found {
-		return sdkerrors.Wrapf(types.ErrBeaconDoesNotExist, "beacon not found")
-	}
-
-	if timestampID > beacon.LastTimestampId {
-		beacon.LastTimestampId = timestampID
-		return k.SetBeacon(ctx, beacon)
-	}
-	return nil
-}
-
 // GetBeacon Gets the entire BEACON metadata struct for a beaconID
 func (k Keeper) GetBeacon(ctx sdk.Context, beaconID uint64) (types.Beacon, bool) {
 	store := ctx.KVStore(k.storeKey)
@@ -167,6 +152,9 @@ func (k Keeper) RegisterNewBeacon(ctx sdk.Context, beacon types.Beacon) (uint64,
 
 	beacon.BeaconId = beaconId
 	beacon.LastTimestampId = 0
+	beacon.FirstIdInState = 0
+	beacon.NumInState = 0
+	beacon.RegTime = uint64(ctx.BlockTime().Unix())
 
 	err = k.SetBeacon(ctx, beacon)
 	if err != nil {

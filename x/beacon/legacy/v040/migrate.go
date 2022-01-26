@@ -10,8 +10,14 @@ func Migrate(oldBeaconState v038.GenesisState) *v040.GenesisState {
 	newBeacons := make(v040.BeaconExports, len(oldBeaconState.Beacons))
 
 	for i, oldBeacon := range oldBeaconState.Beacons {
+		firstId := uint64(0)
 		newBeaconTimestamps := make(v040.BeaconTimestampGenesisExports, len(oldBeacon.BeaconTimestamps))
 		for j, oldBeaconTimestamp := range oldBeacon.BeaconTimestamps {
+
+			if firstId == 0 || oldBeaconTimestamp.TimestampID < firstId {
+				firstId = oldBeaconTimestamp.TimestampID
+			}
+
 			newBeaconTimestamps[j] = v040.BeaconTimestampGenesisExport{
 				Id: oldBeaconTimestamp.TimestampID,
 				T:  oldBeaconTimestamp.SubmitTime,
@@ -26,6 +32,9 @@ func Migrate(oldBeaconState v038.GenesisState) *v040.GenesisState {
 				Name:            oldBeacon.Beacon.Name,
 				LastTimestampId: oldBeacon.Beacon.LastTimestampID,
 				Owner:           oldBeacon.Beacon.Owner.String(),
+				NumInState:      uint64(len(oldBeacon.BeaconTimestamps)),
+				FirstIdInState:  firstId,
+				RegTime:         0, // reg time was never recorded originally
 			},
 			Timestamps: newBeaconTimestamps,
 		}

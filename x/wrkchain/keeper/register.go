@@ -53,22 +53,6 @@ func (k Keeper) SetNumBlocks(ctx sdk.Context, wrkchainId uint64) error {
 	return k.SetWrkChain(ctx, wrkchain)
 }
 
-// SetLastBlock - sets the last block number submitted
-func (k Keeper) SetLastBlock(ctx sdk.Context, wrkchainId uint64, blockNum uint64) error {
-	wrkchain, found := k.GetWrkChain(ctx, wrkchainId)
-	if !found {
-		// doesn't exist. Don't update
-		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))
-	}
-
-	if blockNum > wrkchain.Lastblock {
-		wrkchain.Lastblock = blockNum
-		return k.SetWrkChain(ctx, wrkchain)
-	}
-
-	return nil
-}
-
 // GetWrkChain Gets the entire WRKChain metadata struct for a wrkchainId
 func (k Keeper) GetWrkChain(ctx sdk.Context, wrkchainId uint64) (types.WrkChain, bool) {
 	store := ctx.KVStore(k.storeKey)

@@ -13,8 +13,9 @@ message WrkChain {
     string type = 5;
     uint64 lastblock = 6;
     uint64 num_blocks = 7;
-    uint64 reg_time = 8;
-    string owner = 9;
+    uint64 lowest_height = 8;
+    uint64 reg_time = 9;
+    string owner = 10;
 }
 
 message WrkChainBlock {

@@ -14,15 +14,16 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 
 	for _, record := range data.RegisteredWrkchains {
 		wrkChain := types.WrkChain{
-			WrkchainId: record.Wrkchain.WrkchainId,
-			Moniker:    record.Wrkchain.Moniker,
-			Name:       record.Wrkchain.Name,
-			Genesis:    record.Wrkchain.Genesis,
-			Type:       record.Wrkchain.Type,
-			Lastblock:  record.Wrkchain.Lastblock,
-			NumBlocks:  record.Wrkchain.NumBlocks,
-			RegTime:    record.Wrkchain.RegTime,
-			Owner:      record.Wrkchain.Owner,
+			WrkchainId:   record.Wrkchain.WrkchainId,
+			Moniker:      record.Wrkchain.Moniker,
+			Name:         record.Wrkchain.Name,
+			Genesis:      record.Wrkchain.Genesis,
+			Type:         record.Wrkchain.Type,
+			Lastblock:    record.Wrkchain.Lastblock,
+			NumBlocks:    record.Wrkchain.NumBlocks,
+			LowestHeight: record.Wrkchain.LowestHeight,
+			RegTime:      record.Wrkchain.RegTime,
+			Owner:        record.Wrkchain.Owner,
 		}
 
 		err := keeper.SetWrkChain(ctx, wrkChain)
@@ -66,15 +67,16 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 		records = append(records, types.WrkChainExport{
 			Wrkchain: types.WrkChain{
-				WrkchainId: wc.WrkchainId,
-				Moniker:    wc.Moniker,
-				Name:       wc.Name,
-				Genesis:    wc.Genesis,
-				Type:       wc.Type,
-				Lastblock:  wc.Lastblock,
-				NumBlocks:  wc.NumBlocks,
-				RegTime:    wc.RegTime,
-				Owner:      wc.Owner,
+				WrkchainId:   wc.WrkchainId,
+				Moniker:      wc.Moniker,
+				Name:         wc.Name,
+				Genesis:      wc.Genesis,
+				Type:         wc.Type,
+				Lastblock:    wc.Lastblock,
+				NumBlocks:    wc.NumBlocks,
+				LowestHeight: wc.LowestHeight,
+				RegTime:      wc.RegTime,
+				Owner:        wc.Owner,
 			},
 			Blocks: blockHashList,
 		})

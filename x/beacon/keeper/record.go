@@ -138,7 +138,18 @@ func (k Keeper) RecordNewBeaconTimestamp(
 		return 0, err
 	}
 
-	err = k.SetLastTimestampID(ctx, beacon.BeaconId, timestampId)
+	// update beacon metadata
+	if timestampId > beacon.LastTimestampId {
+		beacon.LastTimestampId = timestampId
+	}
+
+	if beacon.FirstIdInState == 0 {
+		beacon.FirstIdInState = timestampId
+	}
+
+	beacon.NumInState = beacon.NumInState + 1
+
+	err = k.SetBeacon(ctx, beacon)
 
 	if err != nil {
 		return 0, err

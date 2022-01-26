@@ -34,6 +34,7 @@ func Migrate(oldBeaconState v038.GenesisState) *v040.GenesisState {
 				Owner:           oldBeacon.Beacon.Owner.String(),
 				NumInState:      uint64(len(oldBeacon.BeaconTimestamps)),
 				FirstIdInState:  firstId,
+				RegTime:         0, // reg time was never recorded originally
 			},
 			Timestamps: newBeaconTimestamps,
 		}

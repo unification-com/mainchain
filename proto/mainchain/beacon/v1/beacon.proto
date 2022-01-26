@@ -12,7 +12,8 @@ message Beacon {
   uint64 last_timestamp_id = 4;
   uint64 first_id_in_state = 5;
   uint64 num_in_state = 6;
-  string owner = 7;
+  uint64 reg_time = 7;
+  string owner = 8;
 }
 
 message BeaconTimestamp {

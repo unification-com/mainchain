@@ -154,6 +154,7 @@ func (k Keeper) RegisterNewBeacon(ctx sdk.Context, beacon types.Beacon) (uint64,
 	beacon.LastTimestampId = 0
 	beacon.FirstIdInState = 0
 	beacon.NumInState = 0
+	beacon.RegTime = uint64(ctx.BlockTime().Unix())
 
 	err = k.SetBeacon(ctx, beacon)
 	if err != nil {

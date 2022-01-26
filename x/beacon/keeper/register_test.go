@@ -89,6 +89,7 @@ func TestRegisterBeacon(t *testing.T) {
 		expectedB.LastTimestampId = 0
 		expectedB.Moniker = moniker
 		expectedB.Name = name
+		expectedB.RegTime = uint64(ctx.BlockTime().Unix())
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)

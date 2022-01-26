@@ -6,9 +6,9 @@ import (
 )
 
 // SetWrkChainBlock Sets the WrkChain Block struct for a wrkchainId & height
-func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainBlock types.WrkChainBlock) error {
+func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, wrkchainBlock types.WrkChainBlock) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.WrkChainBlockKey(wrkchainBlock.WrkchainId, wrkchainBlock.Height), k.cdc.MustMarshalBinaryBare(&wrkchainBlock))
+	store.Set(types.WrkChainBlockKey(wrkchainId, wrkchainBlock.Height), k.cdc.MustMarshalBinaryBare(&wrkchainBlock))
 
 	return nil
 }
@@ -45,12 +45,12 @@ func (k Keeper) IsAuthorisedToRecord(ctx sdk.Context, wrkchainId uint64, recorde
 }
 
 // GetWrkChainBlock Gets the entire WRKChain metadata struct for a wrkchainId
-func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, height uint64) types.WrkChainBlock {
+func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, height uint64) (types.WrkChainBlock, bool) {
 	store := ctx.KVStore(k.storeKey)
 
 	if !k.IsWrkChainBlockRecorded(ctx, wrkchainId, height) {
 		// return a new empty WrkChainBlock struct
-		return types.WrkChainBlock{}
+		return types.WrkChainBlock{}, false
 	}
 
 	blockKey := types.WrkChainBlockKey(wrkchainId, height)
@@ -58,7 +58,7 @@ func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, height uint
 	bz := store.Get(blockKey)
 	var wrkchainBlock types.WrkChainBlock
 	k.cdc.MustUnmarshalBinaryBare(bz, &wrkchainBlock)
-	return wrkchainBlock
+	return wrkchainBlock, true
 }
 
 // GetWrkChainBlockHashesIterator Gets an iterator over all WrkChain hashess in
@@ -147,26 +147,23 @@ func (k Keeper) RecordNewWrkchainHashes(
 	parentHash string,
 	hash1 string,
 	hash2 string,
-	hash3 string,
-	owner sdk.AccAddress) error {
+	hash3 string) error {
 
 	logger := k.Logger(ctx)
 
 	// we're only ever adding new WRKChain data, never updating existing. Handler will have checked if height has
 	// previously been recorded.
-	wrkchainBlock := types.WrkChainBlock{}
+	wrkchainBlock := types.WrkChainBlock{
+		Height:     height,
+		Blockhash:  blockHash,
+		Parenthash: parentHash,
+		Hash1:      hash1,
+		Hash2:      hash2,
+		Hash3:      hash3,
+		SubTime:    uint64(ctx.BlockTime().Unix()),
+	}
 
-	wrkchainBlock.WrkchainId = wrkchainId
-	wrkchainBlock.Height = height
-	wrkchainBlock.Blockhash = blockHash
-	wrkchainBlock.Parenthash = parentHash
-	wrkchainBlock.Hash1 = hash1
-	wrkchainBlock.Hash2 = hash2
-	wrkchainBlock.Hash3 = hash3
-	wrkchainBlock.Owner = owner.String()
-	wrkchainBlock.SubTime = uint64(ctx.BlockTime().Unix())
-
-	err := k.SetWrkChainBlock(ctx, wrkchainBlock)
+	err := k.SetWrkChainBlock(ctx, wrkchainId, wrkchainBlock)
 
 	if err != nil {
 		return err

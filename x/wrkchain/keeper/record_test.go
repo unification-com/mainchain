@@ -29,8 +29,6 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 
 		for h := uint64(1); h <= numToRecord; h++ {
 			block := types.WrkChainBlock{}
-			block.WrkchainId = wcID
-			block.Owner = addr.String()
 			block.Height = h
 			block.Blockhash = test_helpers.GenerateRandomString(66)
 			block.Parenthash = test_helpers.GenerateRandomString(66)
@@ -39,10 +37,11 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 			block.Hash3 = test_helpers.GenerateRandomString(66)
 			block.SubTime = uint64(time.Now().Unix())
 
-			err := app.WrkchainKeeper.SetWrkChainBlock(ctx, block)
+			err := app.WrkchainKeeper.SetWrkChainBlock(ctx, wcID, block)
 			require.NoError(t, err)
 
-			blockDb := app.WrkchainKeeper.GetWrkChainBlock(ctx, wcID, h)
+			blockDb, found := app.WrkchainKeeper.GetWrkChainBlock(ctx, wcID, h)
+			require.True(t, found)
 			require.True(t, WRKChainBlockEqual(blockDb, block))
 		}
 	}
@@ -64,8 +63,6 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 
 		for h := uint64(1); h <= numToRecord; h++ {
 			block := types.WrkChainBlock{}
-			block.WrkchainId = wcID
-			block.Owner = addr.String()
 			block.Height = h
 			block.Blockhash = test_helpers.GenerateRandomString(66)
 			block.Parenthash = test_helpers.GenerateRandomString(66)
@@ -74,7 +71,7 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 			block.Hash3 = test_helpers.GenerateRandomString(66)
 			block.SubTime = uint64(time.Now().Unix())
 
-			err := app.WrkchainKeeper.SetWrkChainBlock(ctx, block)
+			err := app.WrkchainKeeper.SetWrkChainBlock(ctx, wcID, block)
 			require.NoError(t, err)
 
 			isRecorded := app.WrkchainKeeper.IsWrkChainBlockRecorded(ctx, wcID, h)
@@ -102,8 +99,6 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 
 		for h := uint64(1); h <= numToRecord; h++ {
 			block := types.WrkChainBlock{}
-			block.WrkchainId = wcID
-			block.Owner = addr.String()
 			block.Height = h
 			block.Blockhash = test_helpers.GenerateRandomString(66)
 			block.Parenthash = test_helpers.GenerateRandomString(66)
@@ -114,7 +109,7 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 
 			testBlocks = append(testBlocks, block)
 
-			err := app.WrkchainKeeper.SetWrkChainBlock(ctx, block)
+			err := app.WrkchainKeeper.SetWrkChainBlock(ctx, wcID, block)
 			require.NoError(t, err)
 		}
 
@@ -167,8 +162,6 @@ func TestRecordWrkchainHashes(t *testing.T) {
 
 	for h := uint64(1); h <= numToRecord; h++ {
 		expectedBlock := types.WrkChainBlock{}
-		expectedBlock.WrkchainId = wcID
-		expectedBlock.Owner = testAddrs[0].String()
 		expectedBlock.Height = h
 		expectedBlock.Blockhash = test_helpers.GenerateRandomString(66)
 		expectedBlock.Parenthash = test_helpers.GenerateRandomString(66)
@@ -177,10 +170,11 @@ func TestRecordWrkchainHashes(t *testing.T) {
 		expectedBlock.Hash3 = test_helpers.GenerateRandomString(66)
 		expectedBlock.SubTime = uint64(time.Now().Unix())
 
-		err := app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcID, h, expectedBlock.Blockhash, expectedBlock.Parenthash, expectedBlock.Hash1, expectedBlock.Hash2, expectedBlock.Hash3, testAddrs[0])
+		err := app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcID, h, expectedBlock.Blockhash, expectedBlock.Parenthash, expectedBlock.Hash1, expectedBlock.Hash2, expectedBlock.Hash3)
 		require.NoError(t, err)
 
-		blockDb := app.WrkchainKeeper.GetWrkChainBlock(ctx, wcID, h)
+		blockDb, found := app.WrkchainKeeper.GetWrkChainBlock(ctx, wcID, h)
+		require.True(t, found)
 		// hackery
 		expectedBlock.SubTime = blockDb.SubTime
 		require.True(t, WRKChainBlockEqual(blockDb, expectedBlock))

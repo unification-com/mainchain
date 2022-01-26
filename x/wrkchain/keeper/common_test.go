@@ -42,6 +42,11 @@ func WRKChainBlockEqual(bA, bB types.WrkChainBlock) bool {
 	return bA == bB
 }
 
+// WRKChainBlockLegacyEqual checks if two WRKChainBlocks are equal
+func WRKChainBlockLegacyEqual(bA, bB types.WrkChainBlockLegacy) bool {
+	return bA == bB
+}
+
 // RandInBetween generates a random number between two given values
 func RandInBetween(min, max int) int {
 	return rand.Intn(max-min) + min

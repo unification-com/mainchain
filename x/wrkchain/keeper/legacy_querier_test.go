@@ -54,7 +54,7 @@ func getQueriedWrkChain(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, q
 	return wc
 }
 
-func getQueriedWrkChainBlock(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, wcID, height uint64) types.WrkChainBlock {
+func getQueriedWrkChainBlock(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, wcID, height uint64) types.WrkChainBlockLegacy {
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, keeper.QueryWrkChainBlock, strconv.FormatUint(wcID, 10), strconv.FormatUint(height, 10)}, "/"),
 		Data: nil,
@@ -64,7 +64,7 @@ func getQueriedWrkChainBlock(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmi
 	require.NoError(t, err)
 	require.NotNil(t, bz)
 
-	var wcb types.WrkChainBlock
+	var wcb types.WrkChainBlockLegacy
 	require.NoError(t, cdc.UnmarshalJSON(bz, &wcb))
 
 	return wcb
@@ -158,7 +158,7 @@ func TestQueryWrkChainByID(t *testing.T) {
 func TestQueryWrkChainBlockByHeight(t *testing.T) {
 	testApp, ctx, legacyQuerierCdc, querier := setupTest()
 
-	var testWcBlocks []types.WrkChainBlock
+	var testWcBlocks []types.WrkChainBlockLegacy
 	numBlocks := uint64(100)
 	wcID := uint64(1)
 	addr := TestAddrs[0]
@@ -177,8 +177,6 @@ func TestQueryWrkChainBlockByHeight(t *testing.T) {
 
 	for h := uint64(1); h <= numBlocks; h++ {
 		block := types.WrkChainBlock{}
-		block.WrkchainId = wcID
-		block.Owner = addr.String()
 		block.Height = h
 		block.Blockhash = GenerateRandomString(32)
 		block.Parenthash = GenerateRandomString(32)
@@ -187,15 +185,26 @@ func TestQueryWrkChainBlockByHeight(t *testing.T) {
 		block.Hash3 = GenerateRandomString(32)
 		block.SubTime = uint64(time.Now().Unix())
 
-		err = testApp.WrkchainKeeper.SetWrkChainBlock(ctx, block)
+		err = testApp.WrkchainKeeper.SetWrkChainBlock(ctx, wcID, block)
 		require.NoError(t, err)
-		testWcBlocks = append(testWcBlocks, block)
+		expectedBlk := types.WrkChainBlockLegacy{
+			WrkChainID: wcID,
+			Height:     block.Height,
+			BlockHash:  block.Blockhash,
+			ParentHash: block.Parenthash,
+			Hash1:      block.Hash1,
+			Hash2:      block.Hash2,
+			Hash3:      block.Hash3,
+			SubmitTime: block.SubTime,
+			Owner:      addr.String(),
+		}
+		testWcBlocks = append(testWcBlocks, expectedBlk)
 	}
 
 	for i, tWcb := range testWcBlocks {
 		height := uint64(i + 1)
 		block := getQueriedWrkChainBlock(t, ctx, legacyQuerierCdc, querier, wcID, height)
-		require.True(t, WRKChainBlockEqual(tWcb, block))
+		require.True(t, WRKChainBlockLegacyEqual(tWcb, block))
 	}
 }
 

@@ -84,9 +84,31 @@ func queryWrkChainBlock(ctx sdk.Context, path []string, req abci.RequestQuery, k
 		height = 0
 	}
 
-	wrkchainBlock := keeper.GetWrkChainBlock(ctx, uint64(wrkchainID), uint64(height))
+	wrkchain, found := keeper.GetWrkChain(ctx, uint64(wrkchainID))
 
-	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, wrkchainBlock)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrWrkChainDoesNotExist, "wrkchain %d not found", wrkchainID)
+	}
+
+	wrkchainBlock, found := keeper.GetWrkChainBlock(ctx, uint64(wrkchainID), uint64(height))
+
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrWrkChainDoesNotExist, "block %d not found for wrkchain %d", height, wrkchainID)
+	}
+
+	legacyBlk := types.WrkChainBlockLegacy{
+		WrkChainID: wrkchain.WrkchainId,
+		Height:     wrkchainBlock.Height,
+		BlockHash:  wrkchainBlock.Blockhash,
+		ParentHash: wrkchainBlock.Parenthash,
+		Hash1:      wrkchainBlock.Hash1,
+		Hash2:      wrkchainBlock.Hash2,
+		Hash3:      wrkchainBlock.Hash3,
+		SubmitTime: wrkchainBlock.SubTime,
+		Owner:      wrkchain.Owner,
+	}
+
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, legacyBlk)
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}

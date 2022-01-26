@@ -62,9 +62,23 @@ func (q Keeper) WrkChainBlock(c context.Context, req *types.QueryWrkChainBlockRe
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	wrkchainBlock := q.GetWrkChainBlock(ctx, req.WrkchainId, req.Height)
+	wrkchain, found := q.GetWrkChain(ctx, req.WrkchainId)
 
-	return &types.QueryWrkChainBlockResponse{Block: &wrkchainBlock}, nil
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "wrkchain %d doesn't exist", req.WrkchainId)
+	}
+
+	wrkchainBlock, found := q.GetWrkChainBlock(ctx, req.WrkchainId, req.Height)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "block %d doesn't exist for wrkchain %d", req.Height, req.WrkchainId)
+	}
+
+	return &types.QueryWrkChainBlockResponse{
+		Block:      &wrkchainBlock,
+		WrkchainId: wrkchain.WrkchainId,
+		Owner:      wrkchain.Owner,
+	}, nil
 }
 
 func (q Keeper) WrkChainsFiltered(c context.Context, req *types.QueryWrkChainsFilteredRequest) (*types.QueryWrkChainsFilteredResponse, error) {

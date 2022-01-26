@@ -116,7 +116,7 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 		return nil, sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "wrkchain block hashes have already been recorded for this height")
 	}
 
-	err := k.RecordNewWrkchainHashes(ctx, msg.WrkchainId, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3, ownerAddr)
+	err := k.RecordNewWrkchainHashes(ctx, msg.WrkchainId, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3)
 
 	if err != nil {
 		return nil, err

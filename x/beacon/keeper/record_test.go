@@ -158,4 +158,9 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 		require.Equal(t, retTsID, beacon.LastTimestampId, "not equal: exp = %d, act = %d", retTsID, beacon.LastTimestampId)
 	}
 
+	beacon, found := app.BeaconKeeper.GetBeacon(ctx, bID)
+	require.True(t, found)
+	require.True(t, beacon.NumInState == numToRecord)
+	require.True(t, beacon.FirstIdInState == 1)
+
 }

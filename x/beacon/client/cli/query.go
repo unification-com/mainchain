@@ -153,7 +153,7 @@ $ %s query beacon search --page=2 --limit=100
 
 // GetCmdBeaconTimestamp queries information about a beacon's recorded timestamp
 func GetCmdBeaconTimestamp() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "timestamp [beacon_id] [timestamp_id]",
 		Short: "Query a BEACON for given ID and timestamp ID to retrieve recorded timestamp",
 		Args:  cobra.ExactArgs(2),
@@ -188,4 +188,7 @@ func GetCmdBeaconTimestamp() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }

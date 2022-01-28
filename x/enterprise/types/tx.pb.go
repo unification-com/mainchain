@@ -29,9 +29,12 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgUndPurchaseOrder represents a message to raise a new purchase order
 type MsgUndPurchaseOrder struct {
-	Purchaser string     `protobuf:"bytes,1,opt,name=purchaser,proto3" json:"purchaser,omitempty"`
-	Amount    types.Coin `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount"`
+	// purchaser is the address of the account raising the purchase order
+	Purchaser string `protobuf:"bytes,1,opt,name=purchaser,proto3" json:"purchaser,omitempty"`
+	// amount is the amount of eFUND in nund
+	Amount types.Coin `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount"`
 }
 
 func (m *MsgUndPurchaseOrder) Reset()         { *m = MsgUndPurchaseOrder{} }
@@ -67,7 +70,7 @@ func (m *MsgUndPurchaseOrder) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUndPurchaseOrder proto.InternalMessageInfo
 
-// MsgSubmitProposalResponse defines the Msg/SubmitProposal response type.
+// MsgUndPurchaseOrderResponse defines the Msg/UndPurchaseOrder response type.
 type MsgUndPurchaseOrderResponse struct {
 	PurchaseOrderId uint64 `protobuf:"varint,1,opt,name=purchase_order_id,json=purchaseOrderId,proto3" json:"purchase_order_id,omitempty"`
 }
@@ -112,10 +115,14 @@ func (m *MsgUndPurchaseOrderResponse) GetPurchaseOrderId() uint64 {
 	return 0
 }
 
+// MsgProcessUndPurchaseOrder represents a message to processed a raised purchase order
 type MsgProcessUndPurchaseOrder struct {
-	PurchaseOrderId uint64              `protobuf:"varint,1,opt,name=purchase_order_id,json=purchaseOrderId,proto3" json:"id" yaml:"id"`
-	Decision        PurchaseOrderStatus `protobuf:"varint,2,opt,name=decision,proto3,enum=mainchain.enterprise.v1.PurchaseOrderStatus" json:"decision,omitempty"`
-	Signer          string              `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
+	// purchase_order_id is the ID of the purchase order being raised
+	PurchaseOrderId uint64 `protobuf:"varint,1,opt,name=purchase_order_id,json=purchaseOrderId,proto3" json:"id" yaml:"id"`
+	// decision is an enumerated PurchaseOrderStatus representing, for example accepted/rejected
+	Decision PurchaseOrderStatus `protobuf:"varint,2,opt,name=decision,proto3,enum=mainchain.enterprise.v1.PurchaseOrderStatus" json:"decision,omitempty"`
+	// signer is the address of the authorised decision maker
+	Signer string `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgProcessUndPurchaseOrder) Reset()         { *m = MsgProcessUndPurchaseOrder{} }
@@ -151,6 +158,7 @@ func (m *MsgProcessUndPurchaseOrder) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgProcessUndPurchaseOrder proto.InternalMessageInfo
 
+// MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder response type.
 type MsgProcessUndPurchaseOrderResponse struct {
 }
 
@@ -187,10 +195,15 @@ func (m *MsgProcessUndPurchaseOrderResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgProcessUndPurchaseOrderResponse proto.InternalMessageInfo
 
+// MsgWhitelistAddress represents a message to processed an address whitelist action.
+// only addresses whitelisted by an authorised decision maker can raise new purchase orders
 type MsgWhitelistAddress struct {
-	Address string          `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Signer  string          `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
-	Action  WhitelistAction `protobuf:"varint,3,opt,name=whitelist_action,json=whitelistAction,proto3,enum=mainchain.enterprise.v1.WhitelistAction" json:"action" yaml:"action"`
+	// address is the address for which the action is being executed
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// signer is the address of the authorised decision maker
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
+	// whitelist_action is the action being executed, and is either add or remove.
+	Action WhitelistAction `protobuf:"varint,3,opt,name=whitelist_action,json=whitelistAction,proto3,enum=mainchain.enterprise.v1.WhitelistAction" json:"action" yaml:"action"`
 }
 
 func (m *MsgWhitelistAddress) Reset()         { *m = MsgWhitelistAddress{} }
@@ -226,6 +239,7 @@ func (m *MsgWhitelistAddress) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgWhitelistAddress proto.InternalMessageInfo
 
+// MsgWhitelistAddressResponse defines the Msg/WhitelistAddress response type.
 type MsgWhitelistAddressResponse struct {
 }
 
@@ -327,7 +341,9 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// UndPurchaseOrder defines a method to create new purchase order.
 	UndPurchaseOrder(ctx context.Context, in *MsgUndPurchaseOrder, opts ...grpc.CallOption) (*MsgUndPurchaseOrderResponse, error)
+	// ProcessUndPurchaseOrder defines a method to process a decision on a purchase order.
 	ProcessUndPurchaseOrder(ctx context.Context, in *MsgProcessUndPurchaseOrder, opts ...grpc.CallOption) (*MsgProcessUndPurchaseOrderResponse, error)
+	// WhitelistAddress defines a method to execute a whitelist action.
 	WhitelistAddress(ctx context.Context, in *MsgWhitelistAddress, opts ...grpc.CallOption) (*MsgWhitelistAddressResponse, error)
 }
 
@@ -370,7 +386,9 @@ func (c *msgClient) WhitelistAddress(ctx context.Context, in *MsgWhitelistAddres
 type MsgServer interface {
 	// UndPurchaseOrder defines a method to create new purchase order.
 	UndPurchaseOrder(context.Context, *MsgUndPurchaseOrder) (*MsgUndPurchaseOrderResponse, error)
+	// ProcessUndPurchaseOrder defines a method to process a decision on a purchase order.
 	ProcessUndPurchaseOrder(context.Context, *MsgProcessUndPurchaseOrder) (*MsgProcessUndPurchaseOrderResponse, error)
+	// WhitelistAddress defines a method to execute a whitelist action.
 	WhitelistAddress(context.Context, *MsgWhitelistAddress) (*MsgWhitelistAddressResponse, error)
 }
 

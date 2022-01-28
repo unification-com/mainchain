@@ -23,6 +23,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// WrkChain holds metadata about a registered wrkchain
 type WrkChain struct {
 	WrkchainId   uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
 	Moniker      string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
@@ -139,6 +140,7 @@ func (m *WrkChain) GetOwner() string {
 	return ""
 }
 
+// WrkChainBlock holds data about a wrkchain's block hash submission
 type WrkChainBlock struct {
 	Height     uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
 	Blockhash  string `protobuf:"bytes,2,opt,name=blockhash,proto3" json:"blockhash,omitempty"`
@@ -231,6 +233,7 @@ func (m *WrkChainBlock) GetSubTime() uint64 {
 	return 0
 }
 
+// Params defines the parameters for the wrkchain module.
 type Params struct {
 	FeeRegister uint64 `protobuf:"varint,1,opt,name=fee_register,json=feeRegister,proto3" json:"fee_register,omitempty"`
 	FeeRecord   uint64 `protobuf:"varint,2,opt,name=fee_record,json=feeRecord,proto3" json:"fee_record,omitempty"`

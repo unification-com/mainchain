@@ -112,7 +112,9 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+// QueryWrkChainRequest is the request type for the Query/WrkChain RPC method
 type QueryWrkChainRequest struct {
+	// wrkchain_id is the id of the wrkchain to query for
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
 }
 
@@ -156,6 +158,7 @@ func (m *QueryWrkChainRequest) GetWrkchainId() uint64 {
 	return 0
 }
 
+// QueryWrkChainResponse is the response type for the Query/WrkChain RPC method
 type QueryWrkChainResponse struct {
 	Wrkchain *WrkChain `protobuf:"bytes,1,opt,name=wrkchain,proto3" json:"wrkchain,omitempty"`
 }
@@ -200,9 +203,12 @@ func (m *QueryWrkChainResponse) GetWrkchain() *WrkChain {
 	return nil
 }
 
+// QueryWrkChainBlockRequest is the request type for the Query/WrkChainBlock RPC method
 type QueryWrkChainBlockRequest struct {
+	// wrkchain_id is the id of the wrkchain to query for
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
-	Height     uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
+	// height is the block number of the hash to query for
+	Height uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
 }
 
 func (m *QueryWrkChainBlockRequest) Reset()         { *m = QueryWrkChainBlockRequest{} }
@@ -252,6 +258,7 @@ func (m *QueryWrkChainBlockRequest) GetHeight() uint64 {
 	return 0
 }
 
+// QueryWrkChainBlockResponse is the response type for the Query/WrkChainBlock RPC method
 type QueryWrkChainBlockResponse struct {
 	Block      *WrkChainBlock `protobuf:"bytes,1,opt,name=block,proto3" json:"block,omitempty"`
 	WrkchainId uint64         `protobuf:"varint,2,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
@@ -312,9 +319,13 @@ func (m *QueryWrkChainBlockResponse) GetOwner() string {
 	return ""
 }
 
+// QueryWrkChainsFilteredRequest is the request type for the Query/WrkChainsFiltered RPC method
 type QueryWrkChainsFilteredRequest struct {
-	Moniker    string             `protobuf:"bytes,1,opt,name=moniker,proto3" json:"moniker,omitempty"`
-	Owner      string             `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	// moniker is the moniker of the wrkchain to search for
+	Moniker string `protobuf:"bytes,1,opt,name=moniker,proto3" json:"moniker,omitempty"`
+	// owner is an address to search for
+	Owner string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -351,8 +362,10 @@ func (m *QueryWrkChainsFilteredRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryWrkChainsFilteredRequest proto.InternalMessageInfo
 
+// QueryWrkChainsFilteredResponse is the response type for the Query/WrkChainsFiltered RPC method
 type QueryWrkChainsFilteredResponse struct {
-	Wrkchains  []WrkChain          `protobuf:"bytes,1,rep,name=wrkchains,proto3" json:"wrkchains"`
+	Wrkchains []WrkChain `protobuf:"bytes,1,rep,name=wrkchains,proto3" json:"wrkchains"`
+	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -474,9 +487,13 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
+	// Params queries the parameters of x/wrkchain module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// WrkChain queries the metadata of a wrkchain.
 	WrkChain(ctx context.Context, in *QueryWrkChainRequest, opts ...grpc.CallOption) (*QueryWrkChainResponse, error)
+	// WrkChainBlock queries a submitted hash of a wrkchain
 	WrkChainBlock(ctx context.Context, in *QueryWrkChainBlockRequest, opts ...grpc.CallOption) (*QueryWrkChainBlockResponse, error)
+	// WrkChainsFiltered queries all wrkchain metadata for given search parameters
 	WrkChainsFiltered(ctx context.Context, in *QueryWrkChainsFilteredRequest, opts ...grpc.CallOption) (*QueryWrkChainsFilteredResponse, error)
 }
 
@@ -526,9 +543,13 @@ func (c *queryClient) WrkChainsFiltered(ctx context.Context, in *QueryWrkChainsF
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
+	// Params queries the parameters of x/wrkchain module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// WrkChain queries the metadata of a wrkchain.
 	WrkChain(context.Context, *QueryWrkChainRequest) (*QueryWrkChainResponse, error)
+	// WrkChainBlock queries a submitted hash of a wrkchain
 	WrkChainBlock(context.Context, *QueryWrkChainBlockRequest) (*QueryWrkChainBlockResponse, error)
+	// WrkChainsFiltered queries all wrkchain metadata for given search parameters
 	WrkChainsFiltered(context.Context, *QueryWrkChainsFilteredRequest) (*QueryWrkChainsFilteredResponse, error)
 }
 

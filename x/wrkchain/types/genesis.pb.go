@@ -85,6 +85,8 @@ func (m *GenesisState) GetRegisteredWrkchains() WrkChainExports {
 	return nil
 }
 
+// WrkChainBlockGenesisExport is a trimmed version of WrkChainBlock
+// for genesis exports to conserve space
 type WrkChainBlockGenesisExport struct {
 	He uint64 `protobuf:"varint,1,opt,name=he,proto3" json:"he,omitempty"`
 	Bh string `protobuf:"bytes,2,opt,name=bh,proto3" json:"bh,omitempty"`
@@ -177,6 +179,7 @@ func (m *WrkChainBlockGenesisExport) GetSt() uint64 {
 	return 0
 }
 
+// WrkChainExport holds genesis export data for a wrkchain, including hashes
 type WrkChainExport struct {
 	Wrkchain WrkChain                    `protobuf:"bytes,1,opt,name=wrkchain,proto3" json:"wrkchain"`
 	Blocks   WrkChainBlockGenesisExports `protobuf:"bytes,2,rep,name=blocks,proto3,castrepeated=WrkChainBlockGenesisExports" json:"blocks"`

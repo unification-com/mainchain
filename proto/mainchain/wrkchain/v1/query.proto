@@ -9,18 +9,22 @@ import "mainchain/wrkchain/v1/wrkchain.proto";
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
 service Query {
+  // Params queries the parameters of x/wrkchain module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/mainchain/wrkchain/v1/params";
   }
 
+  // WrkChain queries the metadata of a wrkchain.
   rpc WrkChain(QueryWrkChainRequest) returns (QueryWrkChainResponse) {
     option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}";
   }
 
+  // WrkChainBlock queries a submitted hash of a wrkchain
   rpc WrkChainBlock(QueryWrkChainBlockRequest) returns (QueryWrkChainBlockResponse) {
     option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{height}";
   }
 
+  // WrkChainsFiltered queries all wrkchain metadata for given search parameters
   rpc WrkChainsFiltered(QueryWrkChainsFilteredRequest) returns (QueryWrkChainsFilteredResponse) {
     option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchains";
   }
@@ -34,36 +38,48 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryWrkChainRequest is the request type for the Query/WrkChain RPC method
 message QueryWrkChainRequest {
+  // wrkchain_id is the id of the wrkchain to query for
   uint64 wrkchain_id = 1;
 }
 
+// QueryWrkChainResponse is the response type for the Query/WrkChain RPC method
 message QueryWrkChainResponse {
   WrkChain wrkchain = 1;
 }
 
+// QueryWrkChainBlockRequest is the request type for the Query/WrkChainBlock RPC method
 message QueryWrkChainBlockRequest {
+  // wrkchain_id is the id of the wrkchain to query for
   uint64 wrkchain_id = 1;
+  // height is the block number of the hash to query for
   uint64 height = 2;
 }
 
+// QueryWrkChainBlockResponse is the response type for the Query/WrkChainBlock RPC method
 message QueryWrkChainBlockResponse {
   WrkChainBlock block = 1;
   uint64 wrkchain_id = 2;
   string owner = 3;
 }
 
+// QueryWrkChainsFilteredRequest is the request type for the Query/WrkChainsFiltered RPC method
 message QueryWrkChainsFilteredRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
+  // moniker is the moniker of the wrkchain to search for
   string moniker = 1;
+  // owner is an address to search for
   string owner = 2;
+  // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
+// QueryWrkChainsFilteredResponse is the response type for the Query/WrkChainsFiltered RPC method
 message QueryWrkChainsFilteredResponse {
   repeated WrkChain wrkchains = 1 [(gogoproto.nullable) = false];
+  // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
-

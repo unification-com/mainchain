@@ -28,10 +28,14 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgRegisterBeacon represents a message to register a new beacon
 type MsgRegisterBeacon struct {
+	// moniker is a short identifier for a beacon
 	Moniker string `protobuf:"bytes,1,opt,name=moniker,proto3" json:"moniker,omitempty"`
-	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Owner   string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
+	// name is a long name for a beacon
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// owner is the address of the owner of the beacon
+	Owner string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *MsgRegisterBeacon) Reset()         { *m = MsgRegisterBeacon{} }
@@ -69,6 +73,7 @@ var xxx_messageInfo_MsgRegisterBeacon proto.InternalMessageInfo
 
 // MsgRegisterBeaconResponse defines the Msg/RegisterBeacon response type.
 type MsgRegisterBeaconResponse struct {
+	// beacon_id is the id of the new beacon
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
 }
 
@@ -112,11 +117,16 @@ func (m *MsgRegisterBeaconResponse) GetBeaconId() uint64 {
 	return 0
 }
 
+// MsgRecordBeaconTimestamp represents a message to record a timestamp for a registered beacon
 type MsgRecordBeaconTimestamp struct {
-	BeaconId   uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
-	Hash       string `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	// beacon_id is the id of the beacon the timestamp is being submitted for
+	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
+	// hash is the hash or data being submitted
+	Hash string `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	// submit_time is a unix epoch value of the submission time
 	SubmitTime uint64 `protobuf:"varint,3,opt,name=submit_time,json=submitTime,proto3" json:"submit_time,omitempty"`
-	Owner      string `protobuf:"bytes,4,opt,name=owner,proto3" json:"owner,omitempty"`
+	// owner is the address of the owner of the beacon
+	Owner string `protobuf:"bytes,4,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *MsgRecordBeaconTimestamp) Reset()         { *m = MsgRecordBeaconTimestamp{} }
@@ -152,8 +162,11 @@ func (m *MsgRecordBeaconTimestamp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRecordBeaconTimestamp proto.InternalMessageInfo
 
+// MsgRecordBeaconTimestampResponse defines the Msg/RecordBeacon response type.
 type MsgRecordBeaconTimestampResponse struct {
-	BeaconId    uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
+	// beacon_id is the id of the beacon
+	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
+	// timestamp_id is the id of the new timestamp
 	TimestampId uint64 `protobuf:"varint,2,opt,name=timestamp_id,json=timestampId,proto3" json:"timestamp_id,omitempty"`
 }
 
@@ -254,8 +267,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// UndPurchaseOrder defines a method to create new purchase order.
+	// RegisterBeacon defines a method to register a new beacon
 	RegisterBeacon(ctx context.Context, in *MsgRegisterBeacon, opts ...grpc.CallOption) (*MsgRegisterBeaconResponse, error)
+	// RecordBeaconTimestamp defines a method to record a timestamp for a registered beacon
 	RecordBeaconTimestamp(ctx context.Context, in *MsgRecordBeaconTimestamp, opts ...grpc.CallOption) (*MsgRecordBeaconTimestampResponse, error)
 }
 
@@ -287,8 +301,9 @@ func (c *msgClient) RecordBeaconTimestamp(ctx context.Context, in *MsgRecordBeac
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// UndPurchaseOrder defines a method to create new purchase order.
+	// RegisterBeacon defines a method to register a new beacon
 	RegisterBeacon(context.Context, *MsgRegisterBeacon) (*MsgRegisterBeaconResponse, error)
+	// RecordBeaconTimestamp defines a method to record a timestamp for a registered beacon
 	RecordBeaconTimestamp(context.Context, *MsgRecordBeaconTimestamp) (*MsgRecordBeaconTimestampResponse, error)
 }
 

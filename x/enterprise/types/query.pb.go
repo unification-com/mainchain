@@ -114,7 +114,7 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-// QueryEnterpriseUndPurchaseOrderRequest is the request type for the Query/PO RPC method.
+// QueryEnterpriseUndPurchaseOrderRequest is the request type for the Query/EnterpriseUndPurchaseOrder RPC method.
 type QueryEnterpriseUndPurchaseOrderRequest struct {
 	// purchase_order_id defines the PO to query for.
 	PurchaseOrderId uint64 `protobuf:"varint,1,opt,name=purchase_order_id,json=purchaseOrderId,proto3" json:"purchase_order_id,omitempty"`
@@ -162,7 +162,7 @@ func (m *QueryEnterpriseUndPurchaseOrderRequest) GetPurchaseOrderId() uint64 {
 	return 0
 }
 
-// QueryEnterpriseUndPurchaseOrderResponse is the response type for the Query/PO RPC method.
+// QueryEnterpriseUndPurchaseOrderResponse is the response type for the Query/EnterpriseUndPurchaseOrder RPC method.
 type QueryEnterpriseUndPurchaseOrderResponse struct {
 	PurchaseOrder EnterpriseUndPurchaseOrder `protobuf:"bytes,1,opt,name=purchase_order,json=purchaseOrder,proto3" json:"purchase_order"`
 }
@@ -209,7 +209,7 @@ func (m *QueryEnterpriseUndPurchaseOrderResponse) GetPurchaseOrder() EnterpriseU
 	return EnterpriseUndPurchaseOrder{}
 }
 
-// QueryEnterpriseUndPurchaseOrdersRequest is the request type for the Query/PurchaseOrders RPC
+// QueryEnterpriseUndPurchaseOrdersRequest is the request type for the Query/EnterpriseUndPurchaseOrders RPC
 // method
 type QueryEnterpriseUndPurchaseOrdersRequest struct {
 	Pagination *query.PageRequest  `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -273,12 +273,13 @@ func (m *QueryEnterpriseUndPurchaseOrdersRequest) GetStatus() PurchaseOrderStatu
 	return StatusNil
 }
 
-// QueryEnterpriseUndPurchaseOrdersResponse is the response type for the Query/PurchaseOrders RPC
+// QueryEnterpriseUndPurchaseOrdersResponse is the response type for the Query/EnterpriseUndPurchaseOrders RPC
 // method
 type QueryEnterpriseUndPurchaseOrdersResponse struct {
-	// info is the signing info of all validators
+	// purchase_orders is the list of all purchase orders
 	PurchaseOrders []EnterpriseUndPurchaseOrder `protobuf:"bytes,1,rep,name=purchase_orders,json=purchaseOrders,proto3" json:"purchase_orders"`
-	Pagination     *query.PageResponse          `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QueryEnterpriseUndPurchaseOrdersResponse) Reset() {
@@ -330,7 +331,9 @@ func (m *QueryEnterpriseUndPurchaseOrdersResponse) GetPagination() *query.PageRe
 	return nil
 }
 
+// QueryLockedUndByAddressRequest is the request type for the Query/LockedUndByAddress RPC method
 type QueryLockedUndByAddressRequest struct {
+	// owner is the address to query
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
@@ -374,6 +377,7 @@ func (m *QueryLockedUndByAddressRequest) GetOwner() string {
 	return ""
 }
 
+// QueryLockedUndByAddressResponse is the response type for the Query/LockedUndByAddress RPC method
 type QueryLockedUndByAddressResponse struct {
 	Owner     string     `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	LockedUnd *LockedUnd `protobuf:"bytes,2,opt,name=locked_und,json=lockedUnd,proto3" json:"locked_und,omitempty"`
@@ -426,6 +430,7 @@ func (m *QueryLockedUndByAddressResponse) GetLockedUnd() *LockedUnd {
 	return nil
 }
 
+// QueryTotalLockedRequest is the request type for the Query/TotalLocked RPC method
 type QueryTotalLockedRequest struct {
 }
 
@@ -462,6 +467,7 @@ func (m *QueryTotalLockedRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryTotalLockedRequest proto.InternalMessageInfo
 
+// QueryTotalLockedResponse is the response type for the Query/TotalLocked RPC method
 type QueryTotalLockedResponse struct {
 	Amount types.Coin `protobuf:"bytes,1,opt,name=amount,proto3" json:"amount"`
 }
@@ -506,6 +512,7 @@ func (m *QueryTotalLockedResponse) GetAmount() types.Coin {
 	return types.Coin{}
 }
 
+// QueryTotalUnlockedRequest is the request type for the Query/TotalUnlocked RPC method
 type QueryTotalUnlockedRequest struct {
 }
 
@@ -542,6 +549,7 @@ func (m *QueryTotalUnlockedRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryTotalUnlockedRequest proto.InternalMessageInfo
 
+// QueryTotalUnlockedResponse is the response type for the Query/TotalUnlocked RPC method
 type QueryTotalUnlockedResponse struct {
 	Amount types.Coin `protobuf:"bytes,1,opt,name=amount,proto3" json:"amount"`
 }
@@ -586,6 +594,7 @@ func (m *QueryTotalUnlockedResponse) GetAmount() types.Coin {
 	return types.Coin{}
 }
 
+// QueryEnterpriseSupplyRequest is the request type for the Query/EnterpriseSupply RPC method
 type QueryEnterpriseSupplyRequest struct {
 }
 
@@ -622,6 +631,7 @@ func (m *QueryEnterpriseSupplyRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryEnterpriseSupplyRequest proto.InternalMessageInfo
 
+// QueryEnterpriseSupplyResponse is the response type for the Query/EnterpriseSupply RPC method
 type QueryEnterpriseSupplyResponse struct {
 	Supply UndSupply `protobuf:"bytes,1,opt,name=supply,proto3" json:"supply"`
 }
@@ -666,6 +676,7 @@ func (m *QueryEnterpriseSupplyResponse) GetSupply() UndSupply {
 	return UndSupply{}
 }
 
+// QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC method
 type QueryTotalSupplyRequest struct {
 }
 
@@ -702,6 +713,7 @@ func (m *QueryTotalSupplyRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryTotalSupplyRequest proto.InternalMessageInfo
 
+// QueryTotalSupplyResponse is the response type for the Query/TotalSupply RPC method
 type QueryTotalSupplyResponse struct {
 	Supply github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=supply,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"supply"`
 }
@@ -838,6 +850,7 @@ func (m *QuerySupplyOfResponse) GetAmount() types.Coin {
 	return types.Coin{}
 }
 
+// QueryWhitelistRequest is the request type for the Query/Whitelist RPC method.
 type QueryWhitelistRequest struct {
 }
 
@@ -874,6 +887,7 @@ func (m *QueryWhitelistRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryWhitelistRequest proto.InternalMessageInfo
 
+// QueryWhitelistResponse is the response type for the Query/Whitelist RPC method.
 type QueryWhitelistResponse struct {
 	Addresses []string `protobuf:"bytes,1,rep,name=addresses,proto3" json:"addresses,omitempty"`
 }
@@ -918,7 +932,9 @@ func (m *QueryWhitelistResponse) GetAddresses() []string {
 	return nil
 }
 
+// QueryWhitelistedRequest is the request type for the Query/Whitelisted RPC method.
 type QueryWhitelistedRequest struct {
+	// address is the address to query
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
 
@@ -962,6 +978,7 @@ func (m *QueryWhitelistedRequest) GetAddress() string {
 	return ""
 }
 
+// QueryWhitelistedResponse is the response type for the Query/Whitelisted RPC method.
 type QueryWhitelistedResponse struct {
 	Address     string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Whitelisted bool   `protobuf:"varint,2,opt,name=whitelisted,proto3" json:"whitelisted,omitempty"`
@@ -1014,7 +1031,9 @@ func (m *QueryWhitelistedResponse) GetWhitelisted() bool {
 	return false
 }
 
+// QueryEnterpriseAccountRequest is the request type for the Query/EnterpriseAccount RPC method.
 type QueryEnterpriseAccountRequest struct {
+	// address is the address to query
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
 
@@ -1058,6 +1077,7 @@ func (m *QueryEnterpriseAccountRequest) GetAddress() string {
 	return ""
 }
 
+// QueryEnterpriseAccountResponse is the response type for the Query/EnterpriseAccount RPC method.
 type QueryEnterpriseAccountResponse struct {
 	Account EnterpriseUserAccount `protobuf:"bytes,1,opt,name=account,proto3" json:"account"`
 }
@@ -1224,29 +1244,31 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
+	// Params queries the parameters of x/enterprise module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Purchase Order queries proposal details based on PurchaseOrderId.
+	// EnterpriseUndPurchaseOrder queries purchase order details based on PurchaseOrderId.
 	EnterpriseUndPurchaseOrder(ctx context.Context, in *QueryEnterpriseUndPurchaseOrderRequest, opts ...grpc.CallOption) (*QueryEnterpriseUndPurchaseOrderResponse, error)
-	// Purchase Order queries proposal details based on PurchaseOrderId.
+	// EnterpriseUndPurchaseOrders queries all current purchase orders.
 	EnterpriseUndPurchaseOrders(ctx context.Context, in *QueryEnterpriseUndPurchaseOrdersRequest, opts ...grpc.CallOption) (*QueryEnterpriseUndPurchaseOrdersResponse, error)
-	// Queries an account address for their locked FUND
+	// LockedUndByAddress queries an account address for their locked FUND
 	LockedUndByAddress(ctx context.Context, in *QueryLockedUndByAddressRequest, opts ...grpc.CallOption) (*QueryLockedUndByAddressResponse, error)
-	// Get total locked FUND
+	// TotalLocked queries the total locked FUND
 	TotalLocked(ctx context.Context, in *QueryTotalLockedRequest, opts ...grpc.CallOption) (*QueryTotalLockedResponse, error)
-	// Get total Unlocked FUND
+	// TotalUnlocked queries the total Unlocked FUND
 	TotalUnlocked(ctx context.Context, in *QueryTotalUnlockedRequest, opts ...grpc.CallOption) (*QueryTotalUnlockedResponse, error)
-	// Get Enterprise supply, including locked Ent. FUND. Just returns nund data
+	// EnterpriseSupply queries the chain's supply, including locked Ent. FUND. Only returns nund data
 	EnterpriseSupply(ctx context.Context, in *QueryEnterpriseSupplyRequest, opts ...grpc.CallOption) (*QueryEnterpriseSupplyResponse, error)
-	// Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
-	// with locked eFUND removed from total for nund
+	// TotalSupply should be used instead of /cosmos/bank/v1beta1/supply to get true total supply available
+	// for general use, i.e. with locked eFUND removed from total for nund
 	TotalSupply(ctx context.Context, in *QueryTotalSupplyRequest, opts ...grpc.CallOption) (*QueryTotalSupplyResponse, error)
-	// Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
+	// SupplyOf should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
 	// with locked eFUND removed from total for nund
 	SupplyOf(ctx context.Context, in *QuerySupplyOfRequest, opts ...grpc.CallOption) (*QuerySupplyOfResponse, error)
-	// Query whitelisted addresses
+	// Whitelist queries whitelisted addresses authorised to raise new purchase orders
 	Whitelist(ctx context.Context, in *QueryWhitelistRequest, opts ...grpc.CallOption) (*QueryWhitelistResponse, error)
+	// Whitelisted queries whether or not the given address is authorised to raise new purchase orders
 	Whitelisted(ctx context.Context, in *QueryWhitelistedRequest, opts ...grpc.CallOption) (*QueryWhitelistedResponse, error)
-	// Queries an account address for their locked FUND
+	// EnterpriseAccount queries an account address for their locked FUND and other data
 	EnterpriseAccount(ctx context.Context, in *QueryEnterpriseAccountRequest, opts ...grpc.CallOption) (*QueryEnterpriseAccountResponse, error)
 }
 
@@ -1368,29 +1390,31 @@ func (c *queryClient) EnterpriseAccount(ctx context.Context, in *QueryEnterprise
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
+	// Params queries the parameters of x/enterprise module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Purchase Order queries proposal details based on PurchaseOrderId.
+	// EnterpriseUndPurchaseOrder queries purchase order details based on PurchaseOrderId.
 	EnterpriseUndPurchaseOrder(context.Context, *QueryEnterpriseUndPurchaseOrderRequest) (*QueryEnterpriseUndPurchaseOrderResponse, error)
-	// Purchase Order queries proposal details based on PurchaseOrderId.
+	// EnterpriseUndPurchaseOrders queries all current purchase orders.
 	EnterpriseUndPurchaseOrders(context.Context, *QueryEnterpriseUndPurchaseOrdersRequest) (*QueryEnterpriseUndPurchaseOrdersResponse, error)
-	// Queries an account address for their locked FUND
+	// LockedUndByAddress queries an account address for their locked FUND
 	LockedUndByAddress(context.Context, *QueryLockedUndByAddressRequest) (*QueryLockedUndByAddressResponse, error)
-	// Get total locked FUND
+	// TotalLocked queries the total locked FUND
 	TotalLocked(context.Context, *QueryTotalLockedRequest) (*QueryTotalLockedResponse, error)
-	// Get total Unlocked FUND
+	// TotalUnlocked queries the total Unlocked FUND
 	TotalUnlocked(context.Context, *QueryTotalUnlockedRequest) (*QueryTotalUnlockedResponse, error)
-	// Get Enterprise supply, including locked Ent. FUND. Just returns nund data
+	// EnterpriseSupply queries the chain's supply, including locked Ent. FUND. Only returns nund data
 	EnterpriseSupply(context.Context, *QueryEnterpriseSupplyRequest) (*QueryEnterpriseSupplyResponse, error)
-	// Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
-	// with locked eFUND removed from total for nund
+	// TotalSupply should be used instead of /cosmos/bank/v1beta1/supply to get true total supply available
+	// for general use, i.e. with locked eFUND removed from total for nund
 	TotalSupply(context.Context, *QueryTotalSupplyRequest) (*QueryTotalSupplyResponse, error)
-	// Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
+	// SupplyOf should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
 	// with locked eFUND removed from total for nund
 	SupplyOf(context.Context, *QuerySupplyOfRequest) (*QuerySupplyOfResponse, error)
-	// Query whitelisted addresses
+	// Whitelist queries whitelisted addresses authorised to raise new purchase orders
 	Whitelist(context.Context, *QueryWhitelistRequest) (*QueryWhitelistResponse, error)
+	// Whitelisted queries whether or not the given address is authorised to raise new purchase orders
 	Whitelisted(context.Context, *QueryWhitelistedRequest) (*QueryWhitelistedResponse, error)
-	// Queries an account address for their locked FUND
+	// EnterpriseAccount queries an account address for their locked FUND and other data
 	EnterpriseAccount(context.Context, *QueryEnterpriseAccountRequest) (*QueryEnterpriseAccountResponse, error)
 }
 

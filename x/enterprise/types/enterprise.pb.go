@@ -24,13 +24,19 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// PurchaseOrderStatus enumerates the valid statuses for a given purchase order.
 type PurchaseOrderStatus int32
 
 const (
-	StatusNil       PurchaseOrderStatus = 0
-	StatusRaised    PurchaseOrderStatus = 1
-	StatusAccepted  PurchaseOrderStatus = 2
-	StatusRejected  PurchaseOrderStatus = 3
+	// STATUS_NIL defines a no-op status.
+	StatusNil PurchaseOrderStatus = 0
+	// STATUS_RAISED defines a raised status.
+	StatusRaised PurchaseOrderStatus = 1
+	// STATUS_ACCEPTED defines an accepted status.
+	StatusAccepted PurchaseOrderStatus = 2
+	// STATUS_REJECTED defines a rejected status.
+	StatusRejected PurchaseOrderStatus = 3
+	// STATUS_COMPLETED defines a completed status.
 	StatusCompleted PurchaseOrderStatus = 4
 )
 
@@ -58,11 +64,15 @@ func (PurchaseOrderStatus) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_0031edbd5eb0f2fc, []int{0}
 }
 
+// WhitelistAction enumerates the valid actions for whitelisting addresses.
 type WhitelistAction int32
 
 const (
-	WhitelistActionNil    WhitelistAction = 0
-	WhitelistActionAdd    WhitelistAction = 1
+	// WHITELIST_ACTION_NIL defines a no-op action.
+	WhitelistActionNil WhitelistAction = 0
+	// WHITELIST_ACTION_ADD defines an add action.
+	WhitelistActionAdd WhitelistAction = 1
+	// WHITELIST_ACTION_REMOVE defines a remove action.
 	WhitelistActionRemove WhitelistAction = 2
 )
 
@@ -86,10 +96,15 @@ func (WhitelistAction) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_0031edbd5eb0f2fc, []int{1}
 }
 
+// PurchaseOrderDecision defines a decision made for a given purchase order, ie,
+// whether to accept or reject
 type PurchaseOrderDecision struct {
-	Signer       string              `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
-	Decision     PurchaseOrderStatus `protobuf:"varint,2,opt,name=decision,proto3,enum=mainchain.enterprise.v1.PurchaseOrderStatus" json:"decision,omitempty"`
-	DecisionTime uint64              `protobuf:"varint,3,opt,name=decision_time,json=decisionTime,proto3" json:"decision_time,omitempty"`
+	// signer is an authorised address for making decisions
+	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
+	// decision is the decision made, i.e. accept/reject
+	Decision PurchaseOrderStatus `protobuf:"varint,2,opt,name=decision,proto3,enum=mainchain.enterprise.v1.PurchaseOrderStatus" json:"decision,omitempty"`
+	// decision_time is a unix epoch value of the decision submission time
+	DecisionTime uint64 `protobuf:"varint,3,opt,name=decision_time,json=decisionTime,proto3" json:"decision_time,omitempty"`
 }
 
 func (m *PurchaseOrderDecision) Reset()         { *m = PurchaseOrderDecision{} }
@@ -146,14 +161,22 @@ func (m *PurchaseOrderDecision) GetDecisionTime() uint64 {
 	return 0
 }
 
+// EnterpriseUndPurchaseOrder defines a purchase order raised by a whitelisted address
 type EnterpriseUndPurchaseOrder struct {
-	Id             uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Purchaser      string                 `protobuf:"bytes,2,opt,name=purchaser,proto3" json:"purchaser,omitempty"`
-	Amount         types.Coin             `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount"`
-	Status         PurchaseOrderStatus    `protobuf:"varint,4,opt,name=status,proto3,enum=mainchain.enterprise.v1.PurchaseOrderStatus" json:"status,omitempty"`
-	RaiseTime      uint64                 `protobuf:"varint,5,opt,name=raise_time,json=raiseTime,proto3" json:"raise_time,omitempty"`
-	CompletionTime uint64                 `protobuf:"varint,6,opt,name=completion_time,json=completionTime,proto3" json:"completion_time,omitempty"`
-	Decisions      PurchaseOrderDecisions `protobuf:"bytes,7,rep,name=decisions,proto3,castrepeated=PurchaseOrderDecisions" json:"decisions"`
+	// id is the purchase order ID
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// purchaser is the address of the user who raised the order
+	Purchaser string `protobuf:"bytes,2,opt,name=purchaser,proto3" json:"purchaser,omitempty"`
+	// amount is the amount being raised for
+	Amount types.Coin `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount"`
+	// status is the current PurchaseOrderStatus
+	Status PurchaseOrderStatus `protobuf:"varint,4,opt,name=status,proto3,enum=mainchain.enterprise.v1.PurchaseOrderStatus" json:"status,omitempty"`
+	// raise_time is a unix epoch value of the order submission time
+	RaiseTime uint64 `protobuf:"varint,5,opt,name=raise_time,json=raiseTime,proto3" json:"raise_time,omitempty"`
+	// completion_time is a unix epoch value of the time the order was completed
+	CompletionTime uint64 `protobuf:"varint,6,opt,name=completion_time,json=completionTime,proto3" json:"completion_time,omitempty"`
+	// decisions is an array of decisions made by authorised addresses
+	Decisions PurchaseOrderDecisions `protobuf:"bytes,7,rep,name=decisions,proto3,castrepeated=PurchaseOrderDecisions" json:"decisions"`
 }
 
 func (m *EnterpriseUndPurchaseOrder) Reset()         { *m = EnterpriseUndPurchaseOrder{} }
@@ -238,6 +261,7 @@ func (m *EnterpriseUndPurchaseOrder) GetDecisions() PurchaseOrderDecisions {
 	return nil
 }
 
+// PurchaseOrders defines a list of purchase orders
 type PurchaseOrders struct {
 	PurchaseOrders []*EnterpriseUndPurchaseOrder `protobuf:"bytes,1,rep,name=purchase_orders,json=purchaseOrders,proto3" json:"purchase_orders,omitempty"`
 }
@@ -282,8 +306,11 @@ func (m *PurchaseOrders) GetPurchaseOrders() []*EnterpriseUndPurchaseOrder {
 	return nil
 }
 
+// LockedUnd defines the amount of locked FUND for an account
 type LockedUnd struct {
-	Owner  string     `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// owner is the address of the locked FUND owner
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// amount is the amount currently locked and available to pay for beacon/wrkchain fees
 	Amount types.Coin `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount"`
 }
 
@@ -334,11 +361,16 @@ func (m *LockedUnd) GetAmount() types.Coin {
 	return types.Coin{}
 }
 
+// EnterpriseUserAccount defines data about an enterprise user
 type EnterpriseUserAccount struct {
-	Owner    string     `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	Locked   types.Coin `protobuf:"bytes,2,opt,name=locked,proto3" json:"locked"`
+	// owner is the address of the account
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	// locked is the amount the account currently has locked and available to pay for beacon/wrkchain fees
+	Locked types.Coin `protobuf:"bytes,2,opt,name=locked,proto3" json:"locked"`
+	// unlocked is the amount currently unlocked - i.e. standard FUND in general supply
 	Unlocked types.Coin `protobuf:"bytes,3,opt,name=unlocked,proto3" json:"unlocked"`
-	Total    types.Coin `protobuf:"bytes,4,opt,name=total,proto3" json:"total"`
+	// total is the sum of locked and unlocked FUND
+	Total types.Coin `protobuf:"bytes,4,opt,name=total,proto3" json:"total"`
 }
 
 func (m *EnterpriseUserAccount) Reset()         { *m = EnterpriseUserAccount{} }
@@ -402,11 +434,16 @@ func (m *EnterpriseUserAccount) GetTotal() types.Coin {
 	return types.Coin{}
 }
 
+// UndSupply defines the current FUND supply, including locked
 type UndSupply struct {
-	Denom  string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	// denom is the denomination, e.g. nund
+	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	// amount is the amount of unlocked FUND in general supply
 	Amount uint64 `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	// locked is the amount of locked FUND
 	Locked uint64 `protobuf:"varint,3,opt,name=locked,proto3" json:"locked,omitempty"`
-	Total  uint64 `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	// amount is the sum of locked and unlocked FUND
+	Total uint64 `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
 }
 
 func (m *UndSupply) Reset()         { *m = UndSupply{} }
@@ -470,6 +507,7 @@ func (m *UndSupply) GetTotal() uint64 {
 	return 0
 }
 
+// WhitelistAddresses defines a list of whitelisted addresses authorised to raise enterprise purchase orders
 type WhitelistAddresses struct {
 	Addresses []string `protobuf:"bytes,1,rep,name=addresses,proto3" json:"addresses,omitempty"`
 }
@@ -514,10 +552,15 @@ func (m *WhitelistAddresses) GetAddresses() []string {
 	return nil
 }
 
+// Params defines the parameters for the enterprise module.
 type Params struct {
-	EntSigners        string `protobuf:"bytes,1,opt,name=ent_signers,json=entSigners,proto3" json:"ent_signers,omitempty"`
-	Denom             string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
-	MinAccepts        uint64 `protobuf:"varint,3,opt,name=min_accepts,json=minAccepts,proto3" json:"min_accepts,omitempty"`
+	// ent_signers is a list of addresses authorised to make decisions on raised purchase orders
+	EntSigners string `protobuf:"bytes,1,opt,name=ent_signers,json=entSigners,proto3" json:"ent_signers,omitempty"`
+	// denom is the denomination of eFUND, e.g. nund
+	Denom string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
+	// min_accepts is the minumum number of ent_signers required to accept a PO before it is processed and efUND minted
+	MinAccepts uint64 `protobuf:"varint,3,opt,name=min_accepts,json=minAccepts,proto3" json:"min_accepts,omitempty"`
+	// decision_time_limit is the time limit within which all decisions must be made for a raised purchase order.
 	DecisionTimeLimit uint64 `protobuf:"varint,4,opt,name=decision_time_limit,json=decisionTimeLimit,proto3" json:"decision_time_limit,omitempty"`
 }
 

@@ -28,12 +28,18 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgRegisterWrkChain represents a message to register a new wrkchain
 type MsgRegisterWrkChain struct {
-	Moniker     string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
-	Name        string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// moniker is a short identifier for a wrkchain
+	Moniker string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
+	// name is a long name for a wrkchain
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// genesis_hash is a hash of the genesis block of the wrkchain
 	GenesisHash string `protobuf:"bytes,4,opt,name=genesis_hash,json=genesisHash,proto3" json:"genesis" yaml:"genesis"`
-	BaseType    string `protobuf:"bytes,5,opt,name=base_type,json=baseType,proto3" json:"type" yaml:"type"`
-	Owner       string `protobuf:"bytes,6,opt,name=owner,proto3" json:"owner,omitempty"`
+	// base_type is the type of wrkchain, e.g. geth, cosmos etc.
+	BaseType string `protobuf:"bytes,5,opt,name=base_type,json=baseType,proto3" json:"type" yaml:"type"`
+	// owner is the address of the owner of the wrkchain
+	Owner string `protobuf:"bytes,6,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *MsgRegisterWrkChain) Reset()         { *m = MsgRegisterWrkChain{} }
@@ -69,8 +75,9 @@ func (m *MsgRegisterWrkChain) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRegisterWrkChain proto.InternalMessageInfo
 
-// MsgRegisterBeaconResponse defines the Msg/RegisterBeacon response type.
+// MsgRegisterWrkChainResponse defines the Msg/RegisterWrkChain response type.
 type MsgRegisterWrkChainResponse struct {
+	// wrkchain_id is the id of the new wrkchain
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
 }
 
@@ -114,15 +121,24 @@ func (m *MsgRegisterWrkChainResponse) GetWrkchainId() uint64 {
 	return 0
 }
 
+// MsgRecordWrkChainBlock represents a message to submit a set of block hashes for a registered wrkchain
 type MsgRecordWrkChainBlock struct {
+	// wrkchain_id is the id of the wrkchain the hashes are being submitted for
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
-	Height     uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
-	BlockHash  string `protobuf:"bytes,3,opt,name=block_hash,json=blockHash,proto3" json:"blockhash" yaml:"blockhash"`
+	// height is the block height/number of the hashes being submitted
+	Height uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
+	// block_hash is the main block hash
+	BlockHash string `protobuf:"bytes,3,opt,name=block_hash,json=blockHash,proto3" json:"blockhash" yaml:"blockhash"`
+	// parent_hash is an optional parent block hash for the given height/block number
 	ParentHash string `protobuf:"bytes,4,opt,name=parent_hash,json=parentHash,proto3" json:"parenthash" yaml:"parenthash"`
-	Hash1      string `protobuf:"bytes,5,opt,name=hash1,proto3" json:"hash1,omitempty"`
-	Hash2      string `protobuf:"bytes,6,opt,name=hash2,proto3" json:"hash2,omitempty"`
-	Hash3      string `protobuf:"bytes,7,opt,name=hash3,proto3" json:"hash3,omitempty"`
-	Owner      string `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"`
+	// hash1 is an optional supplementary hash to be submitted, for example TxHash
+	Hash1 string `protobuf:"bytes,5,opt,name=hash1,proto3" json:"hash1,omitempty"`
+	// hash2 is an optional supplementary hash to be submitted, for example TxHash
+	Hash2 string `protobuf:"bytes,6,opt,name=hash2,proto3" json:"hash2,omitempty"`
+	// hash3 is an optional supplementary hash to be submitted, for example TxHash
+	Hash3 string `protobuf:"bytes,7,opt,name=hash3,proto3" json:"hash3,omitempty"`
+	// owner is the address of the owner of the wrkchain
+	Owner string `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *MsgRecordWrkChainBlock) Reset()         { *m = MsgRecordWrkChainBlock{} }
@@ -158,9 +174,12 @@ func (m *MsgRecordWrkChainBlock) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRecordWrkChainBlock proto.InternalMessageInfo
 
+// MsgRecordWrkChainBlockResponse defines the Msg/RecordWrkChainBlock response type.
 type MsgRecordWrkChainBlockResponse struct {
+	// wrkchain_id is the id of the wrkchain
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
-	Height     uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
+	// height is the height of the submitted block hashes
+	Height uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
 }
 
 func (m *MsgRecordWrkChainBlockResponse) Reset()         { *m = MsgRecordWrkChainBlockResponse{} }
@@ -269,8 +288,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// UndPurchaseOrder defines a method to create new purchase order.
+	// RegisterWrkChain defines a method to register a new wrkchain
 	RegisterWrkChain(ctx context.Context, in *MsgRegisterWrkChain, opts ...grpc.CallOption) (*MsgRegisterWrkChainResponse, error)
+	// RecordWrkChainBlock defines a method to record a block hash set for a registered wrkchain
 	RecordWrkChainBlock(ctx context.Context, in *MsgRecordWrkChainBlock, opts ...grpc.CallOption) (*MsgRecordWrkChainBlockResponse, error)
 }
 
@@ -302,8 +322,9 @@ func (c *msgClient) RecordWrkChainBlock(ctx context.Context, in *MsgRecordWrkCha
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// UndPurchaseOrder defines a method to create new purchase order.
+	// RegisterWrkChain defines a method to register a new wrkchain
 	RegisterWrkChain(context.Context, *MsgRegisterWrkChain) (*MsgRegisterWrkChainResponse, error)
+	// RecordWrkChainBlock defines a method to record a block hash set for a registered wrkchain
 	RecordWrkChainBlock(context.Context, *MsgRecordWrkChainBlock) (*MsgRecordWrkChainBlockResponse, error)
 }
 

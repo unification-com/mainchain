@@ -112,7 +112,9 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+// QueryBeaconRequest is the request type for the Query/Beacon RPC method
 type QueryBeaconRequest struct {
+	// beacon_id is the id of the beacon to query for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
 }
 
@@ -156,6 +158,7 @@ func (m *QueryBeaconRequest) GetBeaconId() uint64 {
 	return 0
 }
 
+// QueryBeaconResponse is the response type for the Query/Beacon RPC method
 type QueryBeaconResponse struct {
 	Beacon *Beacon `protobuf:"bytes,1,opt,name=beacon,proto3" json:"beacon,omitempty"`
 }
@@ -200,8 +203,11 @@ func (m *QueryBeaconResponse) GetBeacon() *Beacon {
 	return nil
 }
 
+// QueryBeaconTimestampRequest is the request type for the Query/BeaconTimestamp RPC method
 type QueryBeaconTimestampRequest struct {
-	BeaconId    uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
+	// beacon_id is the id of the beacon to query for
+	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
+	// timestamp_id is the id of the timestamp to query for
 	TimestampId uint64 `protobuf:"varint,2,opt,name=timestamp_id,json=timestampId,proto3" json:"timestamp_id,omitempty"`
 }
 
@@ -252,6 +258,7 @@ func (m *QueryBeaconTimestampRequest) GetTimestampId() uint64 {
 	return 0
 }
 
+// QueryBeaconTimestampResponse is the response type for the Query/BeaconTimestamp RPC method
 type QueryBeaconTimestampResponse struct {
 	Timestamp *BeaconTimestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	BeaconId  uint64           `protobuf:"varint,2,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
@@ -312,9 +319,13 @@ func (m *QueryBeaconTimestampResponse) GetOwner() string {
 	return ""
 }
 
+// QueryBeaconsFilteredRequest is the request type for the Query/BeaconsFiltered RPC method
 type QueryBeaconsFilteredRequest struct {
-	Moniker    string             `protobuf:"bytes,1,opt,name=moniker,proto3" json:"moniker,omitempty"`
-	Owner      string             `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	// moniker is the moniker of the beacon to search for
+	Moniker string `protobuf:"bytes,1,opt,name=moniker,proto3" json:"moniker,omitempty"`
+	// owner is an address to search for
+	Owner string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -351,8 +362,10 @@ func (m *QueryBeaconsFilteredRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBeaconsFilteredRequest proto.InternalMessageInfo
 
+// QueryBeaconsFilteredResponse is the response type for the Query/BeaconsFiltered RPC method
 type QueryBeaconsFilteredResponse struct {
-	Beacons    []Beacon            `protobuf:"bytes,1,rep,name=beacons,proto3" json:"beacons"`
+	Beacons []Beacon `protobuf:"bytes,1,rep,name=beacons,proto3" json:"beacons"`
+	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -473,9 +486,13 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
+	// Params queries the parameters of x/beacon module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Beacon queries the metadata of a beacon.
 	Beacon(ctx context.Context, in *QueryBeaconRequest, opts ...grpc.CallOption) (*QueryBeaconResponse, error)
+	// BeaconTimestamp queries a timestamp of a beacon
 	BeaconTimestamp(ctx context.Context, in *QueryBeaconTimestampRequest, opts ...grpc.CallOption) (*QueryBeaconTimestampResponse, error)
+	// BeaconsFiltered queries all beacon metadata for given search parameters
 	BeaconsFiltered(ctx context.Context, in *QueryBeaconsFilteredRequest, opts ...grpc.CallOption) (*QueryBeaconsFilteredResponse, error)
 }
 
@@ -525,9 +542,13 @@ func (c *queryClient) BeaconsFiltered(ctx context.Context, in *QueryBeaconsFilte
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
+	// Params queries the parameters of x/beacon module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Beacon queries the metadata of a beacon.
 	Beacon(context.Context, *QueryBeaconRequest) (*QueryBeaconResponse, error)
+	// BeaconTimestamp queries a timestamp of a beacon
 	BeaconTimestamp(context.Context, *QueryBeaconTimestampRequest) (*QueryBeaconTimestampResponse, error)
+	// BeaconsFiltered queries all beacon metadata for given search parameters
 	BeaconsFiltered(context.Context, *QueryBeaconsFilteredRequest) (*QueryBeaconsFilteredResponse, error)
 }
 

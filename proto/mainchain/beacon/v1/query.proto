@@ -8,19 +8,24 @@ import "mainchain/beacon/v1/beacon.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
+// Query defines the gRPC querier service.
 service Query {
+  // Params queries the parameters of x/beacon module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/mainchain/beacon/v1/params";
   }
 
+  // Beacon queries the metadata of a beacon.
   rpc Beacon(QueryBeaconRequest) returns (QueryBeaconResponse) {
     option (google.api.http).get = "/mainchain/beacon/v1/beacon/{beacon_id}";
   }
 
+  // BeaconTimestamp queries a timestamp of a beacon
   rpc BeaconTimestamp(QueryBeaconTimestampRequest) returns (QueryBeaconTimestampResponse) {
     option (google.api.http).get = "/mainchain/beacon/v1/beacon/{beacon_id}/timestamp/{timestamp_id}";
   }
 
+  // BeaconsFiltered queries all beacon metadata for given search parameters
   rpc BeaconsFiltered(QueryBeaconsFilteredRequest) returns (QueryBeaconsFilteredResponse) {
     option (google.api.http).get = "/mainchain/beacon/v1/beacons";
   }
@@ -34,35 +39,48 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryBeaconRequest is the request type for the Query/Beacon RPC method
 message QueryBeaconRequest {
+  // beacon_id is the id of the beacon to query for
   uint64 beacon_id = 1;
 }
 
+// QueryBeaconResponse is the response type for the Query/Beacon RPC method
 message QueryBeaconResponse {
   Beacon beacon = 1;
 }
 
+// QueryBeaconTimestampRequest is the request type for the Query/BeaconTimestamp RPC method
 message QueryBeaconTimestampRequest {
+  // beacon_id is the id of the beacon to query for
   uint64 beacon_id = 1;
+  // timestamp_id is the id of the timestamp to query for
   uint64 timestamp_id = 2;
 }
 
+// QueryBeaconTimestampResponse is the response type for the Query/BeaconTimestamp RPC method
 message QueryBeaconTimestampResponse {
   BeaconTimestamp timestamp = 1;
   uint64 beacon_id = 2;
   string owner = 3;
 }
 
+// QueryBeaconsFilteredRequest is the request type for the Query/BeaconsFiltered RPC method
 message QueryBeaconsFilteredRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
+  // moniker is the moniker of the beacon to search for
   string moniker = 1;
+  // owner is an address to search for
   string owner = 2;
+  // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
+// QueryBeaconsFilteredResponse is the response type for the Query/BeaconsFiltered RPC method
 message QueryBeaconsFilteredResponse {
   repeated Beacon beacons = 1 [(gogoproto.nullable) = false];
+  // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

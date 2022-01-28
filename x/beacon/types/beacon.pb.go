@@ -23,6 +23,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Beacon holds metadata about a registered beacon
 type Beacon struct {
 	BeaconId        uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
 	Moniker         string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
@@ -123,6 +124,7 @@ func (m *Beacon) GetOwner() string {
 	return ""
 }
 
+// BeaconTimestamp holds each hash submitted to a registered beacon
 type BeaconTimestamp struct {
 	TimestampId uint64 `protobuf:"varint,1,opt,name=timestamp_id,json=timestampId,proto3" json:"timestamp_id,omitempty"`
 	SubmitTime  uint64 `protobuf:"varint,2,opt,name=submit_time,json=submitTime,proto3" json:"submit_time,omitempty"`
@@ -183,6 +185,7 @@ func (m *BeaconTimestamp) GetHash() string {
 	return ""
 }
 
+// Params defines the parameters for the beacon module.
 type Params struct {
 	FeeRegister uint64 `protobuf:"varint,1,opt,name=fee_register,json=feeRegister,proto3" json:"fee_register,omitempty"`
 	FeeRecord   uint64 `protobuf:"varint,2,opt,name=fee_record,json=feeRecord,proto3" json:"fee_record,omitempty"`

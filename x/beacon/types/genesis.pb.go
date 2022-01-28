@@ -85,6 +85,8 @@ func (m *GenesisState) GetRegisteredBeacons() BeaconExports {
 	return nil
 }
 
+// BeaconTimestampGenesisExport is a trimmed version of BeaconTimestamp
+// for genesis exports to conserve space
 type BeaconTimestampGenesisExport struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	T  uint64 `protobuf:"varint,2,opt,name=t,proto3" json:"t,omitempty"`
@@ -145,6 +147,7 @@ func (m *BeaconTimestampGenesisExport) GetH() string {
 	return ""
 }
 
+// BeaconExport holds genesis export data for a beacon, including submitted timestamps
 type BeaconExport struct {
 	Beacon     Beacon                        `protobuf:"bytes,1,opt,name=beacon,proto3" json:"beacon"`
 	Timestamps BeaconTimestampGenesisExports `protobuf:"bytes,2,rep,name=timestamps,proto3,castrepeated=BeaconTimestampGenesisExports" json:"timestamps"`

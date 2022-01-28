@@ -6,7 +6,9 @@ info:
 paths:
   /mainchain/enterprise/v1/account/{address}:
     get:
-      summary: Queries an account address for their locked FUND
+      summary: >-
+        EnterpriseAccount queries an account address for their locked FUND and
+        other data
       operationId: EnterpriseAccount
       responses:
         '200':
@@ -19,7 +21,11 @@ paths:
                 properties:
                   owner:
                     type: string
+                    title: owner is the address of the account
                   locked:
+                    title: >-
+                      locked is the amount the account currently has locked and
+                      available to pay for beacon/wrkchain fees
                     type: object
                     properties:
                       denom:
@@ -35,6 +41,9 @@ paths:
 
                       signatures required by gogoproto.
                   unlocked:
+                    title: >-
+                      unlocked is the amount currently unlocked - i.e. standard
+                      FUND in general supply
                     type: object
                     properties:
                       denom:
@@ -50,6 +59,7 @@ paths:
 
                       signatures required by gogoproto.
                   total:
+                    title: total is the sum of locked and unlocked FUND
                     type: object
                     properties:
                       denom:
@@ -64,6 +74,10 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                title: EnterpriseUserAccount defines data about an enterprise user
+            description: >-
+              QueryEnterpriseAccountResponse is the response type for the
+              Query/EnterpriseAccount RPC method.
         default:
           description: An unexpected error response
           schema:
@@ -88,6 +102,7 @@ paths:
                       format: byte
       parameters:
         - name: address
+          description: address is the address to query
           in: path
           required: true
           type: string
@@ -96,8 +111,8 @@ paths:
   /mainchain/enterprise/v1/ent_supply:
     get:
       summary: >-
-        Get Enterprise supply, including locked Ent. FUND. Just returns nund
-        data
+        EnterpriseSupply queries the chain's supply, including locked Ent. FUND.
+        Only returns nund data
       operationId: EnterpriseSupply
       responses:
         '200':
@@ -110,15 +125,23 @@ paths:
                 properties:
                   denom:
                     type: string
+                    title: denom is the denomination, e.g. nund
                   amount:
                     type: string
                     format: uint64
+                    title: amount is the amount of unlocked FUND in general supply
                   locked:
                     type: string
                     format: uint64
+                    title: locked is the amount of locked FUND
                   total:
                     type: string
                     format: uint64
+                    title: amount is the sum of locked and unlocked FUND
+                title: UndSupply defines the current FUND supply, including locked
+            title: >-
+              QueryEnterpriseSupplyResponse is the response type for the
+              Query/EnterpriseSupply RPC method
         default:
           description: An unexpected error response
           schema:
@@ -145,7 +168,7 @@ paths:
         - Enterprise
   /mainchain/enterprise/v1/locked:
     get:
-      summary: Get total locked FUND
+      summary: TotalLocked queries the total locked FUND
       operationId: TotalLocked
       responses:
         '200':
@@ -168,6 +191,9 @@ paths:
                   method
 
                   signatures required by gogoproto.
+            title: >-
+              QueryTotalLockedResponse is the response type for the
+              Query/TotalLocked RPC method
         default:
           description: An unexpected error response
           schema:
@@ -194,7 +220,7 @@ paths:
         - Enterprise
   /mainchain/enterprise/v1/locked/{owner}:
     get:
-      summary: Queries an account address for their locked FUND
+      summary: LockedUndByAddress queries an account address for their locked FUND
       operationId: LockedUndByAddress
       responses:
         '200':
@@ -209,6 +235,7 @@ paths:
                 properties:
                   owner:
                     type: string
+                    title: owner is the address of the locked FUND owner
                   amount:
                     type: object
                     properties:
@@ -224,6 +251,13 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                    title: >-
+                      amount is the amount currently locked and available to pay
+                      for beacon/wrkchain fees
+                title: LockedUnd defines the amount of locked FUND for an account
+            title: >-
+              QueryLockedUndByAddressResponse is the response type for the
+              Query/LockedUndByAddress RPC method
         default:
           description: An unexpected error response
           schema:
@@ -248,6 +282,7 @@ paths:
                       format: byte
       parameters:
         - name: owner
+          description: owner is the address to query
           in: path
           required: true
           type: string
@@ -255,6 +290,7 @@ paths:
         - Enterprise
   /mainchain/enterprise/v1/params:
     get:
+      summary: Params queries the parameters of x/enterprise module.
       operationId: EnterpriseParams
       responses:
         '200':
@@ -267,14 +303,25 @@ paths:
                 properties:
                   ent_signers:
                     type: string
+                    title: >-
+                      ent_signers is a list of addresses authorised to make
+                      decisions on raised purchase orders
                   denom:
                     type: string
+                    title: denom is the denomination of eFUND, e.g. nund
                   min_accepts:
                     type: string
                     format: uint64
+                    title: >-
+                      min_accepts is the minumum number of ent_signers required
+                      to accept a PO before it is processed and efUND minted
                   decision_time_limit:
                     type: string
                     format: uint64
+                    description: >-
+                      decision_time_limit is the time limit within which all
+                      decisions must be made for a raised purchase order.
+                description: Params defines the parameters for the enterprise module.
             title: >-
               QueryParamsResponse is the response type for the Query/Params RPC
               method
@@ -304,7 +351,7 @@ paths:
         - Enterprise
   /mainchain/enterprise/v1/pos:
     get:
-      summary: Purchase Order queries proposal details based on PurchaseOrderId.
+      summary: EnterpriseUndPurchaseOrders queries all current purchase orders.
       operationId: EnterpriseUndPurchaseOrders
       responses:
         '200':
@@ -320,8 +367,12 @@ paths:
                     id:
                       type: string
                       format: uint64
+                      title: id is the purchase order ID
                     purchaser:
                       type: string
+                      title: >-
+                        purchaser is the address of the user who raised the
+                        order
                     amount:
                       type: object
                       properties:
@@ -337,7 +388,9 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
+                      title: amount is the amount being raised for
                     status:
+                      title: status is the current PurchaseOrderStatus
                       type: string
                       enum:
                         - STATUS_NIL
@@ -346,12 +399,27 @@ paths:
                         - STATUS_REJECTED
                         - STATUS_COMPLETED
                       default: STATUS_NIL
+                      description: >-
+                        PurchaseOrderStatus enumerates the valid statuses for a
+                        given purchase order.
+
+                         - STATUS_NIL: STATUS_NIL defines a no-op status.
+                         - STATUS_RAISED: STATUS_RAISED defines a raised status.
+                         - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+                         - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+                         - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
                     raise_time:
                       type: string
                       format: uint64
+                      title: >-
+                        raise_time is a unix epoch value of the order submission
+                        time
                     completion_time:
                       type: string
                       format: uint64
+                      title: >-
+                        completion_time is a unix epoch value of the time the
+                        order was completed
                     decisions:
                       type: array
                       items:
@@ -359,7 +427,11 @@ paths:
                         properties:
                           signer:
                             type: string
+                            title: >-
+                              signer is an authorised address for making
+                              decisions
                           decision:
+                            title: decision is the decision made, i.e. accept/reject
                             type: string
                             enum:
                               - STATUS_NIL
@@ -368,11 +440,35 @@ paths:
                               - STATUS_REJECTED
                               - STATUS_COMPLETED
                             default: STATUS_NIL
+                            description: >-
+                              PurchaseOrderStatus enumerates the valid statuses
+                              for a given purchase order.
+
+                               - STATUS_NIL: STATUS_NIL defines a no-op status.
+                               - STATUS_RAISED: STATUS_RAISED defines a raised status.
+                               - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+                               - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+                               - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
                           decision_time:
                             type: string
                             format: uint64
-                title: info is the signing info of all validators
+                            title: >-
+                              decision_time is a unix epoch value of the
+                              decision submission time
+                        title: >-
+                          PurchaseOrderDecision defines a decision made for a
+                          given purchase order, ie,
+
+                          whether to accept or reject
+                      title: >-
+                        decisions is an array of decisions made by authorised
+                        addresses
+                  title: >-
+                    EnterpriseUndPurchaseOrder defines a purchase order raised
+                    by a whitelisted address
+                title: purchase_orders is the list of all purchase orders
               pagination:
+                description: pagination defines the pagination in the response.
                 type: object
                 properties:
                   next_key:
@@ -389,19 +485,9 @@ paths:
                       PageRequest.count_total
 
                       was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
             title: >-
               QueryEnterpriseUndPurchaseOrdersResponse is the response type for
-              the Query/PurchaseOrders RPC
+              the Query/EnterpriseUndPurchaseOrders RPC
 
               method
         default:
@@ -479,6 +565,12 @@ paths:
           required: false
           type: string
         - name: status
+          description: |2-
+             - STATUS_NIL: STATUS_NIL defines a no-op status.
+             - STATUS_RAISED: STATUS_RAISED defines a raised status.
+             - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+             - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+             - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
           in: query
           required: false
           type: string
@@ -493,7 +585,9 @@ paths:
         - Enterprise
   /mainchain/enterprise/v1/pos/{purchase_order_id}:
     get:
-      summary: Purchase Order queries proposal details based on PurchaseOrderId.
+      summary: >-
+        EnterpriseUndPurchaseOrder queries purchase order details based on
+        PurchaseOrderId.
       operationId: EnterpriseUndPurchaseOrder
       responses:
         '200':
@@ -507,8 +601,10 @@ paths:
                   id:
                     type: string
                     format: uint64
+                    title: id is the purchase order ID
                   purchaser:
                     type: string
+                    title: purchaser is the address of the user who raised the order
                   amount:
                     type: object
                     properties:
@@ -524,7 +620,9 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
+                    title: amount is the amount being raised for
                   status:
+                    title: status is the current PurchaseOrderStatus
                     type: string
                     enum:
                       - STATUS_NIL
@@ -533,12 +631,27 @@ paths:
                       - STATUS_REJECTED
                       - STATUS_COMPLETED
                     default: STATUS_NIL
+                    description: >-
+                      PurchaseOrderStatus enumerates the valid statuses for a
+                      given purchase order.
+
+                       - STATUS_NIL: STATUS_NIL defines a no-op status.
+                       - STATUS_RAISED: STATUS_RAISED defines a raised status.
+                       - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+                       - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+                       - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
                   raise_time:
                     type: string
                     format: uint64
+                    title: >-
+                      raise_time is a unix epoch value of the order submission
+                      time
                   completion_time:
                     type: string
                     format: uint64
+                    title: >-
+                      completion_time is a unix epoch value of the time the
+                      order was completed
                   decisions:
                     type: array
                     items:
@@ -546,7 +659,9 @@ paths:
                       properties:
                         signer:
                           type: string
+                          title: signer is an authorised address for making decisions
                         decision:
+                          title: decision is the decision made, i.e. accept/reject
                           type: string
                           enum:
                             - STATUS_NIL
@@ -555,12 +670,35 @@ paths:
                             - STATUS_REJECTED
                             - STATUS_COMPLETED
                           default: STATUS_NIL
+                          description: >-
+                            PurchaseOrderStatus enumerates the valid statuses
+                            for a given purchase order.
+
+                             - STATUS_NIL: STATUS_NIL defines a no-op status.
+                             - STATUS_RAISED: STATUS_RAISED defines a raised status.
+                             - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+                             - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+                             - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
                         decision_time:
                           type: string
                           format: uint64
+                          title: >-
+                            decision_time is a unix epoch value of the decision
+                            submission time
+                      title: >-
+                        PurchaseOrderDecision defines a decision made for a
+                        given purchase order, ie,
+
+                        whether to accept or reject
+                    title: >-
+                      decisions is an array of decisions made by authorised
+                      addresses
+                title: >-
+                  EnterpriseUndPurchaseOrder defines a purchase order raised by
+                  a whitelisted address
             description: >-
               QueryEnterpriseUndPurchaseOrderResponse is the response type for
-              the Query/PO RPC method.
+              the Query/EnterpriseUndPurchaseOrder RPC method.
         default:
           description: An unexpected error response
           schema:
@@ -595,10 +733,10 @@ paths:
   /mainchain/enterprise/v1/supply:
     get:
       summary: >-
-        Should be used in place of /cosmos/bank/v1beta1/supply to get true total
-        supply,
+        TotalSupply should be used instead of /cosmos/bank/v1beta1/supply to get
+        true total supply available
 
-        with locked eFUND removed from total for nund
+        for general use, i.e. with locked eFUND removed from total for nund
       operationId: TotalSupply
       responses:
         '200':
@@ -623,6 +761,9 @@ paths:
                     method
 
                     signatures required by gogoproto.
+            title: >-
+              QueryTotalSupplyResponse is the response type for the
+              Query/TotalSupply RPC method
         default:
           description: An unexpected error response
           schema:
@@ -650,8 +791,8 @@ paths:
   /mainchain/enterprise/v1/supply/{denom}:
     get:
       summary: >-
-        Should be used in place of /cosmos/bank/v1beta1/supply to get true total
-        supply,
+        SupplyOf should be used in place of /cosmos/bank/v1beta1/supply to get
+        true total supply,
 
         with locked eFUND removed from total for nund
       operationId: SupplyOf
@@ -711,7 +852,7 @@ paths:
         - Enterprise
   /mainchain/enterprise/v1/unlocked:
     get:
-      summary: Get total Unlocked FUND
+      summary: TotalUnlocked queries the total Unlocked FUND
       operationId: TotalUnlocked
       responses:
         '200':
@@ -734,6 +875,9 @@ paths:
                   method
 
                   signatures required by gogoproto.
+            title: >-
+              QueryTotalUnlockedResponse is the response type for the
+              Query/TotalUnlocked RPC method
         default:
           description: An unexpected error response
           schema:
@@ -760,7 +904,9 @@ paths:
         - Enterprise
   /mainchain/enterprise/v1/whitelist:
     get:
-      summary: Query whitelisted addresses
+      summary: >-
+        Whitelist queries whitelisted addresses authorised to raise new purchase
+        orders
       operationId: Whitelist
       responses:
         '200':
@@ -772,6 +918,9 @@ paths:
                 type: array
                 items:
                   type: string
+            description: >-
+              QueryWhitelistResponse is the response type for the
+              Query/Whitelist RPC method.
         default:
           description: An unexpected error response
           schema:
@@ -798,6 +947,9 @@ paths:
         - Enterprise
   /mainchain/enterprise/v1/whitelist/{address}:
     get:
+      summary: >-
+        Whitelisted queries whether or not the given address is authorised to
+        raise new purchase orders
       operationId: Whitelisted
       responses:
         '200':
@@ -810,6 +962,9 @@ paths:
               whitelisted:
                 type: boolean
                 format: boolean
+            description: >-
+              QueryWhitelistedResponse is the response type for the
+              Query/Whitelisted RPC method.
         default:
           description: An unexpected error response
           schema:
@@ -834,6 +989,7 @@ paths:
                       format: byte
       parameters:
         - name: address
+          description: address is the address to query
           in: path
           required: true
           type: string
@@ -841,6 +997,7 @@ paths:
         - Enterprise
   /mainchain/beacon/v1/beacon/{beacon_id}:
     get:
+      summary: Beacon queries the metadata of a beacon.
       operationId: Beacon
       responses:
         '200':
@@ -861,8 +1018,21 @@ paths:
                   last_timestamp_id:
                     type: string
                     format: uint64
+                  first_id_in_state:
+                    type: string
+                    format: uint64
+                  num_in_state:
+                    type: string
+                    format: uint64
+                  reg_time:
+                    type: string
+                    format: uint64
                   owner:
                     type: string
+                title: Beacon holds metadata about a registered beacon
+            title: >-
+              QueryBeaconResponse is the response type for the Query/Beacon RPC
+              method
         default:
           description: An unexpected error response
           schema:
@@ -887,6 +1057,7 @@ paths:
                       format: byte
       parameters:
         - name: beacon_id
+          description: beacon_id is the id of the beacon to query for
           in: path
           required: true
           type: string
@@ -895,6 +1066,7 @@ paths:
         - BEACON
   /mainchain/beacon/v1/beacon/{beacon_id}/timestamp/{timestamp_id}:
     get:
+      summary: BeaconTimestamp queries a timestamp of a beacon
       operationId: BeaconTimestamp
       responses:
         '200':
@@ -905,9 +1077,6 @@ paths:
               timestamp:
                 type: object
                 properties:
-                  beacon_id:
-                    type: string
-                    format: uint64
                   timestamp_id:
                     type: string
                     format: uint64
@@ -916,8 +1085,17 @@ paths:
                     format: uint64
                   hash:
                     type: string
-                  owner:
-                    type: string
+                title: >-
+                  BeaconTimestamp holds each hash submitted to a registered
+                  beacon
+              beacon_id:
+                type: string
+                format: uint64
+              owner:
+                type: string
+            title: >-
+              QueryBeaconTimestampResponse is the response type for the
+              Query/BeaconTimestamp RPC method
         default:
           description: An unexpected error response
           schema:
@@ -942,11 +1120,13 @@ paths:
                       format: byte
       parameters:
         - name: beacon_id
+          description: beacon_id is the id of the beacon to query for
           in: path
           required: true
           type: string
           format: uint64
         - name: timestamp_id
+          description: timestamp_id is the id of the timestamp to query for
           in: path
           required: true
           type: string
@@ -955,6 +1135,7 @@ paths:
         - BEACON
   /mainchain/beacon/v1/beacons:
     get:
+      summary: BeaconsFiltered queries all beacon metadata for given search parameters
       operationId: BeaconsFiltered
       responses:
         '200':
@@ -977,9 +1158,20 @@ paths:
                     last_timestamp_id:
                       type: string
                       format: uint64
+                    first_id_in_state:
+                      type: string
+                      format: uint64
+                    num_in_state:
+                      type: string
+                      format: uint64
+                    reg_time:
+                      type: string
+                      format: uint64
                     owner:
                       type: string
+                  title: Beacon holds metadata about a registered beacon
               pagination:
+                description: pagination defines the pagination in the response.
                 type: object
                 properties:
                   next_key:
@@ -996,16 +1188,9 @@ paths:
                       PageRequest.count_total
 
                       was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
+            title: >-
+              QueryBeaconsFilteredResponse is the response type for the
+              Query/BeaconsFiltered RPC method
         default:
           description: An unexpected error response
           schema:
@@ -1030,10 +1215,12 @@ paths:
                       format: byte
       parameters:
         - name: moniker
+          description: moniker is the moniker of the beacon to search for.
           in: query
           required: false
           type: string
         - name: owner
+          description: owner is an address to search for.
           in: query
           required: false
           type: string
@@ -1088,6 +1275,7 @@ paths:
         - BEACON
   /mainchain/beacon/v1/params:
     get:
+      summary: Params queries the parameters of x/beacon module.
       operationId: BeaconParams
       responses:
         '200':
@@ -1106,6 +1294,7 @@ paths:
                     format: uint64
                   denom:
                     type: string
+                description: Params defines the parameters for the beacon module.
             title: >-
               QueryParamsResponse is the response type for the Query/Params RPC
               method
@@ -1135,6 +1324,7 @@ paths:
         - BEACON
   /mainchain/wrkchain/v1/params:
     get:
+      summary: Params queries the parameters of x/wrkchain module.
       operationId: WrkchainParams
       responses:
         '200':
@@ -1153,6 +1343,7 @@ paths:
                     format: uint64
                   denom:
                     type: string
+                description: Params defines the parameters for the wrkchain module.
             title: >-
               QueryParamsResponse is the response type for the Query/Params RPC
               method
@@ -1182,6 +1373,7 @@ paths:
         - WrkChain
   /mainchain/wrkchain/v1/wrkchain/{wrkchain_id}:
     get:
+      summary: WrkChain queries the metadata of a wrkchain.
       operationId: WrkChain
       responses:
         '200':
@@ -1209,11 +1401,18 @@ paths:
                   num_blocks:
                     type: string
                     format: uint64
+                  lowest_height:
+                    type: string
+                    format: uint64
                   reg_time:
                     type: string
                     format: uint64
                   owner:
                     type: string
+                title: WrkChain holds metadata about a registered wrkchain
+            title: >-
+              QueryWrkChainResponse is the response type for the Query/WrkChain
+              RPC method
         default:
           description: An unexpected error response
           schema:
@@ -1238,6 +1437,7 @@ paths:
                       format: byte
       parameters:
         - name: wrkchain_id
+          description: wrkchain_id is the id of the wrkchain to query for
           in: path
           required: true
           type: string
@@ -1246,6 +1446,7 @@ paths:
         - WrkChain
   /mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{height}:
     get:
+      summary: WrkChainBlock queries a submitted hash of a wrkchain
       operationId: WrkChainBlock
       responses:
         '200':
@@ -1256,9 +1457,6 @@ paths:
               block:
                 type: object
                 properties:
-                  wrkchain_id:
-                    type: string
-                    format: uint64
                   height:
                     type: string
                     format: uint64
@@ -1275,8 +1473,17 @@ paths:
                   sub_time:
                     type: string
                     format: uint64
-                  owner:
-                    type: string
+                title: >-
+                  WrkChainBlock holds data about a wrkchain's block hash
+                  submission
+              wrkchain_id:
+                type: string
+                format: uint64
+              owner:
+                type: string
+            title: >-
+              QueryWrkChainBlockResponse is the response type for the
+              Query/WrkChainBlock RPC method
         default:
           description: An unexpected error response
           schema:
@@ -1301,11 +1508,13 @@ paths:
                       format: byte
       parameters:
         - name: wrkchain_id
+          description: wrkchain_id is the id of the wrkchain to query for
           in: path
           required: true
           type: string
           format: uint64
         - name: height
+          description: height is the block number of the hash to query for
           in: path
           required: true
           type: string
@@ -1314,6 +1523,9 @@ paths:
         - WrkChain
   /mainchain/wrkchain/v1/wrkchains:
     get:
+      summary: >-
+        WrkChainsFiltered queries all wrkchain metadata for given search
+        parameters
       operationId: WrkChainsFiltered
       responses:
         '200':
@@ -1343,12 +1555,17 @@ paths:
                     num_blocks:
                       type: string
                       format: uint64
+                    lowest_height:
+                      type: string
+                      format: uint64
                     reg_time:
                       type: string
                       format: uint64
                     owner:
                       type: string
+                  title: WrkChain holds metadata about a registered wrkchain
               pagination:
+                description: pagination defines the pagination in the response.
                 type: object
                 properties:
                   next_key:
@@ -1365,16 +1582,9 @@ paths:
                       PageRequest.count_total
 
                       was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
+            title: >-
+              QueryWrkChainsFilteredResponse is the response type for the
+              Query/WrkChainsFiltered RPC method
         default:
           description: An unexpected error response
           schema:
@@ -1399,10 +1609,12 @@ paths:
                       format: byte
       parameters:
         - name: moniker
+          description: moniker is the moniker of the wrkchain to search for.
           in: query
           required: false
           type: string
         - name: owner
+          description: owner is an address to search for.
           in: query
           required: false
           type: string
@@ -23055,8 +23267,10 @@ definitions:
       id:
         type: string
         format: uint64
+        title: id is the purchase order ID
       purchaser:
         type: string
+        title: purchaser is the address of the user who raised the order
       amount:
         type: object
         properties:
@@ -23069,7 +23283,9 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+        title: amount is the amount being raised for
       status:
+        title: status is the current PurchaseOrderStatus
         type: string
         enum:
           - STATUS_NIL
@@ -23078,12 +23294,25 @@ definitions:
           - STATUS_REJECTED
           - STATUS_COMPLETED
         default: STATUS_NIL
+        description: >-
+          PurchaseOrderStatus enumerates the valid statuses for a given purchase
+          order.
+
+           - STATUS_NIL: STATUS_NIL defines a no-op status.
+           - STATUS_RAISED: STATUS_RAISED defines a raised status.
+           - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+           - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+           - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
       raise_time:
         type: string
         format: uint64
+        title: raise_time is a unix epoch value of the order submission time
       completion_time:
         type: string
         format: uint64
+        title: >-
+          completion_time is a unix epoch value of the time the order was
+          completed
       decisions:
         type: array
         items:
@@ -23091,7 +23320,9 @@ definitions:
           properties:
             signer:
               type: string
+              title: signer is an authorised address for making decisions
             decision:
+              title: decision is the decision made, i.e. accept/reject
               type: string
               enum:
                 - STATUS_NIL
@@ -23100,15 +23331,40 @@ definitions:
                 - STATUS_REJECTED
                 - STATUS_COMPLETED
               default: STATUS_NIL
+              description: >-
+                PurchaseOrderStatus enumerates the valid statuses for a given
+                purchase order.
+
+                 - STATUS_NIL: STATUS_NIL defines a no-op status.
+                 - STATUS_RAISED: STATUS_RAISED defines a raised status.
+                 - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+                 - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+                 - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
             decision_time:
               type: string
               format: uint64
+              title: >-
+                decision_time is a unix epoch value of the decision submission
+                time
+          title: >-
+            PurchaseOrderDecision defines a decision made for a given purchase
+            order, ie,
+
+            whether to accept or reject
+        title: decisions is an array of decisions made by authorised addresses
+    title: >-
+      EnterpriseUndPurchaseOrder defines a purchase order raised by a
+      whitelisted address
   mainchain.enterprise.v1.EnterpriseUserAccount:
     type: object
     properties:
       owner:
         type: string
+        title: owner is the address of the account
       locked:
+        title: >-
+          locked is the amount the account currently has locked and available to
+          pay for beacon/wrkchain fees
         type: object
         properties:
           denom:
@@ -23121,6 +23377,9 @@ definitions:
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
       unlocked:
+        title: >-
+          unlocked is the amount currently unlocked - i.e. standard FUND in
+          general supply
         type: object
         properties:
           denom:
@@ -23133,6 +23392,7 @@ definitions:
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
       total:
+        title: total is the sum of locked and unlocked FUND
         type: object
         properties:
           denom:
@@ -23144,11 +23404,13 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+    title: EnterpriseUserAccount defines data about an enterprise user
   mainchain.enterprise.v1.LockedUnd:
     type: object
     properties:
       owner:
         type: string
+        title: owner is the address of the locked FUND owner
       amount:
         type: object
         properties:
@@ -23161,25 +23423,42 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+        title: >-
+          amount is the amount currently locked and available to pay for
+          beacon/wrkchain fees
+    title: LockedUnd defines the amount of locked FUND for an account
   mainchain.enterprise.v1.Params:
     type: object
     properties:
       ent_signers:
         type: string
+        title: >-
+          ent_signers is a list of addresses authorised to make decisions on
+          raised purchase orders
       denom:
         type: string
+        title: denom is the denomination of eFUND, e.g. nund
       min_accepts:
         type: string
         format: uint64
+        title: >-
+          min_accepts is the minumum number of ent_signers required to accept a
+          PO before it is processed and efUND minted
       decision_time_limit:
         type: string
         format: uint64
+        description: >-
+          decision_time_limit is the time limit within which all decisions must
+          be made for a raised purchase order.
+    description: Params defines the parameters for the enterprise module.
   mainchain.enterprise.v1.PurchaseOrderDecision:
     type: object
     properties:
       signer:
         type: string
+        title: signer is an authorised address for making decisions
       decision:
+        title: decision is the decision made, i.e. accept/reject
         type: string
         enum:
           - STATUS_NIL
@@ -23188,9 +23467,24 @@ definitions:
           - STATUS_REJECTED
           - STATUS_COMPLETED
         default: STATUS_NIL
+        description: >-
+          PurchaseOrderStatus enumerates the valid statuses for a given purchase
+          order.
+
+           - STATUS_NIL: STATUS_NIL defines a no-op status.
+           - STATUS_RAISED: STATUS_RAISED defines a raised status.
+           - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+           - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+           - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
       decision_time:
         type: string
         format: uint64
+        title: decision_time is a unix epoch value of the decision submission time
+    title: >-
+      PurchaseOrderDecision defines a decision made for a given purchase order,
+      ie,
+
+      whether to accept or reject
   mainchain.enterprise.v1.PurchaseOrderStatus:
     type: string
     enum:
@@ -23200,6 +23494,15 @@ definitions:
       - STATUS_REJECTED
       - STATUS_COMPLETED
     default: STATUS_NIL
+    description: >-
+      PurchaseOrderStatus enumerates the valid statuses for a given purchase
+      order.
+
+       - STATUS_NIL: STATUS_NIL defines a no-op status.
+       - STATUS_RAISED: STATUS_RAISED defines a raised status.
+       - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+       - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+       - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
   mainchain.enterprise.v1.QueryEnterpriseAccountResponse:
     type: object
     properties:
@@ -23208,7 +23511,11 @@ definitions:
         properties:
           owner:
             type: string
+            title: owner is the address of the account
           locked:
+            title: >-
+              locked is the amount the account currently has locked and
+              available to pay for beacon/wrkchain fees
             type: object
             properties:
               denom:
@@ -23224,6 +23531,9 @@ definitions:
 
               signatures required by gogoproto.
           unlocked:
+            title: >-
+              unlocked is the amount currently unlocked - i.e. standard FUND in
+              general supply
             type: object
             properties:
               denom:
@@ -23239,6 +23549,7 @@ definitions:
 
               signatures required by gogoproto.
           total:
+            title: total is the sum of locked and unlocked FUND
             type: object
             properties:
               denom:
@@ -23253,6 +23564,10 @@ definitions:
               method
 
               signatures required by gogoproto.
+        title: EnterpriseUserAccount defines data about an enterprise user
+    description: >-
+      QueryEnterpriseAccountResponse is the response type for the
+      Query/EnterpriseAccount RPC method.
   mainchain.enterprise.v1.QueryEnterpriseSupplyResponse:
     type: object
     properties:
@@ -23261,15 +23576,23 @@ definitions:
         properties:
           denom:
             type: string
+            title: denom is the denomination, e.g. nund
           amount:
             type: string
             format: uint64
+            title: amount is the amount of unlocked FUND in general supply
           locked:
             type: string
             format: uint64
+            title: locked is the amount of locked FUND
           total:
             type: string
             format: uint64
+            title: amount is the sum of locked and unlocked FUND
+        title: UndSupply defines the current FUND supply, including locked
+    title: >-
+      QueryEnterpriseSupplyResponse is the response type for the
+      Query/EnterpriseSupply RPC method
   mainchain.enterprise.v1.QueryEnterpriseUndPurchaseOrderResponse:
     type: object
     properties:
@@ -23279,8 +23602,10 @@ definitions:
           id:
             type: string
             format: uint64
+            title: id is the purchase order ID
           purchaser:
             type: string
+            title: purchaser is the address of the user who raised the order
           amount:
             type: object
             properties:
@@ -23296,7 +23621,9 @@ definitions:
               method
 
               signatures required by gogoproto.
+            title: amount is the amount being raised for
           status:
+            title: status is the current PurchaseOrderStatus
             type: string
             enum:
               - STATUS_NIL
@@ -23305,12 +23632,25 @@ definitions:
               - STATUS_REJECTED
               - STATUS_COMPLETED
             default: STATUS_NIL
+            description: >-
+              PurchaseOrderStatus enumerates the valid statuses for a given
+              purchase order.
+
+               - STATUS_NIL: STATUS_NIL defines a no-op status.
+               - STATUS_RAISED: STATUS_RAISED defines a raised status.
+               - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+               - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+               - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
           raise_time:
             type: string
             format: uint64
+            title: raise_time is a unix epoch value of the order submission time
           completion_time:
             type: string
             format: uint64
+            title: >-
+              completion_time is a unix epoch value of the time the order was
+              completed
           decisions:
             type: array
             items:
@@ -23318,7 +23658,9 @@ definitions:
               properties:
                 signer:
                   type: string
+                  title: signer is an authorised address for making decisions
                 decision:
+                  title: decision is the decision made, i.e. accept/reject
                   type: string
                   enum:
                     - STATUS_NIL
@@ -23327,12 +23669,33 @@ definitions:
                     - STATUS_REJECTED
                     - STATUS_COMPLETED
                   default: STATUS_NIL
+                  description: >-
+                    PurchaseOrderStatus enumerates the valid statuses for a
+                    given purchase order.
+
+                     - STATUS_NIL: STATUS_NIL defines a no-op status.
+                     - STATUS_RAISED: STATUS_RAISED defines a raised status.
+                     - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+                     - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+                     - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
                 decision_time:
                   type: string
                   format: uint64
+                  title: >-
+                    decision_time is a unix epoch value of the decision
+                    submission time
+              title: >-
+                PurchaseOrderDecision defines a decision made for a given
+                purchase order, ie,
+
+                whether to accept or reject
+            title: decisions is an array of decisions made by authorised addresses
+        title: >-
+          EnterpriseUndPurchaseOrder defines a purchase order raised by a
+          whitelisted address
     description: >-
       QueryEnterpriseUndPurchaseOrderResponse is the response type for the
-      Query/PO RPC method.
+      Query/EnterpriseUndPurchaseOrder RPC method.
   mainchain.enterprise.v1.QueryEnterpriseUndPurchaseOrdersResponse:
     type: object
     properties:
@@ -23344,8 +23707,10 @@ definitions:
             id:
               type: string
               format: uint64
+              title: id is the purchase order ID
             purchaser:
               type: string
+              title: purchaser is the address of the user who raised the order
             amount:
               type: object
               properties:
@@ -23361,7 +23726,9 @@ definitions:
                 method
 
                 signatures required by gogoproto.
+              title: amount is the amount being raised for
             status:
+              title: status is the current PurchaseOrderStatus
               type: string
               enum:
                 - STATUS_NIL
@@ -23370,12 +23737,25 @@ definitions:
                 - STATUS_REJECTED
                 - STATUS_COMPLETED
               default: STATUS_NIL
+              description: >-
+                PurchaseOrderStatus enumerates the valid statuses for a given
+                purchase order.
+
+                 - STATUS_NIL: STATUS_NIL defines a no-op status.
+                 - STATUS_RAISED: STATUS_RAISED defines a raised status.
+                 - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+                 - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+                 - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
             raise_time:
               type: string
               format: uint64
+              title: raise_time is a unix epoch value of the order submission time
             completion_time:
               type: string
               format: uint64
+              title: >-
+                completion_time is a unix epoch value of the time the order was
+                completed
             decisions:
               type: array
               items:
@@ -23383,7 +23763,9 @@ definitions:
                 properties:
                   signer:
                     type: string
+                    title: signer is an authorised address for making decisions
                   decision:
+                    title: decision is the decision made, i.e. accept/reject
                     type: string
                     enum:
                       - STATUS_NIL
@@ -23392,11 +23774,33 @@ definitions:
                       - STATUS_REJECTED
                       - STATUS_COMPLETED
                     default: STATUS_NIL
+                    description: >-
+                      PurchaseOrderStatus enumerates the valid statuses for a
+                      given purchase order.
+
+                       - STATUS_NIL: STATUS_NIL defines a no-op status.
+                       - STATUS_RAISED: STATUS_RAISED defines a raised status.
+                       - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
+                       - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
+                       - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
                   decision_time:
                     type: string
                     format: uint64
-        title: info is the signing info of all validators
+                    title: >-
+                      decision_time is a unix epoch value of the decision
+                      submission time
+                title: >-
+                  PurchaseOrderDecision defines a decision made for a given
+                  purchase order, ie,
+
+                  whether to accept or reject
+              title: decisions is an array of decisions made by authorised addresses
+          title: >-
+            EnterpriseUndPurchaseOrder defines a purchase order raised by a
+            whitelisted address
+        title: purchase_orders is the list of all purchase orders
       pagination:
+        description: pagination defines the pagination in the response.
         type: object
         properties:
           next_key:
@@ -23413,17 +23817,9 @@ definitions:
               PageRequest.count_total
 
               was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
     title: >-
       QueryEnterpriseUndPurchaseOrdersResponse is the response type for the
-      Query/PurchaseOrders RPC
+      Query/EnterpriseUndPurchaseOrders RPC
 
       method
   mainchain.enterprise.v1.QueryLockedUndByAddressResponse:
@@ -23436,6 +23832,7 @@ definitions:
         properties:
           owner:
             type: string
+            title: owner is the address of the locked FUND owner
           amount:
             type: object
             properties:
@@ -23451,6 +23848,13 @@ definitions:
               method
 
               signatures required by gogoproto.
+            title: >-
+              amount is the amount currently locked and available to pay for
+              beacon/wrkchain fees
+        title: LockedUnd defines the amount of locked FUND for an account
+    title: >-
+      QueryLockedUndByAddressResponse is the response type for the
+      Query/LockedUndByAddress RPC method
   mainchain.enterprise.v1.QueryParamsResponse:
     type: object
     properties:
@@ -23459,14 +23863,25 @@ definitions:
         properties:
           ent_signers:
             type: string
+            title: >-
+              ent_signers is a list of addresses authorised to make decisions on
+              raised purchase orders
           denom:
             type: string
+            title: denom is the denomination of eFUND, e.g. nund
           min_accepts:
             type: string
             format: uint64
+            title: >-
+              min_accepts is the minumum number of ent_signers required to
+              accept a PO before it is processed and efUND minted
           decision_time_limit:
             type: string
             format: uint64
+            description: >-
+              decision_time_limit is the time limit within which all decisions
+              must be made for a raised purchase order.
+        description: Params defines the parameters for the enterprise module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
   mainchain.enterprise.v1.QuerySupplyOfResponse:
     type: object
@@ -23501,6 +23916,9 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+    title: >-
+      QueryTotalLockedResponse is the response type for the Query/TotalLocked
+      RPC method
   mainchain.enterprise.v1.QueryTotalSupplyResponse:
     type: object
     properties:
@@ -23518,6 +23936,9 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
+    title: >-
+      QueryTotalSupplyResponse is the response type for the Query/TotalSupply
+      RPC method
   mainchain.enterprise.v1.QueryTotalUnlockedResponse:
     type: object
     properties:
@@ -23533,6 +23954,9 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
+    title: >-
+      QueryTotalUnlockedResponse is the response type for the
+      Query/TotalUnlocked RPC method
   mainchain.enterprise.v1.QueryWhitelistResponse:
     type: object
     properties:
@@ -23540,6 +23964,9 @@ definitions:
         type: array
         items:
           type: string
+    description: >-
+      QueryWhitelistResponse is the response type for the Query/Whitelist RPC
+      method.
   mainchain.enterprise.v1.QueryWhitelistedResponse:
     type: object
     properties:
@@ -23548,20 +23975,28 @@ definitions:
       whitelisted:
         type: boolean
         format: boolean
+    description: >-
+      QueryWhitelistedResponse is the response type for the Query/Whitelisted
+      RPC method.
   mainchain.enterprise.v1.UndSupply:
     type: object
     properties:
       denom:
         type: string
+        title: denom is the denomination, e.g. nund
       amount:
         type: string
         format: uint64
+        title: amount is the amount of unlocked FUND in general supply
       locked:
         type: string
         format: uint64
+        title: locked is the amount of locked FUND
       total:
         type: string
         format: uint64
+        title: amount is the sum of locked and unlocked FUND
+    title: UndSupply defines the current FUND supply, including locked
   mainchain.beacon.v1.Beacon:
     type: object
     properties:
@@ -23575,14 +24010,21 @@ definitions:
       last_timestamp_id:
         type: string
         format: uint64
+      first_id_in_state:
+        type: string
+        format: uint64
+      num_in_state:
+        type: string
+        format: uint64
+      reg_time:
+        type: string
+        format: uint64
       owner:
         type: string
+    title: Beacon holds metadata about a registered beacon
   mainchain.beacon.v1.BeaconTimestamp:
     type: object
     properties:
-      beacon_id:
-        type: string
-        format: uint64
       timestamp_id:
         type: string
         format: uint64
@@ -23591,8 +24033,7 @@ definitions:
         format: uint64
       hash:
         type: string
-      owner:
-        type: string
+    title: BeaconTimestamp holds each hash submitted to a registered beacon
   mainchain.beacon.v1.Params:
     type: object
     properties:
@@ -23604,6 +24045,7 @@ definitions:
         format: uint64
       denom:
         type: string
+    description: Params defines the parameters for the beacon module.
   mainchain.beacon.v1.QueryBeaconResponse:
     type: object
     properties:
@@ -23620,17 +24062,25 @@ definitions:
           last_timestamp_id:
             type: string
             format: uint64
+          first_id_in_state:
+            type: string
+            format: uint64
+          num_in_state:
+            type: string
+            format: uint64
+          reg_time:
+            type: string
+            format: uint64
           owner:
             type: string
+        title: Beacon holds metadata about a registered beacon
+    title: QueryBeaconResponse is the response type for the Query/Beacon RPC method
   mainchain.beacon.v1.QueryBeaconTimestampResponse:
     type: object
     properties:
       timestamp:
         type: object
         properties:
-          beacon_id:
-            type: string
-            format: uint64
           timestamp_id:
             type: string
             format: uint64
@@ -23639,8 +24089,15 @@ definitions:
             format: uint64
           hash:
             type: string
-          owner:
-            type: string
+        title: BeaconTimestamp holds each hash submitted to a registered beacon
+      beacon_id:
+        type: string
+        format: uint64
+      owner:
+        type: string
+    title: >-
+      QueryBeaconTimestampResponse is the response type for the
+      Query/BeaconTimestamp RPC method
   mainchain.beacon.v1.QueryBeaconsFilteredResponse:
     type: object
     properties:
@@ -23659,9 +24116,20 @@ definitions:
             last_timestamp_id:
               type: string
               format: uint64
+            first_id_in_state:
+              type: string
+              format: uint64
+            num_in_state:
+              type: string
+              format: uint64
+            reg_time:
+              type: string
+              format: uint64
             owner:
               type: string
+          title: Beacon holds metadata about a registered beacon
       pagination:
+        description: pagination defines the pagination in the response.
         type: object
         properties:
           next_key:
@@ -23678,14 +24146,9 @@ definitions:
               PageRequest.count_total
 
               was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
+    title: >-
+      QueryBeaconsFilteredResponse is the response type for the
+      Query/BeaconsFiltered RPC method
   mainchain.beacon.v1.QueryParamsResponse:
     type: object
     properties:
@@ -23700,6 +24163,7 @@ definitions:
             format: uint64
           denom:
             type: string
+        description: Params defines the parameters for the beacon module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
   mainchain.wrkchain.v1.Params:
     type: object
@@ -23712,6 +24176,7 @@ definitions:
         format: uint64
       denom:
         type: string
+    description: Params defines the parameters for the wrkchain module.
   mainchain.wrkchain.v1.QueryParamsResponse:
     type: object
     properties:
@@ -23726,6 +24191,7 @@ definitions:
             format: uint64
           denom:
             type: string
+        description: Params defines the parameters for the wrkchain module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
   mainchain.wrkchain.v1.QueryWrkChainBlockResponse:
     type: object
@@ -23733,9 +24199,6 @@ definitions:
       block:
         type: object
         properties:
-          wrkchain_id:
-            type: string
-            format: uint64
           height:
             type: string
             format: uint64
@@ -23752,8 +24215,15 @@ definitions:
           sub_time:
             type: string
             format: uint64
-          owner:
-            type: string
+        title: WrkChainBlock holds data about a wrkchain's block hash submission
+      wrkchain_id:
+        type: string
+        format: uint64
+      owner:
+        type: string
+    title: >-
+      QueryWrkChainBlockResponse is the response type for the
+      Query/WrkChainBlock RPC method
   mainchain.wrkchain.v1.QueryWrkChainResponse:
     type: object
     properties:
@@ -23777,11 +24247,18 @@ definitions:
           num_blocks:
             type: string
             format: uint64
+          lowest_height:
+            type: string
+            format: uint64
           reg_time:
             type: string
             format: uint64
           owner:
             type: string
+        title: WrkChain holds metadata about a registered wrkchain
+    title: >-
+      QueryWrkChainResponse is the response type for the Query/WrkChain RPC
+      method
   mainchain.wrkchain.v1.QueryWrkChainsFilteredResponse:
     type: object
     properties:
@@ -23807,12 +24284,17 @@ definitions:
             num_blocks:
               type: string
               format: uint64
+            lowest_height:
+              type: string
+              format: uint64
             reg_time:
               type: string
               format: uint64
             owner:
               type: string
+          title: WrkChain holds metadata about a registered wrkchain
       pagination:
+        description: pagination defines the pagination in the response.
         type: object
         properties:
           next_key:
@@ -23829,14 +24311,9 @@ definitions:
               PageRequest.count_total
 
               was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
+    title: >-
+      QueryWrkChainsFilteredResponse is the response type for the
+      Query/WrkChainsFiltered RPC method
   mainchain.wrkchain.v1.WrkChain:
     type: object
     properties:
@@ -23857,17 +24334,18 @@ definitions:
       num_blocks:
         type: string
         format: uint64
+      lowest_height:
+        type: string
+        format: uint64
       reg_time:
         type: string
         format: uint64
       owner:
         type: string
+    title: WrkChain holds metadata about a registered wrkchain
   mainchain.wrkchain.v1.WrkChainBlock:
     type: object
     properties:
-      wrkchain_id:
-        type: string
-        format: uint64
       height:
         type: string
         format: uint64
@@ -23884,8 +24362,7 @@ definitions:
       sub_time:
         type: string
         format: uint64
-      owner:
-        type: string
+    title: WrkChainBlock holds data about a wrkchain's block hash submission
   CheckTxResult:
     type: object
     properties:

@@ -7,49 +7,65 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
 
+// Msg defines the enterprise Msg service.
 service Msg {
   // UndPurchaseOrder defines a method to create new purchase order.
   rpc UndPurchaseOrder(MsgUndPurchaseOrder)
       returns (MsgUndPurchaseOrderResponse);
 
+  // ProcessUndPurchaseOrder defines a method to process a decision on a purchase order.
   rpc ProcessUndPurchaseOrder(MsgProcessUndPurchaseOrder)
       returns (MsgProcessUndPurchaseOrderResponse);
 
+  // WhitelistAddress defines a method to execute a whitelist action.
   rpc WhitelistAddress(MsgWhitelistAddress)
       returns (MsgWhitelistAddressResponse);
 
 }
 
+// MsgUndPurchaseOrder represents a message to raise a new purchase order
 message MsgUndPurchaseOrder {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
+  // purchaser is the address of the account raising the purchase order
   string purchaser = 1;
+  // amount is the amount of eFUND in nund
   cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
 }
 
-// MsgSubmitProposalResponse defines the Msg/SubmitProposal response type.
+// MsgUndPurchaseOrderResponse defines the Msg/UndPurchaseOrder response type.
 message MsgUndPurchaseOrderResponse { uint64 purchase_order_id = 1; }
 
-
+// MsgProcessUndPurchaseOrder represents a message to processed a raised purchase order
 message MsgProcessUndPurchaseOrder {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
+  // purchase_order_id is the ID of the purchase order being raised
   uint64 purchase_order_id = 1 [ (gogoproto.jsontag) = "id", (gogoproto.moretags) = "yaml:\"id\"" ];
+  // decision is an enumerated PurchaseOrderStatus representing, for example accepted/rejected
   PurchaseOrderStatus decision = 2;
+  // signer is the address of the authorised decision maker
   string signer = 3;
 }
 
+// MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder response type.
 message MsgProcessUndPurchaseOrderResponse {}
 
+// MsgWhitelistAddress represents a message to processed an address whitelist action.
+// only addresses whitelisted by an authorised decision maker can raise new purchase orders
 message MsgWhitelistAddress {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
+  // address is the address for which the action is being executed
   string address = 1;
+  // signer is the address of the authorised decision maker
   string signer = 2;
+  // whitelist_action is the action being executed, and is either add or remove.
   WhitelistAction whitelist_action = 3 [ (gogoproto.customname) = "Action",  (gogoproto.jsontag) = "action", (gogoproto.moretags) = "yaml:\"action\"" ];
 }
 
+// MsgWhitelistAddressResponse defines the Msg/WhitelistAddress response type.
 message MsgWhitelistAddressResponse{}

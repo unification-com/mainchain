@@ -14,6 +14,8 @@ message GenesisState {
   repeated WrkChainExport registered_wrkchains = 3 [(gogoproto.castrepeated) = "WrkChainExports", (gogoproto.nullable) = false];
 }
 
+// WrkChainBlockGenesisExport is a trimmed version of WrkChainBlock
+// for genesis exports to conserve space
 message WrkChainBlockGenesisExport {
   uint64 he = 1;
   string bh = 2;
@@ -24,6 +26,7 @@ message WrkChainBlockGenesisExport {
   uint64 st = 7;
 }
 
+// WrkChainExport holds genesis export data for a wrkchain, including hashes
 message WrkChainExport {
   WrkChain wrkchain = 1 [(gogoproto.nullable) = false];
   repeated WrkChainBlockGenesisExport blocks = 2 [(gogoproto.castrepeated) = "WrkChainBlockGenesisExports", (gogoproto.nullable) = false];

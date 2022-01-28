@@ -6,42 +6,56 @@ import "mainchain/beacon/v1/beacon.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
+// Msg defines the beacon Msg service.
 service Msg {
-  // UndPurchaseOrder defines a method to create new purchase order.
+  // RegisterBeacon defines a method to register a new beacon
   rpc RegisterBeacon(MsgRegisterBeacon)
       returns (MsgRegisterBeaconResponse);
 
+  // RecordBeaconTimestamp defines a method to record a timestamp for a registered beacon
   rpc RecordBeaconTimestamp(MsgRecordBeaconTimestamp)
       returns (MsgRecordBeaconTimestampResponse);
 
 }
 
+// MsgRegisterBeacon represents a message to register a new beacon
 message MsgRegisterBeacon {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
+  // moniker is a short identifier for a beacon
   string moniker = 1;
+  // name is a long name for a beacon
   string name = 2;
+  // owner is the address of the owner of the beacon
   string owner = 3;
 }
 
 // MsgRegisterBeaconResponse defines the Msg/RegisterBeacon response type.
 message MsgRegisterBeaconResponse {
+  // beacon_id is the id of the new beacon
   uint64 beacon_id = 1;
 }
 
-
+// MsgRecordBeaconTimestamp represents a message to record a timestamp for a registered beacon
 message MsgRecordBeaconTimestamp {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
+  // beacon_id is the id of the beacon the timestamp is being submitted for
   uint64 beacon_id = 1;
+  // hash is the hash or data being submitted
   string hash = 2;
+  // submit_time is a unix epoch value of the submission time
   uint64 submit_time = 3;
+  // owner is the address of the owner of the beacon
   string owner = 4;
 }
 
+// MsgRecordBeaconTimestampResponse defines the Msg/RecordBeacon response type.
 message MsgRecordBeaconTimestampResponse {
+  // beacon_id is the id of the beacon
   uint64 beacon_id = 1;
+  // timestamp_id is the id of the new timestamp
   uint64 timestamp_id = 2;
 }

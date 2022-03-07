@@ -28,11 +28,9 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [Running a Light Client/REST server](software/light-client-rpc.md)
 
-
 ### Full Command References
 
-- [`und` - the und server command reference](software/und-commands.md)
-- [`undcli` - the und client command reference](software/undcli-commands.md)
+- [`und` - the und server command reference](und_cmd/und.md)
 
 ### Full Config File References
 

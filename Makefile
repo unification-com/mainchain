@@ -7,7 +7,7 @@ COMMIT := $(shell git log -1 --format='%H')
 BINDIR ?= $(GOPATH)/bin
 DOCKER := $(shell which docker)
 DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
-TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
+TM_CORE_SEM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
 
 LATEST_RELEASE := $(shell curl --silent https://api.github.com/repos/unification-com/mainchain/releases/latest | grep -Po '"tag_name": \"\K.*?(?=\")')
 
@@ -17,7 +17,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain \
 		  -X github.com/cosmos/cosmos-sdk/version.AppName=und \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION) \
+		  -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_CORE_SEM_VERSION) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags)"
 
 export UND_LDFLAGS = $(ldflags)
@@ -125,10 +125,10 @@ check-updates:
 	@echo "go get github.com/user/repo to update. E.g. go get github.com/cosmos/cosmos-sdk"
 
 snapshot: goreleaser
-	UND_BUILD_TAGS="$(build_tags)" goreleaser --snapshot --skip-publish --rm-dist --debug
+	TM_CORE_SEM_VERSION="${TM_CORE_SEM_VERSION}" goreleaser --snapshot --skip-publish --rm-dist --debug
 
 release: goreleaser
-	UND_BUILD_TAGS="$(build_tags)" goreleaser --rm-dist
+	TM_CORE_SEM_VERSION="${TM_CORE_SEM_VERSION}" goreleaser --rm-dist
 
 ###############################################################################
 ###                                Protobuf                                 ###
@@ -154,7 +154,7 @@ proto-swagger-gen:
 proto-check-breaking:
 	@$(DOCKER_BUF) buf breaking --against-input $(HTTPS_GIT)#branch=stargate
 
-TM_URL              = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.0-rc6/proto/tendermint
+TM_URL              = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.14/proto/tendermint
 GOGO_PROTO_URL      = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
 COSMOS_PROTO_URL    = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
 CONFIO_URL          = https://raw.githubusercontent.com/confio/ics23/v0.6.3

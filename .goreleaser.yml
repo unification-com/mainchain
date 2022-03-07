@@ -14,28 +14,6 @@ builds:
     env:
       - CGO_ENABLED=0
     goos:
-      - linux
-    goarch:
-      - amd64
-    ldflags:
-      - -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain
-      - -X github.com/cosmos/cosmos-sdk/version.ServerName=und
-      - -X github.com/cosmos/cosmos-sdk/version.ClientName=undcli
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{.FullCommit}}
-      - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo"
-    flags:
-      - -mod=readonly
-      - -tags="netgo"
-    hooks:
-      pre: go mod verify
-  -
-    id: "undcli"
-    binary: undcli
-    main: ./cmd/undcli
-    env:
-      - CGO_ENABLED=0
-    goos:
       - darwin
       - linux
       - windows
@@ -43,10 +21,10 @@ builds:
       - amd64
     ldflags:
       - -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain
-      - -X github.com/cosmos/cosmos-sdk/version.ServerName=und
-      - -X github.com/cosmos/cosmos-sdk/version.ClientName=undcli
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=und
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.FullCommit}}
+      - -X github.com/tendermint/tendermint/version.TMCoreSemVer={{.Env.TM_CORE_SEM_VERSION}}
       - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo"
     flags:
       - -mod=readonly
@@ -63,27 +41,7 @@ archives:
     format: tar.gz
     replacements:
       amd64: x86_64
-    files:
-      - docs/*
-      - LICENSE
-      - README.md
 
-  -
-    id: "undcli"
-    builds:
-      - undcli
-    name_template: "{{ .Binary }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
-    replacements:
-      amd64: x86_64
-      darwin: osx
-    files:
-      - docs/*
-      - LICENSE
-      - README.md
 checksum:
   name_template: 'checksums.txt'
 snapshot:

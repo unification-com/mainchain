@@ -1,60 +1,20 @@
 # Changelog
 
-## Unreleased changes
+## v1.5.0 - 07/03/2022
 
-Unreleased changes have been merged into `master`
+The first `stargate` release of `und`, implementing the Cosmos SDK v0.42.x branch
 
-* [[`895b25790a`](https://github.com/unification-com/mainchain/commit/895b25790a)] - scripts - dev helper script improvements (Codegnosis)
-* [[`f2cfb56162`](https://github.com/unification-com/mainchain/commit/f2cfb56162)] - app - 0.38.5 exporter (Codegnosis)
-* [[`d646ea3453`](https://github.com/unification-com/mainchain/commit/d646ea3453)] - x/wrkchain - modify genesis exporter to export last 20k submissions (Codegnosis)
-* [[`68b2b3b2e7`](https://github.com/unification-com/mainchain/commit/68b2b3b2e7)] - x/beacon - modify genesis exporter to export last 20k submissions (Codegnosis)
-* [[`53891908a8`](https://github.com/unification-com/mainchain/commit/53891908a8)] - app/cmd - revert to 0.38.5. Remove unused functions & flags (Codegnosis)
-* [[`52471cf2b3`](https://github.com/unification-com/mainchain/commit/52471cf2b3)] - modules - revert to 0.38.5 (Codegnosis)
-* [[`cd351f72ef`](https://github.com/unification-com/mainchain/commit/cd351f72ef)] - Docker - revert configs & add dummy node for export testing (Codegnosis)
-* [[`e39d33d4c0`](https://github.com/unification-com/mainchain/commit/e39d33d4c0)] - app/cmd - remove unused functions (Codegnosis)
-* [[`59e81f340f`](https://github.com/unification-com/mainchain/commit/59e81f340f)] - docs - add missing --home flag (Codegnosis)
-* [[`da676453ad`](https://github.com/unification-com/mainchain/commit/da676453ad)] - docs - update guides and README (Codegnosis)
-* [[`59a7639e66`](https://github.com/unification-com/mainchain/commit/59a7639e66)] - Dockerfile - update golang image & fix Python install apk error (Codegnosis)
-* [[`1dec7ea69d`](https://github.com/unification-com/mainchain/commit/1dec7ea69d)] - scripts - new helper script to export genesis and dump data from DevNet (Codegnosis)
-* [[`2949409142`](https://github.com/unification-com/mainchain/commit/2949409142)] - scripts - improved script to populate a running DevNet with data (Codegnosis)
-* [[`c40d64a25d`](https://github.com/unification-com/mainchain/commit/c40d64a25d)] - docker - only one node with debug output (Codegnosis)
-* [[`d95aceacd1`](https://github.com/unification-com/mainchain/commit/d95aceacd1)] - app - plug in genesis data import (Codegnosis)
-* [[`8fc6d1406a`](https://github.com/unification-com/mainchain/commit/8fc6d1406a)] - cmd.und - pass home dir to app (Codegnosis)
-* [[`219f67596b`](https://github.com/unification-com/mainchain/commit/219f67596b)] - app - genesis data import functionality (Codegnosis)
-* [[`83edd65395`](https://github.com/unification-com/mainchain/commit/83edd65395)] - x.wrkchain - bug fix - NumBlocks needs incrementing with each hash import (Codegnosis)
-* [[`5d893431df`](https://github.com/unification-com/mainchain/commit/5d893431df)] - cmd.und - plug in WRKChain/BEACON data dumper commands (Codegnosis)
-* [[`18c4f0fad6`](https://github.com/unification-com/mainchain/commit/18c4f0fad6)] - app - add dumper for individual BEACON/WRKChain data (Codegnosis)
-* [[`0c7d284833`](https://github.com/unification-com/mainchain/commit/0c7d284833)] - x.wrkchain - process selected WRKChain data exports (Codegnosis)
-* [[`89e3ed25a9`](https://github.com/unification-com/mainchain/commit/89e3ed25a9)] - x.beacon - process selected BEACONs data export (Codegnosis)
-* [[`e68ca006fc`](https://github.com/unification-com/mainchain/commit/e68ca006fc)] - cmd.und - add flags to allow selecting which WRKChain/BEACON data is included in state db export to new genesis (Codegnosis)
-* [[`6bce830be9`](https://github.com/unification-com/mainchain/commit/6bce830be9)] - scripts - quick script to export MainNet genesis and merge BEACON/WrkChain data with DevNet for import testing (Codegnosis)
-* [[`e41a1e5d55`](https://github.com/unification-com/mainchain/commit/e41a1e5d55)] - docker - tweak rest start script to allow for larger genesis files (Codegnosis)
-* [[`8f1f0be5a0`](https://github.com/unification-com/mainchain/commit/8f1f0be5a0)] - app - genesis export - do not panic on no commission error. Some validators have 0% commission (Codegnosis)
-* [[`fd6b9d8cb6`](https://github.com/unification-com/mainchain/commit/fd6b9d8cb6)] - x.wrkchain - genesis export optimisations (Codegnosis)
-* [[`9eb9a7ad01`](https://github.com/unification-com/mainchain/commit/9eb9a7ad01)] - x.beacon - genesis export optimisations (Codegnosis)
-* [[`1f40befc41`](https://github.com/unification-com/mainchain/commit/1f40befc41)] - DevNet docker - use golang:1.15.3-alpine (Codegnosis)
-* [[`700fc7992b`](https://github.com/unification-com/mainchain/commit/700fc7992b)] - update DevNet genesis and app configs for SDK 0.39.x (Codegnosis)
-* [[`25ce45540d`](https://github.com/unification-com/mainchain/commit/25ce45540d)] - implement required app changes for SDK v0.39.1 (Codegnosis)
-* [[`72de3ad0a1`](https://github.com/unification-com/mainchain/commit/72de3ad0a1)] - upgrate modules to Cosmos SDK v0.39.1 (Codegnosis)
-* [[`cc392a29c8`](https://github.com/unification-com/mainchain/commit/cc392a29c8)] - docs - ledger doc clean up (Codegnosis)
-* [[`b4baf769ae`](https://github.com/unification-com/mainchain/commit/b4baf769ae)] - docs - typo (Codegnosis)
-* [[`333b08d292`](https://github.com/unification-com/mainchain/commit/333b08d292)] - docs - add overview, support info, and UI formatting to ledger doc (Codegnosis)
-* [[`a7332d1d1d`](https://github.com/unification-com/mainchain/commit/a7332d1d1d)] - docs - ledger & web wallet (Codegnosis)
-* [[`7b6d279ee5`](https://github.com/unification-com/mainchain/commit/7b6d279ee5)] - go.mod - replace cosmos/ledger-cosmos-go package with unification-com/ledger-unification-go package (Codegnosis)
-* [[`fc7a0e194f`](https://github.com/unification-com/mainchain/commit/fc7a0e194f)] - docs - update RPC1 port (Codegnosis)
-* [[`507f5fc1ba`](https://github.com/unification-com/mainchain/commit/507f5fc1ba)] - scripts - add script to generate and submit Txs to DevNet for testing (Codegnosis)
-* [[`43132319d7`](https://github.com/unification-com/mainchain/commit/43132319d7)] - readme -  add info on enabling cleveldb support (Codegnosis)
-* [[`493a2e8d48`](https://github.com/unification-com/mainchain/commit/493a2e8d48)] - makefile - include cleveldb makefile (Codegnosis)
-* [[`f3111c2a16`](https://github.com/unification-com/mainchain/commit/f3111c2a16)] - add cleveldb Makefile (Codegnosis)
-* [[`af97a0e3e4`](https://github.com/unification-com/mainchain/commit/af97a0e3e4)] - x.beacon - update unit tests (Codegnosis)
-* [[`11f74b00d5`](https://github.com/unification-com/mainchain/commit/11f74b00d5)] - x.beacon - keeper optimisations (Codegnosis)
-* [[`cc9e3d5ee4`](https://github.com/unification-com/mainchain/commit/cc9e3d5ee4)] - x.wrkchain - update unit tests (Codegnosis)
-* [[`c0b921e1c4`](https://github.com/unification-com/mainchain/commit/c0b921e1c4)] - x.wrkchain - keeper optimisations (Codegnosis)
-* [[`1f4e2b56d7`](https://github.com/unification-com/mainchain/commit/1f4e2b56d7)] - docs - AWS default disk size (Codegnosis)
-* [[`5d2ef67d7e`](https://github.com/unification-com/mainchain/commit/5d2ef67d7e)] - docs - move pruning warning further down (Codegnosis)
-* [[`8ef3ce2465`](https://github.com/unification-com/mainchain/commit/8ef3ce2465)] - additional pruning notes (Codegnosis)
-* [[`226ff7b7ee`](https://github.com/unification-com/mainchain/commit/226ff7b7ee)] - update changelog with v1.4.8 release date (Codegnosis)
-* [[`94a567f8d5`](https://github.com/unification-com/mainchain/commit/94a567f8d5)] - update changelog (Codegnosis)
+* Cosmos SDK updated to 0.42.11
+* Tendermint updated to v0.34.14
+* All Mainchain modules modules migrated to implement protobuf definitions
+
+## v1.4.9 - 28/02/2022
+
+A minor update for use during the `stargate` network upgrade only.
+
+* Fixed bug which prevents genesis exports from successfully executing if a validator has 0% commission.
+* Last 20k WRKChain hash and BEACON timestamp entries exported to genesis to prevent potentially undistributable 
+multi-Gb `genesis.json` and `OOM` errors on export.
 
 ## v1.4.8 - 03/07/2020
 

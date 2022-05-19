@@ -512,8 +512,20 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// Register new tendermint queries routes from grpc-gateway.
 	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
+	// Register enterprise GRPC routes first, to ensure /supply/total is overridden
+	// with the enterprise version. If it is loaded "in order", i.e. bank module first,
+	// then the router will use the bank module's version.
+	ModuleBasics["enterprise"].RegisterRESTRoutes(clientCtx, apiSvr.Router)
+
 	// Register legacy and grpc-gateway routes for all modules.
 	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
+
+	// Register enterprise GRPC routes first, to ensure /cosmos/bank/v1beta1/supply is overridden
+	// with the enterprise version. If it is loaded "in order", i.e. bank module first,
+	// then the router will use the bank module's version.
+	ModuleBasics["enterprise"].RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+
+	// Register other GRPC routes
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily

@@ -10,8 +10,6 @@ Unification Mainchain Daemon (server)
 
 ### SEE ALSO
 
-* [und ](und_.md)	 - 
-* [und ](und_.md)	 - 
 * [und add-genesis-account](und_add-genesis-account.md)	 - Add a genesis account to genesis.json
 * [und collect-gentxs](und_collect-gentxs.md)	 - Collect genesis txs and output a genesis.json file
 * [und convert](und_convert.md)	 - convert between FUND denominations

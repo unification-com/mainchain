@@ -1,6 +1,6 @@
 # Accounts and Wallets
 
-The `undcli` CMD can be used to create new accounts, or import previous accounts
+The `und` CMD can be used to create new accounts, or import previous accounts
 and keys.
 
 #### Contents
@@ -16,26 +16,29 @@ Before continuing, ensure you have gone through the following docs:
 ## Create a new account
 
 ::: danger IMPORTANT
-When you create a new account, the CMD will output a mnemonic. KEEP THIS SAFE - if you lose it, you will not be able to recover your account!
+When you create a new account, the CMD will output a mnemonic. KEEP THIS SAFE - if you lose it, you will not be able to 
+recover your account!
 :::
 
 To create a new account, run:
 
 ```bash
-undcli keys add [account_name]
+und keys add [account_name]
 ```
 
 `[account_name]` is whatever name you would like to use as an identifier when signing transactions. For example:
 
 ```bash
-undcli keys add my_new_wallet
+und keys add my_new_wallet
 ```
 
 ::: tip
 stick to alphanumeric characters, hyphens, underscores and full stops.
 :::
 
-If your OS keyring for `undcli` is not already unlocked/created, you will be prompted for a password. Once entered, the application will output your account details, including your wallet address, public key and mnemonic for recovery/future importing.
+If your OS keyring for `und` is not already unlocked/created, you will be prompted for a password. Once entered, 
+the application will output your account details, including your wallet address, public key and mnemonic for 
+recovery/future importing.
 
 Accounts and keys are stored in your OS keyring by default.
 
@@ -45,7 +48,7 @@ The same command can be used to import a previously saved mnemonic by passing
 the `--recover` flag:
 
 ```bash
-undcli keys add [account_name] --recover
+und keys add [account_name] --recover
 ```
 
 You will be prompted to enter your mnemonic.
@@ -55,13 +58,13 @@ You will be prompted to enter your mnemonic.
 You can list locally stored account with the following command:
 
 ```bash
-undcli keys list
+und keys list
 ```
 
 or show the details of a particular account:
 
 ```bash
-undcli keys show my_new_wallet
+und keys show my_new_wallet
 ```
 
-Run `undcli keys --help` for further details
+Run `und keys --help` for further details

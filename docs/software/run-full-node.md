@@ -26,8 +26,10 @@ und init [your_node_moniker]
 und init MyAwesomeNode
 ```
 
-Once initialised, you can edit your configuration in `$HOME/.und_mainchain/config/config.toml`. See [configuration reference](../software/und-mainchain-config-ref.md) for more details on the config file.
+Once initialised, you can edit your configuration in `$HOME/.und_mainchain/config/config.toml`. See 
+[configuration reference](../software/und-mainchain-config-ref.md) for more details on the config file.
 
 ## Genesis
 
-Depending on the network you are joining, you will need the appropriate genesis file to replace the default `$HOME/.und_mainchain/config/genesis.json`
+Depending on the network you are joining, you will need the appropriate genesis file to replace the 
+default `$HOME/.und_mainchain/config/genesis.json`

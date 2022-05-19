@@ -41,8 +41,7 @@ module.exports = {
                     {
                       title: "CLI Command & Config References",
                       children: [
-                        "/software/und-commands",
-                        "/software/undcli-commands",
+                        "/software/und_cmd/und",
                         "/software/und-mainchain-config-ref",
                         "/software/und-mainchain-app-config-ref"
                       ]

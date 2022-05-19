@@ -1,14 +1,16 @@
 # Native Coin Denomination `nund`
 
-The currency used on Mainchain is FUND. However, the native on-chain coin denomination  (on MainNet, TestNet and DevNet) is **`nund`**, or "Nano Unification Denomination", such that **1,000,000,000 nund == 1 FUND**.
+The currency used on Mainchain is FUND. However, the native on-chain coin denomination (on MainNet, TestNet and DevNet)
+is **`nund`**, or "Nano Unification Denomination", such that **1,000,000,000 nund == 1 FUND**.
 
-All transactions, fees and stakes are defined and paid for in `nund`. For example, if you need to send **1 FUND** to your friend, you will need to set your Tx to send `1000000000nund`.
+All transactions, fees and stakes are defined and paid for in `nund`. For example, if you need to send **1 FUND** to 
+your friend, you will need to set your Tx to send `1000000000nund`.
 
 The `undcli` CMD has a simple conversion utility to help convert any fees
 and FUND transactions into `nund`, and vice-versa:
 
 ```bash
-undcli convert 1000000000 nund fund
+und convert 1000000000 nund fund
 ```
 
 will result in:
@@ -20,7 +22,7 @@ will result in:
 Likewise,
 
 ```bash
-undcli convert 10 fund nund
+und convert 10 fund nund
 ```
 
 will result in:

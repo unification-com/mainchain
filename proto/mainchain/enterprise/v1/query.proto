@@ -57,6 +57,18 @@ service Query {
     option (google.api.http).get = "/mainchain/enterprise/v1/supply/{denom}";
   }
 
+  // TotalSupplyOverwrite should be used instead of /cosmos/bank/v1beta1/supply to get true total supply available
+  // for general use, i.e. with locked eFUND removed from total for nund
+  rpc TotalSupplyOverwrite(QueryTotalSupplyRequest) returns (QueryTotalSupplyResponse) {
+    option (google.api.http).get = "/cosmos/bank/v1beta1/supply";
+  }
+
+  // SupplyOf should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
+  // with locked eFUND removed from total for nund
+  rpc SupplyOfOverwrite(QuerySupplyOfRequest) returns (QuerySupplyOfResponse) {
+    option (google.api.http).get = "/cosmos/bank/v1beta1/supply/{denom}";
+  }
+
   // Whitelist queries whitelisted addresses authorised to raise new purchase orders
   rpc Whitelist(QueryWhitelistRequest) returns(QueryWhitelistResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/whitelist";

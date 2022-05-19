@@ -126,6 +126,10 @@ func (q Keeper) TotalSupply(c context.Context, req *types.QueryTotalSupplyReques
 	return &types.QueryTotalSupplyResponse{Supply: totalSupply}, nil
 }
 
+func (q Keeper) TotalSupplyOverwrite(c context.Context, req *types.QueryTotalSupplyRequest) (*types.QueryTotalSupplyResponse, error) {
+	return q.TotalSupply(c, req)
+}
+
 // SupplyOf Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
 // with locked eFUND removed from total for nund
 func (q Keeper) SupplyOf(c context.Context, req *types.QuerySupplyOfRequest) (*types.QuerySupplyOfResponse, error) {
@@ -142,6 +146,10 @@ func (q Keeper) SupplyOf(c context.Context, req *types.QuerySupplyOfRequest) (*t
 	supply := q.GetSupplyOfWithLockedNundRemoved(ctx, req.Denom)
 
 	return &types.QuerySupplyOfResponse{Amount: sdk.NewCoin(req.Denom, supply)}, nil
+}
+
+func (q Keeper) SupplyOfOverwrite(c context.Context, req *types.QuerySupplyOfRequest) (*types.QuerySupplyOfResponse, error) {
+	return q.SupplyOf(c, req)
 }
 
 func (q Keeper) Whitelist(c context.Context, req *types.QueryWhitelistRequest) (*types.QueryWhitelistResponse, error) {

@@ -324,4 +324,9 @@ run() {
   fi
 }
 
-run
+# run
+
+echo ""
+echo "DEPRECATED."
+echo "Please see installation documentation. Future upgrades will implement cosmovisor"
+echo ""

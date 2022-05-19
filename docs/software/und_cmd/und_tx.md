@@ -16,8 +16,6 @@ und tx [flags]
 ### SEE ALSO
 
 * [und](und.md)	 - Unification Mainchain Daemon (server)
-* [und tx ](und_tx_.md)	 - 
-* [und tx ](und_tx_.md)	 - 
 * [und tx bank](und_tx_bank.md)	 - Bank transaction subcommands
 * [und tx beacon](und_tx_beacon.md)	 - Beacon transaction subcommands
 * [und tx broadcast](und_tx_broadcast.md)	 - Broadcast transactions generated offline

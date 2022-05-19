@@ -1,6 +1,7 @@
 # Genesis Settings & Parameters
 
-This document gives a brief explanation of each of the main parameters found in a network's `genesis.json`. Some parameters have been omitted for brevity.
+This document gives a brief explanation of each of the main parameters found in a network's `genesis.json`.
+Some parameters have been omitted for brevity.
 
 With the exception of Chain Params, the following parameters are changeable on-chain via governance.
 
@@ -9,9 +10,9 @@ With the exception of Chain Params, the following parameters are changeable on-c
 ## Chain Params
 
 - `.genesis_time`  
-Genesis block timestamp. E.g. 2020-01-06T12:00:00Z
+Genesis block timestamp. E.g. 2022-06-08T14:00:00Z
 - `.chain_id`  
-ID of the current chain, E.g. `FUND-Mainchain-MainNet-v1`
+ID of the current chain, E.g. `FUND-MainNet-2`
 
 ## Auth Params
 

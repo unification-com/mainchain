@@ -1,7 +1,7 @@
 # Simple usage with a mounted data directory:
 # > docker build -t undd .
-# > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und init [node_name]
-# > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und start
+# > docker run -it -p 26657:26657 -p 26656:26656 -v $HOME/.und_mainchain:/root/.und_mainchain undd und init [node_name]
+# > docker run -it -p 26657:26657 -p 26656:26656 -v $HOME/.und_mainchain:/root/.und_mainchain undd und start
 FROM golang:alpine3.12 AS build-env
 
 # Set up dependencies
@@ -29,7 +29,6 @@ WORKDIR /root
 
 # Copy over binaries from the build-env
 COPY --from=build-env /go/bin/und /usr/bin/und
-COPY --from=build-env /go/bin/undcli /usr/bin/undcli
 
 # Run und by default, omit entrypoint to ease using container with undcli
 CMD ["und"]

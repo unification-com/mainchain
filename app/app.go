@@ -105,12 +105,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 }
 
 var (
-	// default home directories for the application CLI
-	//DefaultCLIHome = os.ExpandEnv("$HOME/.und_cli")
-
-	// DefaultNodeHome sets the folder where the application data and configuration will be stored
-	//DefaultNodeHome = os.ExpandEnv("$HOME/.und_mainchain")
-
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 

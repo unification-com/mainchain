@@ -36,6 +36,7 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 
 - [`.und_mainchain/config/config.toml` Reference](software/und-mainchain-config-ref.md)
 - [`.und_mainchain/config/app.toml` Reference](software/und-mainchain-app-config-ref.md)
+- [`.und_mainchain/config/client.toml` Reference](software/und-mainchain-client-config-ref.md)
 
 ## 3. Mainchain Networks
 

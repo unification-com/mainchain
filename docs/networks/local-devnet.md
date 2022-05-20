@@ -98,7 +98,8 @@ appropriate moniker for each imported account.
 
 ### Useful DevNet Defaults for `und`
 
-`und` defaults for DevNet can be set as follows. This will set the corresponding values in `$HOME/.und_cli/config/config.toml`
+`und` defaults for DevNet can be set as follows. This will set the corresponding values in 
+`$HOME/.und_mainchain/config/client.toml`
 
 ```
 und config chain-id FUND-Mainchain-DevNet

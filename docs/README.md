@@ -3,8 +3,8 @@
 # Unification Mainchain Documentation
 
 Welcome to the documentation for Unification's Mainchain. These docs
-cover how to build and install the two main applications `und` and `undcli`,
-how to run a node on MainNet, TestNet and DevNet, and how to interact with the Mainchain network.
+cover how to build and install the `und` application, how to run a node on MainNet, TestNet and DevNet, and how 
+to interact with the Mainchain network.
 
 ## 1. About Mainchain
 
@@ -50,6 +50,7 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 ## 4. Guides & Examples
 
 ### Tx & Query Examples
+
 - [Sending Simple Transactions](examples/transactions.md)
 - [Example WRKChain Transactions and Queries](examples/wrkchain.md)
 - [Example BEACON Transactions and Queries](examples/beacon.md)
@@ -66,4 +67,11 @@ how to run a node on MainNet, TestNet and DevNet, and how to interact with the M
 - [Third Party Tool Development](developers/third-party.md)
 
 ### Disclaimer
-Please note that this software is still in development. In these early days, we can expect to have issues, updates, and bugs. The existing `und` and `undcli` CLI tools require advanced technical skills and may involve risks which are outside of the control of the Unification Foundation and/or the Unification dev team. Any use of this open source [Apache 2.0 licensed](https://github.com/unification-com/mainchain/blob/master/LICENSE) software is done at your own risk and on a "AS IS" basis, without warranties or conditions of any kind, and any and all liability of the Unification Foundation and/or the Unification dev team for damages arising in connection to the software is excluded. Please exercise extreme caution!
+
+Please note that this software is still in development. In these early days, we can expect to have issues, updates, and
+bugs. The existing `und` CLI tool requires advanced technical skills and may involve risks which are
+outside of the control of the Unification Foundation and/or the Unification dev team. Any use of this open
+source [Apache 2.0 licensed](https://github.com/unification-com/mainchain/blob/master/LICENSE) software is done at your
+own risk and on a "AS IS" basis, without warranties or conditions of any kind, and any and all liability of the
+Unification Foundation and/or the Unification dev team for damages arising in connection to the software is excluded.
+Please exercise extreme caution!

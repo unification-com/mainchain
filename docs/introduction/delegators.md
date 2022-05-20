@@ -78,7 +78,7 @@ Delegators may participate in several functions regarding the running of the net
 
 - **Exercising due diligence when selecting a validator to delegate to**: an important fist step, before delegating 
   FUND is to ensure that the chosen validator has a history of good behaviour. There are several tools available, 
-  from block explorers to the `undcli` command line tools for querying a validator.
+  from block explorers to the `und` command line tools for querying a validator.
 
 - **Monitore the validator's behaviour after delegation**: this includes ensuring the validator maintains high uptimes 
   (does not frequently miss blocks), does not double-sign blocks, and participates in governance.

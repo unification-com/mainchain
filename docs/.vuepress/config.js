@@ -74,8 +74,7 @@ module.exports = {
                     "/examples/transactions",
                     "/examples/wrkchain",
                     "/examples/beacon",
-                    "/examples/enterprise-fund",
-                    "/examples/finchain"
+                    "/examples/enterprise-fund"
                 ]
             },
             {

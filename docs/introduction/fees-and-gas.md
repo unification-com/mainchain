@@ -8,7 +8,7 @@ The gas price for a transaction is set by the sender of the Tx, but each validat
 `minimum-gas-prices` value, and will not process transactions that do not meet this minimum requirement.
 :::
 
-Fees are paid in `nund`, and may be either set or calculated depending on which flags are passed to the `undcli` command.
+Fees are paid in `nund`, and may be either set or calculated depending on which flags are passed to the `und` command.
 
 ::: tip NOTE
 only `--fees` or `--gas-prices` may be used - not both at the same time.
@@ -31,7 +31,7 @@ around 6500 bytes, and therefore the gas consumed by the Tx will be 6500 * 10 = 
 :::
 
 ```
-undcli tx send [from] [to] 123456nund --memo="some und from me to you" --fees=2000000nund
+und tx send [from] [to] 123456nund --memo="some und from me to you" --fees=2000000nund
 ```
 
 In this instance, the `gas-price` is implied as approximately 30.77nund (fee / gas: 2000000 / 65000), so the Validator 
@@ -46,12 +46,12 @@ proposes the block.
 
 ## Example 2: setting --gas and --gas-prices
 
-In this example, we'll set our own `--gas-prices`, and ask `undcli` to estimate the amount of gas the Tx will 
+In this example, we'll set our own `--gas-prices`, and ask `und` to estimate the amount of gas the Tx will 
 consume based on the Tx input by passing the `--gas=auto` flag. We can also use the `--gas-adjustment` 
 flag to increase/decrease this gas estimate. We'll assume again that the calculated estimate will be around 65000 gas:
 
 ```
-undcli tx send from to 123456nund --memo="some und from me to you" --gas=auto --gas-prices=25.0nund
+und tx send from to 123456nund --memo="some und from me to you" --gas=auto --gas-prices=25.0nund
 ```
 
 In this example, the Tx **fee** will be calculated and included in the transaction for us. 

@@ -6,7 +6,7 @@ is **`nund`**, or "Nano Unification Denomination", such that **1,000,000,000 nun
 All transactions, fees and stakes are defined and paid for in `nund`. For example, if you need to send **1 FUND** to 
 your friend, you will need to set your Tx to send `1000000000nund`.
 
-The `undcli` CMD has a simple conversion utility to help convert any fees
+The `und` CMD has a simple conversion utility to help convert any fees
 and FUND transactions into `nund`, and vice-versa:
 
 ```bash

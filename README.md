@@ -2,12 +2,14 @@
 
 ## Unification Mainchain
 
+[![Latest Release](https://img.shields.io/github/v/release/unification-com/mainchain?display_name=tag)](https://github.com/unification-com/mainchain/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/unification-com/mainchain)](https://goreportcard.com/report/github.com/unification-com/mainchain)
-[![Join the chat at https://discord.com/channels/725618617525207042](https://img.shields.io/discord/725618617525207042?label=Discord)](https://discord.com/channels/725618617525207042)
+[![Join the chat at https://discord.com/channels/725618617525207042](https://img.shields.io/discord/725618617525207042?label=discord)](https://discord.com/channels/725618617525207042)
 
 Official Golang implementation of Unification Mainchain.
 
-Mainchain is the backbone of the Unification Network. It is a Tendermint based chain, and is where WRKChains and BEACONs submit their hashes, and FUND transactions take place.
+Mainchain is the backbone of the Unification Network. It is a Tendermint based chain, and is where WRKChains and
+BEACONs submit their hashes, and FUND transactions take place.
 
 ## Quick start installation
 
@@ -17,22 +19,23 @@ There are several options for installing the binaries
 
 ### Pre-compiled binaries
 
-The quickest way to obtain and run the `und` and `undcli` applications is to download
+The quickest way to obtain and run the `und` application is to download
 the latest pre-compiled binaries from [latest release](https://github.com/unification-com/mainchain/releases)
 
 Once downloaded, you can verify the SHA256 checksum against those listed in the release's `checksums.txt`, for example:
 
 ```bash
-openssl dgst -sha256 undcli_v1.4.5_linux_x86_64.tar.gz
-SHA256(undcli_v1.4.5_linux_x86_64.tar.gz)= 239559182183648379164f5ff0faa0b3fe0e404f5368e1995e56b2269c93ec05
+openssl dgst -sha256 und_v1.5.0_linux_x86_64.tar.gz
+SHA256(und_v1.5.0_linux_x86_64.tar.gz)= 98a93e757234f4cc408421b112bbc850975178900f3db53ab4a244f677041287
 ```
 
 ### Install from source
 
-**IMPORTANT**: if you are connecting to MainNet, it is highly recommended you clone and 
-build from the [latest release tag](https://github.com/unification-com/mainchain/releases/latest) and **not** the `master` branch.
+**IMPORTANT**: if you are connecting to MainNet or TestNet, you will need to clone and
+build from the [latest release tag](https://github.com/unification-com/mainchain/releases/latest) and **not**
+the `master` branch.
 
-Clone latest release for running on MainNet
+Clone the latest release for connecting to a public network:
 
 ```bash
 git clone -b [latest-release-tag] https://github.com/unification-com/mainchain
@@ -49,21 +52,6 @@ Then run:
 ```bash
 $ cd mainchain
 $ make install
-```
-
-#### cleveldb support
-
-To build with cleveldb as the database backend, run:
-
-```bash 
-CLEVELDB_ENABLED=true make install
-```
-
-Once the node has been initialised, the DB backend can be set in
-`$HOME/.und_mainchain/confog/config.toml`:
-
-```toml 
-db_backend = "cleveldb"
 ```
 
 ### Build from source
@@ -87,26 +75,12 @@ $ cd mainchain
 $ make build
 ```
 
-`und` and `undcli` binaries and output to `./build`. This is useful for development and testing.
+to build the `und` binary and output to `./build`. This is useful for development and testing.
 
-#### cleveldb support
+### Dockerised `und`
 
-To build with cleveldb as the database backend, run:
-
-```bash 
-CLEVELDB_ENABLED=true make build
-```
-
-Once the node is initialised, the DB backend can be set in
-`$HOME/.und_mainchain/confog/config.toml`:
-
-```toml 
-db_backend = "cleveldb"
-```
-
-### Dockerised `und` and `undcli`
-
-The Dockerised binaries can be used instead of installing locally. The Docker container will use the latest release tag to build the binaries.
+The Dockerised binaries can be used instead of installing locally. The Docker container will use the latest release tag
+to build the binaries.
 
 Build the container:
 
@@ -117,22 +91,24 @@ docker build -t undd .
 Example commands, with mounted data directories:
 
 ```bash
-$ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und init [node_name]
+$ docker run -it -p 26657:26657 -p 26656:26656 -v $HOME/.und_mainchain:/root/.und_mainchain undd und init [node_name]
 ```
 
 Download the relevant genesis and seeds for the network you wish to join, and run:
 
 ```bash
-$ docker run -it -p 26657:26657 -p 26656:26656 -v ~/.und_mainchain:/root/.und_mainchain -v ~/.und_cli:/root/.und_cli undd und start
+$ docker run -it -p 26657:26657 -p 26656:26656 -v $HOME/.und_mainchain:/root/.und_mainchain undd und start
 ```
 
 ## DevNet Development Enviroment
 
-A complete DevNet environment, comprising of 3 EVs, a REST server, a reverse proxy server and several test wallets loaded with FUND is available via Docker Compose compositions  for development and testing purposes. See [DevNet documentation](docs/local-devnet.md) for more detailed information.
+A complete DevNet environment, comprising of 3 EVs, a REST server, a reverse proxy server and several test wallets
+loaded with FUND is available via Docker Compose compositions for development and testing purposes.
+See [DevNet documentation](docs/local-devnet.md) for more detailed information.
 
 ## Unit Tests & Chain Simulation
 
->**Important**: New modules and features should be committed with corresponding unit tests and simulation operations.
+> **Important**: New modules and features should be committed with corresponding unit tests and simulation operations.
 
 ### Unit Tests
 
@@ -150,11 +126,16 @@ make test
 
 ### Chain Simulation
 
-The `simapp` can be used to simulate a running chain, which is particularly useful during development and testing to check that new features are working as expected in a simulated live chain environment (i.e. many different transactions being executed against the chain). The simulation will produce the specified number of blocks, using the specified number of operations (transactions) per block to simulate a full running chain environment.
+The `simapp` can be used to simulate a running chain, which is particularly useful during development and testing to
+check that new features are working as expected in a simulated live chain environment (i.e. many different transactions
+being executed against the chain). The simulation will produce the specified number of blocks, using the specified
+number of operations (transactions) per block to simulate a full running chain environment.
 
-For example, the following command will simulate 500 blocks, each with 200 randomly generated transaction operations, checking for invariants every block.
+For example, the following command will simulate 500 blocks, each with 200 randomly generated transaction operations,
+checking for invariants every block.
 
-The parameters used to generate the chain, along with the final chain state export and simulation statistics will be saved to the specified `ExportParamsPath`, `ExportStatePath` and `ExportStatsPath` paths respectively.
+The parameters used to generate the chain, along with the final chain state export and simulation statistics will be
+saved to the specified `ExportParamsPath`, `ExportStatePath` and `ExportStatsPath` paths respectively.
 
 ```
 go test -mod=readonly ./app \
@@ -176,7 +157,9 @@ go test -mod=readonly ./app \
 
 ### Benchmark testing
 
-CPU and RAM benchmarks can also be generated using the `simapp`, which are useful for checking resources used by modules and features and resolving resource issues. For example, the following will generate a CPU benchmark for a full simulation, using the default block/blocksize values:
+CPU and RAM benchmarks can also be generated using the `simapp`, which are useful for checking resources used by modules
+and features and resolving resource issues. For example, the following will generate a CPU benchmark for a full
+simulation, using the default block/blocksize values:
 
 ```
 go test -mod=readonly \

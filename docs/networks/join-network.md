@@ -161,8 +161,8 @@ sent via your local node (which was started using the `und start` command, and w
 and only open to `localhost`).
 
 ::: tip
-You can use the `--node` flag with the `und` command to have it send to a different node instead. Default values 
-for `und` can also be set in `$HOME/.und_cli/config/config.toml`
+You can use the `--node` flag with the `und` command to have it send to a different node instead. Default client values 
+for `und` can also be set in `$HOME/.und_mainchain/config/client.toml`
 :::
 
 ## Block Explorer

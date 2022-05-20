@@ -43,7 +43,8 @@ module.exports = {
                       children: [
                         "/software/und_cmd/und",
                         "/software/und-mainchain-config-ref",
-                        "/software/und-mainchain-app-config-ref"
+                        "/software/und-mainchain-app-config-ref",
+                        "/software/und-mainchain-client-config-ref"
                       ]
                     }
                 ]

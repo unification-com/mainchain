@@ -11,6 +11,8 @@ require (
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/opencontainers/image-spec v1.0.2 // indirect
+	github.com/opencontainers/runc v1.0.3 // indirect
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1

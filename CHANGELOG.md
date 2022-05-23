@@ -10,11 +10,11 @@ The first `stargate` release of `und`, implementing the Cosmos SDK v0.42.x branc
 
 ## v1.4.9 - 28/02/2022
 
-A minor update for use during the `stargate` network upgrade only.
+und v1.4.9 is an incremental release which is used only for exporting the genesis state of the Cosmos SDK v0.38 branch.
+It includes a bug fix which prevents genesis exports from successfully executing if a validator has 0% commission.
 
-* Fixed bug which prevents genesis exports from successfully executing if a validator has 0% commission.
-* Last 20k WRKChain hash and BEACON timestamp entries exported to genesis to prevent potentially undistributable 
-multi-Gb `genesis.json` and `OOM` errors on export.
+**Note**: This version is not intended for use in running a node, and should only be used during the upcoming Network
+upgrade to the Cosmos SDK v0.42 (stargate) branch.
 
 ## v1.4.8 - 03/07/2020
 

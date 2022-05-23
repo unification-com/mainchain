@@ -23,14 +23,14 @@
 # IN THE SOFTWARE.
 #####################################################################################################################
 
-LATEST_RELEASE="https://api.github.com/repos/unification-com/mainchain/releases/latest"
+#LATEST_RELEASE="https://api.github.com/repos/unification-com/mainchain/releases/latest"
 GH_DL_PREFIX="https://github.com/unification-com/mainchain/releases/download"
-LATEST_VERSION="$(curl --silent ${LATEST_RELEASE} | grep -Po '"tag_name": "\K.*?(?=")')"
+#LATEST_VERSION="$(curl --silent ${LATEST_RELEASE} | grep -Po '"tag_name": "\K.*?(?=")')"
 DOWNLOAD_DEST="/tmp/mainchain_tmp"
 LOCAL_BIN="/usr/local/bin"
 BACKUP_DIR="${HOME}/UND_BIN_BAK"
-SPECIFIED_VERSION=${1}
-VERSION_TO_INSTALL=${LATEST_VERSION}
+#SPECIFIED_VERSION=${1}
+#VERSION_TO_INSTALL=${LATEST_VERSION}
 
 BINARIES_TO_INSTALL="und undcli"
 
@@ -42,12 +42,34 @@ REQUIRE_BACKUP=false
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-echo "Latest release is v${LATEST_VERSION}"
+#echo "Latest release is v${LATEST_VERSION}"
 
-if [ -n "$SPECIFIED_VERSION" ]; then
-  echo "user requested v${SPECIFIED_VERSION}"
-  VERSION_TO_INSTALL=${SPECIFIED_VERSION}
-fi
+#if [ -n "$SPECIFIED_VERSION" ]; then
+#  echo "user requested v${SPECIFIED_VERSION}"
+#  VERSION_TO_INSTALL=${SPECIFIED_VERSION}
+#fi
+
+VERSION_TO_INSTALL="1.4.8"
+
+echo ""
+echo "------------------"
+echo "DEPRECATION NOTICE"
+echo "------------------"
+echo ""
+echo "This script will be deprecated once und v1.5.0 has been released"
+echo "on MainNet. Once the network has been upgraded to Cosmos SDK v0.42.x,"
+echo "cosmovisor will be the preferred method for und binary upgrades."
+echo ""
+echo "The last version supported by this script is:"
+echo ""
+echo "und v${VERSION_TO_INSTALL}"
+echo ""
+echo "No version higher than this should be used to run a node on either:"
+echo ""
+echo "FUND-Mainchain-MainNet-v1 or FUND-Mainchain-TestNet-v12"
+echo ""
+
+read -rp "Press [enter] to continue installing und v${VERSION_TO_INSTALL} or ^C to exit" key
 
 # check binary
 # check und

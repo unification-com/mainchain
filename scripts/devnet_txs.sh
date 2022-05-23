@@ -52,7 +52,7 @@ function get_addr() {
 
 function get_base_flags() {
   local BROADCAST=${1:-$BROADCAST_MODE}
-  local FLAGS="--broadcast-mode=${BROADCAST} --chain-id=${CHAIN_ID} --node=${DEVNET_RPC_TCP} --gas=auto --gas-adjustment=1.5 -y"
+  local FLAGS="--broadcast-mode=${BROADCAST} --output=json --chain-id=${CHAIN_ID} --node=${DEVNET_RPC_TCP} --gas=auto --gas-adjustment=1.5 -y"
   echo "${FLAGS}"
 }
 

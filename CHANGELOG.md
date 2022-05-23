@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.1 - 23/05/2022
+
+A minor update that:
+
+* Implements the `config` command and loads any client configuration from `.und_mainchain/config/client.toml`
+* Overrides the gRPC `/cosmos/bank/v1beta1/supply` endpoints with the `enterprise` versions to correctly subtract locked eFUND
+
 ## v1.5.0 - 07/03/2022
 
 The first `stargate` release of `und`, implementing the Cosmos SDK v0.42.x branch

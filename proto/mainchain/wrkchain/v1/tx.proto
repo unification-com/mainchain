@@ -1,0 +1,73 @@
+syntax = "proto3";
+package mainchain.wrkchain.v1;
+
+import "gogoproto/gogo.proto";
+import "mainchain/wrkchain/v1/wrkchain.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
+
+// Msg defines the wrkchain Msg service.
+service Msg {
+  // RegisterWrkChain defines a method to register a new wrkchain
+  rpc RegisterWrkChain(MsgRegisterWrkChain)
+      returns (MsgRegisterWrkChainResponse);
+
+  // RecordWrkChainBlock defines a method to record a block hash set for a registered wrkchain
+  rpc RecordWrkChainBlock(MsgRecordWrkChainBlock)
+      returns (MsgRecordWrkChainBlockResponse);
+
+}
+
+// MsgRegisterWrkChain represents a message to register a new wrkchain
+message MsgRegisterWrkChain {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // moniker is a short identifier for a wrkchain
+  string moniker = 2;
+  // name is a long name for a wrkchain
+  string name = 3;
+  // genesis_hash is a hash of the genesis block of the wrkchain
+  string genesis_hash = 4 [(gogoproto.jsontag) = "genesis", (gogoproto.moretags) = "yaml:\"genesis\""];
+  // base_type is the type of wrkchain, e.g. geth, cosmos etc.
+  string base_type = 5 [(gogoproto.jsontag) = "type", (gogoproto.moretags) = "yaml:\"type\""];
+  // owner is the address of the owner of the wrkchain
+  string owner = 6;
+}
+
+// MsgRegisterWrkChainResponse defines the Msg/RegisterWrkChain response type.
+message MsgRegisterWrkChainResponse {
+  // wrkchain_id is the id of the new wrkchain
+  uint64 wrkchain_id = 1;
+}
+
+// MsgRecordWrkChainBlock represents a message to submit a set of block hashes for a registered wrkchain
+message MsgRecordWrkChainBlock {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // wrkchain_id is the id of the wrkchain the hashes are being submitted for
+  uint64 wrkchain_id = 1;
+  // height is the block height/number of the hashes being submitted
+  uint64 height = 2;
+  // block_hash is the main block hash
+  string block_hash = 3 [(gogoproto.jsontag) = "blockhash", (gogoproto.moretags) = "yaml:\"blockhash\""];
+  // parent_hash is an optional parent block hash for the given height/block number
+  string parent_hash = 4 [(gogoproto.jsontag) = "parenthash", (gogoproto.moretags) = "yaml:\"parenthash\""];
+  // hash1 is an optional supplementary hash to be submitted, for example TxHash
+  string hash1 = 5;
+  // hash2 is an optional supplementary hash to be submitted, for example TxHash
+  string hash2 = 6;
+  // hash3 is an optional supplementary hash to be submitted, for example TxHash
+  string hash3 = 7;
+  // owner is the address of the owner of the wrkchain
+  string owner = 8;
+}
+
+// MsgRecordWrkChainBlockResponse defines the Msg/RecordWrkChainBlock response type.
+message MsgRecordWrkChainBlockResponse {
+  // wrkchain_id is the id of the wrkchain
+  uint64 wrkchain_id = 1;
+  // height is the height of the submitted block hashes
+  uint64 height = 2;
+}

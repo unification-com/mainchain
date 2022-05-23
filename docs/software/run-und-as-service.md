@@ -4,7 +4,9 @@
 
 [[toc]]
 
-If you intend to run your node as a Validator on any of the public networks, then you will most likely need to permanently run `und` as a background service (as opposed to manually running `und start` and leaving a terminal window/SSH session open).
+If you intend to run your node as a Validator on any of the public networks, then you will most likely need to 
+permanently run `und` as a background service (as opposed to manually running `und start` and leaving a 
+terminal window/SSH session open).
 
 This can easily be done using `systemctl`, and setting up an appropriate service configuration.
 
@@ -26,14 +28,12 @@ Description=Unification Mainchain Validator Node
 User=USERNAME
 Group=USERNAME
 WorkingDirectory=/home/USERNAME
-ExecStart=/home/USERNAME/go/bin/und start --home /home/USERNAME/.und_mainchain
+ExecStart=/usr/local/bin start --home /home/USERNAME/.und_mainchain
 LimitNOFILE=4096
 
 [Install]
 WantedBy=default.target
 ```
-
-Of course, `und` can also be installed into `/usr/local/bin` instead of `/home/USERNAME/$GOPATH/bin/und`
 
 It is entirely possible to create a more sophisticated service definition should you desire.
 
@@ -41,6 +41,7 @@ Next, inform `systemctl` of the new service:
 
 ```bash
 sudo systemctl daemon-reload
+sudo systemctl enable und
 ```
 
 The service can now be started:

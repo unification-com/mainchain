@@ -1,6 +1,14 @@
 # Changelog
 
-## 1.4.9 - 28/02/2022
+## v1.5.0 - 07/03/2022
+
+The first `stargate` release of `und`, implementing the Cosmos SDK v0.42.x branch
+
+* Cosmos SDK updated to 0.42.11
+* Tendermint updated to v0.34.14
+* All Mainchain modules modules migrated to implement protobuf definitions
+
+## v1.4.9 - 28/02/2022
 
 und v1.4.9 is an incremental release which is used only for exporting the genesis state of the Cosmos SDK v0.38 branch.
 It includes a bug fix which prevents genesis exports from successfully executing if a validator has 0% commission.

@@ -1,8 +1,12 @@
 # Light Client/REST
 
-The `undcli` binary comes packaged with a full REST capable server, from which the majority of the `undcli query ...` and `undcli tx ...` commands can also be served.
+The `und` binary comes packaged with a full REST capable server, from which the majority of 
+the `und query ...` and `und tx ...` commands can also be served.
 
-The REST server is generally useful for third party services such as [wallets](https://github.com/unification-com/web-wallet) and [block explorers](https://github.com/unification-com/mainchain-explorer). It interacts with, and can be used alongside the `und` RPC interface.
+The REST server is generally useful for third party services such as 
+[wallets](https://github.com/unification-com/web-wallet) and 
+[block explorers](https://github.com/unification-com/mainchain-explorer). It interacts with, and can be used 
+alongside the `und` RPC interface.
 
 #### Contents
 
@@ -17,33 +21,39 @@ Before continuing, ensure you have gone through the following docs:
 
 ## Running a light client
 
-The Light Client can be started using the following command:
+The Light Client can be started by setting the configuring options in `app.toml` as follows:
 
-```bash
-undcli rest-server --laddr=[tcp://ip:port] --node [tcp://ip:port] --chain-id=[chain_id]
+```toml
+[api]
+enable = true
+swagger = true
+address = "tcp://0.0.0.0:1317"
 ```
 
-For example:
+Then running the `und start` command as normal
 
 ```bash
-undcli rest-server --laddr=tcp://localhost:1317 --node tcp://11.22.33.44:26657 --chain-id=FUND-Mainchain-TestNet-v8
+und start
 ```
 
-This will start the light client on your local host listening on `localhost:1317`, and use the node hosted at `11.22.33.44:26657` to source its data and interface with the `FUND-Mainchain-TestNet-v8` chain (e.g. broadcast any transactions).
+This will start the light client on your local host listening on `localhost:1317`, and use the node 
+hosted at `11.22.33.44:26657` to source its data and interface with the `FUND-Mainchain-TestNet-v8` chain 
+(e.g. broadcast any transactions).
 
 ::: tip
-setting the listen address IP to `0.0.0.0`, e.g. `--laddr=tcp://0.0.0.0:1317` will allow any host to connect to your REST server.
+setting the listen address IP to `0.0.0.0`, e.g. `tcp://0.0.0.0:1317` will allow any host to connect to your REST server.
 :::
 
-Once running, you can visit [http://localhost:1317/swagger-ui/](http://localhost:1317/swagger-ui/) to view all of the REST endpoints available.
-
-The full `undcli rest-server` command specification can be found [here](undcli-commands.md#undcli-rest-server).
+Once running, you can visit [http://localhost:1317/swagger/](http://localhost:1317/swagger/) to view all the REST 
+endpoints available.
 
 ## Running an Archive RPC node
 
-Light Clients are more effective when interfacing with full nodes running in "archive" mode. Nodes running in archive mode do not prune any sync data, and keep a complete transaction event history.
+Light Clients are more effective when interfacing with full nodes running in "archive" mode. Nodes running in archive 
+mode do not prune any sync data, and keep a complete transaction event history.
 
-The quickest way to get up and running with an archive node is to configure the pruning option in `$HOME/.und_mainchain/config/app.toml`:
+The quickest way to get up and running with an archive node is to configure the pruning option in 
+`$HOME/.und_mainchain/config/app.toml`:
 
 ```toml
 pruning = "nothing"

@@ -1,0 +1,119 @@
+syntax = "proto3";
+package mainchain.enterprise.v1;
+
+import "cosmos_sdk/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
+
+// PurchaseOrderStatus enumerates the valid statuses for a given purchase order.
+enum PurchaseOrderStatus {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // STATUS_NIL defines a no-op status.
+  STATUS_NIL = 0 [ (gogoproto.enumvalue_customname) = "StatusNil" ];
+  // STATUS_RAISED defines a raised status.
+  STATUS_RAISED = 1 [ (gogoproto.enumvalue_customname) = "StatusRaised" ];
+  // STATUS_ACCEPTED defines an accepted status.
+  STATUS_ACCEPTED = 2 [ (gogoproto.enumvalue_customname) = "StatusAccepted" ];
+  // STATUS_REJECTED defines a rejected status.
+  STATUS_REJECTED = 3 [ (gogoproto.enumvalue_customname) = "StatusRejected" ];
+  // STATUS_COMPLETED defines a completed status.
+  STATUS_COMPLETED = 4 [ (gogoproto.enumvalue_customname) = "StatusCompleted" ];
+}
+
+// WhitelistAction enumerates the valid actions for whitelisting addresses.
+enum WhitelistAction {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // WHITELIST_ACTION_NIL defines a no-op action.
+  WHITELIST_ACTION_NIL = 0
+      [ (gogoproto.enumvalue_customname) = "WhitelistActionNil" ];
+  // WHITELIST_ACTION_ADD defines an add action.
+  WHITELIST_ACTION_ADD = 1
+      [ (gogoproto.enumvalue_customname) = "WhitelistActionAdd" ];
+  // WHITELIST_ACTION_REMOVE defines a remove action.
+  WHITELIST_ACTION_REMOVE = 2
+      [ (gogoproto.enumvalue_customname) = "WhitelistActionRemove" ];
+}
+
+// PurchaseOrderDecision defines a decision made for a given purchase order, ie,
+// whether to accept or reject
+message PurchaseOrderDecision {
+  // signer is an authorised address for making decisions
+  string signer = 1;
+  // decision is the decision made, i.e. accept/reject
+  PurchaseOrderStatus decision = 2;
+  // decision_time is a unix epoch value of the decision submission time
+  uint64 decision_time = 3;
+}
+
+// EnterpriseUndPurchaseOrder defines a purchase order raised by a whitelisted address
+message EnterpriseUndPurchaseOrder {
+  // id is the purchase order ID
+  uint64 id = 1;
+  // purchaser is the address of the user who raised the order
+  string purchaser = 2;
+  // amount is the amount being raised for
+  cosmos.base.v1beta1.Coin amount = 3 [ (gogoproto.nullable) = false ];
+  // status is the current PurchaseOrderStatus
+  PurchaseOrderStatus status = 4;
+  // raise_time is a unix epoch value of the order submission time
+  uint64 raise_time = 5;
+  // completion_time is a unix epoch value of the time the order was completed
+  uint64 completion_time = 6;
+  // decisions is an array of decisions made by authorised addresses
+  repeated PurchaseOrderDecision decisions = 7 [(gogoproto.castrepeated) = "PurchaseOrderDecisions", (gogoproto.nullable) = false];
+}
+
+// PurchaseOrders defines a list of purchase orders
+message PurchaseOrders {
+  repeated EnterpriseUndPurchaseOrder purchase_orders = 1;
+}
+
+// LockedUnd defines the amount of locked FUND for an account
+message LockedUnd {
+  // owner is the address of the locked FUND owner
+  string owner = 1;
+  // amount is the amount currently locked and available to pay for beacon/wrkchain fees
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
+// EnterpriseUserAccount defines data about an enterprise user
+message EnterpriseUserAccount {
+  // owner is the address of the account
+  string owner = 1;
+  // locked is the amount the account currently has locked and available to pay for beacon/wrkchain fees
+  cosmos.base.v1beta1.Coin locked = 2 [ (gogoproto.nullable) = false ];
+  // unlocked is the amount currently unlocked - i.e. standard FUND in general supply
+  cosmos.base.v1beta1.Coin unlocked = 3 [ (gogoproto.nullable) = false ];
+  // total is the sum of locked and unlocked FUND
+  cosmos.base.v1beta1.Coin total = 4 [ (gogoproto.nullable) = false ];
+}
+
+// UndSupply defines the current FUND supply, including locked
+message UndSupply {
+  // denom is the denomination, e.g. nund
+  string denom = 1;
+  // amount is the amount of unlocked FUND in general supply
+  uint64 amount = 2;
+  // locked is the amount of locked FUND
+  uint64 locked = 3;
+  // amount is the sum of locked and unlocked FUND
+  uint64 total = 4;
+}
+
+// WhitelistAddresses defines a list of whitelisted addresses authorised to raise enterprise purchase orders
+message WhitelistAddresses { repeated string addresses = 1; }
+
+// Params defines the parameters for the enterprise module.
+message Params {
+  // ent_signers is a list of addresses authorised to make decisions on raised purchase orders
+  string ent_signers = 1;
+  // denom is the denomination of eFUND, e.g. nund
+  string denom = 2;
+  // min_accepts is the minumum number of ent_signers required to accept a PO before it is processed and efUND minted
+  uint64 min_accepts = 3;
+  // decision_time_limit is the time limit within which all decisions must be made for a raised purchase order.
+  uint64 decision_time_limit = 4;
+}

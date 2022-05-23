@@ -1,0 +1,29 @@
+syntax = "proto3";
+package mainchain.beacon.v1;
+
+import "gogoproto/gogo.proto";
+import "mainchain/beacon/v1/beacon.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/beacon/types";
+
+// GenesisState defines the beacon module's genesis state.
+message GenesisState {
+  // params defines all the paramaters of the module.
+  Params params = 1 [(gogoproto.nullable) = false];
+  uint64 starting_beacon_id = 2;
+  repeated BeaconExport registered_beacons = 3 [(gogoproto.castrepeated) = "BeaconExports", (gogoproto.nullable) = false];
+}
+
+// BeaconTimestampGenesisExport is a trimmed version of BeaconTimestamp
+// for genesis exports to conserve space
+message BeaconTimestampGenesisExport {
+  uint64 id = 1;
+  uint64 t = 2;
+  string h = 3;
+}
+
+// BeaconExport holds genesis export data for a beacon, including submitted timestamps
+message BeaconExport {
+  Beacon beacon = 1 [(gogoproto.nullable) = false];
+  repeated BeaconTimestampGenesisExport timestamps = 2 [(gogoproto.castrepeated) = "BeaconTimestampGenesisExports", (gogoproto.nullable) = false];
+}

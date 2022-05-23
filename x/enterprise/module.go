@@ -1,158 +1,202 @@
 package enterprise
 
 import (
+	"context"
 	"encoding/json"
-	"github.com/unification-com/mainchain/x/enterprise/internal/types"
-	"github.com/unification-com/mainchain/x/enterprise/simulation"
+	"fmt"
 	"math/rand"
+
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
-
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/unification-com/mainchain/x/enterprise/client/cli"
-	"github.com/unification-com/mainchain/x/enterprise/client/rest"
-
-	"github.com/cosmos/cosmos-sdk/client/context"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	sim "github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/unification-com/mainchain/x/enterprise/keeper"
+	"github.com/unification-com/mainchain/x/enterprise/simulation"
+	"github.com/unification-com/mainchain/x/enterprise/types"
+
+	"github.com/unification-com/mainchain/x/enterprise/client/cli"
+	"github.com/unification-com/mainchain/x/enterprise/client/rest"
 )
 
-// type check to ensure the interface is properly implemented
 var (
 	_ module.AppModule           = AppModule{}
 	_ module.AppModuleBasic      = AppModuleBasic{}
-	_ module.AppModuleSimulation = AppModuleSimulation{}
+	_ module.AppModuleSimulation = AppModule{}
 )
 
-// app module Basics object
-type AppModuleBasic struct{}
+// AppModuleBasic defines the basic application module used by the enterprise module.
+type AppModuleBasic struct {
+	cdc codec.Marshaler
+}
 
+// Name returns the enterprise module's name.
 func (AppModuleBasic) Name() string {
-	return ModuleName
+	return types.ModuleName
 }
 
-func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
-	RegisterCodec(cdc)
+// RegisterLegacyAminoCodec registers the enterprise module's types for the given codec.
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	types.RegisterLegacyAminoCodec(cdc)
 }
 
-func (AppModuleBasic) DefaultGenesis() json.RawMessage {
-	return ModuleCdc.MustMarshalJSON(DefaultGenesisState())
+// DefaultGenesis returns default genesis state as raw bytes for the enterprise
+// module.
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
-// Validation check of the Genesis
-func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
-	var data GenesisState
-	err := ModuleCdc.UnmarshalJSON(bz, &data)
-	if err != nil {
-		return err
+// ValidateGenesis performs genesis state validation for the enterprise module.
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxEncodingConfig, bz json.RawMessage) error {
+	var data types.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
-	// Once json successfully marshalled, passes along to genesis.go
-	return ValidateGenesis(data)
+
+	return types.ValidateGenesis(data)
 }
 
-// Register rest routes
-func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr)
+// RegisterRESTRoutes registers the REST routes for the enterprise module.
+func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
+	rest.RegisterLegacyRESTRoutes(clientCtx, rtr)
 }
 
-// Get the root query command of this module
-func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetQueryCmd(StoreKey, cdc)
+// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the enterprise module.
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
 
-// Get the root tx command of this module
-func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetTxCmd(StoreKey, cdc)
+// GetTxCmd returns the root tx command for the enterprise module.
+func (AppModuleBasic) GetTxCmd() *cobra.Command {
+	return cli.GetTxCmd()
 }
 
-type AppModule struct {
-	AppModuleBasic
-	AppModuleSimulation
-	keeper       Keeper
-	supplyKeeper types.SupplyKeeper
+// GetQueryCmd returns the root query command for the enterprise module.
+func (AppModuleBasic) GetQueryCmd() *cobra.Command {
+	return cli.GetQueryCmd()
 }
 
-// NewAppModule creates a new AppModule Object
-func NewAppModule(k Keeper, sk types.SupplyKeeper) AppModule {
-	return AppModule{
-		AppModuleBasic: AppModuleBasic{},
-		keeper:         k,
-		supplyKeeper:   sk,
-	}
-}
-
-func (AppModule) Name() string {
-	return ModuleName
-}
-
-func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
-	RegisterInvariants(ir, am.keeper)
-}
-
-func (am AppModule) Route() string {
-	return RouterKey
-}
-
-func (am AppModule) NewHandler() sdk.Handler {
-	return NewHandler(am.keeper)
-}
-func (am AppModule) QuerierRoute() string {
-	return ModuleName
-}
-
-func (am AppModule) NewQuerierHandler() sdk.Querier {
-	return NewQuerier(am.keeper)
-}
-
-func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	BeginBlocker(ctx, am.keeper)
-}
-
-func (am AppModule) EndBlock(sdk.Context, abci.RequestEndBlock) []abci.ValidatorUpdate {
-	return []abci.ValidatorUpdate{}
-}
-
-func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
-	var genesisState GenesisState
-	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
-	return InitGenesis(ctx, am.keeper, am.supplyKeeper, genesisState)
-}
-
-func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
-	gs := ExportGenesis(ctx, am.keeper)
-	return ModuleCdc.MustMarshalJSON(gs)
+// RegisterInterfaces registers interfaces and implementations of the enterprise module.
+func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	types.RegisterInterfaces(registry)
 }
 
 //____________________________________________________________________________
 
-// AppModuleSimulation defines the module simulation functions used by the auth module.
-type AppModuleSimulation struct{}
+// AppModule implements an application module for the enterprise module.
+type AppModule struct {
+	AppModuleBasic
 
-// RegisterStoreDecoder registers a decoder for auth module's types
-func (AppModuleSimulation) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[StoreKey] = simulation.DecodeStore
+	keeper        keeper.Keeper
+	bankKeeper    types.BankKeeper
+	accountKeeper types.AccountKeeper
 }
 
+// NewAppModule creates a new AppModule object
+func NewAppModule(cdc codec.Marshaler, keeper keeper.Keeper, bankKeeper types.BankKeeper, accountKeeper types.AccountKeeper) AppModule {
+	return AppModule{
+		AppModuleBasic: AppModuleBasic{cdc: cdc},
+		keeper:         keeper,
+		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
+	}
+}
+
+// Name returns the enterprise module's name.
+func (AppModule) Name() string {
+	return types.ModuleName
+}
+
+// RegisterInvariants performs a no-op.
+func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
+	keeper.RegisterInvariants(ir, am.keeper)
+}
+
+// Route returns the message routing key for the module.
+func (am AppModule) Route() sdk.Route {
+	return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper))
+}
+
+// QuerierRoute returns the enterprise module's querier route name.
+func (AppModule) QuerierRoute() string {
+	return types.QuerierRoute
+}
+
+// LegacyQuerierHandler returns the enterprise module sdk.Querier.
+func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
+	return keeper.NewLegacyQuerier(am.keeper, legacyQuerierCdc)
+}
+
+// RegisterServices registers a GRPC query service to respond to the
+// module-specific GRPC queries.
+func (am AppModule) RegisterServices(cfg module.Configurator) {
+	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
+	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+}
+
+// InitGenesis performs genesis initialization for the enterprise module. It returns
+// no validator updates.
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
+	var genesisState types.GenesisState
+	cdc.MustUnmarshalJSON(data, &genesisState)
+	InitGenesis(ctx, am.keeper, am.bankKeeper, am.accountKeeper, genesisState)
+	return []abci.ValidatorUpdate{}
+}
+
+// ExportGenesis returns the exported genesis state as raw bytes for the enterprise
+// module.
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
+	gs := ExportGenesis(ctx, am.keeper)
+	return cdc.MustMarshalJSON(gs)
+}
+
+// BeginBlock returns the begin blocker for the enterprise module.
+func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
+	BeginBlocker(ctx, am.keeper)
+}
+
+// EndBlock returns the end blocker for the enterprise module. It returns no validator
+// updates.
+func (AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
+	return []abci.ValidatorUpdate{}
+}
+
+//____________________________________________________________________________
+
+// AppModuleSimulation functions
+
 // GenerateGenesisState creates a randomized GenState of the enterprise module
-func (AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState) {
+func (am AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
 }
 
-// RandomizedParams creates randomized auth param changes for the simulator.
-func (AppModuleSimulation) RandomizedParams(r *rand.Rand) []sim.ParamChange {
+// ProposalContents doesn't return any content functions for governance proposals.
+func (AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
+	return nil
+}
+
+// RandomizedParams creates randomized enterprise param changes for the simulator.
+func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
 	return simulation.ParamChanges(r)
 }
 
-// ProposalContents doesn't return any content functions for proposals.
-func (AppModuleSimulation) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
-	return nil
+// RegisterStoreDecoder registers a decoder for enterprise module's types
+func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+	sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
 // WeightedOperations doesn't return any enterprise module operation.
-func (AppModuleSimulation) WeightedOperations(_ module.SimulationState) []sim.WeightedOperation {
-	return nil
+func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc,
+		am.keeper, am.bankKeeper, am.accountKeeper,
+	)
 }

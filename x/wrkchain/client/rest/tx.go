@@ -3,13 +3,14 @@ package rest
 import (
 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/gorilla/mux"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	"github.com/gorilla/mux"
-	"github.com/unification-com/mainchain/x/wrkchain/internal/keeper"
-	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
+
+	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 type registerWrkChainReq struct {
@@ -34,32 +35,32 @@ type recordWrkChainBlockReq struct {
 }
 
 // registerTxRoutes - define REST Tx routes
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc("/wrkchain/reg", registerWrkChainHandler(cliCtx)).Methods("POST")
 
 	r.HandleFunc("/wrkchain/rec", recordWrkChainBlockHandler(cliCtx)).Methods("POST")
 }
 
-func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func registerWrkChainHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req registerWrkChainReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
 			return
 		}
 
 		baseReq := req.BaseReq.Sanitize()
 
-		// automatically apply fees
-		paramsRetriever := keeper.NewParamsRetriever(cliCtx)
-		wrkchainParams, err := paramsRetriever.GetParams()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		}
-
-		fees := sdk.NewCoins(sdk.NewInt64Coin(wrkchainParams.Denom, int64(wrkchainParams.FeeRegister)))
-
-		baseReq.Fees = fees
+		// Todo -  automatically apply fees
+		//paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+		//wrkchainParams, err := paramsRetriever.GetParams()
+		//if err != nil {
+		//	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		//}
+		//
+		//fees := sdk.NewCoins(sdk.NewInt64Coin(wrkchainParams.Denom, int64(wrkchainParams.FeeRegister)))
+		//
+		//baseReq.Fees = fees
 
 		if !baseReq.ValidateBasic(w) {
 			return
@@ -79,30 +80,30 @@ func registerWrkChainHandler(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
+		tx.WriteGeneratedTxResponse(cliCtx, w, baseReq, msg)
 	}
 }
 
-func recordWrkChainBlockHandler(cliCtx context.CLIContext) http.HandlerFunc {
+func recordWrkChainBlockHandler(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req recordWrkChainBlockReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
 			return
 		}
 
 		baseReq := req.BaseReq.Sanitize()
 
-		// automatically apply fees
-		paramsRetriever := keeper.NewParamsRetriever(cliCtx)
-		wrkchainParams, err := paramsRetriever.GetParams()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		}
-
-		fees := sdk.NewCoins(sdk.NewInt64Coin(wrkchainParams.Denom, int64(wrkchainParams.FeeRecord)))
-
-		baseReq.Fees = fees
+		// todo - automatically apply fees
+		//paramsRetriever := keeper.NewParamsRetriever(cliCtx)
+		//wrkchainParams, err := paramsRetriever.GetParams()
+		//if err != nil {
+		//	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		//}
+		//
+		//fees := sdk.NewCoins(sdk.NewInt64Coin(wrkchainParams.Denom, int64(wrkchainParams.FeeRecord)))
+		//
+		//baseReq.Fees = fees
 
 		if !baseReq.ValidateBasic(w) {
 			return
@@ -122,6 +123,6 @@ func recordWrkChainBlockHandler(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
+		tx.WriteGeneratedTxResponse(cliCtx, w, baseReq, msg)
 	}
 }

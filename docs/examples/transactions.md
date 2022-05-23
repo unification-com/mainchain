@@ -1,11 +1,12 @@
 # Sending Simple Transactions
 
-The `undcli` CMD can be used to generate, sign and broadcast new transactions
+The `und` CMD can be used to generate, sign and broadcast new transactions
 to the network. It can also be used to query transactions, accounts and
 a variety of other network information.
 
 ::: warning IMPORTANT
-Whenever you use `undcli` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if necessary `--node=` flags so that you connect to the correct network!
+Whenever you use `und` to send Txs or query the chain ensure you pass the correct data to the `--chain-id` and if
+necessary `--node=` flags so that you connect to the correct network!
 :::
 
 #### Contents
@@ -22,7 +23,7 @@ with funds.
 The `send` command is as follows:
 
 ```bash
-undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id] --node=tcp://[ip]:[port] --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node false
+und tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id] --node=tcp://[ip]:[port] --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node false
 ```
 
 - `[from_key_or_address]` - this can be either your account identifier, or your `bech32` address
@@ -32,7 +33,8 @@ undcli tx send [from_key_or_address] [to_address] [amount] --chain-id [chain_id]
 - `[ip]:[port]` - the IP and Port of the RPC node to broadcast the Tx
 
 ::: tip
-If you are running your own full node, you can set the `--trust-node` flag to `true`, which will tell `undcli` not to verify the proofs form the response.
+If you are running your own full node, you can set the `--trust-node` flag to `true`, which will tell `und` not to
+verify the proofs form the response.
 :::
 
 For example, we are running on DevNet, and would like to send 1 FUND from
@@ -41,7 +43,7 @@ account `und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy`. We would
 therefore run:
 
 ```bash
-undcli tx send und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy 1000000000nund --chain-id FUND-Mainchain-DevNet --node=tcp://172.25.0.3:26661 --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node=false
+und tx send und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy 1000000000nund --chain-id FUND-Mainchain-DevNet --node=tcp://172.25.0.3:26661 --gas=auto --gas-adjustment=1.5 --gas-prices=0.25nund --trust-node=false
 ```
 
 You will be prompted for confirmation, along with your password for the account.
@@ -59,7 +61,9 @@ similar to the following:
 ```
 
 ::: tip
-you can set the `--broadcast-mode` flag in the command to `block`. This will tell `undcli` to wait for the transaction to be processed in a block before returning the result. This will take up to 5-6 seconds to complete, but the Tx result will be included in the output.
+you can set the `--broadcast-mode` flag in the command to `block`. This will tell `und` to wait for the transaction
+to be processed in a block before returning the result. This will take up to 5-6 seconds to complete, but the Tx result
+will be included in the output.
 :::
 
 ## Query a Transaction
@@ -67,7 +71,7 @@ you can set the `--broadcast-mode` flag in the command to `block`. This will tel
 You can then query the transaction's progress and final result by running:
 
 ```bash
-undcli query tx 6FC93147D467E27C104BD68DADAC0CFD6AA130E37E8B29F6652570A891E38F71 --chain-id FUND-Mainchain-DevNet
+und query tx 6FC93147D467E27C104BD68DADAC0CFD6AA130E37E8B29F6652570A891E38F71 --chain-id FUND-Mainchain-DevNet
 ```
 
 The output should be similar to:
@@ -167,7 +171,7 @@ Finally, to check that the funds have been sent and received, we can query the
 account:
 
 ```bash
-undcli query account und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --chain-id FUND-Mainchain-DevNet
+und query account und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --chain-id FUND-Mainchain-DevNet
 ```
 
 Which will output a result similar to:

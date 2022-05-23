@@ -41,10 +41,10 @@ module.exports = {
                     {
                       title: "CLI Command & Config References",
                       children: [
-                        "/software/und-commands",
-                        "/software/undcli-commands",
+                        "/software/und_cmd/und",
                         "/software/und-mainchain-config-ref",
-                        "/software/und-mainchain-app-config-ref"
+                        "/software/und-mainchain-app-config-ref",
+                        "/software/und-mainchain-client-config-ref"
                       ]
                     }
                 ]
@@ -74,8 +74,7 @@ module.exports = {
                     "/examples/transactions",
                     "/examples/wrkchain",
                     "/examples/beacon",
-                    "/examples/enterprise-fund",
-                    "/examples/finchain"
+                    "/examples/enterprise-fund"
                 ]
             },
             {

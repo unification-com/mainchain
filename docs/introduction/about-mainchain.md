@@ -21,10 +21,9 @@ Additionally, the [Mainchain repository](https://github.com/unification-com/main
 
 ## Software
 
-The Mainchain suite comes with two binaries: `und` and `undcli`
-
-- `und` - "Unification Daemon": the Mainchain server-side daemon, used to run a full node for Mainchain. Validators run this service to produce blocks. See [full command reference](und-commands.md)  
-- `undcli` - "Unification Daemon Client": the command line interface for interacting with Mainchain nodes. It can also be used to run a light-client RPC node service. See [full command reference](undcli-commands.md)
+The Mainchain suite comes with a unified binary: `und`. This binary is used for running the server-side daemon (e.g.
+for Validator nodes, seeds, sentries, RPCs etc.), and as a client to interact with the network (e.g. for sending queries
+and generating and broadcasting transactions).
 
 Mainchain has been built with the following core Cosmos SDK modules:
 
@@ -37,12 +36,12 @@ Mainchain has been built with the following core Cosmos SDK modules:
 - `x/supply`: FUND Coin supply logic
 - `x/params`: Handles module-level parameters, which can be modified via governance.
 - `x/crisis`: Handles potential network errors during the early days of deployment
+- `x/upgrade`: Handles processing software upgrades and associated state migrations
 
 Unification have also developed the following modules for Mainchain:
 
 - `x/beacon`: BEACON hash timestamp submission logic
 - `x/enterprise`: Handles purchasing, locking and unlocking of Enterprise FUND
-- `x/mint`: A modified core Cosmos SDK module, handling inflation and Block Reward logic.
 - `x/wrkchain`: WRKChain block hash submission handling
 
 #### Next

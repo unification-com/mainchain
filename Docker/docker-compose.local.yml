@@ -1,40 +1,32 @@
 version: "3"
 services:
-  node1:
-    hostname: node1
+  dn_node1:
+    hostname: dn_node1
     build:
       context: ..
       dockerfile: ./Docker/validator.local/Dockerfile
       args:
         WITH_DELVE: "no"
-    container_name: node1
-#    command: /root/.go/bin/und start --home /root/.und_mainchain/node1 --p2p.laddr=tcp://0.0.0.0:26651 --rpc.laddr=tcp://0.0.0.0:26661 --log_level="main:info,state:info,x/enterprise:debug,x/beacon:debug,x/wrkchain:debug,*:error"
-    command: >
-      /bin/sh -c "
-        /root/.go/bin/und start --home /root/.und_mainchain/node1 --p2p.laddr=tcp://0.0.0.0:26651 --rpc.laddr=tcp://0.0.0.0:26661 --halt-time 0 & \
-        tail -f /root/.und_mainchain/node1/config/genesis.json
-      "
+    container_name: dn_node1
+    command: /root/.go/bin/und start --home /root/.und_mainchain/node1
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.3
     ports:
       - "26661:26661"
       - "26651:26651"
+      - "1317:1317"
+      - "9091:9091"
 
-  node2:
-    hostname: node2
+  dn_node2:
+    hostname: dn_node2
     build:
       context: ..
       dockerfile: ./Docker/validator.local/Dockerfile
       args:
         WITH_DELVE: "no"
-    container_name: node2
-#    command: /root/.go/bin/und start --home /root/.und_mainchain/node2 --p2p.laddr=tcp://0.0.0.0:26652 --rpc.laddr=tcp://0.0.0.0:26662
-    command: >
-      /bin/sh -c "
-        /root/.go/bin/und start --home /root/.und_mainchain/node2 --p2p.laddr=tcp://0.0.0.0:26652 --rpc.laddr=tcp://0.0.0.0:26662 --halt-time 0 & \
-        tail -f /root/.und_mainchain/node2/config/genesis.json
-      "
+    container_name: dn_node2
+    command: /root/.go/bin/und start --home /root/.und_mainchain/node2
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.4
@@ -42,20 +34,15 @@ services:
       - "26662:26662"
       - "26652:26652"
 
-  node3:
-    hostname: node3
+  dn_node3:
+    hostname: dn_node3
     build:
       context: ..
       dockerfile: ./Docker/validator.local/Dockerfile
       args:
         WITH_DELVE: "no"
-    container_name: node3
-#    command: /root/.go/bin/und start --home /root/.und_mainchain/node3 --p2p.laddr=tcp://0.0.0.0:26653 --rpc.laddr=tcp://0.0.0.0:26663
-    command: >
-      /bin/sh -c "
-        /root/.go/bin/und start --home /root/.und_mainchain/node3 --p2p.laddr=tcp://0.0.0.0:26653 --rpc.laddr=tcp://0.0.0.0:26663 --halt-time 0 & \
-        tail -f /root/.und_mainchain/node3/config/genesis.json
-      "
+    container_name: dn_node3
+    command: /root/.go/bin/und start --home /root/.und_mainchain/node3
     networks:
       mainchain_devnet:
         ipv4_address: 172.25.0.5
@@ -79,27 +66,6 @@ services:
       - "26664:26664"
       - "26654:26654"
 
-  rest-server:
-    hostname: rest-server
-    build:
-      context: ..
-      dockerfile: ./Docker/validator.local/Dockerfile
-      args:
-        WITH_DELVE: "no"
-    container_name: rest-server
-    command: >
-      /bin/sh -c "
-        until nc -z 172.25.0.3 26661; do sleep 1; echo 'wait for node1'; done
-        echo 'wait for first block'
-        sleep 20
-        /root/.go/bin/undcli rest-server --laddr=tcp://0.0.0.0:1317 --node tcp://172.25.0.3:26661 --chain-id=FUND-Mainchain-DevNet --trust-node=true
-      "
-    networks:
-      mainchain_devnet:
-        ipv4_address: 172.25.0.6
-    ports:
-      - "1317:1317"
-
   proxy:
     hostname: proxy
     build:
@@ -110,6 +76,7 @@ services:
         ipv4_address: 172.25.0.7
     ports:
       - "1318:1318"
+      - "9092:9092"
 
 networks:
   mainchain_devnet:

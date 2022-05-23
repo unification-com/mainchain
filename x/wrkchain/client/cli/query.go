@@ -1,23 +1,20 @@
 package cli
 
 import (
+	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
+	"strconv"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain/x/wrkchain/internal/keeper"
-	"github.com/unification-com/mainchain/x/wrkchain/internal/types"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
-func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd() *cobra.Command {
 	wrkchainQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the wrkchain module",
@@ -25,65 +22,82 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	wrkchainQueryCmd.AddCommand(flags.GetCommands(
-		GetCmdQueryParams(cdc),
-		GetCmdWrkChain(storeKey, cdc),
-		GetCmdSearchWrkChains(storeKey, cdc),
-		GetCmdWrkChainBlock(storeKey, cdc),
-	)...)
+	wrkchainQueryCmd.AddCommand(
+		GetCmdQueryParams(),
+		GetCmdWrkChain(),
+		GetCmdSearchWrkChains(),
+		GetCmdWrkChainBlock(),
+	)
 	return wrkchainQueryCmd
 }
 
 // GetCmdQueryParams implements a command to return the current WRKChain parameters.
-func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdQueryParams() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "params",
 		Short: "Query the current WRKChain parameters",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
 
-			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, keeper.QueryParameters)
-			res, _, err := cliCtx.QueryWithData(route, nil)
+			// Query store for all params
+			params, err := queryClient.Params(
+				context.Background(),
+				&types.QueryParamsRequest{},
+			)
+
 			if err != nil {
 				return err
 			}
 
-			var params types.Params
-			if err := cdc.UnmarshalJSON(res, &params); err != nil {
-				return err
-			}
-
-			return cliCtx.PrintOutput(params)
+			return clientCtx.PrintObjectLegacy(params)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdWrkChain queries information about a wrkchain
-func GetCmdWrkChain(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func GetCmdWrkChain() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "wrkchain [wrkchain id]",
 		Short: "Query a WRKChain for given ID",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			wrkchainId := args[0]
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, keeper.QueryWrkChain, wrkchainId), nil)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
-				fmt.Printf("could not find WRKChain - %s \n", wrkchainId)
-				return nil
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			// validate that the beacon id is a uint
+			wrkchainId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("beacon_id %s not a valid int, please input a valid beacon_id", args[0])
 			}
 
-			var out types.WrkChain
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			res, err := queryClient.WrkChain(context.Background(), &types.QueryWrkChainRequest{
+				WrkchainId: wrkchainId,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdSearchWrkChains runs a WRKChain search query with parameters
-func GetCmdSearchWrkChains(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdSearchWrkChains() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "search",
 		Short: "Query all WRKChains with optional filters",
@@ -95,71 +109,88 @@ $ %s query wrkchain search --moniker wrkchain1
 $ %s query wrkchain search --owner und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay
 $ %s query wrkchain search --page=2 --limit=100
 `,
-				version.ClientName, version.ClientName, version.ClientName,
+				version.AppName, version.AppName, version.AppName,
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			moniker := viper.GetString(FlagMoniker)
-			bechOwnerAddr := viper.GetString(FlagOwner)
-			page := viper.GetInt(FlagPage)
-			limit := viper.GetInt(FlagNumLimit)
+			moniker, _ := cmd.Flags().GetString(FlagMoniker)
+			bechOwnerAddr, _ := cmd.Flags().GetString(FlagOwner)
+			pageReq, _ := client.ReadPageRequest(cmd.Flags())
 
-			var ownerAddr sdk.AccAddress
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
 
-			params := types.NewQueryWrkChainParams(page, limit, moniker, ownerAddr)
-			if len(bechOwnerAddr) != 0 {
-				ownerAddr, err := sdk.AccAddressFromBech32(bechOwnerAddr)
-				if err != nil {
-					return err
-				}
-				params.Owner = ownerAddr
+			params := &types.QueryWrkChainsFilteredRequest{
+				Pagination: pageReq,
 			}
 
-			bz, err := cdc.MarshalJSON(params)
+			if len(moniker) > 0 {
+				params.Moniker = moniker
+			}
+
+			if len(bechOwnerAddr) > 0 {
+				params.Owner = bechOwnerAddr
+			}
+
+			res, err := queryClient.WrkChainsFiltered(context.Background(), params)
+
 			if err != nil {
 				return err
 			}
 
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			return clientCtx.PrintProto(res)
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", queryRoute, keeper.QueryWrkChainsFiltered), bz)
-			if err != nil {
-				return err
-			}
-
-			var out types.QueryResWrkChains
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
 		},
 	}
-	cmd.Flags().Int(FlagPage, 1, "pagination page of wrkchains to to query for")
-	cmd.Flags().Int(FlagNumLimit, 100, "pagination limit of wrkchains to query for")
+	flags.AddQueryFlagsToCmd(cmd)
 	cmd.Flags().String(FlagMoniker, "", "(optional) filter wrkchains by name")
 	cmd.Flags().String(FlagOwner, "", "(optional) filter wrkchains by owner address")
 	return cmd
 }
 
 // GetCmdWrkChainBlock queries information about a wrkchain's recorded block hashes
-func GetCmdWrkChainBlock(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "block [wrkchain id] [height]",
+func GetCmdWrkChainBlock() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "block [wrkchain_id] [height]",
 		Short: "Query a WRKChain for given ID and block height to retrieve recorded hashes for that block",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			wrkchainId := args[0]
-			height := args[1]
 
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s/%s", queryRoute, keeper.QueryWrkChainBlock, wrkchainId, height), nil)
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
-				fmt.Printf("could not find WRKChain %s block hashes at height %s \n", wrkchainId, height)
-				return nil
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			// validate that the wrkchain_id is a uint
+			wrkchainId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("wrkchain_id %s not a valid int, please input a valid wrkchain_id", args[0])
 			}
 
-			var out types.WrkChainBlock
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
+			// validate that the height is a uint
+			height, err := strconv.ParseUint(args[1], 10, 64)
+
+			if err != nil {
+				return fmt.Errorf("height %s not a valid int, please input a valid height", args[1])
+			}
+
+			res, err := queryClient.WrkChainBlock(context.Background(), &types.QueryWrkChainBlockRequest{
+				WrkchainId: wrkchainId,
+				Height:     height,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }

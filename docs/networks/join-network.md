@@ -138,9 +138,71 @@ There is a known issue with the `syncable` pruning option in the Cosmos SDK. Sin
 default value when `und init` is run, it is recommended to set the value to either `pruning = "everything"` or `pruning = "nothing"` in `$HOME/.und_mainchain/config/app.toml`. Note that setting to `pruning = "nothing"` will increase storage usage considerably.
 :::
 
+## State Syncing from Snapshots
+
+The default method for syncing your node with the network is to start from `genesis`, and replay every block to the
+current block. As the chain grows, this can potentially take several days to complete. Thankfully, Cosmos SDK >= 0.42,
+which is used by the latest `und` software, can use State Syncing  from Snapshots to quickly sync your node from a safe
+checkpoint. This potentially reduces the sync time to no more than an hour or so, and in most cases mere minutes.
+
+Setting this up requires a few more steps
+
+1. Run the following command to get the latest block hash and height. For **TestNet**:
+
+```bash
+curl -s https://rest-testnet.unification.io/blocks/latest | jq '.|[.block_id.hash,.block.header.height]'
+```
+
+For **MainNet**:
+
+```bash
+curl -s https://rest.unification.io/blocks/latest | jq '.|[.block_id.hash,.block.header.height]'
+```
+
+Example output:
+
+```json
+[
+  "820275B5EE63EDA2923886A01C0B1196A7CE1D96A89FA0D774942999C6698AAC",
+  "1052423"
+]
+```
+
+2. Using the output from the above command, configure `[statesync]` section in `/mnt/disks/data/.und_mainchain/config.toml`:
+
+```toml
+enable = true
+rpc_servers = "TWO_RPC_NODES"
+trust_height = 1052423
+trust_hash = "820275B5EE63EDA2923886A01C0B1196A7CE1D96A89FA0D774942999C6698AAC"
+trust_period = "168h0m0s"
+discovery_time = "30s"
+temp_dir = ""
+chunk_request_timeout = "60s"
+chunk_fetchers = "4"
+```
+
+The `rpc_servers` requires two RPC nodes for verification.
+
+For **TestNet**, replace `TWO_RPC_NODES` with:
+
+`sync1-testnet.unification.io:26657,sync2-testnet.unification.io:26657`
+
+For **MainNet**:
+
+`sync1.unification.io:26657,sync2.unification.io:26657`
+
+e.g.:
+
+```toml
+rpc_servers = "sync1.unification.io:26657,sync2.unification.io:26657"
+```
+
+Or any RPC servers of your choice for the target network.
+
 ## Running your node
 
-Now that you have `genesis`, and some seed nodes, you can run your full node:
+Now that you have `genesis`, and some seed nodes, and state sync configured, you can run your full node:
 
 ```bash
 und start

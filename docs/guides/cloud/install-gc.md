@@ -221,8 +221,8 @@ See [https://github.com/unification-com/mainchain/releases](https://github.com/u
 the latest release, and replace the archive name with the latest `linux` version in the commands below.
 
 ```bash
-wget https://github.com/unification-com/mainchain/releases/download/1.5.0/und_v1.5.0_linux_x86_64.tar.gz
-tar -zxvf und_v1.5.0_linux_x86_64.tar.gz
+wget https://github.com/unification-com/mainchain/releases/download/1.5.1/und_v1.5.1_linux_x86_64.tar.gz
+tar -zxvf und_v1.5.1_linux_x86_64.tar.gz
 sudo mv und /usr/local/bin/und
 ```
 
@@ -247,7 +247,7 @@ und version --log_level=""
 should output something similar to:
 
 ```yaml
-1.5.0
+1.5.1
 ```
 
 ## Part 5: Initialising your full node
@@ -584,7 +584,7 @@ You can now exit the SSH session - the rest of the commands will be run in a ter
 
 Go
 to [https://github.com/unification-com/mainchain/releases/latest](https://github.com/unification-com/mainchain/releases/latest)
-and download the latest `und` archive for your OS - for example, `und_v1.5.0_windows_x86_64.tar.gz`.
+and download the latest `und` archive for your OS - for example, `und_v1.5.1_windows_x86_64.tar.gz`.
 
 Open a terminal/PowerShell, and `cd` into the directory where you extracted the `und` executable:
 

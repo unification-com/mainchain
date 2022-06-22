@@ -2,9 +2,10 @@ package app
 
 import (
 	"fmt"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"os"
 	"testing"
+
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -14,7 +15,12 @@ import (
 // Profile with:
 // /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/cosmos-sdk/GaiaApp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
 func BenchmarkFullAppSimulation(b *testing.B) {
-	config, db, dir, logger, _, err := simapp.SetupSimulation("goleveldb-app-sim", "Simulation")
+	b.ReportAllocs()
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("goleveldb-app-sim", "Simulation")
+
+	if skip {
+		b.Skip("skipping benchmark application simulation")
+	}
 
 	fmt.Println("Running BenchmarkFullAppSimulation on und_app")
 	SetConfig()
@@ -61,8 +67,12 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 }
 
 func BenchmarkInvariants(b *testing.B) {
+	b.ReportAllocs()
 	fmt.Println("Running BenchmarkInvariants on und_app")
-	config, db, dir, logger, _, err := simapp.SetupSimulation("leveldb-app-invariant-bench", "Simulation")
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-invariant-bench", "Simulation")
+	if skip {
+		b.Skip("skipping benchmark application simulation")
+	}
 	SetConfig()
 	if err != nil {
 		b.Fatalf("simulation setup failed: %s", err.Error())

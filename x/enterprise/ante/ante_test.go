@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -16,6 +16,18 @@ import (
 )
 
 const TestChainID = "und-unit-test-chain"
+
+func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amtCoins sdk.Coins) error {
+	err := bk.MintCoins(ctx, types.ModuleName, amtCoins)
+	if err != nil {
+		return err
+	}
+	err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, amtCoins)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 	app := test_helpers.Setup(true)
@@ -36,12 +48,10 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 	// fund the account
 	accAmt := sdk.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
-	totalSupply := initCoins
-	app.BankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
-
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
-	_ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
+	err := fundAccount(ctx, app.BankKeeper, addr, initCoins)
+	require.NoError(t, err)
 
 	// artificially add locked FUND without minting first
 	toLock := sdk.NewCoin(actualFeeDenom, accAmt)
@@ -58,7 +68,7 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 
 	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	_, err := antehandler(ctx, tx, false)
+	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
 }
@@ -80,15 +90,12 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 	pubK := privK.PubKey()
 	addr := sdk.AccAddress(pubK.Address())
 
-	// fund the account
 	accAmt := sdk.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
-	totalSupply := initCoins
-	app.BankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
-
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
-	_ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
+	err := fundAccount(ctx, app.BankKeeper, addr, initCoins)
+	require.NoError(t, err)
 
 	_ = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, sdk.NewInt64Coin(actualFeeDenom, int64(actualRegFeeAmt)))
 
@@ -98,7 +105,7 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 
 	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	_, err := antehandler(ctx, tx, false)
+	_, err = antehandler(ctx, tx, false)
 	require.NoError(t, err)
 }
 
@@ -120,14 +127,12 @@ func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(actualRegFeeAmt))
+	accAmt := sdk.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
-	totalSupply := initCoins
-	app.BankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
-
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
-	_ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
+	err := fundAccount(ctx, app.BankKeeper, addr, initCoins)
+	require.NoError(t, err)
 
 	feeInt := int64(actualRegFeeAmt)
 	msg := wrkchaintypes.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
@@ -135,6 +140,6 @@ func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
 
 	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	_, err := antehandler(ctx, tx, false)
+	_, err = antehandler(ctx, tx, false)
 	require.NoError(t, err)
 }

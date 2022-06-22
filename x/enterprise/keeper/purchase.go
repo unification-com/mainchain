@@ -148,7 +148,7 @@ func (k Keeper) GetPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) (types
 
 	bz := store.Get(types.PurchaseOrderKey(purchaseOrderID))
 	var enterpriseUndPurchaseOrder types.EnterpriseUndPurchaseOrder
-	k.cdc.MustUnmarshalBinaryBare(bz, &enterpriseUndPurchaseOrder)
+	k.cdc.MustUnmarshal(bz, &enterpriseUndPurchaseOrder)
 	return enterpriseUndPurchaseOrder, true
 }
 
@@ -193,7 +193,7 @@ func (k Keeper) IteratePurchaseOrders(ctx sdk.Context, cb func(purchaseOrder typ
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var po types.EnterpriseUndPurchaseOrder
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &po)
+		k.cdc.MustUnmarshal(iterator.Value(), &po)
 
 		if cb(po) {
 			break
@@ -253,7 +253,7 @@ func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enterprise
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.PurchaseOrderKey(purchaseOrder.Id), k.cdc.MustMarshalBinaryBare(&purchaseOrder))
+	store.Set(types.PurchaseOrderKey(purchaseOrder.Id), k.cdc.MustMarshal(&purchaseOrder))
 
 	return nil
 }

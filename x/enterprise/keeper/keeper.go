@@ -16,13 +16,13 @@ type Keeper struct {
 	paramSpace paramtypes.Subspace
 	bankKeeper types.BankKeeper
 	accKeeper  types.AccountKeeper
-	cdc        codec.BinaryMarshaler // The wire codec for binary encoding/decoding.
+	cdc        codec.BinaryCodec // The wire codec for binary encoding/decoding.
 }
 
 // NewKeeper creates new instances of the enterprise Keeper
 func NewKeeper(storeKey sdk.StoreKey, bankKeeper types.BankKeeper,
 	accKeeper types.AccountKeeper, paramSpace paramtypes.Subspace,
-	cdc codec.BinaryMarshaler) Keeper {
+	cdc codec.BinaryCodec) Keeper {
 
 	// ensure module account is set in SupplyKeeper
 	if addr := accKeeper.GetModuleAddress(types.ModuleName); addr == nil {

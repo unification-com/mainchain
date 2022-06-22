@@ -76,7 +76,7 @@ $ %s query enterprise params
 				return err
 			}
 
-			return clientCtx.PrintObjectLegacy(params)
+			return clientCtx.PrintProto(params)
 		},
 	}
 

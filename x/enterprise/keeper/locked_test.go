@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"math/rand"
 	"testing"
 
@@ -46,11 +47,11 @@ func TestGetTotalUnlocked(t *testing.T) {
 	require.NoError(t, err)
 
 	totUnlocked := app.EnterpriseKeeper.GetTotalUnLockedUnd(ctx)
-	totalSupply := app.BankKeeper.GetSupply(ctx).GetTotal()
+	totalSupply := app.BankKeeper.GetSupply(ctx, denom)
 
-	diff := totalSupply.Sub(sdk.Coins{totUnlocked})
+	diff := totalSupply.Sub(totUnlocked)
 
-	require.Equal(t, sdk.Coins{locked}, diff)
+	require.Equal(t, locked, diff)
 }
 
 func TestGetTotalUndSupply(t *testing.T) {
@@ -59,9 +60,9 @@ func TestGetTotalUndSupply(t *testing.T) {
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	test_helpers.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
 
-	totalSupply := app.BankKeeper.GetSupply(ctx).GetTotal()
+	totalSupply := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
 	totalSupplyFromEnt := app.EnterpriseKeeper.GetTotalUndSupply(ctx)
-	require.Equal(t, totalSupply, sdk.Coins{totalSupplyFromEnt})
+	require.Equal(t, totalSupply, totalSupplyFromEnt)
 }
 
 func TestSetGetLockedUndForAccount(t *testing.T) {
@@ -244,7 +245,7 @@ func TestGetTotalSupplyWithLockedNundRemoved(t *testing.T) {
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
 	totalSupply := sdk.NewCoins(sdk.NewInt64Coin(test_helpers.TestDenomination, 0))
-	totalMinted := sdk.NewCoins(sdk.NewInt64Coin(test_helpers.TestDenomination, 0))
+	totalMinted := sdk.NewInt64Coin(test_helpers.TestDenomination, 0)
 
 	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
 
@@ -264,10 +265,13 @@ func TestGetTotalSupplyWithLockedNundRemoved(t *testing.T) {
 		totalSupply = totalSupply.Add(toUnlock)
 		totalMinted = totalMinted.Add(toMint)
 
-		totalSupplyDb := app.EnterpriseKeeper.GetTotalSupplyWithLockedNundRemoved(ctx)
+		pageReq := &query.PageRequest{
+			Limit: 10,
+		}
+		totalSupplyDb, _, _ := app.EnterpriseKeeper.GetTotalSupplyWithLockedNundRemoved(ctx, pageReq)
 		require.True(t, totalSupplyDb.IsEqual(totalSupply))
 
-		totalMintedDb := app.BankKeeper.GetSupply(ctx).GetTotal()
+		totalMintedDb := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
 		require.True(t, totalMintedDb.IsEqual(totalMinted))
 	}
 }

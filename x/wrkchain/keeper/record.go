@@ -8,7 +8,7 @@ import (
 // SetWrkChainBlock Sets the WrkChain Block struct for a wrkchainId & height
 func (k Keeper) SetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, wrkchainBlock types.WrkChainBlock) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.WrkChainBlockKey(wrkchainId, wrkchainBlock.Height), k.cdc.MustMarshalBinaryBare(&wrkchainBlock))
+	store.Set(types.WrkChainBlockKey(wrkchainId, wrkchainBlock.Height), k.cdc.MustMarshal(&wrkchainBlock))
 
 	return nil
 }
@@ -57,7 +57,7 @@ func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, height uint
 
 	bz := store.Get(blockKey)
 	var wrkchainBlock types.WrkChainBlock
-	k.cdc.MustUnmarshalBinaryBare(bz, &wrkchainBlock)
+	k.cdc.MustUnmarshal(bz, &wrkchainBlock)
 	return wrkchainBlock, true
 }
 
@@ -76,7 +76,7 @@ func (k Keeper) IterateWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64, c
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wcb types.WrkChainBlock
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &wcb)
+		k.cdc.MustUnmarshal(iterator.Value(), &wcb)
 
 		if cb(wcb) {
 			break
@@ -93,7 +93,7 @@ func (k Keeper) IterateWrkChainBlockHashesReverse(ctx sdk.Context, wrkchainID ui
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wcb types.WrkChainBlock
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &wcb)
+		k.cdc.MustUnmarshal(iterator.Value(), &wcb)
 
 		if cb(wcb) {
 			break

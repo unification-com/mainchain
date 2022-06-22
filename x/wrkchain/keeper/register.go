@@ -36,7 +36,7 @@ func (k Keeper) SetHighestWrkChainID(ctx sdk.Context, wrkChainID uint64) {
 // SetWrkChain Sets the WrkChain metadata struct for a wrkchainId
 func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.WrkChainKey(wrkchain.WrkchainId), k.cdc.MustMarshalBinaryBare(&wrkchain))
+	store.Set(types.WrkChainKey(wrkchain.WrkchainId), k.cdc.MustMarshal(&wrkchain))
 
 	return nil
 }
@@ -62,7 +62,7 @@ func (k Keeper) GetWrkChain(ctx sdk.Context, wrkchainId uint64) (types.WrkChain,
 	}
 	bz := store.Get(types.WrkChainKey(wrkchainId))
 	var wrkchain types.WrkChain
-	k.cdc.MustUnmarshalBinaryBare(bz, &wrkchain)
+	k.cdc.MustUnmarshal(bz, &wrkchain)
 	return wrkchain, true
 }
 
@@ -99,7 +99,7 @@ func (k Keeper) IterateWrkChains(ctx sdk.Context, cb func(wrkChain types.WrkChai
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wc types.WrkChain
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &wc)
+		k.cdc.MustUnmarshal(iterator.Value(), &wc)
 
 		if cb(wc) {
 			break

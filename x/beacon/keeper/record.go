@@ -9,7 +9,7 @@ import (
 func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconId uint64, beaconTimestamp types.BeaconTimestamp) error {
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.BeaconTimestampKey(beaconId, beaconTimestamp.TimestampId), k.cdc.MustMarshalBinaryBare(&beaconTimestamp))
+	store.Set(types.BeaconTimestampKey(beaconId, beaconTimestamp.TimestampId), k.cdc.MustMarshal(&beaconTimestamp))
 
 	return nil
 }
@@ -40,7 +40,7 @@ func (k Keeper) GetBeaconTimestampByID(ctx sdk.Context, beaconID uint64, timesta
 
 	bz := store.Get(timestampKey)
 	var beaconTimestamp types.BeaconTimestamp
-	k.cdc.MustUnmarshalBinaryBare(bz, &beaconTimestamp)
+	k.cdc.MustUnmarshal(bz, &beaconTimestamp)
 	return beaconTimestamp, true
 }
 
@@ -52,7 +52,7 @@ func (k Keeper) IterateBeaconTimestamps(ctx sdk.Context, beaconID uint64, cb fun
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &bts)
+		k.cdc.MustUnmarshal(iterator.Value(), &bts)
 
 		if cb(bts) {
 			break
@@ -68,7 +68,7 @@ func (k Keeper) IterateBeaconTimestampsReverse(ctx sdk.Context, beaconID uint64,
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &bts)
+		k.cdc.MustUnmarshal(iterator.Value(), &bts)
 
 		if cb(bts) {
 			break

@@ -55,7 +55,7 @@ func GetCmdQueryParams() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintObjectLegacy(params)
+			return clientCtx.PrintProto(params)
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)

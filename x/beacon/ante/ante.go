@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/beacon/exported"
+	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
 // CorrectBeaconFeeDecorator checks if the correct fees have been sent to pay for a
@@ -83,15 +84,13 @@ func checkBeaconFees(ctx sdk.Context, tx sdk.FeeTx, bk BeaconKeeper) error {
 
 	// go through Msgs wrapped in the Tx, and check for BEACON messages
 	for _, msg := range msgs {
-		if msg.Route() == exported.RouterKey {
-			switch msg.Type() {
-			case exported.RegisterAction:
-				expectedFees = expectedFees.Add(bk.GetRegistrationFeeAsCoin(ctx))
-				numMsgs = numMsgs + 1
-			case exported.RecordAction:
-				expectedFees = expectedFees.Add(bk.GetRecordFeeAsCoin(ctx))
-				numMsgs = numMsgs + 1
-			}
+		switch msg.(type) {
+		case *types.MsgRegisterBeacon:
+			expectedFees = expectedFees.Add(bk.GetRegistrationFeeAsCoin(ctx))
+			numMsgs = numMsgs + 1
+		case *types.MsgRecordBeaconTimestamp:
+			expectedFees = expectedFees.Add(bk.GetRecordFeeAsCoin(ctx))
+			numMsgs = numMsgs + 1
 		}
 	}
 

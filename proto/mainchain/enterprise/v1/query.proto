@@ -158,12 +158,16 @@ message QueryEnterpriseSupplyResponse {
 }
 
 // QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC method
-message QueryTotalSupplyRequest {}
+message QueryTotalSupplyRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
 
 // QueryTotalSupplyResponse is the response type for the Query/TotalSupply RPC method
 message QueryTotalSupplyResponse {
   repeated cosmos.base.v1beta1.Coin supply = 1
   [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QuerySupplyOfRequest is the request type for the Query/SupplyOf RPC method.

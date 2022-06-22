@@ -24,7 +24,7 @@ const (
 )
 
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONMarshaler,
+	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 ) simulation.WeightedOperations {
 
@@ -108,7 +108,7 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "")
+		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
 
 		return opMsg, nil, nil
 	}
@@ -172,7 +172,7 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "")
+		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
 
 		return opMsg, nil, nil
 	}

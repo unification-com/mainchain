@@ -34,7 +34,7 @@ func (k Keeper) SetHighestBeaconID(ctx sdk.Context, beaconID uint64) {
 // SetBeacon Sets the BEACON metadata struct for a beaconID
 func (k Keeper) SetBeacon(ctx sdk.Context, beacon types.Beacon) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.BeaconKey(beacon.BeaconId), k.cdc.MustMarshalBinaryBare(&beacon))
+	store.Set(types.BeaconKey(beacon.BeaconId), k.cdc.MustMarshal(&beacon))
 
 	return nil
 }
@@ -48,7 +48,7 @@ func (k Keeper) GetBeacon(ctx sdk.Context, beaconID uint64) (types.Beacon, bool)
 	}
 	bz := store.Get(types.BeaconKey(beaconID))
 	var beacon types.Beacon
-	k.cdc.MustUnmarshalBinaryBare(bz, &beacon)
+	k.cdc.MustUnmarshal(bz, &beacon)
 	return beacon, true
 }
 
@@ -87,7 +87,7 @@ func (k Keeper) IterateBeacons(ctx sdk.Context, cb func(beacon types.Beacon) (st
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var b types.Beacon
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &b)
+		k.cdc.MustUnmarshal(iterator.Value(), &b)
 
 		if cb(b) {
 			break

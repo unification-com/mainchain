@@ -59,7 +59,7 @@ func (q Keeper) EnterpriseUndPurchaseOrders(c context.Context, req *types.QueryE
 	poStore := prefix.NewStore(store, types.PurchaseOrderIDKeyPrefix)
 	pageRes, err := query.Paginate(poStore, req.Pagination, func(key []byte, value []byte) error {
 		var info types.EnterpriseUndPurchaseOrder
-		err := q.cdc.UnmarshalBinaryBare(value, &info)
+		err := q.cdc.Unmarshal(value, &info)
 		if err != nil {
 			return err
 		}
@@ -121,9 +121,12 @@ func (q Keeper) EnterpriseSupply(c context.Context, req *types.QueryEnterpriseSu
 func (q Keeper) TotalSupply(c context.Context, req *types.QueryTotalSupplyRequest) (*types.QueryTotalSupplyResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-	totalSupply := q.GetTotalSupplyWithLockedNundRemoved(ctx)
+	totalSupply, pageResp, err := q.GetTotalSupplyWithLockedNundRemoved(ctx, req.Pagination)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
-	return &types.QueryTotalSupplyResponse{Supply: totalSupply}, nil
+	return &types.QueryTotalSupplyResponse{Supply: totalSupply, Pagination: pageResp}, nil
 }
 
 func (q Keeper) TotalSupplyOverwrite(c context.Context, req *types.QueryTotalSupplyRequest) (*types.QueryTotalSupplyResponse, error) {
@@ -145,7 +148,7 @@ func (q Keeper) SupplyOf(c context.Context, req *types.QuerySupplyOfRequest) (*t
 	ctx := sdk.UnwrapSDKContext(c)
 	supply := q.GetSupplyOfWithLockedNundRemoved(ctx, req.Denom)
 
-	return &types.QuerySupplyOfResponse{Amount: sdk.NewCoin(req.Denom, supply)}, nil
+	return &types.QuerySupplyOfResponse{Amount: supply}, nil
 }
 
 func (q Keeper) SupplyOfOverwrite(c context.Context, req *types.QuerySupplyOfRequest) (*types.QuerySupplyOfResponse, error) {

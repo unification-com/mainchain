@@ -20,13 +20,11 @@ var (
 func CheckIsBeaconTx(tx sdk.Tx) bool {
 	msgs := tx.GetMsgs()
 	for _, msg := range msgs {
-		if msg.Route() == types.RouterKey {
-			switch msg.Type() {
-			case types.RecordAction:
-				return true
-			case types.RegisterAction:
-				return true
-			}
+		switch msg.(type) {
+		case *types.MsgRegisterBeacon:
+			return true
+		case *types.MsgRecordBeaconTimestamp:
+			return true
 		}
 	}
 	return false

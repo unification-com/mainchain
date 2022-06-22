@@ -23,7 +23,7 @@ func TestMigrate(t *testing.T) {
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
-		WithJSONMarshaler(encodingConfig.Marshaler)
+		WithCodec(encodingConfig.Marshaler)
 
 	owner, err := sdk.AccAddressFromBech32("und10wl769hge8nhszv70uxc9zu0lgrc2lggkhst8v")
 	require.NoError(t, err)
@@ -59,7 +59,7 @@ func TestMigrate(t *testing.T) {
 
 	migrated := v040.Migrate(v038State)
 
-	bz, err := clientCtx.JSONMarshaler.MarshalJSON(migrated)
+	bz, err := clientCtx.Codec.MarshalJSON(migrated)
 	require.NoError(t, err)
 
 	// Indent the JSON bz correctly.

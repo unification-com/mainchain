@@ -326,8 +326,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseSupply() {
 	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
 	toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
 
-	supply := app.BankKeeper.GetSupply(ctx).GetTotal().AmountOf(test_helpers.TestDenomination)
-	baseSupply := sdk.NewCoin(test_helpers.TestDenomination, supply)
+	baseSupply := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
 	locked := toLock.Sub(toUnlock)
 	unlocked := baseSupply.Add(toUnlock)
 	total := baseSupply.Add(toLock)
@@ -363,8 +362,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
 	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
 	toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
 
-	supply := app.BankKeeper.GetSupply(ctx).GetTotal().AmountOf(test_helpers.TestDenomination)
-	baseSupply := sdk.NewCoin(test_helpers.TestDenomination, supply)
+	baseSupply := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
 	expectedTotalSupply := baseSupply.Add(toUnlock)
 
 	expectedResponse := &types.QueryTotalSupplyResponse{
@@ -384,7 +382,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
 	lRes, err := queryClient.TotalSupply(gocontext.Background(), req)
 
 	suite.Require().NoError(err)
-	suite.Require().Equal(expectedResponse, lRes)
+	suite.Require().Equal(expectedResponse.Supply, lRes.Supply)
 }
 
 func (suite *KeeperTestSuite) TestGRPCQuerySupplyOf() {
@@ -393,8 +391,7 @@ func (suite *KeeperTestSuite) TestGRPCQuerySupplyOf() {
 	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
 	toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
 
-	supply := app.BankKeeper.GetSupply(ctx).GetTotal().AmountOf(test_helpers.TestDenomination)
-	baseSupply := sdk.NewCoin(test_helpers.TestDenomination, supply)
+	baseSupply := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
 	expectedTotalSupply := baseSupply.Add(toUnlock)
 
 	expectedResponse := &types.QuerySupplyOfResponse{

@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 )
 
 // MainchainApp implements the common methods for a Cosmos SDK-based application
@@ -15,7 +16,7 @@ type MainchainApp interface {
 	Name() string
 
 	// LegacyAmino The application types codec.
-	// NOTE: This shoult be sealed before being returned.
+	// NOTE: This should be sealed before being returned.
 	LegacyAmino() *codec.LegacyAmino
 
 	// BeginBlocker Application updates every begin block.
@@ -37,4 +38,7 @@ type MainchainApp interface {
 
 	// ModuleAccountAddrs All the registered module account addreses.
 	ModuleAccountAddrs() map[string]bool
+
+	// Helper for the simulation framework.
+	SimulationManager() *module.SimulationManager
 }

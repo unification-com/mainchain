@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/unification-com/mainchain/app/test_helpers"
@@ -16,6 +16,18 @@ import (
 )
 
 const TestChainID = "und-unit-test-chain"
+
+func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amtCoins sdk.Coins) error {
+	err := bk.MintCoins(ctx, enttypes.ModuleName, amtCoins)
+	if err != nil {
+		return err
+	}
+	err = bk.SendCoinsFromModuleToAccount(ctx, enttypes.ModuleName, addr, amtCoins)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 	app := test_helpers.Setup(true)
@@ -221,14 +233,12 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(actualRecFeeAmt - 1))
+	accAmt := sdk.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
-	totalSupply := initCoins
-	app.BankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
-
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
-	_ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
+	err := fundAccount(ctx, app.BankKeeper, addr, initCoins)
+	require.NoError(t, err)
 
 	// Register
 	feeInt := int64(actualRegFeeAmt)
@@ -242,7 +252,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, actualRegFeeAmt, actualFeeDenom)
 
-	_, err := antehandler(ctx, tx, false)
+	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
 	if err != nil {
@@ -287,12 +297,10 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	// fund the account
 	accAmt := sdk.NewInt(int64(actualRecFeeAmt - 2))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
-	totalSupply := initCoins
-	app.BankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
-
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
-	_ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
+	err := fundAccount(ctx, app.BankKeeper, addr, initCoins)
+	require.NoError(t, err)
 
 	lockedUnd := enttypes.LockedUnd{
 		Owner:  addr.String(),
@@ -313,7 +321,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, actualRegFeeAmt, actualFeeDenom)
 
-	_, err := antehandler(ctx, tx, false)
+	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
 	if err != nil {
@@ -358,12 +366,10 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	// fund the account
 	accAmt := sdk.NewInt(int64(actualRegFeeAmt))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
-	totalSupply := initCoins
-	app.BankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
-
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
-	_ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
+	err := fundAccount(ctx, app.BankKeeper, addr, initCoins)
+	require.NoError(t, err)
 
 	// Register
 	feeInt := int64(actualRegFeeAmt)
@@ -374,7 +380,7 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 
 	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	_, err := antehandler(ctx, tx, false)
+	_, err = antehandler(ctx, tx, false)
 	require.NoError(t, err)
 
 	// Record
@@ -406,14 +412,12 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(0))
+	accAmt := sdk.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
-	totalSupply := initCoins
-	app.BankKeeper.SetSupply(ctx, banktypes.NewSupply(totalSupply))
-
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
-	_ = app.BankKeeper.AddCoins(ctx, addr, initCoins)
+	err := fundAccount(ctx, app.BankKeeper, addr, initCoins)
+	require.NoError(t, err)
 
 	lockedUnd := enttypes.LockedUnd{
 		Owner:  addr.String(),
@@ -429,7 +433,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 
 	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	_, err := antehandler(ctx, tx, false)
+	_, err = antehandler(ctx, tx, false)
 	require.NoError(t, err)
 
 	// Record

@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/wrkchain/exported"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 // CorrectWrkChainFeeDecorator checks if the correct fees have been sent to pay for a
@@ -83,15 +84,13 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 
 	// go through Msgs wrapped in the Tx, and check for WRKChain messages
 	for _, msg := range msgs {
-		if msg.Route() == exported.RouterKey {
-			switch msg.Type() {
-			case exported.RegisterAction:
-				expectedFees = expectedFees.Add(wck.GetRegistrationFeeAsCoin(ctx))
-				numMsgs = numMsgs + 1
-			case exported.RecordAction:
-				expectedFees = expectedFees.Add(wck.GetRecordFeeAsCoin(ctx))
-				numMsgs = numMsgs + 1
-			}
+		switch msg.(type) {
+		case *types.MsgRegisterWrkChain:
+			expectedFees = expectedFees.Add(wck.GetRegistrationFeeAsCoin(ctx))
+			numMsgs = numMsgs + 1
+		case *types.MsgRecordWrkChainBlock:
+			expectedFees = expectedFees.Add(wck.GetRecordFeeAsCoin(ctx))
+			numMsgs = numMsgs + 1
 		}
 	}
 

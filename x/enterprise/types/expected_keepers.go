@@ -2,8 +2,8 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	bankexported "github.com/cosmos/cosmos-sdk/x/bank/exported"
 )
 
 // ParamSubspace defines the expected Subspace interface for parameters (noalias)
@@ -14,7 +14,8 @@ type ParamSubspace interface {
 
 // BankKeeper defines the expected bank keeper
 type BankKeeper interface {
-	GetSupply(ctx sdk.Context) bankexported.SupplyI
+	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+	GetPaginatedTotalSupply(ctx sdk.Context, pagination *query.PageRequest) (sdk.Coins, *query.PageResponse, error)
 
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 
@@ -25,7 +26,6 @@ type BankKeeper interface {
 
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
-	SetBalances(ctx sdk.Context, addr sdk.AccAddress, balances sdk.Coins) error
 
 	LockedCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins

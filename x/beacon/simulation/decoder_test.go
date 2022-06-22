@@ -32,10 +32,10 @@ func TestDecodeStore(t *testing.T) {
 	beaconTs, err := types.NewBeaconTimestamp(1, uint64(time.Now().Unix()), "arbitraryblockhashvalue")
 	require.NoError(t, err)
 
-	beaconBz, err := cdc.MarshalBinaryBare(&beacon)
+	beaconBz, err := cdc.Marshal(&beacon)
 	require.NoError(t, err)
 
-	beaconTsBz, err := cdc.MarshalBinaryBare(&beaconTs)
+	beaconTsBz, err := cdc.Marshal(&beaconTs)
 	require.NoError(t, err)
 
 	kvPairs := kv.Pairs{

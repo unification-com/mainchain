@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/app/test_helpers"
@@ -66,20 +67,24 @@ func getQueriedTotalUnLocked(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmi
 	return totalLocked
 }
 
-func getQueriedTotalSupply(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier) sdk.Coins {
-	query := abci.RequestQuery{
+func getQueriedTotalSupply(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier) types.QueryTotalSupplyResponse {
+	req := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, keeper.QueryTotalSupply}, "/"),
 		Data: []byte{},
 	}
 
-	bz, err := querier(ctx, []string{keeper.QueryTotalSupply}, query)
+	req.Data = cdc.MustMarshalJSON(types.QueryTotalSupplyRequest{Pagination: &query.PageRequest{
+		Limit: 10,
+	}})
+
+	bz, err := querier(ctx, []string{keeper.QueryTotalSupply}, req)
 	require.NoError(t, err)
 	require.NotNil(t, bz)
 
-	var totalLocked sdk.Coins
-	require.NoError(t, cdc.UnmarshalJSON(bz, &totalLocked))
+	var resp types.QueryTotalSupplyResponse
+	require.NoError(t, cdc.UnmarshalJSON(bz, &resp))
 
-	return totalLocked
+	return resp
 }
 
 func getQueriedEnterpriseSupply(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier) types.UndSupply {
@@ -229,7 +234,7 @@ func TestLegacyQueryTotalSupply(t *testing.T) {
 	_ = testApp.EnterpriseKeeper.UnlockCoinsForFees(ctx, TestAddrs[0], sdk.NewCoins(toUnlock))
 
 	totalSupplyFromEnt := getQueriedTotalSupply(t, ctx, legacyQuerierCdc, querier)
-	require.Equal(t, sdk.Coins{toUnlock}, totalSupplyFromEnt)
+	require.Equal(t, sdk.Coins{toUnlock}, totalSupplyFromEnt.Supply)
 }
 
 func TestLegacyQueryEnterpriseSupply(t *testing.T) {

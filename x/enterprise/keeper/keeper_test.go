@@ -23,18 +23,18 @@ type KeeperTestSuite struct {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	app := test_helpers.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testApp := test_helpers.Setup(false)
+	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
+	test_helpers.SetKeeperTestParamsAndDefaultValues(testApp, ctx)
 
-	queryHelper := baseapp.NewQueryServerTestHelper(ctx, app.InterfaceRegistry())
-	types.RegisterQueryServer(queryHelper, app.EnterpriseKeeper)
+	queryHelper := baseapp.NewQueryServerTestHelper(ctx, testApp.InterfaceRegistry())
+	types.RegisterQueryServer(queryHelper, testApp.EnterpriseKeeper)
 	queryClient := types.NewQueryClient(queryHelper)
 
-	suite.app = app
+	suite.app = testApp
 	suite.ctx = ctx
 	suite.queryClient = queryClient
-	suite.addrs = test_helpers.AddTestAddrsIncremental(app, ctx, 10, sdk.NewInt(30000000))
+	suite.addrs = test_helpers.AddTestAddrsIncremental(testApp, ctx, 10, sdk.NewInt(30000000))
 }
 
 func TestKeeperTestSuite(t *testing.T) {

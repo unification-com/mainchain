@@ -92,7 +92,7 @@ func (q Keeper) WrkChainsFiltered(c context.Context, req *types.QueryWrkChainsFi
 
 	pageRes, err := query.FilteredPaginate(wrkchainStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
 		var wc types.WrkChain
-		if err := q.cdc.UnmarshalBinaryBare(value, &wc); err != nil {
+		if err := q.cdc.Unmarshal(value, &wc); err != nil {
 			return false, status.Error(codes.Internal, err.Error())
 		}
 

@@ -24,7 +24,7 @@ const (
 )
 
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONMarshaler,
+	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 ) simulation.WeightedOperations {
 
@@ -110,7 +110,7 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "")
+		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
 
 		return opMsg, nil, nil
 	}
@@ -187,7 +187,7 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "")
+		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
 
 		return opMsg, nil, nil
 	}

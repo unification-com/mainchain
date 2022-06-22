@@ -74,15 +74,16 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 	}
 
 	// ensure locked FUND is registered with supply keeper
+	var moduleHoldings sdk.Coins
+	moduleHoldings = moduleHoldings.Add(data.TotalLocked)
+
 	balances := bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
 	if balances.IsZero() {
-		var moduleHoldings sdk.Coins
-		moduleHoldings = moduleHoldings.Add(data.TotalLocked)
-		if err := bankKeeper.SetBalances(ctx, moduleAcc.GetAddress(), moduleHoldings); err != nil {
-			panic(err)
-		}
-
 		accountKeeper.SetModuleAccount(ctx, moduleAcc)
+	}
+
+	if !balances.IsEqual(moduleHoldings) {
+		panic(fmt.Sprintf("enterprise module balance does not match the module holdings: %s <-> %s", balances, moduleHoldings))
 	}
 
 	return []abci.ValidatorUpdate{}

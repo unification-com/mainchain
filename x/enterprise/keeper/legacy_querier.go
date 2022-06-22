@@ -42,7 +42,7 @@ func NewLegacyQuerier(keeper Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Qu
 		case QueryEnterpriseSupply:
 			return queryEnterpriseSupply(ctx, keeper, legacyQuerierCdc)
 		case QueryTotalSupply:
-			return queryTotalSupply(ctx, keeper, legacyQuerierCdc)
+			return queryTotalSupply(ctx, req, keeper, legacyQuerierCdc)
 		case QueryTotalSupplyOf:
 			return queryTotalSupplyOf(ctx, path[1:], keeper, legacyQuerierCdc)
 		case QueryWhitelist:
@@ -165,10 +165,25 @@ func queryEnterpriseSupply(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.Le
 }
 
 // DONE
-func queryTotalSupply(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
-	totalSupply := k.GetTotalSupplyWithLockedNundRemoved(ctx)
+func queryTotalSupply(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	var params types.QueryTotalSupplyRequest
 
-	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, totalSupply)
+	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	totalSupply, pageRes, err := k.GetTotalSupplyWithLockedNundRemoved(ctx, params.Pagination)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	supplyRes := &types.QueryTotalSupplyResponse{
+		Supply:     totalSupply,
+		Pagination: pageRes,
+	}
+
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, supplyRes)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -178,8 +193,7 @@ func queryTotalSupply(ctx sdk.Context, k Keeper, legacyQuerierCdc *codec.LegacyA
 
 func queryTotalSupplyOf(ctx sdk.Context, path []string, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
 	denom := path[0]
-	supply := k.GetSupplyOfWithLockedNundRemoved(ctx, denom)
-	supplyOf := sdk.NewCoin(denom, supply)
+	supplyOf := k.GetSupplyOfWithLockedNundRemoved(ctx, denom)
 	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, supplyOf)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())

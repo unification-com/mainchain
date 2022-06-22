@@ -12,13 +12,13 @@ import (
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding enterprise type
-func NewDecodeStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
+func NewDecodeStore(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 	return func(kvA, kvB kv.Pair) string {
 		switch {
 		case bytes.Equal(kvA.Key[:1], types.PurchaseOrderIDKeyPrefix):
 			var poA, poB types.EnterpriseUndPurchaseOrder
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &poA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &poB)
+			cdc.MustUnmarshal(kvA.Value, &poA)
+			cdc.MustUnmarshal(kvB.Value, &poB)
 			return fmt.Sprintf("%v\n%v", poA, poB)
 		case bytes.Equal(kvA.Key[:1], types.RaisedPoPrefix):
 			poIDA := binary.BigEndian.Uint64(kvA.Value)
@@ -30,19 +30,19 @@ func NewDecodeStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 			return fmt.Sprintf("%d\n%d", poIDA, poIDB)
 		case bytes.Equal(kvA.Key[:1], types.LockedUndAddressKeyPrefix):
 			var lundA, lundB types.LockedUnd
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &lundA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &lundB)
+			cdc.MustUnmarshal(kvA.Value, &lundA)
+			cdc.MustUnmarshal(kvB.Value, &lundB)
 			return fmt.Sprintf("%v\n%v", lundA, lundB)
 
 		case bytes.Equal(kvA.Key[:1], types.TotalLockedUndKey):
 			var tlA, tlB sdk.Coin
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &tlA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &tlB)
+			cdc.MustUnmarshal(kvA.Value, &tlA)
+			cdc.MustUnmarshal(kvB.Value, &tlB)
 			return fmt.Sprintf("%v\n%v", tlA, tlB)
 		case bytes.Equal(kvA.Key[:1], types.WhitelistKeyPrefix):
 			var wlA, wlB types.WhitelistAddresses
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &wlA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &wlB)
+			cdc.MustUnmarshal(kvA.Value, &wlA)
+			cdc.MustUnmarshal(kvB.Value, &wlB)
 			return fmt.Sprintf("%v\n%v", wlA, wlB)
 		case bytes.Equal(kvA.Key[:1], types.HighestPurchaseOrderIDKey):
 			kA := binary.BigEndian.Uint64(kvA.Value)

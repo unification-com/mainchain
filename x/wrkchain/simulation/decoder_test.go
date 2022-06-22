@@ -31,10 +31,10 @@ func TestDecodeStore(t *testing.T) {
 	block, err := types.NewWrkchainBlock(1, "bhash", "phash", "h1", "h2", "h3", uint64(time.Now().Unix()))
 	require.NoError(t, err)
 
-	wcBz, err := cdc.MarshalBinaryBare(&wc)
+	wcBz, err := cdc.Marshal(&wc)
 	require.NoError(t, err)
 
-	blockBz, err := cdc.MarshalBinaryBare(&block)
+	blockBz, err := cdc.Marshal(&block)
 	require.NoError(t, err)
 
 	kvPairs := kv.Pairs{

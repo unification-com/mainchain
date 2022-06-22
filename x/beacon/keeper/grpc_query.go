@@ -91,7 +91,7 @@ func (q Keeper) BeaconsFiltered(c context.Context, req *types.QueryBeaconsFilter
 
 	pageRes, err := query.FilteredPaginate(beaconsStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
 		var b types.Beacon
-		if err := q.cdc.UnmarshalBinaryBare(value, &b); err != nil {
+		if err := q.cdc.Unmarshal(value, &b); err != nil {
 			return false, status.Error(codes.Internal, err.Error())
 		}
 

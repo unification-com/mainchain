@@ -2,14 +2,12 @@ package test_helpers
 
 import (
 	"bytes"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"strconv"
-	"testing"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -18,21 +16,16 @@ import (
 	"github.com/unification-com/mainchain/app/params"
 
 	authsign "github.com/cosmos/cosmos-sdk/x/auth/signing"
-	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
@@ -42,7 +35,6 @@ import (
 
 // SimAppChainID hardcoded chainID for simulation
 const (
-	DefaultGenTxGas  = 1000000
 	TestDenomination = sdk.DefaultBondDenom
 	SimAppChainID    = "simulation-app"
 	charset          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
@@ -184,23 +176,16 @@ func createIncrementalAccounts(accNum int) []sdk.AccAddress {
 	return addresses
 }
 
-// AddTestAddrsFromPubKeys adds the addresses into the app.App providing only the public keys.
-func AddTestAddrsFromPubKeys(app *app.App, ctx sdk.Context, pubKeys []cryptotypes.PubKey, accAmt sdk.Int) {
-	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt))
-
-	setTotalSupply(app, ctx, accAmt, len(pubKeys))
-
-	// fill all the addresses with some coins, set the loose pool tokens simultaneously
-	for _, pubKey := range pubKeys {
-		saveAccount(app, ctx, sdk.AccAddress(pubKey.Address()), initCoins)
+func fundAccount(app *app.App, ctx sdk.Context, addr sdk.AccAddress, amtCoins sdk.Coins) error {
+	err := app.BankKeeper.MintCoins(ctx, enttypes.ModuleName, amtCoins)
+	if err != nil {
+		return err
 	}
-}
-
-// setTotalSupply provides the total supply based on accAmt * totalAccounts.
-func setTotalSupply(app *app.App, ctx sdk.Context, accAmt sdk.Int, totalAccounts int) {
-	totalSupply := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt.MulRaw(int64(totalAccounts))))
-	prevSupply := app.BankKeeper.GetSupply(ctx)
-	app.BankKeeper.SetSupply(ctx, banktypes.NewSupply(prevSupply.GetTotal().Add(totalSupply...)))
+	err = app.BankKeeper.SendCoinsFromModuleToAccount(ctx, enttypes.ModuleName, addr, amtCoins)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // AddTestAddrs constructs and returns accNum amount of accounts with an
@@ -219,7 +204,6 @@ func addTestAddrs(app *app.App, ctx sdk.Context, accNum int, accAmt sdk.Int, str
 	testAddrs := strategy(accNum)
 
 	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt))
-	setTotalSupply(app, ctx, accAmt, accNum)
 
 	// fill all the addresses with some coins, set the loose pool tokens simultaneously
 	for _, addr := range testAddrs {
@@ -233,21 +217,10 @@ func addTestAddrs(app *app.App, ctx sdk.Context, accNum int, accAmt sdk.Int, str
 func saveAccount(app *app.App, ctx sdk.Context, addr sdk.AccAddress, initCoins sdk.Coins) {
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
-	err := app.BankKeeper.AddCoins(ctx, addr, initCoins)
+	err := fundAccount(app, ctx, addr, initCoins)
 	if err != nil {
 		panic(err)
 	}
-}
-
-// ConvertAddrsToValAddrs converts the provided addresses to ValAddress.
-func ConvertAddrsToValAddrs(addrs []sdk.AccAddress) []sdk.ValAddress {
-	valAddrs := make([]sdk.ValAddress, len(addrs))
-
-	for i, addr := range addrs {
-		valAddrs[i] = sdk.ValAddress(addr)
-	}
-
-	return valAddrs
 }
 
 func TestAddr(addr string, bech string) (sdk.AccAddress, error) {
@@ -271,125 +244,6 @@ func TestAddr(addr string, bech string) (sdk.AccAddress, error) {
 	return res, nil
 }
 
-// CheckBalance checks the balance of an account.
-func CheckBalance(t *testing.T, app *app.App, addr sdk.AccAddress, balances sdk.Coins) {
-	ctxCheck := app.BaseApp.NewContext(true, tmproto.Header{})
-	require.True(t, balances.IsEqual(app.BankKeeper.GetAllBalances(ctxCheck, addr)))
-}
-
-// SignCheckDeliver checks a generated signed transaction and simulates a
-// block commitment with the given transaction. A test assertion is made using
-// the parameter 'expPass' against the result. A corresponding result is
-// returned.
-func SignCheckDeliver(
-	t *testing.T, txCfg client.TxConfig, app *bam.BaseApp, header tmproto.Header, msgs []sdk.Msg,
-	chainID string, accNums, accSeqs []uint64, expSimPass, expPass bool, priv ...cryptotypes.PrivKey,
-) (sdk.GasInfo, *sdk.Result, error) {
-
-	tx, err := GenTx(
-		txCfg,
-		msgs,
-		sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
-		DefaultGenTxGas,
-		chainID,
-		accNums,
-		accSeqs,
-		priv...,
-	)
-	require.NoError(t, err)
-	txBytes, err := txCfg.TxEncoder()(tx)
-	require.Nil(t, err)
-
-	// Must simulate now as CheckTx doesn't run Msgs anymore
-	_, res, err := app.Simulate(txBytes)
-
-	if expSimPass {
-		require.NoError(t, err)
-		require.NotNil(t, res)
-	} else {
-		require.Error(t, err)
-		require.Nil(t, res)
-	}
-
-	// Simulate a sending a transaction and committing a block
-	app.BeginBlock(abci.RequestBeginBlock{Header: header})
-	gInfo, res, err := app.Deliver(txCfg.TxEncoder(), tx)
-
-	if expPass {
-		require.NoError(t, err)
-		require.NotNil(t, res)
-	} else {
-		require.Error(t, err)
-		require.Nil(t, res)
-	}
-
-	app.EndBlock(abci.RequestEndBlock{})
-	app.Commit()
-
-	return gInfo, res, err
-}
-
-// GenSequenceOfTxs generates a set of signed transactions of messages, such
-// that they differ only by having the sequence numbers incremented between
-// every transaction.
-func GenSequenceOfTxs(txGen client.TxConfig, msgs []sdk.Msg, accNums []uint64, initSeqNums []uint64, numToGenerate int, priv ...cryptotypes.PrivKey) ([]sdk.Tx, error) {
-	txs := make([]sdk.Tx, numToGenerate)
-	var err error
-	for i := 0; i < numToGenerate; i++ {
-		txs[i], err = GenTx(
-			txGen,
-			msgs,
-			sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
-			DefaultGenTxGas,
-			"",
-			accNums,
-			initSeqNums,
-			priv...,
-		)
-		if err != nil {
-			break
-		}
-		incrementAllSequenceNumbers(initSeqNums)
-	}
-
-	return txs, err
-}
-
-func incrementAllSequenceNumbers(initSeqNums []uint64) {
-	for i := 0; i < len(initSeqNums); i++ {
-		initSeqNums[i]++
-	}
-}
-
-// CreateTestPubKeys returns a total of numPubKeys public keys in ascending order.
-func CreateTestPubKeys(numPubKeys int) []cryptotypes.PubKey {
-	var publicKeys []cryptotypes.PubKey
-	var buffer bytes.Buffer
-
-	// start at 10 to avoid changing 1 to 01, 2 to 02, etc
-	for i := 100; i < (numPubKeys + 100); i++ {
-		numString := strconv.Itoa(i)
-		buffer.WriteString("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF") // base pubkey string
-		buffer.WriteString(numString)                                                       // adding on final two digits to make pubkeys unique
-		publicKeys = append(publicKeys, NewPubKeyFromHex(buffer.String()))
-		buffer.Reset()
-	}
-
-	return publicKeys
-}
-
-// NewPubKeyFromHex returns a PubKey from a hex string.
-func NewPubKeyFromHex(pk string) (res cryptotypes.PubKey) {
-	pkBytes, err := hex.DecodeString(pk)
-	if err != nil {
-		panic(err)
-	}
-	if len(pkBytes) != ed25519.PubKeySize {
-		panic(errors.Wrap(errors.ErrInvalidPubKey, "invalid pubkey size"))
-	}
-	return &ed25519.PubKey{Key: pkBytes}
-}
-
 // EmptyAppOptions is a stub implementing AppOptions
 type EmptyAppOptions struct{}
 
@@ -399,7 +253,7 @@ func (ao EmptyAppOptions) Get(o string) interface{} {
 }
 
 // NewDefaultGenesisState generates the default state for the application.
-func NewDefaultGenesisState(cdc codec.JSONMarshaler) app.GenesisState {
+func NewDefaultGenesisState(cdc codec.JSONCodec) app.GenesisState {
 	return app.ModuleBasics.DefaultGenesis(cdc)
 }
 

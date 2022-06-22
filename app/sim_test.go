@@ -5,9 +5,11 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -16,8 +18,6 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"os"
 	"testing"
-
-	//und_app "github.com/unification-com/mainchain/app"
 
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
@@ -180,14 +180,15 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[paramtypes.StoreKey], newApp.keys[paramtypes.StoreKey], [][]byte{}},
 		{app.keys[govtypes.StoreKey], newApp.keys[govtypes.StoreKey], [][]byte{}},
 		{app.keys[evidencetypes.StoreKey], newApp.keys[evidencetypes.StoreKey], [][]byte{}},
+		{app.keys[authzkeeper.StoreKey], newApp.keys[authzkeeper.StoreKey], [][]byte{}},
 		{app.keys[beacontypes.StoreKey], newApp.keys[beacontypes.StoreKey], [][]byte{}},
 		{app.keys[wrkchaintypes.StoreKey], newApp.keys[wrkchaintypes.StoreKey], [][]byte{}},
 		{app.keys[enttypes.StoreKey], newApp.keys[enttypes.StoreKey], [][]byte{}},
+		{app.keys[feegrant.StoreKey], newApp.keys[feegrant.StoreKey], [][]byte{}},
+		{app.keys[authzkeeper.StoreKey], newApp.keys[authzkeeper.StoreKey], [][]byte{}},
 
-		// ToDo: uncomment when enabled in App
+		// ToDo: add capabilities & IBC stuff when added to app
 		//{app.keys[capabilitytypes.StoreKey], newApp.keys[capabilitytypes.StoreKey], [][]byte{}},
-		//{app.keys[ibchost.StoreKey], newApp.keys[ibchost.StoreKey], [][]byte{}},
-		//{app.keys[ibctransfertypes.StoreKey], newApp.keys[ibctransfertypes.StoreKey], [][]byte{}},
 	}
 
 	for _, skp := range storeKeysPrefixes {

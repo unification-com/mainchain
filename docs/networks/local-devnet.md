@@ -36,8 +36,8 @@ make devnet-down
 ## DevNet Chain ID
 
 ::: warning IMPORTANT
-DevNet's Chain ID is `FUND-Mainchain-DevNet`. Any `und` or `und` commands
-intended for DevNet should use the flag `--chain-id FUND-Mainchain-DevNet`
+DevNet's Chain ID is `FUND-DevNet-2`. Any `und` or `und` commands
+intended for DevNet should use the flag `--chain-id FUND-DevNet-2`
 :::
 
 ## DevNet RPC Nodes
@@ -46,7 +46,7 @@ By default `und` will attempt to broadcast transactions to tcp://localhost:26656
 nodes can be used to send transactions via `und` using the `--node=` flag, for example:
 
 ```bash
-und query tx TX_HASH --chain-id FUND-Mainchain-DevNet --node=tcp://172.25.0.3:26661
+und query tx TX_HASH --chain-id FUND-DevNet-2 --node=tcp://172.25.0.3:26661
 ```
 
 See below for each node's RPC IPs and Ports.
@@ -102,7 +102,7 @@ appropriate moniker for each imported account.
 `$HOME/.und_mainchain/config/client.toml`
 
 ```
-und config chain-id FUND-Mainchain-DevNet
+und config chain-id FUND-DevNet-2
 und config node tcp://localhost:26661
 ```
 

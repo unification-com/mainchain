@@ -79,6 +79,13 @@
           "address": "und10wl769hge8nhszv70uxc9zu0lgrc2lggkhst8v",
           "pub_key": null,
           "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "0",
+          "address": "und1d3ercl9mpg2skhpfeaahvhvytltt3khacpunnr",
+          "pub_key": null,
+          "sequence": "0"
         }
       ],
       "params": {
@@ -189,6 +196,15 @@
           "coins": [
             {
               "amount": "100000000000000",
+              "denom": "nund"
+            }
+          ]
+        },
+        {
+          "address": "und1d3ercl9mpg2skhpfeaahvhvytltt3khacpunnr",
+          "coins": [
+            {
+              "amount": "89900000000000000",
               "denom": "nund"
             }
           ]

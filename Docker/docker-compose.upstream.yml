@@ -55,7 +55,7 @@ services:
         until nc -z 172.25.0.3 26661; do sleep 1; echo 'wait for node1'; done
         echo 'wait for first block'
         sleep 10
-        /root/.go/bin/undcli rest-server --laddr=tcp://0.0.0.0:1317 --node tcp://172.25.0.3:26661 --chain-id=FUND-Mainchain-DevNet --trust-node=false
+        /root/.go/bin/undcli rest-server --laddr=tcp://0.0.0.0:1317 --node tcp://172.25.0.3:26661 --chain-id=FUND-DevNet-2 --trust-node=false
       "
     networks:
       mainchain_devnet:

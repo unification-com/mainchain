@@ -51,13 +51,12 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithLegacyAmino(encodingConfig.Amino).
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
-		//WithBroadcastMode(flags.BroadcastBlock).
 		WithHomeDir(app.DefaultNodeHome).
 		WithViper("")
 
 	rootCmd := &cobra.Command{
 		Use:   app.Name,
-		Short: "Unification Mainchain Daemon (server)",
+		Short: "Unification Mainchain App",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
@@ -134,6 +133,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
+		// todo - add testnet cmd
 		debug.Cmd(),
 		config.Cmd(),
 	)
@@ -151,6 +151,10 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		keys.Commands(app.DefaultNodeHome),
 		GetDenomConversionCmd(),
 	)
+
+	// add rosetta
+	// todo - add rosetta config to app.toml during upgrade
+	rootCmd.AddCommand(server.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
@@ -199,12 +203,11 @@ func txCommand() *cobra.Command {
 		authcmd.GetSignCommand(),
 		authcmd.GetSignBatchCommand(),
 		authcmd.GetMultiSignCommand(),
+		authcmd.GetMultiSignBatchCmd(),
 		authcmd.GetValidateSignaturesCommand(),
-		flags.LineBreak,
 		authcmd.GetBroadcastCommand(),
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
-		flags.LineBreak,
 		vestingcli.GetTxCmd(),
 	)
 

@@ -45,16 +45,16 @@ For example, we have a local account and key set up called "testwrk", and want
 to register a new WRKChain, with the moniker "wrkchain1" called "WRKChain Example 1":
 
 ```bash
-und tx wrkchain register --moniker="wrkchain1" --genesis="78521D6EFBEDF6D7EE9C73EDD3443B8021DADBE06ECE81F639B6EC57D8E3F3EA" --name="WRKChain Example 1" --base="tendermint" --from testwrk --chain-id FUND-Mainchain-DevNet --gas=auto --gas-adjustment=1.25
+und tx wrkchain register --moniker="wrkchain1" --genesis="78521D6EFBEDF6D7EE9C73EDD3443B8021DADBE06ECE81F639B6EC57D8E3F3EA" --name="WRKChain Example 1" --base="tendermint" --from testwrk --chain-id FUND-DevNet-2 --gas=auto --gas-adjustment=1.25
 ```
 
 Once broadcast, you will receive confirmation with the TX Hash, which can be used to query the Tx.
 
 Your WRKCHain's on-chain ID will be embedded in the Tx query result. Alternatively, you can run a search query to get
-your WRKChain's details, for example:
+your WRKChain's details, for example: 
 
 ```bash
-und query wrkchain search --moniker wrkchain1 --chain-id FUND-Mainchain-DevNet
+und query wrkchain search --moniker wrkchain1 --chain-id FUND-DevNet-2
 ```
 
 will return a result similar to:
@@ -117,7 +117,7 @@ und tx wrkchain record 1 --wc_height=[BLOCK_HEIGHT] --block_hash=[BLOCK_HASH] --
 For example, if we just want to submit the block hash for block number 123, we can run:
 
 ```bash
-und tx wrkchain record 1 --wc_height=123 --block_hash=1BB457C575E72D7401C809B66290FAC56347223912F2484BA7E881D42495CD0F --from testwrk --chain-id FUND-Mainchain-DevNet --gas=auto --gas-adjustment=1.5
+und tx wrkchain record 1 --wc_height=123 --block_hash=1BB457C575E72D7401C809B66290FAC56347223912F2484BA7E881D42495CD0F --from testwrk --chain-id FUND-DevNet-2 --gas=auto --gas-adjustment=1.5
 ```
 
 ## Querying a WRKChain on Mainchain

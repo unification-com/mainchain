@@ -36,6 +36,16 @@
   pubkeys: []
 ```
 
+## DevNet Faucet
+
+```
+- name: dn_faucet
+  type: local
+  address: und1d3ercl9mpg2skhpfeaahvhvytltt3khacpunnr
+  pubkey: '{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"A1QI7nzNFRqyt4WOOFqI7RLbWSE+Iq/v4yiQq3dc23WG"}'
+  mnemonic: "satoshi gossip raven burger pair gravity keep derive spike fun kiwi tank similar leg sunny spin food slim shadow deputy canal exhibit faint pepper"
+```
+
 ## Main Test Account
 
 ```

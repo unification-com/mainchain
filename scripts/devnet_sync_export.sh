@@ -12,7 +12,7 @@
 UND_BIN="./build/und"
 UND_HOME_DIR="/tmp/.und_mainchain_DevNet"
 DEVNET_GENESIS="./Docker/assets/node1/config/genesis.json"
-CHAIN_ID="FUND-Mainchain-DevNet"
+CHAIN_ID="FUND-DevNet-2"
 DEVNET_NODE1_HOST="localhost"
 DEVNET_NODE1_RPC_PORT="26661"
 DEVNET_RPC_HTTP="http://${DEVNET_NODE1_HOST}:${DEVNET_NODE1_RPC_PORT}"

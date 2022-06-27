@@ -307,7 +307,7 @@ func New(
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
 
-	//app.registerUpgradeHandlers()
+	app.registerUpgradeHandlers()
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -720,47 +720,3 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 	return paramsKeeper
 }
-
-// todo - Need to set staking params historical_entries = 10000 for IBC relayers to connect & open channels
-// see https://docs.cosmos.network/v0.45/migrations/chain-upgrade-guide-044.html
-//func (app *App) registerUpgradeHandlers() {
-//	app.UpgradeKeeper.SetUpgradeHandler("gravity", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-//		// 1st-time running in-store migrations, using 1 as fromVersion to
-//		// avoid running InitGenesis.
-//		fromVM := map[string]uint64{
-//			"auth":         1,
-//			"bank":         1,
-//			"capability":   1,
-//			"crisis":       1,
-//			"distribution": 1,
-//			"evidence":     1,
-//			"gov":          1,
-//			"params":       1,
-//			"slashing":     1,
-//			"staking":      1,
-//			"upgrade":      1,
-//			"vesting":      1,
-//			"genutil":      1,
-//			"enterprise":   1,
-//			"beacon":       1,
-//			"wrkchain":     1,
-//		}
-//
-//		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
-//	})
-//
-//	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	if upgradeInfo.Name == "gravity" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-//		storeUpgrades := storetypes.StoreUpgrades{
-//			Added: []string{"authz", "feegrant"},
-//			//Added: []string{"authz", "feegrant", "capability", "ibc"},
-//		}
-//
-//		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-//		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
-//	}
-//}

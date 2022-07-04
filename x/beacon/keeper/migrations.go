@@ -1,6 +1,9 @@
 package keeper
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	v045 "github.com/unification-com/mainchain/x/beacon/legacy/v045"
+)
 
 // Migrator is a struct for handling in-place store migrations.
 type Migrator struct {
@@ -14,6 +17,5 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate1to2 migrates from version 1 to 2.
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	// just a hook for now
-	return nil
+	return v045.MigrateStore(ctx, m.keeper.storeKey, m.keeper.paramSpace, m.keeper.cdc)
 }

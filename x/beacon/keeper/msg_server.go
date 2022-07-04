@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 	"time"
@@ -106,7 +107,7 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		subtime = uint64(time.Now().Unix())
 	}
 
-	tsID, err := k.RecordNewBeaconTimestamp(ctx, msg.BeaconId, msg.Hash, subtime)
+	tsID, deleteTimestampId, err := k.RecordNewBeaconTimestamp(ctx, msg.BeaconId, msg.Hash, subtime)
 
 	if err != nil {
 		return nil, err
@@ -126,6 +127,7 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 			types.EventTypeRecordBeaconTimestamp,
 			sdk.NewAttribute(types.AttributeKeyBeaconId, strconv.FormatUint(msg.BeaconId, 10)),
 			sdk.NewAttribute(types.AttributeKeyTimestampID, strconv.FormatUint(tsID, 10)),
+			sdk.NewAttribute(types.AttributeKeyTimestampIdPruned, strconv.FormatUint(deleteTimestampId, 10)),
 			sdk.NewAttribute(types.AttributeKeyTimestampHash, msg.Hash),
 			sdk.NewAttribute(types.AttributeKeyTimestampSubmitTime, strconv.FormatUint(msg.SubmitTime, 10)),
 			sdk.NewAttribute(types.AttributeKeyOwner, ownerAddr.String()),
@@ -135,6 +137,72 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 	return &types.MsgRecordBeaconTimestampResponse{
 		BeaconId:    msg.BeaconId,
 		TimestampId: tsID,
+	}, nil
+
+}
+
+func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.MsgPurchaseBeaconStateStorage) (*types.MsgPurchaseBeaconStateStorageResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	ownerAddr, accErr := sdk.AccAddressFromBech32(msg.Owner)
+	if accErr != nil {
+		return nil, accErr
+	}
+
+	if msg.Number == 0 {
+		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
+	}
+
+	beacon, found := k.GetBeacon(ctx, msg.BeaconId)
+
+	if !found { // Checks if the BEACON is registered
+		return nil, sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
+	}
+
+	if !k.IsAuthorisedToRecord(ctx, msg.BeaconId, ownerAddr) {
+		return nil, sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon")
+	}
+
+	// check not exceeding max
+	maxParam := k.GetParamMaxStorageLimit(ctx)
+	beaconStorageAfter := beacon.InStateLimit + msg.Number
+
+	if beaconStorageAfter > maxParam {
+		return nil, sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", beaconStorageAfter, maxParam))
+	}
+
+	err := k.IncreaseInStateStorage(ctx, msg.BeaconId, msg.Number)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// get remianing can purchase
+	numCanPurchase := k.GetMaxPurchasableSlots(ctx, msg.BeaconId)
+
+	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+		),
+	)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypePurchaseStorage,
+			sdk.NewAttribute(types.AttributeKeyBeaconId, strconv.FormatUint(msg.BeaconId, 10)),
+			sdk.NewAttribute(types.AttributeKeyBeaconStorageNumPurchased, strconv.FormatUint(msg.Number, 10)),
+			sdk.NewAttribute(types.AttributeKeyBeaconStorageNumCanPurchase, strconv.FormatUint(numCanPurchase, 10)),
+			sdk.NewAttribute(types.AttributeKeyOwner, ownerAddr.String()),
+		),
+	)
+
+	return &types.MsgPurchaseBeaconStateStorageResponse{
+		BeaconId:        msg.BeaconId,
+		NumberPurchased: msg.Number,
+		NumCanPurchase:  numCanPurchase,
 	}, nil
 
 }

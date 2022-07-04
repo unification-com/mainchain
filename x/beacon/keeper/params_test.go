@@ -10,7 +10,7 @@ import (
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
-var testParams = types.NewParams(24, 2, test_helpers.TestDenomination)
+var testParams = types.NewParams(24, 2, 2, test_helpers.TestDenomination, 100, 200)
 
 func TestSetGetParams(t *testing.T) {
 	app := test_helpers.Setup(false)
@@ -22,7 +22,10 @@ func TestSetGetParams(t *testing.T) {
 
 	require.True(t, paramsDb.FeeRegister == testParams.FeeRegister)
 	require.True(t, paramsDb.FeeRecord == testParams.FeeRecord)
+	require.True(t, paramsDb.FeePurchaseStorage == testParams.FeePurchaseStorage)
 	require.True(t, paramsDb.Denom == testParams.Denom)
+	require.True(t, paramsDb.DefaultStorageLimit == testParams.DefaultStorageLimit)
+	require.True(t, paramsDb.MaxStorageLimit == testParams.MaxStorageLimit)
 }
 
 func TestGetParamDenom(t *testing.T) {
@@ -56,6 +59,39 @@ func TestGetParamRecordFee(t *testing.T) {
 	ret := app.BeaconKeeper.GetParamRecordFee(ctx)
 
 	require.Equal(t, ret, testParams.FeeRecord)
+}
+
+func TestGetParamPurchaseStorageFee(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	app.BeaconKeeper.SetParams(ctx, testParams)
+
+	ret := app.BeaconKeeper.GetParamPurchaseStorageFee(ctx)
+
+	require.Equal(t, ret, testParams.FeePurchaseStorage)
+}
+
+func TestGetParamDefaultStorageLimit(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	app.BeaconKeeper.SetParams(ctx, testParams)
+
+	ret := app.BeaconKeeper.GetParamDefaultStorageLimit(ctx)
+
+	require.Equal(t, ret, testParams.DefaultStorageLimit)
+}
+
+func TestGetParamMaxStorageLimit(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	app.BeaconKeeper.SetParams(ctx, testParams)
+
+	ret := app.BeaconKeeper.GetParamMaxStorageLimit(ctx)
+
+	require.Equal(t, ret, testParams.MaxStorageLimit)
 }
 
 func TestGetZeroFeeAsCoin(t *testing.T) {
@@ -97,6 +133,19 @@ func TestGetRecordFeeAsCoin(t *testing.T) {
 	require.True(t, ret.IsEqual(paramCoin))
 }
 
+func TestGetPurchaseStorageFeeAsCoin(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	app.BeaconKeeper.SetParams(ctx, testParams)
+
+	ret := app.BeaconKeeper.GetPurchaseStorageFeeAsCoin(ctx)
+
+	paramCoin := sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeePurchaseStorage))
+
+	require.True(t, ret.IsEqual(paramCoin))
+}
+
 func TestGetZeroFeeAsCoins(t *testing.T) {
 	app := test_helpers.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
@@ -132,6 +181,19 @@ func TestGetRecordFeeAsCoins(t *testing.T) {
 	ret := app.BeaconKeeper.GetRecordFeeAsCoins(ctx)
 
 	paramCoin := sdk.Coins{sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeeRecord))}
+
+	require.True(t, ret.IsEqual(paramCoin))
+}
+
+func TestGetPurchaseStorageFeeAsCoins(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+
+	app.BeaconKeeper.SetParams(ctx, testParams)
+
+	ret := app.BeaconKeeper.GetPurchaseStorageFeeAsCoins(ctx)
+
+	paramCoin := sdk.Coins{sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeePurchaseStorage))}
 
 	require.True(t, ret.IsEqual(paramCoin))
 }

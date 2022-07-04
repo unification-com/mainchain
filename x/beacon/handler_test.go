@@ -2,6 +2,7 @@ package beacon_test
 
 import (
 	"errors"
+	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/app/test_helpers"
 	"github.com/unification-com/mainchain/x/beacon/types"
@@ -234,6 +235,128 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 			msg: &types.MsgRecordBeaconTimestamp{
 				Owner:    testAddrs[0].String(),
 				Hash:     test_helpers.GenerateRandomString(24),
+				BeaconId: 1,
+			},
+			expectedError: nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := h(ctx, tc.msg)
+			if tc.expectedError != nil {
+				require.EqualError(t, err, tc.expectedError.Error())
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestValidMsgPurchaseBeaconStateStorage(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+
+	h := beacon.NewHandler(app.BeaconKeeper)
+
+	b := types.Beacon{
+		Moniker: test_helpers.GenerateRandomString(24),
+		Name:    "new beacon",
+		Owner:   testAddrs[0].String(),
+	}
+
+	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
+	require.Nil(t, err)
+
+	msg := &types.MsgPurchaseBeaconStateStorage{
+		BeaconId: 1,
+		Number:   100,
+		Owner:    testAddrs[0].String(),
+	}
+
+	res, err := h(ctx, msg)
+
+	require.NotNil(t, res)
+	require.Nil(t, err)
+
+}
+
+func TestInvalidMsgPurchaseBeaconStateStorage(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
+
+	h := beacon.NewHandler(app.BeaconKeeper)
+
+	b := types.Beacon{
+		Moniker: test_helpers.GenerateRandomString(24),
+		Name:    "new beacon",
+		Owner:   testAddrs[0].String(),
+	}
+
+	_, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
+	require.Nil(t, err)
+
+	tests := []struct {
+		name          string
+		expectedError error
+		msg           *types.MsgPurchaseBeaconStateStorage
+	}{
+		{
+			name:          "empty owner address",
+			msg:           &types.MsgPurchaseBeaconStateStorage{},
+			expectedError: errors.New("empty address string is not allowed"),
+		},
+		{
+			name: "invalid owner address",
+			msg: &types.MsgPurchaseBeaconStateStorage{
+				Owner: "rubbish",
+			},
+			expectedError: errors.New("decoding bech32 failed: invalid bech32 string length 7"),
+		},
+		{
+			name: "cannot purchase zero",
+			msg: &types.MsgPurchaseBeaconStateStorage{
+				Owner:  testAddrs[0].String(),
+				Number: 0,
+			},
+			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero"),
+		},
+		{
+			name: "beacon not registered",
+			msg: &types.MsgPurchaseBeaconStateStorage{
+				Owner:    testAddrs[0].String(),
+				Number:   10,
+				BeaconId: 2,
+			},
+			expectedError: sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet"),
+		},
+		{
+			name: "not beacon owner",
+			msg: &types.MsgPurchaseBeaconStateStorage{
+				Owner:    testAddrs[1].String(),
+				Number:   10,
+				BeaconId: 1,
+			},
+			expectedError: sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon"),
+		},
+		{
+			name: "exceeds max storage",
+			msg: &types.MsgPurchaseBeaconStateStorage{
+				Owner:    testAddrs[0].String(),
+				Number:   test_helpers.TestMaxStorage,
+				BeaconId: 1,
+			},
+			expectedError: sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", test_helpers.TestDefaultStorage+test_helpers.TestMaxStorage, test_helpers.TestMaxStorage)),
+		},
+		{
+			name: "successful",
+			msg: &types.MsgPurchaseBeaconStateStorage{
+				Owner:    testAddrs[0].String(),
+				Number:   10,
 				BeaconId: 1,
 			},
 			expectedError: nil,

@@ -50,6 +50,7 @@ func TestSetGetBeacon(t *testing.T) {
 		b.LastTimestampId = 1
 		b.Moniker = moniker
 		b.Name = name
+		b.InStateLimit = types.DefaultStorageLimit
 
 		err := app.BeaconKeeper.SetBeacon(ctx, b)
 		require.NoError(t, err)
@@ -65,6 +66,7 @@ func TestSetGetBeacon(t *testing.T) {
 		require.True(t, bDb.LastTimestampId == 1)
 		require.True(t, bDb.Moniker == moniker)
 		require.True(t, bDb.Name == name)
+		require.True(t, bDb.InStateLimit == types.DefaultStorageLimit)
 
 		bID = bID + 1
 	}
@@ -90,6 +92,7 @@ func TestRegisterBeacon(t *testing.T) {
 		expectedB.Moniker = moniker
 		expectedB.Name = name
 		expectedB.RegTime = uint64(ctx.BlockTime().Unix())
+		expectedB.InStateLimit = types.DefaultStorageLimit
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)
@@ -125,6 +128,7 @@ func TestHighestBeaconIdAfterRegister(t *testing.T) {
 		expectedB.LastTimestampId = 0
 		expectedB.Moniker = moniker
 		expectedB.Name = name
+		expectedB.InStateLimit = types.DefaultStorageLimit
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)
@@ -151,6 +155,7 @@ func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
 		expectedB.LastTimestampId = 0
 		expectedB.Moniker = moniker
 		expectedB.Name = name
+		expectedB.InStateLimit = types.DefaultStorageLimit
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)
@@ -174,6 +179,7 @@ func TestGetBeaconFilter(t *testing.T) {
 		expectedB.Owner = owner.String()
 		expectedB.Moniker = moniker
 		expectedB.Name = name
+		expectedB.InStateLimit = types.DefaultStorageLimit
 
 		_, _ = app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		lastMoniker = moniker

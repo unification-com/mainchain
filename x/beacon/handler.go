@@ -24,6 +24,10 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := msgServer.RecordBeaconTimestamp(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
+		case *types.MsgPurchaseBeaconStateStorage:
+			res, err := msgServer.PurchaseBeaconStateStorage(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognised %s message type: %T", types.ModuleName, msg)
 		}

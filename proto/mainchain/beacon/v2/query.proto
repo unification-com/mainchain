@@ -1,10 +1,10 @@
 syntax = "proto3";
-package mainchain.beacon.v1;
+package mainchain.beacon.v2;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos_sdk/base/query/v1beta1/pagination.proto";
-import "mainchain/beacon/v1/beacon.proto";
+import "mainchain/beacon/v2/beacon.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 

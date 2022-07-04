@@ -32,6 +32,12 @@ func (k Keeper) QuickCheckHeightIsRecorded(ctx sdk.Context, wrkchainId uint64, h
 	return false
 }
 
+// QuickCheckHeightIsNew Checks if the given height can be recorded
+func (k Keeper) QuickCheckHeightIsNew(ctx sdk.Context, wrkchainId uint64, height uint64) bool {
+	wrkchain, _ := k.GetWrkChain(ctx, wrkchainId)
+	return height > wrkchain.Lastblock
+}
+
 // IsWrkChainBlockRecorded Check if the WrkChainBlock is present in the store or not
 func (k Keeper) IsWrkChainBlockRecorded(ctx sdk.Context, wrkchainId uint64, height uint64) bool {
 	store := ctx.KVStore(k.storeKey)
@@ -84,6 +90,20 @@ func (k Keeper) IterateWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64, c
 	}
 }
 
+func (k Keeper) IterateWrkChainBlockHashesPaginated(ctx sdk.Context, wrkchainID uint64, page, limit uint, cb func(wrkChain types.WrkChainBlock) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIteratorPaginated(store, types.WrkChainAllBlocksKey(wrkchainID), page, limit)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var wcb types.WrkChainBlock
+		k.cdc.MustUnmarshal(iterator.Value(), &wcb)
+
+		if cb(wcb) {
+			break
+		}
+	}
+}
+
 // IterateWrkChainBlockHashesReverse iterates over the all the hashes for a wrkchain in reverse order
 // and performs a callback function
 func (k Keeper) IterateWrkChainBlockHashesReverse(ctx sdk.Context, wrkchainID uint64, cb func(wrkChain types.WrkChainBlock) (stop bool)) {
@@ -106,6 +126,14 @@ func (k Keeper) GetAllWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64) (w
 	k.IterateWrkChainBlockHashes(ctx, wrkchainID, func(wcb types.WrkChainBlock) bool {
 		wrkChainBlocks = append(wrkChainBlocks, wcb)
 		return false
+	})
+	return
+}
+
+func (k Keeper) GetLastWrkChainHeightInState(ctx sdk.Context, wrkchainID uint64) (height uint64) {
+	k.IterateWrkChainBlockHashesPaginated(ctx, wrkchainID, 1, 1, func(wcb types.WrkChainBlock) bool {
+		height = wcb.Height
+		return true
 	})
 	return
 }
@@ -138,6 +166,18 @@ func (k Keeper) GetAllWrkChainBlockHashesForGenesisExport(ctx sdk.Context, wrkch
 	return
 }
 
+// deleteBeaconTimestamp deletes a timestamp from the store
+func (k Keeper) deleteWrkChainHash(ctx sdk.Context, wrkchainId, height uint64) error {
+
+	if !k.IsWrkChainBlockRecorded(ctx, wrkchainId, height) {
+		return nil
+	}
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.WrkChainBlockKey(wrkchainId, height))
+
+	return nil
+}
+
 // RecordNewWrkchainHashes records a WRKChain block has for a registered WRKChain
 func (k Keeper) RecordNewWrkchainHashes(
 	ctx sdk.Context,
@@ -147,11 +187,10 @@ func (k Keeper) RecordNewWrkchainHashes(
 	parentHash string,
 	hash1 string,
 	hash2 string,
-	hash3 string) error {
-
-	logger := k.Logger(ctx)
+	hash3 string) (uint64, error) {
 
 	wrkchain, _ := k.GetWrkChain(ctx, wrkchainId)
+	deletedHeight := uint64(0)
 
 	// we're only ever adding new WRKChain data, never updating existing. Handler will have checked if height has
 	// previously been recorded.
@@ -168,29 +207,35 @@ func (k Keeper) RecordNewWrkchainHashes(
 	err := k.SetWrkChainBlock(ctx, wrkchainId, wrkchainBlock)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// update wrkchain metadata
-	if height > wrkchain.Lastblock {
-		wrkchain.Lastblock = height
-	}
+	wrkchain.Lastblock = height
+	wrkchain.NumBlocks = wrkchain.NumBlocks + 1
+	deleteHeight := wrkchain.LowestHeight
 
-	if wrkchain.LowestHeight == 0 || height < wrkchain.LowestHeight {
+	if wrkchain.LowestHeight == 0 {
 		wrkchain.LowestHeight = height
 	}
 
-	wrkchain.NumBlocks = wrkchain.NumBlocks + 1
+	if wrkchain.NumBlocks > wrkchain.InStateLimit {
+		if deleteHeight > 0 {
+			err = k.deleteWrkChainHash(ctx, wrkchainId, deleteHeight)
+			if err != nil {
+				return 0, err
+			}
+			wrkchain.LowestHeight = k.GetLastWrkChainHeightInState(ctx, wrkchainId)
+			wrkchain.NumBlocks = wrkchain.NumBlocks - 1
+			deletedHeight = deleteHeight
+		}
+	}
 
 	err = k.SetWrkChain(ctx, wrkchain)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	if !ctx.IsCheckTx() {
-		logger.Debug("wrkchain block recorded", "id", wrkchainId, "height", height, "hash", blockHash)
-	}
-
-	return nil
+	return deletedHeight, nil
 }

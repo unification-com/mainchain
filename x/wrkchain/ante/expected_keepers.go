@@ -28,4 +28,6 @@ type WrkchainKeeper interface {
 	GetParamDenom(ctx sdk.Context) string
 	GetRegistrationFeeAsCoin(ctx sdk.Context) sdk.Coin
 	GetRecordFeeAsCoin(ctx sdk.Context) sdk.Coin
+	GetPurchaseStorageFeeAsCoin(ctx sdk.Context) sdk.Coin
+	GetMaxPurchasableSlots(ctx sdk.Context, wrkchainId uint64) uint64
 }

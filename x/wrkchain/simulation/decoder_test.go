@@ -25,7 +25,7 @@ func TestDecodeStore(t *testing.T) {
 	cdc := testApp.AppCodec()
 	dec := simulation.NewDecodeStore(cdc)
 
-	wc, err := types.NewWrkchain(1, "beacon1", "Test BEACON 1", "gen", "test", 0, 0, uint64(time.Now().Unix()), bAddr1.String())
+	wc, err := types.NewWrkchain(1, "wrkchain1", "Test WrkChain 1", "gen", "test", 0, 0, uint64(time.Now().Unix()), bAddr1.String())
 	require.NoError(t, err)
 
 	block, err := types.NewWrkchainBlock(1, "bhash", "phash", "h1", "h2", "h3", uint64(time.Now().Unix()))
@@ -49,8 +49,8 @@ func TestDecodeStore(t *testing.T) {
 		name        string
 		expectedLog string
 	}{
-		{"beacon", fmt.Sprintf("%v\n%v", wc, wc)},
-		{"beacon timestamp", fmt.Sprintf("%v\n%v", block, block)},
+		{"wrkchain", fmt.Sprintf("%v\n%v", wc, wc)},
+		{"wrkchain block", fmt.Sprintf("%v\n%v", block, block)},
 		{"other", ""},
 	}
 

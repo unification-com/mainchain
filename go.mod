@@ -16,7 +16,7 @@ require (
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.19
 	github.com/tendermint/tm-db v0.6.6
-	google.golang.org/genproto v0.0.0-20220622171453-ea41d75dfa0f
+	google.golang.org/genproto v0.0.0-20220630174209-ad1d48641aa7
 	google.golang.org/grpc v1.47.0
 )
 
@@ -78,7 +78,6 @@ require (
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/improbable-eng/grpc-web v0.14.1 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/jhump/protoreflect v1.9.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
@@ -91,9 +90,9 @@ require (
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/mwitkow/go-proto-validators v0.3.2 // indirect
-	github.com/otiai10/copy v1.6.0 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -131,8 +130,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.0 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
-
-//replace github.com/cosmos/ledger-cosmos-go => github.com/unification-com/ledger-unification-go v0.11.3
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 

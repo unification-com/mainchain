@@ -35,9 +35,11 @@ import (
 
 // SimAppChainID hardcoded chainID for simulation
 const (
-	TestDenomination = sdk.DefaultBondDenom
-	SimAppChainID    = "simulation-app"
-	charset          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+	TestDenomination   = sdk.DefaultBondDenom
+	SimAppChainID      = "simulation-app"
+	charset            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+	TestDefaultStorage = 200
+	TestMaxStorage     = 300
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
@@ -108,8 +110,8 @@ func Setup(isCheckTx bool) *app.App {
 }
 
 func SetKeeperTestParamsAndDefaultValues(app *app.App, ctx sdk.Context) {
-	app.BeaconKeeper.SetParams(ctx, beacontypes.NewParams(24, 2, TestDenomination))
-	app.WrkchainKeeper.SetParams(ctx, wrkchaintypes.NewParams(24, 2, TestDenomination))
+	app.BeaconKeeper.SetParams(ctx, beacontypes.NewParams(24, 2, 2, TestDenomination, TestDefaultStorage, TestMaxStorage))
+	app.WrkchainKeeper.SetParams(ctx, wrkchaintypes.NewParams(24, 2, 2, TestDenomination, TestDefaultStorage, TestMaxStorage))
 	app.EnterpriseKeeper.SetParams(ctx, enttypes.Params{
 		EntSigners:        sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String(),
 		Denom:             TestDenomination,

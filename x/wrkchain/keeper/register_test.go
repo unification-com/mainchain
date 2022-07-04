@@ -42,13 +42,14 @@ func TestSetGetWrkChain(t *testing.T) {
 	for _, addr := range testAddrs {
 
 		wc := types.WrkChain{
-			WrkchainId: wcID,
-			Moniker:    test_helpers.GenerateRandomString(12),
-			Name:       test_helpers.GenerateRandomString(20),
-			Genesis:    test_helpers.GenerateRandomString(32),
-			Type:       "tendemrint",
-			RegTime:    uint64(time.Now().Unix()),
-			Owner:      addr.String(),
+			WrkchainId:   wcID,
+			Moniker:      test_helpers.GenerateRandomString(12),
+			Name:         test_helpers.GenerateRandomString(20),
+			Genesis:      test_helpers.GenerateRandomString(32),
+			Type:         "tendemrint",
+			RegTime:      uint64(time.Now().Unix()),
+			Owner:        addr.String(),
+			InStateLimit: types.DefaultStorageLimit,
 		}
 
 		err := app.WrkchainKeeper.SetWrkChain(ctx, wc)
@@ -91,6 +92,7 @@ func TestRegisterWrkChain(t *testing.T) {
 		expectedWc.Name = name
 		expectedWc.Genesis = genesisHash
 		expectedWc.Type = "geth"
+		expectedWc.InStateLimit = types.DefaultStorageLimit
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)

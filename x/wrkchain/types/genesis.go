@@ -7,11 +7,15 @@ import (
 
 const (
 	// WRKChain fees, in nano FUND
-	RegFee    = 1000000000000                // 1000 FUND - used in init genesis
-	RecordFee = 1000000000                   // 1 FUND - used in init genesis
-	FeeDenom  = undtypes.DefaultDenomination // used in init genesis
+	RegFee             = 1000000000000                // 1000 FUND - used in init genesis
+	RecordFee          = 1000000000                   // 1 FUND - used in init genesis
+	PurchaseStorageFee = 1000000000                   // 1 FUND - used in init genesis
+	FeeDenom           = undtypes.DefaultDenomination // used in init genesis
 
 	DefaultStartingWrkChainID uint64 = 1 // used in init genesis
+
+	DefaultStorageLimit    uint64 = 50000   // used in init genesis
+	DefaultMaxStorageLimit uint64 = 1000000 // used in init genesis
 )
 
 // NewGenesisState creates a new GenesisState object
@@ -51,6 +55,9 @@ func ValidateGenesis(data GenesisState) error {
 		}
 		if record.Wrkchain.Type == "" {
 			return fmt.Errorf("invalid WrkChain: BaseType: %s. Error: Missing BaseType", record.Wrkchain.Type)
+		}
+		if record.Wrkchain.InStateLimit == 0 {
+			return fmt.Errorf("invalid WrkChain: InStateLimit: %d. Error: Missing InStateLimit", record.Wrkchain.InStateLimit)
 		}
 		for _, block := range record.Blocks {
 			if block.Bh == "" {

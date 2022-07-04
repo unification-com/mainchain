@@ -1,10 +1,10 @@
 syntax = "proto3";
-package mainchain.wrkchain.v1;
+package mainchain.wrkchain.v2;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos_sdk/base/query/v1beta1/pagination.proto";
-import "mainchain/wrkchain/v1/wrkchain.proto";
+import "mainchain/wrkchain/v2/wrkchain.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
@@ -27,6 +27,10 @@ service Query {
   // WrkChainsFiltered queries all wrkchain metadata for given search parameters
   rpc WrkChainsFiltered(QueryWrkChainsFilteredRequest) returns (QueryWrkChainsFilteredResponse) {
     option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchains";
+  }
+
+  rpc WrkChainStorage(QueryWrkChainStorageRequest) returns (QueryWrkChainStorageResponse) {
+    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/storage";
   }
 }
 
@@ -82,4 +86,28 @@ message QueryWrkChainsFilteredResponse {
   repeated WrkChain wrkchains = 1 [(gogoproto.nullable) = false];
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryWrkChainStorageRequest is the request type for the Query/WrkChainStorage RPC method
+message QueryWrkChainStorageRequest {
+  // wrkchain_id is the id of the wrkchain to query for
+  uint64 wrkchain_id = 1;
+}
+
+// QueryWrkChainStorageResponse is the response type for the Query/WrkChainStorage RPC method
+message QueryWrkChainStorageResponse {
+  uint64 wrkchain_id = 1;
+  string owner = 2;
+
+  // current_limit is the current in-state storage limit for this wrkchain
+  uint64 current_limit = 3;
+
+  // current_used is the number of in-state slots currently used
+  uint64 current_used = 4;
+
+  // max is the maximum possible slots a wrkchain can have, as defined by the wrkchain module params
+  uint64 max = 5;
+
+  // max_purchasable is the maximum number a wrkchain can purchase without exceeding max
+  uint64 max_purchasable = 6;
 }

@@ -7,11 +7,14 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
+// UpdateName this will be changed with each new release that requires migrations
+const UpdateName = "1-ibc"
+
 // todo - Need to set staking params historical_entries = 10000 for IBC relayers to connect & open channels
 // see https://docs.cosmos.network/v0.45/migrations/chain-upgrade-guide-044.html
 func (app *App) registerUpgradeHandlers() {
 	// first upgrade 1-ibc, integrates IBC
-	app.UpgradeKeeper.SetUpgradeHandler("1-ibc", app.register1IBC)
+	app.UpgradeKeeper.SetUpgradeHandler(UpdateName, app.upgradeHandler)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
@@ -19,7 +22,7 @@ func (app *App) registerUpgradeHandlers() {
 	}
 
 	// add new modules in 1-ibc upgrade
-	if upgradeInfo.Name == "1-ibc" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == UpdateName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
 			Added: []string{"authz", "feegrant", "capability", "ibc", "transfer"},
 		}
@@ -29,7 +32,7 @@ func (app *App) registerUpgradeHandlers() {
 	}
 }
 
-func (app *App) register1IBC(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
+func (app *App) upgradeHandler(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 	// 1st-time running in-store migrations, using 1 as fromVersion to
 	// avoid running InitGenesis.
 	fromVM := map[string]uint64{

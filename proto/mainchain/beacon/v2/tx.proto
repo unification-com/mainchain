@@ -1,8 +1,8 @@
 syntax = "proto3";
-package mainchain.beacon.v1;
+package mainchain.beacon.v2;
 
 import "gogoproto/gogo.proto";
-import "mainchain/beacon/v1/beacon.proto";
+import "mainchain/beacon/v2/beacon.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
@@ -15,6 +15,10 @@ service Msg {
   // RecordBeaconTimestamp defines a method to record a timestamp for a registered beacon
   rpc RecordBeaconTimestamp(MsgRecordBeaconTimestamp)
       returns (MsgRecordBeaconTimestampResponse);
+
+  // PurchaseBeaconStateStorage defines the method to purchase more state storage
+  rpc PurchaseBeaconStateStorage(MsgPurchaseBeaconStateStorage)
+      returns (MsgPurchaseBeaconStateStorageResponse);
 
 }
 
@@ -58,4 +62,27 @@ message MsgRecordBeaconTimestampResponse {
   uint64 beacon_id = 1;
   // timestamp_id is the id of the new timestamp
   uint64 timestamp_id = 2;
+}
+
+message MsgPurchaseBeaconStateStorage {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // beacon_id is the id of the beacon the storage is being purchased for
+  uint64 beacon_id = 1;
+
+  // number is the number of state storage spaces to purchase
+  uint64 number = 2;
+
+  // owner is the address of the owner of the beacon
+  string owner = 3;
+}
+
+message MsgPurchaseBeaconStateStorageResponse {
+  // beacon_id is the id of the beacon the storage is being purchased for
+  uint64 beacon_id = 1;
+  // number_purchased is the number of state storage spaces purchased
+  uint64 number_purchased = 2;
+  // num_can_purchase is the number of remaining slots available for purchase
+  uint64 num_can_purchase = 3;
 }

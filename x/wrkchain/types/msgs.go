@@ -8,8 +8,9 @@ import (
 const (
 	RouterKey = ModuleName // defined in keys.go file
 
-	RegisterAction = "register_wrkchain"
-	RecordAction   = "record_wrkchain_hash"
+	RegisterAction        = "register_wrkchain"
+	RecordAction          = "record_wrkchain_hash"
+	PurchaseStorageAction = "purchase_wrkchain_storage"
 )
 
 // --- Register a WRKChain Msg ---
@@ -153,6 +154,59 @@ func (msg MsgRecordWrkChainBlock) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgRecordWrkChainBlock) GetSigners() []sdk.AccAddress {
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{owner}
+}
+
+// --- Purchase state storage Msg ---
+
+var _ sdk.Msg = &MsgPurchaseWrkChainStateStorage{}
+
+// NewMsgRecordBeaconTimestamp is a constructor function for MsgRecordBeaconTimestamp
+func NewMsgPurchaseWrkChainStateStorage(
+	wrkchainId uint64,
+	number uint64,
+	owner sdk.AccAddress) *MsgPurchaseWrkChainStateStorage {
+
+	return &MsgPurchaseWrkChainStateStorage{
+		WrkchainId: wrkchainId,
+		Number:     number,
+		Owner:      owner.String(),
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgPurchaseWrkChainStateStorage) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgPurchaseWrkChainStateStorage) Type() string { return PurchaseStorageAction }
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgPurchaseWrkChainStateStorage) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+	}
+	if msg.WrkchainId == 0 {
+		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
+	}
+	if msg.Number == 0 {
+		return sdkerrors.Wrap(ErrMissingData, "number cannot be zero")
+	}
+
+	return nil
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgPurchaseWrkChainStateStorage) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgPurchaseWrkChainStateStorage) GetSigners() []sdk.AccAddress {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)

@@ -105,7 +105,7 @@ func setupTest() (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
 func TestQueryParams(t *testing.T) {
 	testApp, ctx, legacyQuerierCdc, querier := setupTest()
 
-	paramsNew := types.NewParams(9999, 999, "somecoin")
+	paramsNew := types.NewParams(9999, 999, 999, "somecoin", 999, 9999)
 
 	testApp.WrkchainKeeper.SetParams(ctx, paramsNew)
 	params := getQueriedParams(t, ctx, legacyQuerierCdc, querier)

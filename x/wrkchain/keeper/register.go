@@ -152,6 +152,33 @@ func (k Keeper) GetWrkChainsFiltered(ctx sdk.Context, params types.QueryWrkChain
 	return filteredWrkChains
 }
 
+func (k Keeper) IncreaseInStateStorage(ctx sdk.Context, wrkchainId, amount uint64) error {
+	wrkchain, _ := k.GetWrkChain(ctx, wrkchainId)
+	wrkchain.InStateLimit = wrkchain.InStateLimit + amount
+	err := k.SetWrkChain(ctx, wrkchain)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) GetMaxPurchasableSlots(ctx sdk.Context, wrkchainId uint64) uint64 {
+	wrkchain, found := k.GetWrkChain(ctx, wrkchainId)
+	if !found {
+		return 0
+	}
+
+	maxStorageLimit := k.GetParamMaxStorageLimit(ctx)
+
+	if wrkchain.InStateLimit >= maxStorageLimit {
+		return 0
+	}
+
+	return maxStorageLimit - wrkchain.InStateLimit
+}
+
 // RegisterNewWrkChain registers a WRKChain in the store
 func (k Keeper) RegisterNewWrkChain(ctx sdk.Context, moniker string, wrkchainName string, genesisHash string, baseType string, owner sdk.AccAddress) (uint64, error) {
 
@@ -171,6 +198,7 @@ func (k Keeper) RegisterNewWrkChain(ctx sdk.Context, moniker string, wrkchainNam
 	wrkchain.Genesis = genesisHash
 	wrkchain.Type = baseType
 	wrkchain.RegTime = uint64(ctx.BlockTime().Unix())
+	wrkchain.InStateLimit = k.GetParamDefaultStorageLimit(ctx)
 
 	err = k.SetWrkChain(ctx, wrkchain)
 	if err != nil {

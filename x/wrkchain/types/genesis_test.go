@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestEqualPurchaseOrderID(t *testing.T) {
+func TestEqualStartingWrkChainID(t *testing.T) {
 	state1 := GenesisState{}
 	state2 := GenesisState{}
 	require.Equal(t, state1, state2)
@@ -23,10 +23,10 @@ func TestEqualPurchaseOrderID(t *testing.T) {
 }
 
 func TestNewGenesisState(t *testing.T) {
-	params1 := NewParams(1000, 100, "nund")
+	params1 := NewParams(1000, 100, 100, "nund", 200, 300)
 	state1 := NewGenesisState(params1, 1, nil)
 
-	params2 := NewParams(1000, 100, "nund")
+	params2 := NewParams(1000, 100, 100, "nund", 200, 300)
 	state2 := NewGenesisState(params2, 1, nil)
 
 	require.Equal(t, state1, state2)
@@ -84,6 +84,11 @@ func TestValidateGenesis(t *testing.T) {
 	require.Error(t, expectedErr, err.Error())
 
 	state3.RegisteredWrkchains[0].Wrkchain.Type = "tendermint"
+	expectedErr = fmt.Errorf("invalid Beacon: InStateLimit: 0. Error: Missing InStateLimit")
+	err = ValidateGenesis(*state3)
+	require.Error(t, expectedErr, err.Error())
+
+	state3.RegisteredWrkchains[0].Wrkchain.InStateLimit = 100
 	err = ValidateGenesis(*state3)
 	require.NoError(t, err)
 

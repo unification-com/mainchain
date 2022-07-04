@@ -129,3 +129,32 @@ func (q Keeper) BeaconsFiltered(c context.Context, req *types.QueryBeaconsFilter
 		Beacons: beacons, Pagination: pageRes,
 	}, nil
 }
+
+func (q Keeper) BeaconStorage(c context.Context, req *types.QueryBeaconStorageRequest) (*types.QueryBeaconStorageResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	if req.BeaconId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "beacon id can not be 0")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	beacon, found := q.GetBeacon(ctx, req.BeaconId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "beacon %d doesn't exist in state", req.BeaconId)
+	}
+
+	maxStorageLimit := q.GetParamMaxStorageLimit(ctx)
+
+	return &types.QueryBeaconStorageResponse{
+		BeaconId:       beacon.BeaconId,
+		Owner:          beacon.Owner,
+		CurrentLimit:   beacon.InStateLimit,
+		CurrentUsed:    beacon.NumInState,
+		Max:            maxStorageLimit,
+		MaxPurchasable: maxStorageLimit - beacon.InStateLimit,
+	}, nil
+}

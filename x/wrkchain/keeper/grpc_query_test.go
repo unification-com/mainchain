@@ -13,9 +13,12 @@ func (suite *KeeperTestSuite) TestGRPCQueryParams() {
 	app, ctx, queryClient := suite.app, suite.ctx, suite.queryClient
 
 	testParams := types.Params{
-		FeeRegister: 240,
-		FeeRecord:   24,
-		Denom:       "tnund",
+		FeeRegister:         240,
+		FeeRecord:           24,
+		FeePurchaseStorage:  12,
+		Denom:               "tnund",
+		DefaultStorageLimit: 200,
+		MaxStorageLimit:     300,
 	}
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -68,10 +71,10 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChain() {
 				bID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, "moniker", "name", "lhbohbob", "tm", addrs[0])
 				suite.Require().NoError(err)
 				suite.Require().Equal(uint64(1), bID)
-				dbBeacon, found := app.WrkchainKeeper.GetWrkChain(ctx, uint64(1))
+				dbWrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, uint64(1))
 				suite.Require().True(found)
 
-				expWc = dbBeacon
+				expWc = dbWrkchain
 			},
 			true,
 		},
@@ -94,7 +97,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChain() {
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
+func (suite *KeeperTestSuite) TestGRPCQueryWrkChainsFiltered() {
 	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
 
 	testWrkchains := []types.WrkChain{}
@@ -119,7 +122,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
 		{
 			"request wrkchains with limit 3",
 			func() {
-				// create 5 test beacons
+				// create 5 test wrkchains
 				for i := 0; i < 5; i++ {
 
 					moniker := test_helpers.GenerateRandomString(12)
@@ -293,6 +296,76 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 			} else {
 				suite.Require().Error(err)
 				suite.Require().Nil(blockRes)
+			}
+		})
+	}
+}
+
+func (suite *KeeperTestSuite) TestGRPCQueryWrkChainStorage() {
+	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+
+	var (
+		req    *types.QueryWrkChainStorageRequest
+		expRes types.QueryWrkChainStorageResponse
+	)
+
+	testCases := []struct {
+		msg      string
+		malleate func()
+		expPass  bool
+	}{
+		{
+			"empty request",
+			func() {
+				req = &types.QueryWrkChainStorageRequest{}
+			},
+			false,
+		},
+		{
+			"zero wrkchain id request",
+			func() {
+				req = &types.QueryWrkChainStorageRequest{WrkchainId: 0}
+			},
+			false,
+		},
+		{
+			"valid request",
+			func() {
+				req = &types.QueryWrkChainStorageRequest{WrkchainId: 1}
+
+				wcId, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, "moniker", "name", "ghash", "tm", addrs[0])
+				suite.Require().NoError(err)
+				suite.Require().Equal(uint64(1), wcId)
+
+				_, err = app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcId, 24, "somehash", "parenthash", "hash1", "hash2", "hash3")
+				suite.Require().NoError(err)
+
+				expRes = types.QueryWrkChainStorageResponse{
+					WrkchainId:     wcId,
+					Owner:          addrs[0].String(),
+					CurrentLimit:   types.DefaultStorageLimit,
+					CurrentUsed:    1,
+					Max:            types.DefaultMaxStorageLimit,
+					MaxPurchasable: types.DefaultMaxStorageLimit - types.DefaultStorageLimit,
+				}
+
+			},
+			true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+			testCase.malleate()
+
+			timestampRes, err := queryClient.WrkChainStorage(gocontext.Background(), req)
+
+			if testCase.expPass {
+				suite.Require().NoError(err)
+				suite.Require().Equal(&expRes, timestampRes)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Nil(timestampRes)
 			}
 		})
 	}

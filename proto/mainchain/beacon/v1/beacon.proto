@@ -3,7 +3,7 @@ package mainchain.beacon.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/unification-com/mainchain/x/beacon/types";
+option go_package = "github.com/unification-com/mainchain/x/beacon/legacy/v040";
 
 // Beacon holds metadata about a registered beacon
 message Beacon {

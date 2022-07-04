@@ -140,6 +140,33 @@ func (k Keeper) GetBeaconsFiltered(ctx sdk.Context, params types.QueryBeaconsFil
 	return filteredBeacons
 }
 
+func (k Keeper) IncreaseInStateStorage(ctx sdk.Context, beaconId, amount uint64) error {
+	beacon, _ := k.GetBeacon(ctx, beaconId)
+	beacon.InStateLimit = beacon.InStateLimit + amount
+	err := k.SetBeacon(ctx, beacon)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) GetMaxPurchasableSlots(ctx sdk.Context, beaconId uint64) uint64 {
+	beacon, found := k.GetBeacon(ctx, beaconId)
+	if !found {
+		return 0
+	}
+
+	maxStorageLimit := k.GetParamMaxStorageLimit(ctx)
+
+	if beacon.InStateLimit >= maxStorageLimit {
+		return 0
+	}
+
+	return maxStorageLimit - beacon.InStateLimit
+}
+
 // RegisterBeacon registers a BEACON in the store
 func (k Keeper) RegisterNewBeacon(ctx sdk.Context, beacon types.Beacon) (uint64, error) {
 
@@ -155,6 +182,7 @@ func (k Keeper) RegisterNewBeacon(ctx sdk.Context, beacon types.Beacon) (uint64,
 	beacon.FirstIdInState = 0
 	beacon.NumInState = 0
 	beacon.RegTime = uint64(ctx.BlockTime().Unix())
+	beacon.InStateLimit = k.GetParamDefaultStorageLimit(ctx)
 
 	err = k.SetBeacon(ctx, beacon)
 	if err != nil {

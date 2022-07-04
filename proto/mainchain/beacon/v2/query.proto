@@ -29,6 +29,10 @@ service Query {
   rpc BeaconsFiltered(QueryBeaconsFilteredRequest) returns (QueryBeaconsFilteredResponse) {
     option (google.api.http).get = "/mainchain/beacon/v1/beacons";
   }
+
+  rpc BeaconStorage(QueryBeaconStorageRequest) returns (QueryBeaconStorageResponse) {
+    option (google.api.http).get = "/mainchain/beacon/v1/beacon/{beacon_id}/storage";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method
@@ -83,4 +87,28 @@ message QueryBeaconsFilteredResponse {
   repeated Beacon beacons = 1 [(gogoproto.nullable) = false];
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBeaconStorageRequest is the request type for the Query/BeaconStorage RPC method
+message QueryBeaconStorageRequest {
+  // beacon_id is the id of the beacon to query for
+  uint64 beacon_id = 1;
+}
+
+// QueryBeaconStorageResponse is the response type for the Query/BeaconStorage RPC method
+message QueryBeaconStorageResponse {
+  uint64 beacon_id = 1;
+  string owner = 2;
+
+  // current_limit is the current in-state storage limit for this beacon
+  uint64 current_limit = 3;
+
+  // current_used is the number of in-state slots currently used
+  uint64 current_used = 4;
+
+  // max is the maximum possible slots a beacon can have, as defined by the beacon module params
+  uint64 max = 5;
+
+  // max_purchasable is the maximum number a beacon can purchase without exceeding max
+  uint64 max_purchasable = 6;
 }

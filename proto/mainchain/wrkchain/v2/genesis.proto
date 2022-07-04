@@ -6,7 +6,7 @@ import "mainchain/wrkchain/v1/wrkchain.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
-// GenesisState defines the beacon module's genesis state.
+// GenesisState defines the wrkchain module's genesis state.
 message GenesisState {
   // params defines all the paramaters of the module.
   Params params = 1 [(gogoproto.nullable) = false];

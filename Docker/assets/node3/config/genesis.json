@@ -221,7 +221,10 @@
       "params": {
         "denom": "nund",
         "fee_record": "1000000000",
-        "fee_register": "1000000000000"
+        "fee_purchase_storage": "1000000000",
+        "fee_register": "1000000000000",
+        "default_storage_limit": "100",
+        "max_storage_limit": "200"
       },
       "registered_beacons": [],
       "starting_beacon_id": "1"

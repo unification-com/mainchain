@@ -35,6 +35,7 @@ var (
 func TestStoreMigrate(t *testing.T) {
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 	lastTimestampId := uint64(69000)
+	expectedFirstInState := (lastTimestampId - types.DefaultStorageLimit) + 1
 
 	encCfg := appparams.MakeTestEncodingConfig()
 	cdc := encCfg.Marshaler
@@ -119,7 +120,7 @@ func TestStoreMigrate(t *testing.T) {
 	// should be migrated
 	require.True(t, newBeacon.LastTimestampId == lastTimestampId)
 	require.True(t, newBeacon.NumInState == types.DefaultStorageLimit)
-	require.True(t, newBeacon.FirstIdInState == (lastTimestampId-types.DefaultStorageLimit)+1)
+	require.True(t, newBeacon.FirstIdInState == expectedFirstInState)
 
 	// should remain the same
 	require.True(t, newBeacon.BeaconId == 1)
@@ -127,4 +128,14 @@ func TestStoreMigrate(t *testing.T) {
 	require.True(t, newBeacon.Moniker == "tb1")
 	require.True(t, newBeacon.RegTime == bRegTime)
 	require.True(t, newBeacon.Owner == testAddrs[0].String())
+
+	// check expected prunes
+	for i := uint64(1); i <= lastTimestampId; i++ {
+		has := beaconStore.Has(types.BeaconTimestampKey(1, i))
+		if i < expectedFirstInState {
+			require.False(t, has)
+		} else {
+			require.True(t, has)
+		}
+	}
 }

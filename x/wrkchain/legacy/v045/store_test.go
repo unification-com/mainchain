@@ -35,6 +35,7 @@ var (
 func TestStoreMigrate(t *testing.T) {
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 	lastBlockHeight := uint64(69000)
+	expectedLowestHeight := (lastBlockHeight - types.DefaultStorageLimit) + 1
 
 	encCfg := appparams.MakeTestEncodingConfig()
 	cdc := encCfg.Marshaler
@@ -125,7 +126,7 @@ func TestStoreMigrate(t *testing.T) {
 	// should be migrated
 	require.True(t, newWrkchain.Lastblock == lastBlockHeight)
 	require.True(t, newWrkchain.NumBlocks == types.DefaultStorageLimit)
-	require.True(t, newWrkchain.LowestHeight == (lastBlockHeight-types.DefaultStorageLimit)+1)
+	require.True(t, newWrkchain.LowestHeight == expectedLowestHeight)
 
 	// should remain the same
 	require.True(t, newWrkchain.WrkchainId == 1)
@@ -136,4 +137,13 @@ func TestStoreMigrate(t *testing.T) {
 	require.True(t, newWrkchain.RegTime == wcRegTime)
 	require.True(t, newWrkchain.Owner == testAddrs[0].String())
 
+	// check expected prunes
+	for i := uint64(1); i <= lastBlockHeight; i++ {
+		has := wrkchainStore.Has(types.WrkChainBlockKey(1, i))
+		if i < expectedLowestHeight {
+			require.False(t, has)
+		} else {
+			require.True(t, has)
+		}
+	}
 }

@@ -24,6 +24,7 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 			LowestHeight: record.Wrkchain.LowestHeight,
 			RegTime:      record.Wrkchain.RegTime,
 			Owner:        record.Wrkchain.Owner,
+			InStateLimit: record.Wrkchain.InStateLimit,
 		}
 
 		err := keeper.SetWrkChain(ctx, wrkChain)
@@ -64,6 +65,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	for _, wc := range wrkChains {
 		blockHashList := k.GetAllWrkChainBlockHashesForGenesisExport(ctx, wc.WrkchainId)
+		lowestHeight := uint64(0)
+		if len(blockHashList) > 0 {
+			lowestHeight = blockHashList[0].He
+		}
 
 		records = append(records, types.WrkChainExport{
 			Wrkchain: types.WrkChain{
@@ -73,10 +78,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 				Genesis:      wc.Genesis,
 				Type:         wc.Type,
 				Lastblock:    wc.Lastblock,
-				NumBlocks:    wc.NumBlocks,
-				LowestHeight: wc.LowestHeight,
+				NumBlocks:    uint64(len(blockHashList)),
+				LowestHeight: lowestHeight,
 				RegTime:      wc.RegTime,
 				Owner:        wc.Owner,
+				InStateLimit: wc.InStateLimit,
 			},
 			Blocks: blockHashList,
 		})

@@ -15,6 +15,7 @@ var (
 	ErrIncorrectFeeDenomination = types.ErrIncorrectFeeDenomination
 	ErrInsufficientWrkChainFee  = types.ErrInsufficientWrkChainFee
 	ErrTooMuchWrkChainFee       = types.ErrTooMuchWrkChainFee
+	ErrExceedsMaxStorage        = types.ErrExceedsMaxStorage
 )
 
 func CheckIsWrkChainTx(tx sdk.Tx) bool {
@@ -24,6 +25,8 @@ func CheckIsWrkChainTx(tx sdk.Tx) bool {
 		case *types.MsgRegisterWrkChain:
 			return true
 		case *types.MsgRecordWrkChainBlock:
+			return true
+		case *types.MsgPurchaseWrkChainStateStorage:
 			return true
 		}
 

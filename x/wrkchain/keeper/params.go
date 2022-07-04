@@ -12,7 +12,10 @@ func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	return types.NewParams(
 		k.GetParamRegistrationFee(ctx),
 		k.GetParamRecordFee(ctx),
+		k.GetParamPurchaseStorageFee(ctx),
 		k.GetParamDenom(ctx),
+		k.GetParamDefaultStorageLimit(ctx),
+		k.GetParamMaxStorageLimit(ctx),
 	)
 }
 
@@ -39,6 +42,24 @@ func (k Keeper) GetParamRecordFee(ctx sdk.Context) uint64 {
 	return feeRecordParams
 }
 
+func (k Keeper) GetParamPurchaseStorageFee(ctx sdk.Context) uint64 {
+	var feePurchaseStorageParams uint64
+	k.paramSpace.Get(ctx, types.KeyFeePurchaseStorage, &feePurchaseStorageParams)
+	return feePurchaseStorageParams
+}
+
+func (k Keeper) GetParamDefaultStorageLimit(ctx sdk.Context) uint64 {
+	var defaultStorageLimitParams uint64
+	k.paramSpace.Get(ctx, types.KeyDefaultStorageLimit, &defaultStorageLimitParams)
+	return defaultStorageLimitParams
+}
+
+func (k Keeper) GetParamMaxStorageLimit(ctx sdk.Context) uint64 {
+	var maxStorageLimitParams uint64
+	k.paramSpace.Get(ctx, types.KeyMaxStorageLimit, &maxStorageLimitParams)
+	return maxStorageLimitParams
+}
+
 func (k Keeper) GetZeroFeeAsCoin(ctx sdk.Context) sdk.Coin {
 	return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
 }
@@ -51,6 +72,10 @@ func (k Keeper) GetRecordFeeAsCoin(ctx sdk.Context) sdk.Coin {
 	return sdk.NewInt64Coin(k.GetParamDenom(ctx), int64(k.GetParamRecordFee(ctx)))
 }
 
+func (k Keeper) GetPurchaseStorageFeeAsCoin(ctx sdk.Context) sdk.Coin {
+	return sdk.NewInt64Coin(k.GetParamDenom(ctx), int64(k.GetParamPurchaseStorageFee(ctx)))
+}
+
 func (k Keeper) GetZeroFeeAsCoins(ctx sdk.Context) sdk.Coins {
 	return sdk.Coins{k.GetZeroFeeAsCoin(ctx)}
 }
@@ -61,4 +86,8 @@ func (k Keeper) GetRegistrationFeeAsCoins(ctx sdk.Context) sdk.Coins {
 
 func (k Keeper) GetRecordFeeAsCoins(ctx sdk.Context) sdk.Coins {
 	return sdk.Coins{k.GetRecordFeeAsCoin(ctx)}
+}
+
+func (k Keeper) GetPurchaseStorageFeeAsCoins(ctx sdk.Context) sdk.Coins {
+	return sdk.Coins{k.GetPurchaseStorageFeeAsCoin(ctx)}
 }

@@ -172,3 +172,37 @@ func TestMsgRecordWrkChainBlock(t *testing.T) {
 		}
 	}
 }
+
+func TestMsgPurchaseWrkChainStateStorage(t *testing.T) {
+
+	addr := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
+	emptyAddr := sdk.AccAddress{}
+
+	tests := []struct {
+		wrkchainId uint64
+		number     uint64
+		Owner      sdk.AccAddress
+		expectPass bool
+	}{
+		{1, 10, addr, true},
+		{1, 10, emptyAddr, false},
+		{1, 0, addr, false},
+		{0, 1, addr, false},
+		{0, 0, addr, false},
+		{0, 0, emptyAddr, false},
+	}
+
+	for i, tc := range tests {
+		msg := NewMsgPurchaseWrkChainStateStorage(
+			tc.wrkchainId,
+			tc.number,
+			tc.Owner,
+		)
+
+		if tc.expectPass {
+			require.NoError(t, msg.ValidateBasic(), "test: %v", i)
+		} else {
+			require.Error(t, msg.ValidateBasic(), "test: %v", i)
+		}
+	}
+}

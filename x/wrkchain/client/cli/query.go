@@ -27,6 +27,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdWrkChain(),
 		GetCmdSearchWrkChains(),
 		GetCmdWrkChainBlock(),
+		GetCmdWrkChainStorage(),
 	)
 	return wrkchainQueryCmd
 }
@@ -64,7 +65,7 @@ func GetCmdQueryParams() *cobra.Command {
 // GetCmdWrkChain queries information about a wrkchain
 func GetCmdWrkChain() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "wrkchain [wrkchain id]",
+		Use:   "wrkchain [wrkchain_id]",
 		Short: "Query a WRKChain for given ID",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -75,10 +76,10 @@ func GetCmdWrkChain() *cobra.Command {
 			}
 			queryClient := types.NewQueryClient(clientCtx)
 
-			// validate that the beacon id is a uint
+			// validate that the wrkchain id is a uint
 			wrkchainId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("beacon_id %s not a valid int, please input a valid beacon_id", args[0])
+				return fmt.Errorf("wrkchain_id %s not a valid int, please input a valid wrkchain_id", args[0])
 			}
 
 			res, err := queryClient.WrkChain(context.Background(), &types.QueryWrkChainRequest{
@@ -191,6 +192,41 @@ func GetCmdWrkChainBlock() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdWrkChainStorage queries information about a wrkchain's storage
+func GetCmdWrkChainStorage() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "storage [wrkchain_id]",
+		Short: "Query a WrkChain for given ID to retrieve storage info",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			// validate that the wrkchain id is a uint
+			wrkchainId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("wrkchain_id %s not a valid int, please input a valid wrkchain_id", args[0])
+			}
+
+			res, err := queryClient.WrkChainStorage(context.Background(), &types.QueryWrkChainStorageRequest{
+				WrkchainId: wrkchainId,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

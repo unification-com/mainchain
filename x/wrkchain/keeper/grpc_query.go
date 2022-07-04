@@ -130,3 +130,32 @@ func (q Keeper) WrkChainsFiltered(c context.Context, req *types.QueryWrkChainsFi
 		Wrkchains: wrkchains, Pagination: pageRes,
 	}, nil
 }
+
+func (q Keeper) WrkChainStorage(c context.Context, req *types.QueryWrkChainStorageRequest) (*types.QueryWrkChainStorageResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	if req.WrkchainId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "wrkchain id can not be 0")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	wrkchain, found := q.GetWrkChain(ctx, req.WrkchainId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "wrkchain %d doesn't exist in state", req.WrkchainId)
+	}
+
+	maxStorageLimit := q.GetParamMaxStorageLimit(ctx)
+
+	return &types.QueryWrkChainStorageResponse{
+		WrkchainId:     wrkchain.WrkchainId,
+		Owner:          wrkchain.Owner,
+		CurrentLimit:   wrkchain.InStateLimit,
+		CurrentUsed:    wrkchain.NumBlocks,
+		Max:            maxStorageLimit,
+		MaxPurchasable: maxStorageLimit - wrkchain.InStateLimit,
+	}, nil
+}

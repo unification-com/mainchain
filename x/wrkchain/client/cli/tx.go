@@ -68,7 +68,7 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 				return err
 			}
 
-			// used for getting fees and checking beacon
+			// used for getting fees and checking wrkchain
 			queryClient := types.NewQueryClient(clientCtx)
 
 			from := clientCtx.GetFromAddress()
@@ -144,7 +144,7 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 
 			from := clientCtx.GetFromAddress()
 
-			// used for getting fees and checking beacon
+			// used for getting fees and checking wrkchain
 			queryClient := types.NewQueryClient(clientCtx)
 
 			height, _ := cmd.Flags().GetUint64(FlagHeight)
@@ -185,7 +185,6 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 				return err
 			}
 
-			// todo - check this works
 			if err := cmd.Flags().Set(flags.FlagFees, recFee); err != nil {
 				return err
 			}
@@ -202,5 +201,77 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 	cmd.Flags().String(FlagHash2, "", "(optional) Additional WRKChain hash - e.g. Tx Merkle Root")
 	cmd.Flags().String(FlagHash3, "", "(optional) Additional WRKChain hash")
 
+	return cmd
+}
+
+// GetCmdPurchaseStorage is the CLI command for sending a PurchaseStorageAction transaction
+func GetCmdPurchaseStorage() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "purchase_storage [wrkchain_id] [num_slots]",
+		Short: "purchase more in-state storage for a WrkChain",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Purchase more in-state storage for a WrkChain, allowing more
+hashes to be kept in-state
+
+Example:
+$ %s tx %s purchase_storage 1 100
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// used for getting fees and checking wrkchain
+			queryClient := types.NewQueryClient(clientCtx)
+
+			from := clientCtx.GetFromAddress()
+
+			wrkchainId, err := strconv.Atoi(args[0])
+
+			if err != nil {
+				return err
+			}
+
+			if wrkchainId == 0 {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
+			}
+
+			numToPurchase, err := strconv.Atoi(args[1])
+
+			if err != nil {
+				return err
+			}
+
+			if numToPurchase == 0 {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "num_slots must be > 0")
+			}
+
+			params, err := queryClient.Params(
+				context.Background(),
+				&types.QueryParamsRequest{},
+			)
+
+			purchaseFee := strconv.Itoa(int(params.Params.FeePurchaseStorage)*numToPurchase) + params.Params.Denom
+
+			msg := types.NewMsgPurchaseWrkChainStateStorage(uint64(wrkchainId), uint64(numToPurchase), from)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			if err := cmd.Flags().Set(flags.FlagFees, purchaseFee); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

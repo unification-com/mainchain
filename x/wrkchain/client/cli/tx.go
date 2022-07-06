@@ -43,6 +43,7 @@ func GetTxCmd() *cobra.Command {
 	wrkchainTxCmd.AddCommand(
 		GetCmdRegisterWrkChain(),
 		GetCmdRecordWrkChainBlock(),
+		GetCmdPurchaseStorage(),
 	)
 
 	return wrkchainTxCmd

@@ -108,6 +108,120 @@ paths:
           type: string
       tags:
         - Enterprise
+  /mainchain/enterprise/v1/efund_usage:
+    get:
+      summary: >-
+        EFUNDUsage queries the total eFUND usage to date - i.e. the amount used
+        to pay fees
+      operationId: EFUNDUsage
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: >-
+              QueryEFUNDUsageResponse is the response type for the
+              Query/FUNDUsage RPC method.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Enterprise
+  /mainchain/enterprise/v1/efund_usage/{address}:
+    get:
+      summary: >-
+        QueryEFUNDUsageByAddress queries the total eFUND usage to date for a
+        given address, i.e. the amount used to pay fees
+      operationId: EFUNDUsageByAddress
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: >-
+              QueryEFUNDUsageByAddressResponse is the response type for the
+              Query/FUNDUsageByAddress RPC method.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: address
+          description: address is the address to query
+          in: path
+          required: true
+          type: string
+      tags:
+        - Enterprise
   /mainchain/enterprise/v1/ent_supply:
     get:
       summary: >-
@@ -1095,28 +1209,120 @@ paths:
                   beacon_id:
                     type: string
                     format: uint64
+                    title: beacon_id is the id of the beacon
                   moniker:
                     type: string
+                    title: moniker is the readable id of the beacon
                   name:
                     type: string
+                    title: name is the human friendly name of the beacon
                   last_timestamp_id:
                     type: string
                     format: uint64
+                    title: >-
+                      last_timestamp_id is the current highest recorded
+                      timestamp id for the beacon
                   first_id_in_state:
                     type: string
                     format: uint64
+                    title: >-
+                      first_id_in_state is the lowest recorded timestamp id
+                      currently held in state for the beacon
                   num_in_state:
                     type: string
                     format: uint64
+                    title: >-
+                      num_in_state is the current number of timestamps stored in
+                      state for the beacon
+                  in_state_limit:
+                    type: string
+                    format: uint64
+                    title: >-
+                      in_state_limit is the current maximum number of
+                      timestmamps that will be held in state for the beacon
                   reg_time:
                     type: string
                     format: uint64
+                    title: >-
+                      reg_time is the unix epoch of the beacon's registration
+                      time
                   owner:
                     type: string
+                    title: owner is the owner address of the beacon
                 title: Beacon holds metadata about a registered beacon
             title: >-
               QueryBeaconResponse is the response type for the Query/Beacon RPC
               method
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: beacon_id
+          description: beacon_id is the id of the beacon to query for
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - BEACON
+  /mainchain/beacon/v1/beacon/{beacon_id}/storage:
+    get:
+      operationId: BeaconStorage
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              beacon_id:
+                type: string
+                format: uint64
+              owner:
+                type: string
+              current_limit:
+                type: string
+                format: uint64
+                title: >-
+                  current_limit is the current in-state storage limit for this
+                  beacon
+              current_used:
+                type: string
+                format: uint64
+                title: current_used is the number of in-state slots currently used
+              max:
+                type: string
+                format: uint64
+                title: >-
+                  max is the maximum possible slots a beacon can have, as
+                  defined by the beacon module params
+              max_purchasable:
+                type: string
+                format: uint64
+                title: >-
+                  max_purchasable is the maximum number a beacon can purchase
+                  without exceeding max
+            title: >-
+              QueryBeaconStorageResponse is the response type for the
+              Query/BeaconStorage RPC method
         default:
           description: An unexpected error response
           schema:
@@ -1164,11 +1370,16 @@ paths:
                   timestamp_id:
                     type: string
                     format: uint64
+                    title: timestamp_id is the id of the timestamp
                   submit_time:
                     type: string
                     format: uint64
+                    title: >-
+                      submit_time is the unix epoch of the timestamp's record
+                      time
                   hash:
                     type: string
+                    title: hash is the actual data stored for the timestamp
                 title: >-
                   BeaconTimestamp holds each hash submitted to a registered
                   beacon
@@ -1235,24 +1446,46 @@ paths:
                     beacon_id:
                       type: string
                       format: uint64
+                      title: beacon_id is the id of the beacon
                     moniker:
                       type: string
+                      title: moniker is the readable id of the beacon
                     name:
                       type: string
+                      title: name is the human friendly name of the beacon
                     last_timestamp_id:
                       type: string
                       format: uint64
+                      title: >-
+                        last_timestamp_id is the current highest recorded
+                        timestamp id for the beacon
                     first_id_in_state:
                       type: string
                       format: uint64
+                      title: >-
+                        first_id_in_state is the lowest recorded timestamp id
+                        currently held in state for the beacon
                     num_in_state:
                       type: string
                       format: uint64
+                      title: >-
+                        num_in_state is the current number of timestamps stored
+                        in state for the beacon
+                    in_state_limit:
+                      type: string
+                      format: uint64
+                      title: >-
+                        in_state_limit is the current maximum number of
+                        timestmamps that will be held in state for the beacon
                     reg_time:
                       type: string
                       format: uint64
+                      title: >-
+                        reg_time is the unix epoch of the beacon's registration
+                        time
                     owner:
                       type: string
+                      title: owner is the owner address of the beacon
                   title: Beacon holds metadata about a registered beacon
               pagination:
                 description: pagination defines the pagination in the response.
@@ -1373,11 +1606,34 @@ paths:
                   fee_register:
                     type: string
                     format: uint64
+                    title: fee_register is the cost to register a beacon
                   fee_record:
                     type: string
                     format: uint64
+                    title: fee_record is the cost to record a single timestamp
+                  fee_purchase_storage:
+                    type: string
+                    format: uint64
+                    title: >-
+                      fee_purchase_storage is the cost to purchase a single
+                      additional unit of in-state storage
                   denom:
                     type: string
+                    title: >-
+                      denom is the expected denomination to pay for fees, e.g.
+                      nund
+                  default_storage_limit:
+                    type: string
+                    format: uint64
+                    title: >-
+                      default_storage_limit is the default in-state storage
+                      limit for all new beacons
+                  max_storage_limit:
+                    type: string
+                    format: uint64
+                    title: >-
+                      max_storage_limit is the maximum in-state storage slots
+                      any one beacon can have
                 description: Params defines the parameters for the beacon module.
             title: >-
               QueryParamsResponse is the response type for the Query/Params RPC
@@ -1422,11 +1678,34 @@ paths:
                   fee_register:
                     type: string
                     format: uint64
+                    title: fee_register is the cost to register a wkrchain
                   fee_record:
                     type: string
                     format: uint64
+                    title: fee_record is the cost to record a single wkrchain hash
+                  fee_purchase_storage:
+                    type: string
+                    format: uint64
+                    title: >-
+                      fee_purchase_storage is the cost to purchase a single
+                      additional unit of in-state storage
                   denom:
                     type: string
+                    title: >-
+                      denom is the expected denomination to pay for fees, e.g.
+                      nund
+                  default_storage_limit:
+                    type: string
+                    format: uint64
+                    title: >-
+                      default_storage_limit is the default in-state storage
+                      limit for all new wkrchains
+                  max_storage_limit:
+                    type: string
+                    format: uint64
+                    title: >-
+                      max_storage_limit is the maximum in-state storage slots
+                      any one wkrchain can have
                 description: Params defines the parameters for the wrkchain module.
             title: >-
               QueryParamsResponse is the response type for the Query/Params RPC
@@ -1471,28 +1750,54 @@ paths:
                   wrkchain_id:
                     type: string
                     format: uint64
+                    title: wrkchain_id is the id of the wrkchain
                   moniker:
                     type: string
+                    title: moniker is the readable id of the wrkchain
                   name:
                     type: string
+                    title: name is the human friendly name of the wrkchain
                   genesis:
                     type: string
+                    title: >-
+                      genesis is an optional hash of the wrkchain's genesis
+                      block
                   type:
                     type: string
+                    description: type is the wrkchain type, e.g. geth, cosmos etc.
                   lastblock:
                     type: string
                     format: uint64
+                    title: >-
+                      lastblock is the current highest recorded height for the
+                      wrkchain
                   num_blocks:
                     type: string
                     format: uint64
+                    title: >-
+                      num_blocks is the current number of block hashes stored in
+                      state for the wrkchain
                   lowest_height:
                     type: string
                     format: uint64
+                    title: >-
+                      lowest_height is the lowest recorded height currently held
+                      in state for the wrkchain
+                  in_state_limit:
+                    type: string
+                    format: uint64
+                    title: >-
+                      in_state_limit is the current maximum number of block
+                      hashes that will be held in state for the wrkchain
                   reg_time:
                     type: string
                     format: uint64
+                    title: >-
+                      reg_time is the unix epoch of the wrkchain's registration
+                      time
                   owner:
                     type: string
+                    title: owner is the owner address of the wrkchain
                 title: WrkChain holds metadata about a registered wrkchain
             title: >-
               QueryWrkChainResponse is the response type for the Query/WrkChain
@@ -1544,19 +1849,36 @@ paths:
                   height:
                     type: string
                     format: uint64
+                    title: >-
+                      height is the block number/height of the stored wrkchain
+                      block hash
                   blockhash:
                     type: string
+                    title: blockhash is the block hash of the stored wrkchain block
                   parenthash:
                     type: string
+                    title: >-
+                      parenthash is the optional hash of the parent block of the
+                      stored wrkchain block hash
                   hash1:
                     type: string
+                    title: >-
+                      hash1 is an optional hash of any type of the stored
+                      wrkchain block hash
                   hash2:
                     type: string
+                    title: >-
+                      hash2 is an optional hash of any type of the stored
+                      wrkchain block hash
                   hash3:
                     type: string
+                    title: >-
+                      hash3 is an optional hash of any type of the stored
+                      wrkchain block hash
                   sub_time:
                     type: string
                     format: uint64
+                    title: sub_time is the unix epoch of the wkrchain hash submission
                 title: >-
                   WrkChainBlock holds data about a wrkchain's block hash
                   submission
@@ -1605,6 +1927,76 @@ paths:
           format: uint64
       tags:
         - WrkChain
+  /mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/storage:
+    get:
+      operationId: WrkChainStorage
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              wrkchain_id:
+                type: string
+                format: uint64
+              owner:
+                type: string
+              current_limit:
+                type: string
+                format: uint64
+                title: >-
+                  current_limit is the current in-state storage limit for this
+                  wrkchain
+              current_used:
+                type: string
+                format: uint64
+                title: current_used is the number of in-state slots currently used
+              max:
+                type: string
+                format: uint64
+                title: >-
+                  max is the maximum possible slots a wrkchain can have, as
+                  defined by the wrkchain module params
+              max_purchasable:
+                type: string
+                format: uint64
+                title: >-
+                  max_purchasable is the maximum number a wrkchain can purchase
+                  without exceeding max
+            title: >-
+              QueryWrkChainStorageResponse is the response type for the
+              Query/WrkChainStorage RPC method
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: wrkchain_id
+          description: wrkchain_id is the id of the wrkchain to query for
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - WrkChain
   /mainchain/wrkchain/v1/wrkchains:
     get:
       summary: >-
@@ -1625,28 +2017,54 @@ paths:
                     wrkchain_id:
                       type: string
                       format: uint64
+                      title: wrkchain_id is the id of the wrkchain
                     moniker:
                       type: string
+                      title: moniker is the readable id of the wrkchain
                     name:
                       type: string
+                      title: name is the human friendly name of the wrkchain
                     genesis:
                       type: string
+                      title: >-
+                        genesis is an optional hash of the wrkchain's genesis
+                        block
                     type:
                       type: string
+                      description: type is the wrkchain type, e.g. geth, cosmos etc.
                     lastblock:
                       type: string
                       format: uint64
+                      title: >-
+                        lastblock is the current highest recorded height for the
+                        wrkchain
                     num_blocks:
                       type: string
                       format: uint64
+                      title: >-
+                        num_blocks is the current number of block hashes stored
+                        in state for the wrkchain
                     lowest_height:
                       type: string
                       format: uint64
+                      title: >-
+                        lowest_height is the lowest recorded height currently
+                        held in state for the wrkchain
+                    in_state_limit:
+                      type: string
+                      format: uint64
+                      title: >-
+                        in_state_limit is the current maximum number of block
+                        hashes that will be held in state for the wrkchain
                     reg_time:
                       type: string
                       format: uint64
+                      title: >-
+                        reg_time is the unix epoch of the wrkchain's
+                        registration time
                     owner:
                       type: string
+                      title: owner is the owner address of the wrkchain
                   title: WrkChain holds metadata about a registered wrkchain
               pagination:
                 description: pagination defines the pagination in the response.
@@ -32814,7 +33232,7 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
-  mainchain.enterprise.v1.EnterpriseUndPurchaseOrder:
+  mainchain.enterprise.v2.EnterpriseUndPurchaseOrder:
     type: object
     properties:
       id:
@@ -32908,7 +33326,7 @@ definitions:
     title: >-
       EnterpriseUndPurchaseOrder defines a purchase order raised by a
       whitelisted address
-  mainchain.enterprise.v1.EnterpriseUserAccount:
+  mainchain.enterprise.v2.EnterpriseUserAccount:
     type: object
     properties:
       owner:
@@ -32958,7 +33376,7 @@ definitions:
           signatures required by gogoproto.
         title: total is the sum of locked and unlocked FUND
     title: EnterpriseUserAccount defines data about an enterprise user
-  mainchain.enterprise.v1.LockedUnd:
+  mainchain.enterprise.v2.LockedUnd:
     type: object
     properties:
       owner:
@@ -32980,7 +33398,7 @@ definitions:
           amount is the amount currently locked and available to pay for
           beacon/wrkchain fees
     title: LockedUnd defines the amount of locked FUND for an account
-  mainchain.enterprise.v1.Params:
+  mainchain.enterprise.v2.Params:
     type: object
     properties:
       ent_signers:
@@ -33004,7 +33422,7 @@ definitions:
           decision_time_limit is the time limit within which all decisions must
           be made for a raised purchase order.
     description: Params defines the parameters for the enterprise module.
-  mainchain.enterprise.v1.PurchaseOrderDecision:
+  mainchain.enterprise.v2.PurchaseOrderDecision:
     type: object
     properties:
       signer:
@@ -33038,7 +33456,7 @@ definitions:
       ie,
 
       whether to accept or reject
-  mainchain.enterprise.v1.PurchaseOrderStatus:
+  mainchain.enterprise.v2.PurchaseOrderStatus:
     type: string
     enum:
       - STATUS_NIL
@@ -33056,7 +33474,43 @@ definitions:
        - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
        - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
        - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
-  mainchain.enterprise.v1.QueryEnterpriseAccountResponse:
+  mainchain.enterprise.v2.QueryEFUNDUsageByAddressResponse:
+    type: object
+    properties:
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+    description: >-
+      QueryEFUNDUsageByAddressResponse is the response type for the
+      Query/FUNDUsageByAddress RPC method.
+  mainchain.enterprise.v2.QueryEFUNDUsageResponse:
+    type: object
+    properties:
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+    description: >-
+      QueryEFUNDUsageResponse is the response type for the Query/FUNDUsage RPC
+      method.
+  mainchain.enterprise.v2.QueryEnterpriseAccountResponse:
     type: object
     properties:
       account:
@@ -33121,7 +33575,7 @@ definitions:
     description: >-
       QueryEnterpriseAccountResponse is the response type for the
       Query/EnterpriseAccount RPC method.
-  mainchain.enterprise.v1.QueryEnterpriseSupplyResponse:
+  mainchain.enterprise.v2.QueryEnterpriseSupplyResponse:
     type: object
     properties:
       supply:
@@ -33146,7 +33600,7 @@ definitions:
     title: >-
       QueryEnterpriseSupplyResponse is the response type for the
       Query/EnterpriseSupply RPC method
-  mainchain.enterprise.v1.QueryEnterpriseUndPurchaseOrderResponse:
+  mainchain.enterprise.v2.QueryEnterpriseUndPurchaseOrderResponse:
     type: object
     properties:
       purchase_order:
@@ -33249,7 +33703,7 @@ definitions:
     description: >-
       QueryEnterpriseUndPurchaseOrderResponse is the response type for the
       Query/EnterpriseUndPurchaseOrder RPC method.
-  mainchain.enterprise.v1.QueryEnterpriseUndPurchaseOrdersResponse:
+  mainchain.enterprise.v2.QueryEnterpriseUndPurchaseOrdersResponse:
     type: object
     properties:
       purchase_orders:
@@ -33382,7 +33836,7 @@ definitions:
       Query/EnterpriseUndPurchaseOrders RPC
 
       method
-  mainchain.enterprise.v1.QueryLockedUndByAddressResponse:
+  mainchain.enterprise.v2.QueryLockedUndByAddressResponse:
     type: object
     properties:
       owner:
@@ -33415,7 +33869,7 @@ definitions:
     title: >-
       QueryLockedUndByAddressResponse is the response type for the
       Query/LockedUndByAddress RPC method
-  mainchain.enterprise.v1.QueryParamsResponse:
+  mainchain.enterprise.v2.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -33443,7 +33897,7 @@ definitions:
               must be made for a raised purchase order.
         description: Params defines the parameters for the enterprise module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
-  mainchain.enterprise.v1.QuerySupplyOfResponse:
+  mainchain.enterprise.v2.QuerySupplyOfResponse:
     type: object
     properties:
       amount:
@@ -33461,7 +33915,7 @@ definitions:
     description: >-
       QuerySupplyOfResponse is the response type for the Query/SupplyOf RPC
       method.
-  mainchain.enterprise.v1.QueryTotalLockedResponse:
+  mainchain.enterprise.v2.QueryTotalLockedResponse:
     type: object
     properties:
       amount:
@@ -33479,7 +33933,7 @@ definitions:
     title: >-
       QueryTotalLockedResponse is the response type for the Query/TotalLocked
       RPC method
-  mainchain.enterprise.v1.QueryTotalSupplyResponse:
+  mainchain.enterprise.v2.QueryTotalSupplyResponse:
     type: object
     properties:
       supply:
@@ -33524,7 +33978,7 @@ definitions:
     title: >-
       QueryTotalSupplyResponse is the response type for the Query/TotalSupply
       RPC method
-  mainchain.enterprise.v1.QueryTotalUnlockedResponse:
+  mainchain.enterprise.v2.QueryTotalUnlockedResponse:
     type: object
     properties:
       amount:
@@ -33542,7 +33996,7 @@ definitions:
     title: >-
       QueryTotalUnlockedResponse is the response type for the
       Query/TotalUnlocked RPC method
-  mainchain.enterprise.v1.QueryWhitelistResponse:
+  mainchain.enterprise.v2.QueryWhitelistResponse:
     type: object
     properties:
       addresses:
@@ -33552,7 +34006,7 @@ definitions:
     description: >-
       QueryWhitelistResponse is the response type for the Query/Whitelist RPC
       method.
-  mainchain.enterprise.v1.QueryWhitelistedResponse:
+  mainchain.enterprise.v2.QueryWhitelistedResponse:
     type: object
     properties:
       address:
@@ -33563,7 +34017,7 @@ definitions:
     description: >-
       QueryWhitelistedResponse is the response type for the Query/Whitelisted
       RPC method.
-  mainchain.enterprise.v1.UndSupply:
+  mainchain.enterprise.v2.UndSupply:
     type: object
     properties:
       denom:
@@ -33582,56 +34036,100 @@ definitions:
         format: uint64
         title: amount is the sum of locked and unlocked FUND
     title: UndSupply defines the current FUND supply, including locked
-  mainchain.beacon.v1.Beacon:
+  mainchain.beacon.v2.Beacon:
     type: object
     properties:
       beacon_id:
         type: string
         format: uint64
+        title: beacon_id is the id of the beacon
       moniker:
         type: string
+        title: moniker is the readable id of the beacon
       name:
         type: string
+        title: name is the human friendly name of the beacon
       last_timestamp_id:
         type: string
         format: uint64
+        title: >-
+          last_timestamp_id is the current highest recorded timestamp id for the
+          beacon
       first_id_in_state:
         type: string
         format: uint64
+        title: >-
+          first_id_in_state is the lowest recorded timestamp id currently held
+          in state for the beacon
       num_in_state:
         type: string
         format: uint64
+        title: >-
+          num_in_state is the current number of timestamps stored in state for
+          the beacon
+      in_state_limit:
+        type: string
+        format: uint64
+        title: >-
+          in_state_limit is the current maximum number of timestmamps that will
+          be held in state for the beacon
       reg_time:
         type: string
         format: uint64
+        title: reg_time is the unix epoch of the beacon's registration time
       owner:
         type: string
+        title: owner is the owner address of the beacon
     title: Beacon holds metadata about a registered beacon
-  mainchain.beacon.v1.BeaconTimestamp:
+  mainchain.beacon.v2.BeaconTimestamp:
     type: object
     properties:
       timestamp_id:
         type: string
         format: uint64
+        title: timestamp_id is the id of the timestamp
       submit_time:
         type: string
         format: uint64
+        title: submit_time is the unix epoch of the timestamp's record time
       hash:
         type: string
+        title: hash is the actual data stored for the timestamp
     title: BeaconTimestamp holds each hash submitted to a registered beacon
-  mainchain.beacon.v1.Params:
+  mainchain.beacon.v2.Params:
     type: object
     properties:
       fee_register:
         type: string
         format: uint64
+        title: fee_register is the cost to register a beacon
       fee_record:
         type: string
         format: uint64
+        title: fee_record is the cost to record a single timestamp
+      fee_purchase_storage:
+        type: string
+        format: uint64
+        title: >-
+          fee_purchase_storage is the cost to purchase a single additional unit
+          of in-state storage
       denom:
         type: string
+        title: denom is the expected denomination to pay for fees, e.g. nund
+      default_storage_limit:
+        type: string
+        format: uint64
+        title: >-
+          default_storage_limit is the default in-state storage limit for all
+          new beacons
+      max_storage_limit:
+        type: string
+        format: uint64
+        title: >-
+          max_storage_limit is the maximum in-state storage slots any one beacon
+          can have
     description: Params defines the parameters for the beacon module.
-  mainchain.beacon.v1.QueryBeaconResponse:
+  mainchain.beacon.v2.QueryBeaconResponse:
     type: object
     properties:
       beacon:
@@ -33640,27 +34138,78 @@ definitions:
           beacon_id:
             type: string
             format: uint64
+            title: beacon_id is the id of the beacon
           moniker:
             type: string
+            title: moniker is the readable id of the beacon
           name:
             type: string
+            title: name is the human friendly name of the beacon
           last_timestamp_id:
             type: string
             format: uint64
+            title: >-
+              last_timestamp_id is the current highest recorded timestamp id for
+              the beacon
           first_id_in_state:
             type: string
             format: uint64
+            title: >-
+              first_id_in_state is the lowest recorded timestamp id currently
+              held in state for the beacon
           num_in_state:
             type: string
             format: uint64
+            title: >-
+              num_in_state is the current number of timestamps stored in state
+              for the beacon
+          in_state_limit:
+            type: string
+            format: uint64
+            title: >-
+              in_state_limit is the current maximum number of timestmamps that
+              will be held in state for the beacon
           reg_time:
             type: string
             format: uint64
+            title: reg_time is the unix epoch of the beacon's registration time
           owner:
             type: string
+            title: owner is the owner address of the beacon
         title: Beacon holds metadata about a registered beacon
     title: QueryBeaconResponse is the response type for the Query/Beacon RPC method
-  mainchain.beacon.v1.QueryBeaconTimestampResponse:
+  mainchain.beacon.v2.QueryBeaconStorageResponse:
+    type: object
+    properties:
+      beacon_id:
+        type: string
+        format: uint64
+      owner:
+        type: string
+      current_limit:
+        type: string
+        format: uint64
+        title: current_limit is the current in-state storage limit for this beacon
+      current_used:
+        type: string
+        format: uint64
+        title: current_used is the number of in-state slots currently used
+      max:
+        type: string
+        format: uint64
+        title: >-
+          max is the maximum possible slots a beacon can have, as defined by the
+          beacon module params
+      max_purchasable:
+        type: string
+        format: uint64
+        title: >-
+          max_purchasable is the maximum number a beacon can purchase without
+          exceeding max
+    title: >-
+      QueryBeaconStorageResponse is the response type for the
+      Query/BeaconStorage RPC method
+  mainchain.beacon.v2.QueryBeaconTimestampResponse:
     type: object
     properties:
       timestamp:
@@ -33669,11 +34218,14 @@ definitions:
           timestamp_id:
             type: string
             format: uint64
+            title: timestamp_id is the id of the timestamp
           submit_time:
             type: string
             format: uint64
+            title: submit_time is the unix epoch of the timestamp's record time
           hash:
             type: string
+            title: hash is the actual data stored for the timestamp
         title: BeaconTimestamp holds each hash submitted to a registered beacon
       beacon_id:
         type: string
@@ -33683,7 +34235,7 @@ definitions:
     title: >-
       QueryBeaconTimestampResponse is the response type for the
       Query/BeaconTimestamp RPC method
-  mainchain.beacon.v1.QueryBeaconsFilteredResponse:
+  mainchain.beacon.v2.QueryBeaconsFilteredResponse:
     type: object
     properties:
       beacons:
@@ -33694,24 +34246,44 @@ definitions:
             beacon_id:
               type: string
               format: uint64
+              title: beacon_id is the id of the beacon
             moniker:
               type: string
+              title: moniker is the readable id of the beacon
             name:
               type: string
+              title: name is the human friendly name of the beacon
             last_timestamp_id:
               type: string
               format: uint64
+              title: >-
+                last_timestamp_id is the current highest recorded timestamp id
+                for the beacon
             first_id_in_state:
               type: string
               format: uint64
+              title: >-
+                first_id_in_state is the lowest recorded timestamp id currently
+                held in state for the beacon
             num_in_state:
               type: string
               format: uint64
+              title: >-
+                num_in_state is the current number of timestamps stored in state
+                for the beacon
+            in_state_limit:
+              type: string
+              format: uint64
+              title: >-
+                in_state_limit is the current maximum number of timestmamps that
+                will be held in state for the beacon
             reg_time:
               type: string
               format: uint64
+              title: reg_time is the unix epoch of the beacon's registration time
             owner:
               type: string
+              title: owner is the owner address of the beacon
           title: Beacon holds metadata about a registered beacon
       pagination:
         description: pagination defines the pagination in the response.
@@ -33734,7 +34306,7 @@ definitions:
     title: >-
       QueryBeaconsFilteredResponse is the response type for the
       Query/BeaconsFiltered RPC method
-  mainchain.beacon.v1.QueryParamsResponse:
+  mainchain.beacon.v2.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -33743,26 +34315,68 @@ definitions:
           fee_register:
             type: string
             format: uint64
+            title: fee_register is the cost to register a beacon
           fee_record:
             type: string
             format: uint64
+            title: fee_record is the cost to record a single timestamp
+          fee_purchase_storage:
+            type: string
+            format: uint64
+            title: >-
+              fee_purchase_storage is the cost to purchase a single additional
+              unit of in-state storage
           denom:
             type: string
+            title: denom is the expected denomination to pay for fees, e.g. nund
+          default_storage_limit:
+            type: string
+            format: uint64
+            title: >-
+              default_storage_limit is the default in-state storage limit for
+              all new beacons
+          max_storage_limit:
+            type: string
+            format: uint64
+            title: >-
+              max_storage_limit is the maximum in-state storage slots any one
+              beacon can have
         description: Params defines the parameters for the beacon module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
-  mainchain.wrkchain.v1.Params:
+  mainchain.wrkchain.v2.Params:
     type: object
     properties:
       fee_register:
         type: string
         format: uint64
+        title: fee_register is the cost to register a wkrchain
       fee_record:
         type: string
         format: uint64
+        title: fee_record is the cost to record a single wkrchain hash
+      fee_purchase_storage:
+        type: string
+        format: uint64
+        title: >-
+          fee_purchase_storage is the cost to purchase a single additional unit
+          of in-state storage
       denom:
         type: string
+        title: denom is the expected denomination to pay for fees, e.g. nund
+      default_storage_limit:
+        type: string
+        format: uint64
+        title: >-
+          default_storage_limit is the default in-state storage limit for all
+          new wkrchains
+      max_storage_limit:
+        type: string
+        format: uint64
+        title: >-
+          max_storage_limit is the maximum in-state storage slots any one
+          wkrchain can have
     description: Params defines the parameters for the wrkchain module.
-  mainchain.wrkchain.v1.QueryParamsResponse:
+  mainchain.wrkchain.v2.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -33771,14 +34385,35 @@ definitions:
           fee_register:
             type: string
             format: uint64
+            title: fee_register is the cost to register a wkrchain
           fee_record:
             type: string
             format: uint64
+            title: fee_record is the cost to record a single wkrchain hash
+          fee_purchase_storage:
+            type: string
+            format: uint64
+            title: >-
+              fee_purchase_storage is the cost to purchase a single additional
+              unit of in-state storage
           denom:
             type: string
+            title: denom is the expected denomination to pay for fees, e.g. nund
+          default_storage_limit:
+            type: string
+            format: uint64
+            title: >-
+              default_storage_limit is the default in-state storage limit for
+              all new wkrchains
+          max_storage_limit:
+            type: string
+            format: uint64
+            title: >-
+              max_storage_limit is the maximum in-state storage slots any one
+              wkrchain can have
         description: Params defines the parameters for the wrkchain module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
-  mainchain.wrkchain.v1.QueryWrkChainBlockResponse:
+  mainchain.wrkchain.v2.QueryWrkChainBlockResponse:
     type: object
     properties:
       block:
@@ -33787,19 +34422,36 @@ definitions:
           height:
             type: string
             format: uint64
+            title: >-
+              height is the block number/height of the stored wrkchain block
+              hash
           blockhash:
             type: string
+            title: blockhash is the block hash of the stored wrkchain block
           parenthash:
             type: string
+            title: >-
+              parenthash is the optional hash of the parent block of the stored
+              wrkchain block hash
           hash1:
             type: string
+            title: >-
+              hash1 is an optional hash of any type of the stored wrkchain block
+              hash
           hash2:
             type: string
+            title: >-
+              hash2 is an optional hash of any type of the stored wrkchain block
+              hash
           hash3:
             type: string
+            title: >-
+              hash3 is an optional hash of any type of the stored wrkchain block
+              hash
           sub_time:
             type: string
             format: uint64
+            title: sub_time is the unix epoch of the wkrchain hash submission
         title: WrkChainBlock holds data about a wrkchain's block hash submission
       wrkchain_id:
         type: string
@@ -33809,7 +34461,7 @@ definitions:
     title: >-
       QueryWrkChainBlockResponse is the response type for the
       Query/WrkChainBlock RPC method
-  mainchain.wrkchain.v1.QueryWrkChainResponse:
+  mainchain.wrkchain.v2.QueryWrkChainResponse:
     type: object
     properties:
       wrkchain:
@@ -33818,33 +34470,84 @@ definitions:
           wrkchain_id:
             type: string
             format: uint64
+            title: wrkchain_id is the id of the wrkchain
           moniker:
             type: string
+            title: moniker is the readable id of the wrkchain
           name:
             type: string
+            title: name is the human friendly name of the wrkchain
           genesis:
             type: string
+            title: genesis is an optional hash of the wrkchain's genesis block
           type:
             type: string
+            description: type is the wrkchain type, e.g. geth, cosmos etc.
           lastblock:
             type: string
             format: uint64
+            title: lastblock is the current highest recorded height for the wrkchain
           num_blocks:
             type: string
             format: uint64
+            title: >-
+              num_blocks is the current number of block hashes stored in state
+              for the wrkchain
           lowest_height:
             type: string
             format: uint64
+            title: >-
+              lowest_height is the lowest recorded height currently held in
+              state for the wrkchain
+          in_state_limit:
+            type: string
+            format: uint64
+            title: >-
+              in_state_limit is the current maximum number of block hashes that
+              will be held in state for the wrkchain
           reg_time:
             type: string
             format: uint64
+            title: reg_time is the unix epoch of the wrkchain's registration time
           owner:
             type: string
+            title: owner is the owner address of the wrkchain
         title: WrkChain holds metadata about a registered wrkchain
     title: >-
       QueryWrkChainResponse is the response type for the Query/WrkChain RPC
       method
-  mainchain.wrkchain.v1.QueryWrkChainsFilteredResponse:
+  mainchain.wrkchain.v2.QueryWrkChainStorageResponse:
+    type: object
+    properties:
+      wrkchain_id:
+        type: string
+        format: uint64
+      owner:
+        type: string
+      current_limit:
+        type: string
+        format: uint64
+        title: current_limit is the current in-state storage limit for this wrkchain
+      current_used:
+        type: string
+        format: uint64
+        title: current_used is the number of in-state slots currently used
+      max:
+        type: string
+        format: uint64
+        title: >-
+          max is the maximum possible slots a wrkchain can have, as defined by
+          the wrkchain module params
+      max_purchasable:
+        type: string
+        format: uint64
+        title: >-
+          max_purchasable is the maximum number a wrkchain can purchase without
+          exceeding max
+    title: >-
+      QueryWrkChainStorageResponse is the response type for the
+      Query/WrkChainStorage RPC method
+  mainchain.wrkchain.v2.QueryWrkChainsFilteredResponse:
     type: object
     properties:
       wrkchains:
@@ -33855,28 +34558,50 @@ definitions:
             wrkchain_id:
               type: string
               format: uint64
+              title: wrkchain_id is the id of the wrkchain
             moniker:
               type: string
+              title: moniker is the readable id of the wrkchain
             name:
               type: string
+              title: name is the human friendly name of the wrkchain
             genesis:
               type: string
+              title: genesis is an optional hash of the wrkchain's genesis block
             type:
               type: string
+              description: type is the wrkchain type, e.g. geth, cosmos etc.
             lastblock:
               type: string
               format: uint64
+              title: >-
+                lastblock is the current highest recorded height for the
+                wrkchain
             num_blocks:
               type: string
               format: uint64
+              title: >-
+                num_blocks is the current number of block hashes stored in state
+                for the wrkchain
             lowest_height:
               type: string
               format: uint64
+              title: >-
+                lowest_height is the lowest recorded height currently held in
+                state for the wrkchain
+            in_state_limit:
+              type: string
+              format: uint64
+              title: >-
+                in_state_limit is the current maximum number of block hashes
+                that will be held in state for the wrkchain
             reg_time:
               type: string
               format: uint64
+              title: reg_time is the unix epoch of the wrkchain's registration time
             owner:
               type: string
+              title: owner is the owner address of the wrkchain
           title: WrkChain holds metadata about a registered wrkchain
       pagination:
         description: pagination defines the pagination in the response.
@@ -33899,54 +34624,89 @@ definitions:
     title: >-
       QueryWrkChainsFilteredResponse is the response type for the
       Query/WrkChainsFiltered RPC method
-  mainchain.wrkchain.v1.WrkChain:
+  mainchain.wrkchain.v2.WrkChain:
     type: object
     properties:
       wrkchain_id:
         type: string
         format: uint64
+        title: wrkchain_id is the id of the wrkchain
       moniker:
         type: string
+        title: moniker is the readable id of the wrkchain
       name:
         type: string
+        title: name is the human friendly name of the wrkchain
       genesis:
         type: string
+        title: genesis is an optional hash of the wrkchain's genesis block
       type:
         type: string
+        description: type is the wrkchain type, e.g. geth, cosmos etc.
       lastblock:
         type: string
         format: uint64
+        title: lastblock is the current highest recorded height for the wrkchain
       num_blocks:
         type: string
         format: uint64
+        title: >-
+          num_blocks is the current number of block hashes stored in state for
+          the wrkchain
       lowest_height:
         type: string
         format: uint64
+        title: >-
+          lowest_height is the lowest recorded height currently held in state
+          for the wrkchain
+      in_state_limit:
+        type: string
+        format: uint64
+        title: >-
+          in_state_limit is the current maximum number of block hashes that will
+          be held in state for the wrkchain
       reg_time:
         type: string
         format: uint64
+        title: reg_time is the unix epoch of the wrkchain's registration time
       owner:
         type: string
+        title: owner is the owner address of the wrkchain
     title: WrkChain holds metadata about a registered wrkchain
-  mainchain.wrkchain.v1.WrkChainBlock:
+  mainchain.wrkchain.v2.WrkChainBlock:
     type: object
     properties:
       height:
         type: string
         format: uint64
+        title: height is the block number/height of the stored wrkchain block hash
       blockhash:
         type: string
+        title: blockhash is the block hash of the stored wrkchain block
       parenthash:
         type: string
+        title: >-
+          parenthash is the optional hash of the parent block of the stored
+          wrkchain block hash
       hash1:
         type: string
+        title: >-
+          hash1 is an optional hash of any type of the stored wrkchain block
+          hash
       hash2:
         type: string
+        title: >-
+          hash2 is an optional hash of any type of the stored wrkchain block
+          hash
       hash3:
         type: string
+        title: >-
+          hash3 is an optional hash of any type of the stored wrkchain block
+          hash
       sub_time:
         type: string
         format: uint64
+        title: sub_time is the unix epoch of the wkrchain hash submission
     title: WrkChainBlock holds data about a wrkchain's block hash submission
   CheckTxResult:
     type: object

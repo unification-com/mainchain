@@ -31,7 +31,7 @@ var (
 	// prefix used to store/retrieve an purchase order waiting to be processed from the store
 	PurchaseOrderIDKeyPrefix = []byte{0x01}
 
-	// LockedUndAddressKeyPrefix prefix for address keys - used to store locked FUND for an account
+	// LockedUndAddressKeyPrefix prefix for address keys - used to store locked eFUND for an account
 	LockedUndAddressKeyPrefix = []byte{0x02}
 
 	// WhitelistKeyPrefix is the prefix for whitelisted addresses
@@ -43,6 +43,10 @@ var (
 	// AcceptedPoPrefix used to temporarily store currently accepted purchase orders for the ABCI blocker
 	AcceptedPoPrefix = []byte{0x05}
 
+	// UsedUndAddressKeyPrefix prefix for address keys - used to store a tally of used eFUND for an account
+	UsedUndAddressKeyPrefix = []byte{0x06}
+
+	TotalUsedUndKey   = []byte{0x98}
 	TotalLockedUndKey = []byte{0x99}
 )
 
@@ -65,9 +69,14 @@ func PurchaseOrderKey(purchaseOrderID uint64) []byte {
 	return append(PurchaseOrderIDKeyPrefix, GetPurchaseOrderIDBytes(purchaseOrderID)...)
 }
 
-// AddressStoreKey turn an address to key used for enterprise und/locked data to get it from the store
-func AddressStoreKey(acc sdk.AccAddress) []byte {
+// LockedUndAddressStoreKey turn an address to key used for enterprise und/locked data to get it from the store
+func LockedUndAddressStoreKey(acc sdk.AccAddress) []byte {
 	return append(LockedUndAddressKeyPrefix, acc.Bytes()...)
+}
+
+// UsedUndAddressKeyPrefix turn an address to key used for spent eFUND data to get it from the store
+func UsedUndAddressStoreKey(acc sdk.AccAddress) []byte {
+	return append(UsedUndAddressKeyPrefix, acc.Bytes()...)
 }
 
 // WhitelistAddressStoreKey turn an address to key used for the whitelist store

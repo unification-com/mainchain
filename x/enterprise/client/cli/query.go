@@ -38,6 +38,8 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdGetAddresIsWhitelisted(),
 		GetCmdGetEnterpriseUserAccount(),
 		GetCmdGetEnterpriseSupply(),
+		GetCmdGetSpentEFUNDByAddress(),
+		GetCmdQueryTotalSpentEFUND(),
 	)
 
 	return enterpriseQueryCmd
@@ -368,6 +370,66 @@ func GetCmdGetEnterpriseSupply() *cobra.Command {
 			queryClient := types.NewQueryClient(clientCtx)
 
 			res, err := queryClient.EnterpriseSupply(context.Background(), &types.QueryEnterpriseSupplyRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdGetSpentEFUNDByAddress queries spent eFUND for a given address
+func GetCmdGetSpentEFUNDByAddress() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "spent [address]",
+		Short: "get spent eFUND for an address",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			// validate that the proposal id is a uint
+			purchaser, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.EFUNDUsageByAddress(context.Background(), &types.QueryEFUNDUsageByAddressRequest{
+				Address: purchaser.String(),
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdQueryTotalSpentEFUND implements a command to return the current total locked enterprise und
+func GetCmdQueryTotalSpentEFUND() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "total-spent",
+		Short: "Query the current total spent eFUND",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.EFUNDUsage(context.Background(), &types.QueryEFUNDUsageRequest{})
 			if err != nil {
 				return err
 			}

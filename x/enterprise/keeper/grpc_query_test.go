@@ -138,10 +138,10 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
 		{
 			"request pos with limit 3",
 			func() {
-				// create 5 test pos
-				for i := 0; i < 5; i++ {
+				// create test pos
+				for i := 0; i < len(addrs); i++ {
 					newPo := types.EnterpriseUndPurchaseOrder{
-						Purchaser: addrs[0].String(),
+						Purchaser: addrs[i].String(),
 						Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, int64(i)+1),
 					}
 
@@ -163,14 +163,14 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
 			true,
 		},
 		{
-			"request 2nd page with limit 4",
+			"request 2nd page with limit 3",
 			func() {
 				req = &types.QueryEnterpriseUndPurchaseOrdersRequest{
 					Pagination: &query.PageRequest{Offset: 3, Limit: 3},
 				}
 
 				expRes = &types.QueryEnterpriseUndPurchaseOrdersResponse{
-					PurchaseOrders: testPos[3:],
+					PurchaseOrders: testPos[3:6],
 				}
 			},
 			true,
@@ -184,6 +184,55 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
 
 				expRes = &types.QueryEnterpriseUndPurchaseOrdersResponse{
 					PurchaseOrders: testPos[:2],
+				}
+			},
+			true,
+		},
+		{
+			"request with purchaser filter",
+			func() {
+				req = &types.QueryEnterpriseUndPurchaseOrdersRequest{
+					Purchaser:  addrs[0].String(),
+					Pagination: &query.PageRequest{Limit: 2},
+				}
+
+				expRes = &types.QueryEnterpriseUndPurchaseOrdersResponse{
+					PurchaseOrders: testPos[:1],
+				}
+			},
+			true,
+		},
+		{
+			"request with status filter",
+			func() {
+
+				expectedPo, _ := app.EnterpriseKeeper.GetPurchaseOrder(ctx, testPos[0].Id)
+				expectedPo.Status = types.StatusCompleted
+				_ = app.EnterpriseKeeper.SetPurchaseOrder(ctx, expectedPo)
+				testPos[0] = expectedPo
+
+				req = &types.QueryEnterpriseUndPurchaseOrdersRequest{
+					Status:     types.StatusCompleted,
+					Pagination: &query.PageRequest{Limit: 2},
+				}
+
+				expRes = &types.QueryEnterpriseUndPurchaseOrdersResponse{
+					PurchaseOrders: testPos[:1],
+				}
+			},
+			true,
+		},
+		{
+			"request with purchaser and status filters",
+			func() {
+				req = &types.QueryEnterpriseUndPurchaseOrdersRequest{
+					Purchaser:  addrs[0].String(),
+					Status:     types.StatusCompleted,
+					Pagination: &query.PageRequest{Limit: 2},
+				}
+
+				expRes = &types.QueryEnterpriseUndPurchaseOrdersResponse{
+					PurchaseOrders: testPos[:1],
 				}
 			},
 			true,
@@ -452,5 +501,79 @@ func (suite *KeeperTestSuite) TestGRPCQueryWhitelisted() {
 		suite.Require().NoError(err)
 		suite.Require().False(res.Whitelisted)
 		suite.Require().Equal(addr.String(), res.Address)
+	}
+}
+
+func (suite *KeeperTestSuite) TestEFUNDUsage() {
+	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+
+	poAmount := uint64(12345)
+	totalUnlocked := uint64(0)
+	toUnlock := uint64(123)
+	poAmountCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(poAmount))
+	toUnlockCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(toUnlock))
+
+	for i := 0; i < len(addrs); i++ {
+		newPo := types.EnterpriseUndPurchaseOrder{
+			Purchaser: addrs[i].String(),
+			Amount:    poAmountCoin,
+		}
+
+		poId, err := app.EnterpriseKeeper.RaiseNewPurchaseOrder(ctx, newPo)
+		suite.Require().NoError(err)
+		expectedPo, _ := app.EnterpriseKeeper.GetPurchaseOrder(ctx, poId)
+		expectedPo.Status = types.StatusCompleted
+		_ = app.EnterpriseKeeper.SetPurchaseOrder(ctx, expectedPo)
+
+		err = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[i], poAmountCoin)
+		suite.Require().NoError(err)
+
+		err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
+		suite.Require().NoError(err)
+
+		totalUnlocked += toUnlock
+	}
+
+	expectedResp := &types.QueryEFUNDUsageResponse{Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, int64(totalUnlocked))}
+
+	req := &types.QueryEFUNDUsageRequest{}
+	res, err := queryClient.EFUNDUsage(gocontext.Background(), req)
+	suite.Require().NoError(err)
+	suite.Require().Equal(expectedResp, res)
+}
+
+func (suite *KeeperTestSuite) TestEFUNDUsageByAddress() {
+	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+
+	for i := 0; i < len(addrs); i++ {
+		poAmount := uint64(i+1) * 10
+		toUnlock := uint64(i + 1)
+		poAmountCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(poAmount))
+		toUnlockCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(toUnlock))
+		newPo := types.EnterpriseUndPurchaseOrder{
+			Purchaser: addrs[i].String(),
+			Amount:    poAmountCoin,
+		}
+
+		poId, err := app.EnterpriseKeeper.RaiseNewPurchaseOrder(ctx, newPo)
+		suite.Require().NoError(err)
+		expectedPo, _ := app.EnterpriseKeeper.GetPurchaseOrder(ctx, poId)
+		expectedPo.Status = types.StatusCompleted
+		_ = app.EnterpriseKeeper.SetPurchaseOrder(ctx, expectedPo)
+
+		err = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[i], poAmountCoin)
+		suite.Require().NoError(err)
+
+		err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
+		suite.Require().NoError(err)
+
+		expectedResp := &types.QueryEFUNDUsageByAddressResponse{Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, int64(toUnlock))}
+
+		req := &types.QueryEFUNDUsageByAddressRequest{
+			Address: addrs[i].String(),
+		}
+		res, err := queryClient.EFUNDUsageByAddress(gocontext.Background(), req)
+		suite.Require().NoError(err)
+		suite.Require().Equal(expectedResp, res)
 	}
 }

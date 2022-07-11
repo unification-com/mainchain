@@ -84,14 +84,14 @@ service Query {
     option (google.api.http).get = "/mainchain/enterprise/v1/account/{address}";
   }
 
-  // EFUNDUsage queries the total eFUND usage to date - i.e. the amount used to pay fees
-  rpc EFUNDUsage(QueryEFUNDUsageRequest) returns (QueryEFUNDUsageResponse) {
-    option (google.api.http).get = "/mainchain/enterprise/v1/efund_usage";
+  // TotalSpentEFUND queries the total eFUND usage to date - i.e. the amount used to pay fees
+  rpc TotalSpentEFUND(QueryTotalSpentEFUNDRequest) returns (QueryTotalSpentEFUNDResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/total_spent";
   }
 
-  //QueryEFUNDUsageByAddress queries the total eFUND usage to date for a given address, i.e. the amount used to pay fees
-  rpc EFUNDUsageByAddress(QueryEFUNDUsageByAddressRequest) returns (QueryEFUNDUsageByAddressResponse) {
-    option (google.api.http).get = "/mainchain/enterprise/v1/efund_usage/{address}";
+  // SpentEFUNDByAddress queries the total eFUND usage to date for a given address, i.e. the amount used to pay fees
+  rpc SpentEFUNDByAddress(QuerySpentEFUNDByAddressRequest) returns (QuerySpentEFUNDByAddressResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/spent/{address}";
   }
 }
 
@@ -223,21 +223,21 @@ message QueryEnterpriseAccountResponse {
   EnterpriseUserAccount account = 1 [(gogoproto.nullable) = false];
 }
 
-// QueryEFUNDUsageRequest is the request type for the Query/FUNDUsage RPC method.
-message QueryEFUNDUsageRequest {}
+// QueryTotalSpentEFUNDRequest is the request type for the Query/TotalSpentEFUND RPC method.
+message QueryTotalSpentEFUNDRequest {}
 
-// QueryEFUNDUsageResponse is the response type for the Query/FUNDUsage RPC method.
-message QueryEFUNDUsageResponse {
+// QueryTotalSpentEFUNDResponse is the response type for the Query/TotalSpentEFUND RPC method.
+message QueryTotalSpentEFUNDResponse {
   cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
 }
 
-// QueryEFUNDUsageByAddressRequest is the request type for the Query/FUNDUsageByAddress RPC method.
-message QueryEFUNDUsageByAddressRequest {
+// QuerySpentEFUNDByAddressRequest is the request type for the Query/SpentEFUNDByAddress RPC method.
+message QuerySpentEFUNDByAddressRequest {
   // address is the address to query
   string address = 1;
 }
 
-// QueryEFUNDUsageByAddressResponse is the response type for the Query/FUNDUsageByAddress RPC method.
-message QueryEFUNDUsageByAddressResponse {
+// QuerySpentEFUNDByAddressResponse is the response type for the Query/SpentEFUNDByAddress RPC method.
+message QuerySpentEFUNDByAddressResponse {
   cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
 }

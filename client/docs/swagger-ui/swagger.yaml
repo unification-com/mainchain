@@ -22,7 +22,7 @@ paths:
                   owner:
                     type: string
                     title: owner is the address of the account
-                  locked:
+                  locked_efund:
                     type: object
                     properties:
                       denom:
@@ -38,9 +38,11 @@ paths:
 
                       signatures required by gogoproto.
                     title: >-
-                      locked is the amount the account currently has locked and
-                      available to pay for beacon/wrkchain fees
-                  unlocked:
+                      locked_efund is the amount of eFUND the account currently
+                      has locked and only available to pay for
+
+                      beacon/wrkchain fees
+                  general_supply:
                     type: object
                     properties:
                       denom:
@@ -56,9 +58,12 @@ paths:
 
                       signatures required by gogoproto.
                     title: >-
-                      unlocked is the amount currently unlocked - i.e. standard
-                      FUND in general supply
-                  total:
+                      general_supply is the amount currently held in the bank
+                      module's supply - i.e. standard FUND in general supply
+
+                      usable for anything (transfers, staking, standard tx fees
+                      etc.)
+                  spent_efund:
                     type: object
                     properties:
                       denom:
@@ -73,125 +78,33 @@ paths:
                       custom method
 
                       signatures required by gogoproto.
-                    title: total is the sum of locked and unlocked FUND
+                    title: >-
+                      spent_efund is a running tally of how much eFUND the
+                      account has used so far to pay for beacon/wrkchain fees
+                  spendable:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
+                    title: >-
+                      spendable is the sum of locked eFUND and general bank
+                      module FUND - i.e. how much can be used to pay
+
+                      BEACON/Wrkchain fees all together
                 title: EnterpriseUserAccount defines data about an enterprise user
             description: >-
               QueryEnterpriseAccountResponse is the response type for the
               Query/EnterpriseAccount RPC method.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: address
-          description: address is the address to query
-          in: path
-          required: true
-          type: string
-      tags:
-        - Enterprise
-  /mainchain/enterprise/v1/efund_usage:
-    get:
-      summary: >-
-        EFUNDUsage queries the total eFUND usage to date - i.e. the amount used
-        to pay fees
-      operationId: EFUNDUsage
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              amount:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  Coin defines a token with a denomination and an amount.
-
-
-                  NOTE: The amount field is an Int which implements the custom
-                  method
-
-                  signatures required by gogoproto.
-            description: >-
-              QueryEFUNDUsageResponse is the response type for the
-              Query/FUNDUsage RPC method.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      tags:
-        - Enterprise
-  /mainchain/enterprise/v1/efund_usage/{address}:
-    get:
-      summary: >-
-        QueryEFUNDUsageByAddress queries the total eFUND usage to date for a
-        given address, i.e. the amount used to pay fees
-      operationId: EFUNDUsageByAddress
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              amount:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  Coin defines a token with a denomination and an amount.
-
-
-                  NOTE: The amount field is an Int which implements the custom
-                  method
-
-                  signatures required by gogoproto.
-            description: >-
-              QueryEFUNDUsageByAddressResponse is the response type for the
-              Query/FUNDUsageByAddress RPC method.
         default:
           description: An unexpected error response
           schema:
@@ -853,6 +766,66 @@ paths:
           format: uint64
       tags:
         - Enterprise
+  /mainchain/enterprise/v1/spent/{address}:
+    get:
+      summary: >-
+        SpentEFUNDByAddress queries the total eFUND usage to date for a given
+        address, i.e. the amount used to pay fees
+      operationId: SpentEFUNDByAddress
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: >-
+              QuerySpentEFUNDByAddressResponse is the response type for the
+              Query/SpentEFUNDByAddress RPC method.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: address
+          description: address is the address to query
+          in: path
+          required: true
+          type: string
+      tags:
+        - Enterprise
   /mainchain/enterprise/v1/supply:
     get:
       summary: >-
@@ -1046,6 +1019,60 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - Enterprise
+  /mainchain/enterprise/v1/total_spent:
+    get:
+      summary: >-
+        TotalSpentEFUND queries the total eFUND usage to date - i.e. the amount
+        used to pay fees
+      operationId: TotalSpentEFUND
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              amount:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            description: >-
+              QueryTotalSpentEFUNDResponse is the response type for the
+              Query/TotalSpentEFUND RPC method.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
       tags:
         - Enterprise
   /mainchain/enterprise/v1/unlocked:
@@ -33332,7 +33359,7 @@ definitions:
       owner:
         type: string
         title: owner is the address of the account
-      locked:
+      locked_efund:
         type: object
         properties:
           denom:
@@ -33345,9 +33372,11 @@ definitions:
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
         title: >-
-          locked is the amount the account currently has locked and available to
-          pay for beacon/wrkchain fees
-      unlocked:
+          locked_efund is the amount of eFUND the account currently has locked
+          and only available to pay for
+
+          beacon/wrkchain fees
+      general_supply:
         type: object
         properties:
           denom:
@@ -33360,9 +33389,11 @@ definitions:
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
         title: >-
-          unlocked is the amount currently unlocked - i.e. standard FUND in
-          general supply
-      total:
+          general_supply is the amount currently held in the bank module's
+          supply - i.e. standard FUND in general supply
+
+          usable for anything (transfers, staking, standard tx fees etc.)
+      spent_efund:
         type: object
         properties:
           denom:
@@ -33374,7 +33405,26 @@ definitions:
 
           NOTE: The amount field is an Int which implements the custom method
           signatures required by gogoproto.
-        title: total is the sum of locked and unlocked FUND
+        title: >-
+          spent_efund is a running tally of how much eFUND the account has used
+          so far to pay for beacon/wrkchain fees
+      spendable:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+        title: >-
+          spendable is the sum of locked eFUND and general bank module FUND -
+          i.e. how much can be used to pay
+
+          BEACON/Wrkchain fees all together
     title: EnterpriseUserAccount defines data about an enterprise user
   mainchain.enterprise.v2.LockedUnd:
     type: object
@@ -33474,42 +33524,6 @@ definitions:
        - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
        - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
        - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
-  mainchain.enterprise.v2.QueryEFUNDUsageByAddressResponse:
-    type: object
-    properties:
-      amount:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
-    description: >-
-      QueryEFUNDUsageByAddressResponse is the response type for the
-      Query/FUNDUsageByAddress RPC method.
-  mainchain.enterprise.v2.QueryEFUNDUsageResponse:
-    type: object
-    properties:
-      amount:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
-    description: >-
-      QueryEFUNDUsageResponse is the response type for the Query/FUNDUsage RPC
-      method.
   mainchain.enterprise.v2.QueryEnterpriseAccountResponse:
     type: object
     properties:
@@ -33519,7 +33533,7 @@ definitions:
           owner:
             type: string
             title: owner is the address of the account
-          locked:
+          locked_efund:
             type: object
             properties:
               denom:
@@ -33535,9 +33549,11 @@ definitions:
 
               signatures required by gogoproto.
             title: >-
-              locked is the amount the account currently has locked and
-              available to pay for beacon/wrkchain fees
-          unlocked:
+              locked_efund is the amount of eFUND the account currently has
+              locked and only available to pay for
+
+              beacon/wrkchain fees
+          general_supply:
             type: object
             properties:
               denom:
@@ -33553,9 +33569,11 @@ definitions:
 
               signatures required by gogoproto.
             title: >-
-              unlocked is the amount currently unlocked - i.e. standard FUND in
-              general supply
-          total:
+              general_supply is the amount currently held in the bank module's
+              supply - i.e. standard FUND in general supply
+
+              usable for anything (transfers, staking, standard tx fees etc.)
+          spent_efund:
             type: object
             properties:
               denom:
@@ -33570,7 +33588,29 @@ definitions:
               method
 
               signatures required by gogoproto.
-            title: total is the sum of locked and unlocked FUND
+            title: >-
+              spent_efund is a running tally of how much eFUND the account has
+              used so far to pay for beacon/wrkchain fees
+          spendable:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+            title: >-
+              spendable is the sum of locked eFUND and general bank module FUND
+              - i.e. how much can be used to pay
+
+              BEACON/Wrkchain fees all together
         title: EnterpriseUserAccount defines data about an enterprise user
     description: >-
       QueryEnterpriseAccountResponse is the response type for the
@@ -33897,6 +33937,24 @@ definitions:
               must be made for a raised purchase order.
         description: Params defines the parameters for the enterprise module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
+  mainchain.enterprise.v2.QuerySpentEFUNDByAddressResponse:
+    type: object
+    properties:
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+    description: >-
+      QuerySpentEFUNDByAddressResponse is the response type for the
+      Query/SpentEFUNDByAddress RPC method.
   mainchain.enterprise.v2.QuerySupplyOfResponse:
     type: object
     properties:
@@ -33933,6 +33991,24 @@ definitions:
     title: >-
       QueryTotalLockedResponse is the response type for the Query/TotalLocked
       RPC method
+  mainchain.enterprise.v2.QueryTotalSpentEFUNDResponse:
+    type: object
+    properties:
+      amount:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+    description: >-
+      QueryTotalSpentEFUNDResponse is the response type for the
+      Query/TotalSpentEFUND RPC method.
   mainchain.enterprise.v2.QueryTotalSupplyResponse:
     type: object
     properties:

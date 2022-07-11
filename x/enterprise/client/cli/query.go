@@ -401,7 +401,7 @@ func GetCmdGetSpentEFUNDByAddress() *cobra.Command {
 				return err
 			}
 
-			res, err := queryClient.EFUNDUsageByAddress(context.Background(), &types.QueryEFUNDUsageByAddressRequest{
+			res, err := queryClient.SpentEFUNDByAddress(context.Background(), &types.QuerySpentEFUNDByAddressRequest{
 				Address: purchaser.String(),
 			})
 			if err != nil {
@@ -429,7 +429,7 @@ func GetCmdQueryTotalSpentEFUND() *cobra.Command {
 			}
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.EFUNDUsage(context.Background(), &types.QueryEFUNDUsageRequest{})
+			res, err := queryClient.TotalSpentEFUND(context.Background(), &types.QueryTotalSpentEFUNDRequest{})
 			if err != nil {
 				return err
 			}

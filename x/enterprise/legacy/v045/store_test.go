@@ -134,7 +134,7 @@ func TestStoreMigrate(t *testing.T) {
 		expectedUsed := uint64(i + 1)
 		expectedUsedCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(expectedUsed))
 
-		bz := entStore.Get(types.UsedUndAddressStoreKey(testAddrs[i]))
+		bz := entStore.Get(types.SpentEFUNDAddressStoreKey(testAddrs[i]))
 		var usedUnd sdk.Coin
 		err := cdc.Unmarshal(bz, &usedUnd)
 		require.NoError(t, err)
@@ -142,7 +142,7 @@ func TestStoreMigrate(t *testing.T) {
 	}
 
 	expectedTotalUsedCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(expectedTotalUsed))
-	bz := entStore.Get(types.TotalUsedUndKey)
+	bz := entStore.Get(types.TotalSpentEFUNDKey)
 	var totalUsedCoin sdk.Coin
 	err = cdc.Unmarshal(bz, &totalUsedCoin)
 	require.NoError(t, err)

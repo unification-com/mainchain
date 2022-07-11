@@ -220,17 +220,17 @@ func (q Keeper) EnterpriseAccount(c context.Context, req *types.QueryEnterpriseA
 	}, nil
 }
 
-func (q Keeper) EFUNDUsage(c context.Context, req *types.QueryEFUNDUsageRequest) (*types.QueryEFUNDUsageResponse, error) {
+func (q Keeper) TotalSpentEFUND(c context.Context, req *types.QueryTotalSpentEFUNDRequest) (*types.QueryTotalSpentEFUNDResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	totalUsed := q.GetTotalUsedUnd(ctx)
+	totalSpent := q.GetTotalSpentEFUND(ctx)
 
-	return &types.QueryEFUNDUsageResponse{
-		Amount: totalUsed,
+	return &types.QueryTotalSpentEFUNDResponse{
+		Amount: totalSpent,
 	}, nil
 }
 
-func (q Keeper) EFUNDUsageByAddress(c context.Context, req *types.QueryEFUNDUsageByAddressRequest) (*types.QueryEFUNDUsageByAddressResponse, error) {
+func (q Keeper) SpentEFUNDByAddress(c context.Context, req *types.QuerySpentEFUNDByAddressRequest) (*types.QuerySpentEFUNDByAddressResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	if req.Address == "" {
@@ -242,9 +242,9 @@ func (q Keeper) EFUNDUsageByAddress(c context.Context, req *types.QueryEFUNDUsag
 		return nil, err
 	}
 
-	totalUsed := q.GetUsedUndForAccount(ctx, addr)
+	totalSpent := q.GetSpentEFUNDForAccount(ctx, addr)
 
-	return &types.QueryEFUNDUsageByAddressResponse{
-		Amount: totalUsed,
+	return &types.QuerySpentEFUNDByAddressResponse{
+		Amount: totalSpent,
 	}, nil
 }

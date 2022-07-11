@@ -83,12 +83,17 @@ message LockedUnd {
 message EnterpriseUserAccount {
   // owner is the address of the account
   string owner = 1;
-  // locked is the amount the account currently has locked and available to pay for beacon/wrkchain fees
-  cosmos.base.v1beta1.Coin locked = 2 [ (gogoproto.nullable) = false ];
-  // unlocked is the amount currently unlocked - i.e. standard FUND in general supply
-  cosmos.base.v1beta1.Coin unlocked = 3 [ (gogoproto.nullable) = false ];
-  // total is the sum of locked and unlocked FUND
-  cosmos.base.v1beta1.Coin total = 4 [ (gogoproto.nullable) = false ];
+  // locked_efund is the amount of eFUND the account currently has locked and only available to pay for
+  // beacon/wrkchain fees
+  cosmos.base.v1beta1.Coin locked_efund = 2 [ (gogoproto.nullable) = false ];
+  // general_supply is the amount currently held in the bank module's supply - i.e. standard FUND in general supply
+  // usable for anything (transfers, staking, standard tx fees etc.)
+  cosmos.base.v1beta1.Coin general_supply = 3 [ (gogoproto.nullable) = false ];
+  // spent_efund is a running tally of how much eFUND the account has used so far to pay for beacon/wrkchain fees
+  cosmos.base.v1beta1.Coin spent_efund = 4 [ (gogoproto.nullable) = false ];
+  // spendable is the sum of locked eFUND and general bank module FUND - i.e. how much can be used to pay
+  // BEACON/Wrkchain fees all together
+  cosmos.base.v1beta1.Coin spendable = 5 [ (gogoproto.nullable) = false ];
 }
 
 // UndSupply defines the current FUND supply, including locked

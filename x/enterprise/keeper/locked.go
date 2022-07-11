@@ -11,16 +11,18 @@ import (
 
 func (k Keeper) GetEnterpriseUserAccount(ctx sdk.Context, owner sdk.AccAddress) types.EnterpriseUserAccount {
 	locked := k.GetLockedUndForAccount(ctx, owner)
-	unlocked := k.bankKeeper.GetBalance(ctx, owner, k.GetParamDenom(ctx))
-	lockedCoin := locked.Amount
+	bankSupply := k.bankKeeper.GetBalance(ctx, owner, k.GetParamDenom(ctx))
+	lockedEFUND := locked.Amount
+	spent := k.GetSpentEFUNDForAccount(ctx, owner)
 
-	total := unlocked.Add(lockedCoin)
+	spendable := bankSupply.Add(lockedEFUND)
 
 	userAccount := types.EnterpriseUserAccount{
-		Owner:    owner.String(),
-		Locked:   lockedCoin,
-		Unlocked: unlocked,
-		Total:    total,
+		Owner:         owner.String(),
+		LockedEfund:   lockedEFUND,
+		GeneralSupply: bankSupply,
+		SpentEfund:    spent,
+		Spendable:     spendable,
 	}
 
 	return userAccount
@@ -28,7 +30,7 @@ func (k Keeper) GetEnterpriseUserAccount(ctx sdk.Context, owner sdk.AccAddress) 
 
 // __TOTAL_LOCKED_FUND___________________________________________________
 
-// GetTotalLockedUnd returns the total locked FUND
+// GetTotalLockedUnd returns the total locked eFUND
 func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 	store := ctx.KVStore(k.storeKey)
 
@@ -113,13 +115,13 @@ func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) error {
 	return nil
 }
 
-//__USED_eFUND__________________________________________________________
+//__SPENT_eFUND__________________________________________________________
 
-// GetTotalUsedUnd returns the total used eFUND
-func (k Keeper) GetTotalUsedUnd(ctx sdk.Context) sdk.Coin {
+// GetTotalSpentEFUND returns the total spent eFUND
+func (k Keeper) GetTotalSpentEFUND(ctx sdk.Context) sdk.Coin {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.TotalUsedUndKey)
+	bz := store.Get(types.TotalSpentEFUNDKey)
 
 	if bz == nil {
 		return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
@@ -130,38 +132,39 @@ func (k Keeper) GetTotalUsedUnd(ctx sdk.Context) sdk.Coin {
 	return totalUsed
 }
 
-// SetTotalUsedUnd sets the total used eFUND
-func (k Keeper) SetTotalUsedUnd(ctx sdk.Context, totalUsed sdk.Coin) error {
+// SetTotalSpentEFUND sets the total used eFUND
+func (k Keeper) SetTotalSpentEFUND(ctx sdk.Context, totalUsed sdk.Coin) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.TotalUsedUndKey, k.cdc.MustMarshal(&totalUsed))
+	store.Set(types.TotalSpentEFUNDKey, k.cdc.MustMarshal(&totalUsed))
 	return nil
 }
 
-func (k Keeper) AccountHasUsedUnd(ctx sdk.Context, address sdk.AccAddress) bool {
+// AccountHasSpentEFUND checks if given account has an entry for spent eFUND
+func (k Keeper) AccountHasSpentEFUND(ctx sdk.Context, address sdk.AccAddress) bool {
 	store := ctx.KVStore(k.storeKey)
-	addressKeyBz := types.UsedUndAddressStoreKey(address)
+	addressKeyBz := types.SpentEFUNDAddressStoreKey(address)
 	return store.Has(addressKeyBz)
 }
 
-// Gets a record for used eFUND for a given address
-func (k Keeper) GetUsedUndForAccount(ctx sdk.Context, address sdk.AccAddress) sdk.Coin {
+// GetSpentEFUNDForAccount Gets a record for used eFUND for a given address
+func (k Keeper) GetSpentEFUNDForAccount(ctx sdk.Context, address sdk.AccAddress) sdk.Coin {
 	store := ctx.KVStore(k.storeKey)
 
-	if !k.AccountHasUsedUnd(ctx, address) {
+	if !k.AccountHasSpentEFUND(ctx, address) {
 		// return a new zero coin
 		return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
 	}
 
-	bz := store.Get(types.UsedUndAddressStoreKey(address))
+	bz := store.Get(types.SpentEFUNDAddressStoreKey(address))
 	var usedUnd sdk.Coin
 	k.cdc.MustUnmarshal(bz, &usedUnd)
 	return usedUnd
 }
 
-// Sets the used eFUND data
-func (k Keeper) SetUsedUndForAccount(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
+// SetSpentEFUNDForAccount Sets the spent eFUND data
+func (k Keeper) SetSpentEFUNDForAccount(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.UsedUndAddressStoreKey(address), k.cdc.MustMarshal(&amount))
+	store.Set(types.SpentEFUNDAddressStoreKey(address), k.cdc.MustMarshal(&amount))
 	return nil
 }
 
@@ -389,17 +392,17 @@ func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUn
 }
 
 func (k Keeper) incrementUsedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
-	currentUsed := k.GetUsedUndForAccount(ctx, address)
+	currentUsed := k.GetSpentEFUNDForAccount(ctx, address)
 	newUsed := currentUsed.Add(amount)
-	err := k.SetUsedUndForAccount(ctx, address, newUsed)
+	err := k.SetSpentEFUNDForAccount(ctx, address, newUsed)
 
 	if err != nil {
 		return err
 	}
 
-	totalUsed := k.GetTotalUsedUnd(ctx)
+	totalUsed := k.GetTotalSpentEFUND(ctx)
 	newTotalUsed := totalUsed.Add(amount)
-	err = k.SetTotalUsedUnd(ctx, newTotalUsed)
+	err = k.SetTotalSpentEFUND(ctx, newTotalUsed)
 
 	if err != nil {
 		return err

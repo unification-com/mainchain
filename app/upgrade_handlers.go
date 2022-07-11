@@ -10,7 +10,6 @@ import (
 // UpdateName this will be changed with each new release that requires migrations
 const UpdateName = "1-ibc"
 
-// todo - Need to set staking params historical_entries = 10000 for IBC relayers to connect & open channels
 // see https://docs.cosmos.network/v0.45/migrations/chain-upgrade-guide-044.html
 func (app *App) registerUpgradeHandlers() {
 	// first upgrade 1-ibc, integrates IBC

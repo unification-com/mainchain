@@ -113,6 +113,58 @@ func (k Keeper) SetTotalLockedUnd(ctx sdk.Context, totalLocked sdk.Coin) error {
 	return nil
 }
 
+//__USED_eFUND__________________________________________________________
+
+// GetTotalUsedUnd returns the total used eFUND
+func (k Keeper) GetTotalUsedUnd(ctx sdk.Context) sdk.Coin {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(types.TotalUsedUndKey)
+
+	if bz == nil {
+		return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
+	}
+
+	var totalUsed sdk.Coin
+	k.cdc.MustUnmarshal(bz, &totalUsed)
+	return totalUsed
+}
+
+// SetTotalUsedUnd sets the total used eFUND
+func (k Keeper) SetTotalUsedUnd(ctx sdk.Context, totalUsed sdk.Coin) error {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.TotalUsedUndKey, k.cdc.MustMarshal(&totalUsed))
+	return nil
+}
+
+func (k Keeper) AccountHasUsedUnd(ctx sdk.Context, address sdk.AccAddress) bool {
+	store := ctx.KVStore(k.storeKey)
+	addressKeyBz := types.UsedUndAddressStoreKey(address)
+	return store.Has(addressKeyBz)
+}
+
+// Gets a record for used eFUND for a given address
+func (k Keeper) GetUsedUndForAccount(ctx sdk.Context, address sdk.AccAddress) sdk.Coin {
+	store := ctx.KVStore(k.storeKey)
+
+	if !k.AccountHasUsedUnd(ctx, address) {
+		// return a new zero coin
+		return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
+	}
+
+	bz := store.Get(types.UsedUndAddressStoreKey(address))
+	var usedUnd sdk.Coin
+	k.cdc.MustUnmarshal(bz, &usedUnd)
+	return usedUnd
+}
+
+// Sets the used eFUND data
+func (k Keeper) SetUsedUndForAccount(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.UsedUndAddressStoreKey(address), k.cdc.MustMarshal(&amount))
+	return nil
+}
+
 // __MINTER_AND_UNLOCKER________________________________________________
 
 // MintCoinsAndLock implements an alias call to the underlying bank keeper's MintCoins
@@ -170,10 +222,16 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 			return err
 		}
 
-		// decrement the tracked locked FUND
+		// decrement the tracked locked eFUND
 		feeNund := feesToPay.AmountOf(k.GetParamDenom(ctx))
 		feeNundCoin := sdk.NewCoin(k.GetParamDenom(ctx), feeNund)
 		err = k.decrementLockedUnd(ctx, feePayer, feeNundCoin)
+		if err != nil {
+			return err
+		}
+
+		// increment the used eFUND
+		err = k.incrementUsedUnd(ctx, feePayer, feeNundCoin)
 		if err != nil {
 			return err
 		}
@@ -211,7 +269,14 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 				return err
 			}
 
+			// decrement the tracked locked eFUND
 			err = k.decrementLockedUnd(ctx, feePayer, lockedUnd)
+			if err != nil {
+				return err
+			}
+
+			// increment the used eFUND
+			err = k.incrementUsedUnd(ctx, feePayer, lockedUnd)
 			if err != nil {
 				return err
 			}
@@ -247,7 +312,7 @@ func (k Keeper) sendCoinsFromModuleToAccount(ctx sdk.Context, recipientAddr sdk.
 // Check if a record exists for locked FUND given an account address
 func (k Keeper) AccountHasLockedUnd(ctx sdk.Context, address sdk.AccAddress) bool {
 	store := ctx.KVStore(k.storeKey)
-	addressKeyBz := types.AddressStoreKey(address)
+	addressKeyBz := types.LockedUndAddressStoreKey(address)
 	return store.Has(addressKeyBz)
 }
 
@@ -267,7 +332,7 @@ func (k Keeper) GetLockedUndForAccount(ctx sdk.Context, address sdk.AccAddress) 
 		}
 	}
 
-	bz := store.Get(types.AddressStoreKey(address))
+	bz := store.Get(types.LockedUndAddressStoreKey(address))
 	var lockedUnd types.LockedUnd
 	k.cdc.MustUnmarshal(bz, &lockedUnd)
 	return lockedUnd
@@ -298,7 +363,7 @@ func (k Keeper) GetAllLockedUnds(ctx sdk.Context) (lockedUnds []types.LockedUnd)
 // Deletes the accepted purchase order once processed
 func (k Keeper) DeleteLockedUndForAccount(ctx sdk.Context, address sdk.AccAddress) {
 	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.AddressStoreKey(address))
+	store.Delete(types.LockedUndAddressStoreKey(address))
 }
 
 // Sets the Locked FUND data
@@ -318,8 +383,27 @@ func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUn
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.AddressStoreKey(owner), k.cdc.MustMarshal(&lockedUnd))
+	store.Set(types.LockedUndAddressStoreKey(owner), k.cdc.MustMarshal(&lockedUnd))
 
+	return nil
+}
+
+func (k Keeper) incrementUsedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
+	currentUsed := k.GetUsedUndForAccount(ctx, address)
+	newUsed := currentUsed.Add(amount)
+	err := k.SetUsedUndForAccount(ctx, address, newUsed)
+
+	if err != nil {
+		return err
+	}
+
+	totalUsed := k.GetTotalUsedUnd(ctx)
+	newTotalUsed := totalUsed.Add(amount)
+	err = k.SetTotalUsedUnd(ctx, newTotalUsed)
+
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

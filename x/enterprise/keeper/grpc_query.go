@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/query"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain/x/enterprise/types"
@@ -57,14 +57,27 @@ func (q Keeper) EnterpriseUndPurchaseOrders(c context.Context, req *types.QueryE
 	var purchaseOrders []types.EnterpriseUndPurchaseOrder
 
 	poStore := prefix.NewStore(store, types.PurchaseOrderIDKeyPrefix)
-	pageRes, err := query.Paginate(poStore, req.Pagination, func(key []byte, value []byte) error {
+
+	pageRes, err := query.FilteredPaginate(poStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
 		var info types.EnterpriseUndPurchaseOrder
 		err := q.cdc.Unmarshal(value, &info)
 		if err != nil {
-			return err
+			return false, err
 		}
-		purchaseOrders = append(purchaseOrders, info)
-		return nil
+
+		if req.Status.String() != "STATUS_NIL" && !strings.EqualFold(info.GetStatus().String(), req.Status.String()) {
+			return false, nil
+		}
+
+		if req.Purchaser != "" && !strings.EqualFold(info.Purchaser, req.Purchaser) {
+			return false, nil
+		}
+
+		if accumulate {
+			purchaseOrders = append(purchaseOrders, info)
+		}
+
+		return true, nil
 	})
 	if err != nil {
 		return nil, err
@@ -204,5 +217,34 @@ func (q Keeper) EnterpriseAccount(c context.Context, req *types.QueryEnterpriseA
 
 	return &types.QueryEnterpriseAccountResponse{
 		Account: userAcc,
+	}, nil
+}
+
+func (q Keeper) EFUNDUsage(c context.Context, req *types.QueryEFUNDUsageRequest) (*types.QueryEFUNDUsageResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	totalUsed := q.GetTotalUsedUnd(ctx)
+
+	return &types.QueryEFUNDUsageResponse{
+		Amount: totalUsed,
+	}, nil
+}
+
+func (q Keeper) EFUNDUsageByAddress(c context.Context, req *types.QueryEFUNDUsageByAddressRequest) (*types.QueryEFUNDUsageByAddressResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	if req.Address == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid request")
+	}
+
+	addr, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	totalUsed := q.GetUsedUndForAccount(ctx, addr)
+
+	return &types.QueryEFUNDUsageByAddressResponse{
+		Amount: totalUsed,
 	}, nil
 }

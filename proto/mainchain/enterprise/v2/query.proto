@@ -1,10 +1,10 @@
 syntax = "proto3";
-package mainchain.enterprise.v1;
+package mainchain.enterprise.v2;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos_sdk/base/query/v1beta1/pagination.proto";
-import "mainchain/enterprise/v1/enterprise.proto";
+import "mainchain/enterprise/v2/enterprise.proto";
 import "cosmos_sdk/base/v1beta1/coin.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
@@ -82,6 +82,16 @@ service Query {
   // EnterpriseAccount queries an account address for their locked FUND and other data
   rpc EnterpriseAccount(QueryEnterpriseAccountRequest) returns (QueryEnterpriseAccountResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/account/{address}";
+  }
+
+  // EFUNDUsage queries the total eFUND usage to date - i.e. the amount used to pay fees
+  rpc EFUNDUsage(QueryEFUNDUsageRequest) returns (QueryEFUNDUsageResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/efund_usage";
+  }
+
+  //QueryEFUNDUsageByAddress queries the total eFUND usage to date for a given address, i.e. the amount used to pay fees
+  rpc EFUNDUsageByAddress(QueryEFUNDUsageByAddressRequest) returns (QueryEFUNDUsageByAddressResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/efund_usage/{address}";
   }
 }
 
@@ -211,4 +221,23 @@ message QueryEnterpriseAccountRequest {
 // QueryEnterpriseAccountResponse is the response type for the Query/EnterpriseAccount RPC method.
 message QueryEnterpriseAccountResponse {
   EnterpriseUserAccount account = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryEFUNDUsageRequest is the request type for the Query/FUNDUsage RPC method.
+message QueryEFUNDUsageRequest {}
+
+// QueryEFUNDUsageResponse is the response type for the Query/FUNDUsage RPC method.
+message QueryEFUNDUsageResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryEFUNDUsageByAddressRequest is the request type for the Query/FUNDUsageByAddress RPC method.
+message QueryEFUNDUsageByAddressRequest {
+  // address is the address to query
+  string address = 1;
+}
+
+// QueryEFUNDUsageByAddressResponse is the response type for the Query/FUNDUsageByAddress RPC method.
+message QueryEFUNDUsageByAddressResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
 }

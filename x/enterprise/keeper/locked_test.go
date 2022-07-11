@@ -275,3 +275,72 @@ func TestGetTotalSupplyWithLockedNundRemoved(t *testing.T) {
 		require.True(t, totalMintedDb.IsEqual(totalMinted))
 	}
 }
+
+func TestUnlockCoinsForFeesAndUsedCounter(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+
+	totalUsed := int64(0)
+
+	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
+
+	for _, addr := range testAddresses {
+		amountToMint := int64(test_helpers.RandInBetween(1000, 100000))
+		amountToUnlock := int64(test_helpers.RandInBetween(1, 999))
+
+		toMint := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToMint)
+		toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToUnlock)
+		toUnlockCoins := sdk.NewCoins(toUnlock)
+		totalUsed = totalUsed + amountToUnlock
+
+		_ = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, toMint)
+
+		err := app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addr, toUnlockCoins)
+		require.NoError(t, err)
+
+		usedDb := app.EnterpriseKeeper.GetUsedUndForAccount(ctx, addr)
+		require.True(t, usedDb.IsEqual(toUnlock))
+	}
+
+	expectedTotalUsedCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, totalUsed)
+
+	totalUsedDb := app.EnterpriseKeeper.GetTotalUsedUnd(ctx)
+	require.True(t, totalUsedDb.IsEqual(expectedTotalUsedCoin))
+}
+
+func TestUnlockCoinsForFeesAndUsedCounterWithHalfFunds(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+
+	totalUsed := int64(0)
+
+	testAddresses := test_helpers.AddTestAddrs(app, ctx, 100, sdk.NewInt(10000))
+
+	for _, addr := range testAddresses {
+		amountToMint := int64(test_helpers.RandInBetween(1, 999))
+		// fee is more than minted, to test using account's normal fund supply in addition to minted efund
+		feeToPay := amountToMint * 2
+		// only minted will count as "used"
+		totalUsed = totalUsed + amountToMint
+
+		toMint := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToMint)
+		fee := sdk.NewInt64Coin(test_helpers.TestDenomination, feeToPay)
+		feeCoins := sdk.NewCoins(fee)
+
+		_ = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, toMint)
+
+		err := app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addr, feeCoins)
+		require.NoError(t, err)
+
+		usedDb := app.EnterpriseKeeper.GetUsedUndForAccount(ctx, addr)
+		// fee is 2x what was minted. Only minted should count
+		require.True(t, usedDb.IsEqual(toMint))
+	}
+
+	expectedTotalUsedCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, totalUsed)
+
+	totalUsedDb := app.EnterpriseKeeper.GetTotalUsedUnd(ctx)
+	require.True(t, totalUsedDb.IsEqual(expectedTotalUsedCoin))
+}

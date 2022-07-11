@@ -33,11 +33,11 @@ type processWhitelistActionReq struct {
 }
 
 func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
-	r.HandleFunc("/enterprise/purchase", raisePurchaseOrderHandler(cliCtx)).Methods("POST")
-
-	r.HandleFunc("/enterprise/process", processPurchaseOrderHandler(cliCtx)).Methods("POST")
-
-	r.HandleFunc("/enterprise/whitelist", processWhitelistActionHandler(cliCtx)).Methods("POST")
+	//r.HandleFunc("/enterprise/purchase", raisePurchaseOrderHandler(cliCtx)).Methods("POST")
+	//
+	//r.HandleFunc("/enterprise/process", processPurchaseOrderHandler(cliCtx)).Methods("POST")
+	//
+	//r.HandleFunc("/enterprise/whitelist", processWhitelistActionHandler(cliCtx)).Methods("POST")
 }
 
 func raisePurchaseOrderHandler(cliCtx client.Context) http.HandlerFunc {

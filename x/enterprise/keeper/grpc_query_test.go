@@ -504,7 +504,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryWhitelisted() {
 	}
 }
 
-func (suite *KeeperTestSuite) TestEFUNDUsage() {
+func (suite *KeeperTestSuite) TestTotalSpentEFUND() {
 	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
 
 	poAmount := uint64(12345)
@@ -534,15 +534,15 @@ func (suite *KeeperTestSuite) TestEFUNDUsage() {
 		totalUnlocked += toUnlock
 	}
 
-	expectedResp := &types.QueryEFUNDUsageResponse{Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, int64(totalUnlocked))}
+	expectedResp := &types.QueryTotalSpentEFUNDResponse{Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, int64(totalUnlocked))}
 
-	req := &types.QueryEFUNDUsageRequest{}
-	res, err := queryClient.EFUNDUsage(gocontext.Background(), req)
+	req := &types.QueryTotalSpentEFUNDRequest{}
+	res, err := queryClient.TotalSpentEFUND(gocontext.Background(), req)
 	suite.Require().NoError(err)
 	suite.Require().Equal(expectedResp, res)
 }
 
-func (suite *KeeperTestSuite) TestEFUNDUsageByAddress() {
+func (suite *KeeperTestSuite) TestSpentEFUNDByAddress() {
 	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
 
 	for i := 0; i < len(addrs); i++ {
@@ -567,12 +567,12 @@ func (suite *KeeperTestSuite) TestEFUNDUsageByAddress() {
 		err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
 		suite.Require().NoError(err)
 
-		expectedResp := &types.QueryEFUNDUsageByAddressResponse{Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, int64(toUnlock))}
+		expectedResp := &types.QuerySpentEFUNDByAddressResponse{Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, int64(toUnlock))}
 
-		req := &types.QueryEFUNDUsageByAddressRequest{
+		req := &types.QuerySpentEFUNDByAddressRequest{
 			Address: addrs[i].String(),
 		}
-		res, err := queryClient.EFUNDUsageByAddress(gocontext.Background(), req)
+		res, err := queryClient.SpentEFUNDByAddress(gocontext.Background(), req)
 		suite.Require().NoError(err)
 		suite.Require().Equal(expectedResp, res)
 	}

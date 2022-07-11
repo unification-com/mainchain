@@ -8,11 +8,11 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
-// setTotalUsed will calculate the total amount of eFUND used to pay towards fees to date, for all addresses.
+// setTotalSpentEFUND will calculate the total amount of eFUND used to pay towards fees to date, for all addresses.
 // It will calculate the sum of eFUND purchases, based on purchase orders with the COMPLETE status,
 // then subtract the total amount currently locked in order to get the amount spent on fees to date.
 // It will then save this value to a new store entry for key []byte{0x98}
-func setTotalUsed(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspace paramstypes.Subspace, cdc codec.BinaryCodec) error {
+func setTotalSpentEFUND(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspace paramstypes.Subspace, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	var denom string
 	paramsSubspace.Get(ctx, types.KeyDenom, &denom)
@@ -49,10 +49,10 @@ func setTotalUsed(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspace paramst
 	}
 
 	// Total eFUND used to pay towards fees to date is (total purchased - total currently locked)
-	totalUsed := totalCompleted.Sub(totalLocked)
+	totalSpent := totalCompleted.Sub(totalLocked)
 
 	// save it to the new store key
-	store.Set(types.TotalUsedUndKey, cdc.MustMarshal(&totalUsed))
+	store.Set(types.TotalSpentEFUNDKey, cdc.MustMarshal(&totalSpent))
 
 	return nil
 }
@@ -85,11 +85,11 @@ func getTotalPurchasedByAddress(ctx sdk.Context, storeKey sdk.StoreKey, cdc code
 	return totalCompleted, nil
 }
 
-// setTotalUsedByAddress will calculate the amount of eFUND used to pay towards fees to date.
+// setTotalSpentEFUNDByAddress will calculate the amount of eFUND used to pay towards fees to date.
 // For each address in the LockedUnd keystore, it will calculate the sum of their eFUND purchases,
 // then subtract the amount currently locked in order to get the amount spent on fees to date.
 // It will then save this value to a new store entry for key ([]byte{0x06}, acc.Bytes()...)
-func setTotalUsedByAddress(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspace paramstypes.Subspace, cdc codec.BinaryCodec) error {
+func setTotalSpentEFUNDByAddress(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspace paramstypes.Subspace, cdc codec.BinaryCodec) error {
 
 	store := ctx.KVStore(storeKey)
 	var denom string
@@ -120,7 +120,7 @@ func setTotalUsedByAddress(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspac
 		totalUsed := totalCompleted.Sub(lockedUnd.Amount)
 
 		// save it to the new store key
-		store.Set(types.UsedUndAddressStoreKey(accAddr), cdc.MustMarshal(&totalUsed))
+		store.Set(types.SpentEFUNDAddressStoreKey(accAddr), cdc.MustMarshal(&totalUsed))
 	}
 
 	return nil
@@ -133,9 +133,9 @@ func setTotalUsedByAddress(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspac
 // - Adding new eFUND usage store for each account with eFUND
 func MigrateStore(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspace paramstypes.Subspace, cdc codec.BinaryCodec) error {
 
-	if err := setTotalUsed(ctx, storeKey, paramsSubspace, cdc); err != nil {
+	if err := setTotalSpentEFUND(ctx, storeKey, paramsSubspace, cdc); err != nil {
 		return err
 	}
 
-	return setTotalUsedByAddress(ctx, storeKey, paramsSubspace, cdc)
+	return setTotalSpentEFUNDByAddress(ctx, storeKey, paramsSubspace, cdc)
 }

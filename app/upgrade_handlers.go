@@ -4,6 +4,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
@@ -57,6 +58,29 @@ func (app *App) upgradeHandler(ctx sdk.Context, plan upgradetypes.Plan, _ module
 	stParams := app.StakingKeeper.GetParams(ctx)
 	stParams.HistoricalEntries = 10000
 	app.StakingKeeper.SetParams(ctx, stParams)
+
+	// set BankKeeper's denom metadata for nund/FUND
+	nundMeta := banktypes.Metadata{
+		Description: "The native token of FUND mainchain.",
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    "nund",
+				Exponent: 0,
+				Aliases:  []string{"nanofund"},
+			},
+			{
+				Denom:    "fund",
+				Exponent: 9,
+				Aliases:  []string{"FUND"},
+			},
+		},
+		Base:    "nund",
+		Display: "fund",
+		Symbol:  "FUND",
+		Name:    "FUND",
+	}
+
+	app.BankKeeper.SetDenomMetaData(ctx, nundMeta)
 
 	return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 }

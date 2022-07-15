@@ -21,7 +21,7 @@ func (k Keeper) GetEnterpriseUserAccount(ctx sdk.Context, owner sdk.AccAddress) 
 		Owner:         owner.String(),
 		LockedEfund:   lockedEFUND,
 		GeneralSupply: bankSupply,
-		SpentEfund:    spent,
+		SpentEfund:    spent.Amount,
 		Spendable:     spendable,
 	}
 
@@ -147,25 +147,54 @@ func (k Keeper) AccountHasSpentEFUND(ctx sdk.Context, address sdk.AccAddress) bo
 }
 
 // GetSpentEFUNDForAccount Gets a record for used eFUND for a given address
-func (k Keeper) GetSpentEFUNDForAccount(ctx sdk.Context, address sdk.AccAddress) sdk.Coin {
+func (k Keeper) GetSpentEFUNDForAccount(ctx sdk.Context, address sdk.AccAddress) types.SpentEFUND {
 	store := ctx.KVStore(k.storeKey)
 
 	if !k.AccountHasSpentEFUND(ctx, address) {
 		// return a new zero coin
-		return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
+		return types.SpentEFUND{
+			Owner:  address.String(),
+			Amount: sdk.NewInt64Coin(k.GetParamDenom(ctx), 0),
+		}
 	}
 
 	bz := store.Get(types.SpentEFUNDAddressStoreKey(address))
-	var usedUnd sdk.Coin
-	k.cdc.MustUnmarshal(bz, &usedUnd)
-	return usedUnd
+	var spentEFUND types.SpentEFUND
+	k.cdc.MustUnmarshal(bz, &spentEFUND)
+	return spentEFUND
 }
 
 // SetSpentEFUNDForAccount Sets the spent eFUND data
-func (k Keeper) SetSpentEFUNDForAccount(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
+func (k Keeper) SetSpentEFUNDForAccount(ctx sdk.Context, spent types.SpentEFUND) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.SpentEFUNDAddressStoreKey(address), k.cdc.MustMarshal(&amount))
+	owner, accErr := sdk.AccAddressFromBech32(spent.Owner)
+	if accErr != nil {
+		return accErr
+	}
+	store.Set(types.SpentEFUNDAddressStoreKey(owner), k.cdc.MustMarshal(&spent))
 	return nil
+}
+
+func (k Keeper) GetSpentEFUNDAmountForAccount(ctx sdk.Context, address sdk.AccAddress) sdk.Coin {
+	return k.GetSpentEFUNDForAccount(ctx, address).Amount
+}
+
+// Get an iterator over all accounts with spent eFUND
+func (k Keeper) GetAllSpentEFUNDAccountsIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, types.SpentEFUNDAddressKeyPrefix)
+}
+
+func (k Keeper) GetAllSpentEFUNDs(ctx sdk.Context) (spentEFUNDs []types.SpentEFUND) {
+	spentIterator := k.GetAllSpentEFUNDAccountsIterator(ctx)
+
+	for ; spentIterator.Valid(); spentIterator.Next() {
+		var spent types.SpentEFUND
+		k.cdc.MustUnmarshal(spentIterator.Value(), &spent)
+		spentEFUNDs = append(spentEFUNDs, spent)
+	}
+
+	return spentEFUNDs
 }
 
 // __MINTER_AND_UNLOCKER________________________________________________
@@ -234,7 +263,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		}
 
 		// increment the used eFUND
-		err = k.incrementUsedUnd(ctx, feePayer, feeNundCoin)
+		err = k.incrementSpentEFUND(ctx, feePayer, feeNundCoin)
 		if err != nil {
 			return err
 		}
@@ -279,7 +308,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 			}
 
 			// increment the used eFUND
-			err = k.incrementUsedUnd(ctx, feePayer, lockedUnd)
+			err = k.incrementSpentEFUND(ctx, feePayer, lockedUnd)
 			if err != nil {
 				return err
 			}
@@ -363,12 +392,6 @@ func (k Keeper) GetAllLockedUnds(ctx sdk.Context) (lockedUnds []types.LockedUnd)
 	return lockedUnds
 }
 
-// Deletes the accepted purchase order once processed
-func (k Keeper) DeleteLockedUndForAccount(ctx sdk.Context, address sdk.AccAddress) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.LockedUndAddressStoreKey(address))
-}
-
 // Sets the Locked FUND data
 func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUnd) error {
 	// must have an owner
@@ -391,17 +414,17 @@ func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUn
 	return nil
 }
 
-func (k Keeper) incrementUsedUnd(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
-	currentUsed := k.GetSpentEFUNDForAccount(ctx, address)
-	newUsed := currentUsed.Add(amount)
-	err := k.SetSpentEFUNDForAccount(ctx, address, newUsed)
+func (k Keeper) incrementSpentEFUND(ctx sdk.Context, address sdk.AccAddress, amount sdk.Coin) error {
+	spentEFUND := k.GetSpentEFUNDForAccount(ctx, address)
+	spentEFUND.Amount = spentEFUND.Amount.Add(amount)
+	err := k.SetSpentEFUNDForAccount(ctx, spentEFUND)
 
 	if err != nil {
 		return err
 	}
 
-	totalUsed := k.GetTotalSpentEFUND(ctx)
-	newTotalUsed := totalUsed.Add(amount)
+	totalSpent := k.GetTotalSpentEFUND(ctx)
+	newTotalUsed := totalSpent.Add(amount)
 	err = k.SetTotalSpentEFUND(ctx, newTotalUsed)
 
 	if err != nil {

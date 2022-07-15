@@ -79,6 +79,14 @@ message LockedUnd {
   cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
 }
 
+// SpentEFUND defines the amount of spent eFUND for an account
+message SpentEFUND {
+  // owner is the address of the eFUND owner
+  string owner = 1;
+  // amount is the amount currently locked and available to pay for beacon/wrkchain fees
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
+
 // EnterpriseUserAccount defines data about an enterprise user
 message EnterpriseUserAccount {
   // owner is the address of the account

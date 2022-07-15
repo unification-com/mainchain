@@ -119,6 +119,7 @@ func SetKeeperTestParamsAndDefaultValues(app *app.App, ctx sdk.Context) {
 		DecisionTimeLimit: 1000,
 	})
 	_ = app.EnterpriseKeeper.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(TestDenomination, 0))
+	_ = app.EnterpriseKeeper.SetTotalSpentEFUND(ctx, sdk.NewInt64Coin(TestDenomination, 0))
 	app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, 1)
 }
 

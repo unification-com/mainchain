@@ -100,9 +100,9 @@ func (q Keeper) LockedUndByAddress(c context.Context, req *types.QueryLockedUndB
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	lockedUnd := q.GetLockedUndForAccount(ctx, addr)
+	lockedUnd := q.GetLockedUndAmountForAccount(ctx, addr)
 
-	return &types.QueryLockedUndByAddressResponse{LockedUnd: &lockedUnd}, nil
+	return &types.QueryLockedUndByAddressResponse{Amount: lockedUnd}, nil
 }
 
 func (q Keeper) TotalLocked(c context.Context, req *types.QueryTotalLockedRequest) (*types.QueryTotalLockedResponse, error) {
@@ -242,9 +242,9 @@ func (q Keeper) SpentEFUNDByAddress(c context.Context, req *types.QuerySpentEFUN
 		return nil, err
 	}
 
-	totalSpent := q.GetSpentEFUNDForAccount(ctx, addr)
+	spent := q.GetSpentEFUNDAmountForAccount(ctx, addr)
 
 	return &types.QuerySpentEFUNDByAddressResponse{
-		Amount: totalSpent,
+		Amount: spent,
 	}, nil
 }

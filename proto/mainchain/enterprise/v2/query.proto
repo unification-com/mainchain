@@ -139,8 +139,7 @@ message QueryLockedUndByAddressRequest {
 
 // QueryLockedUndByAddressResponse is the response type for the Query/LockedUndByAddress RPC method
 message QueryLockedUndByAddressResponse {
-  string owner = 1;
-  LockedUnd locked_und = 2;
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryTotalLockedRequest is the request type for the Query/TotalLocked RPC method

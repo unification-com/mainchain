@@ -265,7 +265,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryLockedUndByAddress() {
 
 	var (
 		req    *types.QueryLockedUndByAddressRequest
-		expRes types.LockedUnd
+		expRes types.QueryLockedUndByAddressResponse
 	)
 
 	testCases := []struct {
@@ -303,7 +303,9 @@ func (suite *KeeperTestSuite) TestGRPCQueryLockedUndByAddress() {
 
 				err := app.EnterpriseKeeper.SetLockedUndForAccount(ctx, l)
 				suite.Require().NoError(err)
-				expRes = l
+				expRes = types.QueryLockedUndByAddressResponse{
+					Amount: l.Amount,
+				}
 			},
 			true,
 		},
@@ -317,7 +319,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryLockedUndByAddress() {
 
 			if testCase.expPass {
 				suite.Require().NoError(err)
-				suite.Require().Equal(&expRes, lRes.LockedUnd)
+				suite.Require().Equal(&expRes, lRes)
 			} else {
 				suite.Require().Error(err)
 				suite.Require().Nil(lRes)
@@ -574,6 +576,6 @@ func (suite *KeeperTestSuite) TestSpentEFUNDByAddress() {
 		}
 		res, err := queryClient.SpentEFUNDByAddress(gocontext.Background(), req)
 		suite.Require().NoError(err)
-		suite.Require().Equal(expectedResp, res)
+		suite.Require().Equal(expectedResp.Amount.String(), res.Amount.String())
 	}
 }

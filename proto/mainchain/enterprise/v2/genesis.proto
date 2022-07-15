@@ -16,4 +16,6 @@ message GenesisState {
   repeated LockedUnd locked_und = 4 [(gogoproto.castrepeated) = "LockedUnds", (gogoproto.nullable) = false];
   cosmos.base.v1beta1.Coin total_locked = 5 [(gogoproto.nullable) = false];
   repeated string whitelist = 6 [(gogoproto.castrepeated) = "Whitelists"];
+  repeated SpentEFUND spent_efund = 7 [(gogoproto.castrepeated) = "SpentEFUNDs", (gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin total_spent = 8 [(gogoproto.nullable) = false];
 }

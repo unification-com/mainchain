@@ -259,16 +259,21 @@
       "validator_slash_events": []
     },
     "enterprise": {
-      "locked_und": null,
+      "locked_und": [],
       "params": {
         "decision_time_limit": "120",
         "denom": "nund",
         "ent_signers": "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6,und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
         "min_accepts": "1"
       },
-      "purchase_orders": null,
+      "purchase_orders": [],
+      "spent_efund": [],
       "starting_purchase_order_id": "1",
       "total_locked": {
+        "amount": "0",
+        "denom": "nund"
+      },
+      "total_spent": {
         "amount": "0",
         "denom": "nund"
       },

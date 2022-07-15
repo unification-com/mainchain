@@ -71,6 +71,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		types.NewParams(sdk.DefaultBondDenom, minAccepts, decisionLimit, entAddress),
 		uint64(1),
 		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0), nil, nil, nil,
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0), nil,
 	)
 
 	bz, err := json.MarshalIndent(&entGenesis, "", " ")

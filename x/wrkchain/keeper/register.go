@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -39,18 +37,6 @@ func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) error {
 	store.Set(types.WrkChainKey(wrkchain.WrkchainId), k.cdc.MustMarshal(&wrkchain))
 
 	return nil
-}
-
-func (k Keeper) SetNumBlocks(ctx sdk.Context, wrkchainId uint64) error {
-	wrkchain, found := k.GetWrkChain(ctx, wrkchainId)
-	if !found {
-		// doesn't exist. Don't update
-		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))
-	}
-
-	wrkchain.NumBlocks = wrkchain.NumBlocks + 1
-
-	return k.SetWrkChain(ctx, wrkchain)
 }
 
 // GetWrkChain Gets the entire WRKChain metadata struct for a wrkchainId
@@ -192,7 +178,7 @@ func (k Keeper) RegisterNewWrkChain(ctx sdk.Context, moniker string, wrkchainNam
 	wrkchain.WrkchainId = wrkChainId
 	wrkchain.Moniker = moniker
 	wrkchain.Lastblock = 0
-	wrkchain.NumBlocks = 0
+	wrkchain.NumBlocksInState = 0
 	wrkchain.Owner = owner.String()
 	wrkchain.Name = wrkchainName
 	wrkchain.Genesis = genesisHash

@@ -20,7 +20,7 @@ message WrkChain {
   // lastblock is the current highest recorded height for the wrkchain
   uint64 lastblock = 6;
   // num_blocks is the current number of block hashes stored in state for the wrkchain
-  uint64 num_blocks = 7;
+  uint64 num_blocks_in_state = 7;
   // lowest_height is the lowest recorded height currently held in state for the wrkchain
   uint64 lowest_height = 8;
   // in_state_limit is the current maximum number of block hashes that will be held in state for the wrkchain

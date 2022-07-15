@@ -194,7 +194,7 @@ func TestRecordWrkchainHashes(t *testing.T) {
 	}
 
 	wrkChainDb, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
-	require.True(t, wrkChainDb.NumBlocks == recordLimit)
+	require.True(t, wrkChainDb.NumBlocksInState == recordLimit)
 	require.True(t, wrkChainDb.Lastblock == endHeight-1)
 	require.True(t, wrkChainDb.LowestHeight == numToRecord-recordLimit+startHeight)
 
@@ -274,7 +274,7 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 	// sanity check
 	wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.NumBlocks == recordLimit)
+	require.True(t, wrkchain.NumBlocksInState == recordLimit)
 	require.True(t, wrkchain.LowestHeight == numToRecord-recordLimit+1)
 
 	// increase storage capacity
@@ -299,7 +299,7 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 	// check final result
 	wrkchain, found = app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.NumBlocks == recordLimit+increaseAmount)
+	require.True(t, wrkchain.NumBlocksInState == recordLimit+increaseAmount)
 	require.True(t, wrkchain.LowestHeight == (numToRecord*2)-recordLimit-increaseAmount+1)
 }
 
@@ -343,7 +343,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
 
 		wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 		require.True(t, found)
-		require.True(t, wrkchain.NumBlocks == expectedNumBlock)
+		require.True(t, wrkchain.NumBlocksInState == expectedNumBlock)
 		require.True(t, wrkchain.LowestHeight == expectedLowest)
 		require.True(t, wrkchain.Lastblock == expectedHighest)
 
@@ -372,7 +372,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
 	// final check
 	wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.NumBlocks == 5)
+	require.True(t, wrkchain.NumBlocksInState == 5)
 	require.True(t, wrkchain.LowestHeight == 24)
 	require.True(t, wrkchain.Lastblock == 50)
 
@@ -492,7 +492,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOldWithIncrease(t *testing.T)
 
 		wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 		require.True(t, found)
-		require.True(t, wrkchain.NumBlocks == expectedNumBlock)
+		require.True(t, wrkchain.NumBlocksInState == expectedNumBlock)
 		require.True(t, wrkchain.LowestHeight == expectedLowest)
 		require.True(t, wrkchain.Lastblock == expectedHighest)
 		_, found = app.WrkchainKeeper.GetWrkChainBlock(ctx, wcId, expectedDeleted)
@@ -515,7 +515,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOldWithIncrease(t *testing.T)
 
 	wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.NumBlocks == 8)
+	require.True(t, wrkchain.NumBlocksInState == 8)
 	require.True(t, wrkchain.LowestHeight == 34)
 	require.True(t, wrkchain.Lastblock == 108)
 

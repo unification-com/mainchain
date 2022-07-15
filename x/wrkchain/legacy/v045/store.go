@@ -59,7 +59,7 @@ func pruneWrkChainHeights(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.Bina
 }
 
 func pruneWrkChains(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec) {
-	// loop through Beacons, then each beacon's timestamps
+	// loop through WrkChains, then each WrkChain's hashes
 	store := ctx.KVStore(storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
 
@@ -72,17 +72,17 @@ func pruneWrkChains(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCode
 		numInState, lowestHeightInState := pruneWrkChainHeights(ctx, storeKey, cdc, oldWrkchain.WrkchainId)
 
 		newWrkchain := types.WrkChain{
-			WrkchainId:   oldWrkchain.WrkchainId,
-			Moniker:      oldWrkchain.Moniker,
-			Name:         oldWrkchain.Name,
-			Genesis:      oldWrkchain.Genesis,
-			Type:         oldWrkchain.Type,
-			Lastblock:    oldWrkchain.Lastblock,
-			NumBlocks:    numInState,
-			LowestHeight: lowestHeightInState,
-			InStateLimit: types.DefaultStorageLimit,
-			RegTime:      oldWrkchain.RegTime,
-			Owner:        oldWrkchain.Owner,
+			WrkchainId:       oldWrkchain.WrkchainId,
+			Moniker:          oldWrkchain.Moniker,
+			Name:             oldWrkchain.Name,
+			Genesis:          oldWrkchain.Genesis,
+			Type:             oldWrkchain.Type,
+			Lastblock:        oldWrkchain.Lastblock,
+			NumBlocksInState: numInState,
+			LowestHeight:     lowestHeightInState,
+			InStateLimit:     types.DefaultStorageLimit,
+			RegTime:          oldWrkchain.RegTime,
+			Owner:            oldWrkchain.Owner,
 		}
 
 		// save the updated WrkChain
@@ -95,13 +95,13 @@ func pruneWrkChains(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCode
 //
 // - Adding new params
 // - Setting default in-store limit for Wrkchains
-// - Pruning all old timestamps exceeding in-state limit
+// - Pruning all old hashes exceeding in-state limit
 func MigrateStore(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspace paramstypes.Subspace, cdc codec.BinaryCodec) error {
 
 	// migrate Params
 	migrateParams(ctx, paramsSubspace)
 
-	// prune timestamps
+	// prune hashes
 	pruneWrkChains(ctx, storeKey, cdc)
 
 	return nil

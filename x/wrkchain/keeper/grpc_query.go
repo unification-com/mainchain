@@ -154,7 +154,7 @@ func (q Keeper) WrkChainStorage(c context.Context, req *types.QueryWrkChainStora
 		WrkchainId:     wrkchain.WrkchainId,
 		Owner:          wrkchain.Owner,
 		CurrentLimit:   wrkchain.InStateLimit,
-		CurrentUsed:    wrkchain.NumBlocks,
+		CurrentUsed:    wrkchain.NumBlocksInState,
 		Max:            maxStorageLimit,
 		MaxPurchasable: maxStorageLimit - wrkchain.InStateLimit,
 	}, nil

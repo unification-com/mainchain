@@ -125,7 +125,7 @@ func TestStoreMigrate(t *testing.T) {
 	require.NoError(t, err)
 	// should be migrated
 	require.True(t, newWrkchain.Lastblock == lastBlockHeight)
-	require.True(t, newWrkchain.NumBlocks == types.DefaultStorageLimit)
+	require.True(t, newWrkchain.NumBlocksInState == types.DefaultStorageLimit)
 	require.True(t, newWrkchain.LowestHeight == expectedLowestHeight)
 
 	// should remain the same

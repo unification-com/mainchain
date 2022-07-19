@@ -107,8 +107,6 @@ import (
 	_ "github.com/unification-com/mainchain/client/docs/statik"
 )
 
-// TODO - upgrade migration: added modules authz, feegrant
-
 const Name = "und"
 const appHomeDir = ".und_mainchain"
 

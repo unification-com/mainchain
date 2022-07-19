@@ -179,6 +179,5 @@ func (k Keeper) RecordNewBeaconTimestamp(
 		return 0, 0, err
 	}
 
-	// todo - return deleted ID to add as tx event
 	return timestampId, deleteTimestampId, nil
 }

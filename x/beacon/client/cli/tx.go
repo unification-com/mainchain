@@ -92,7 +92,6 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 				return err
 			}
 
-			// todo - check this works
 			if err := cmd.Flags().Set(flags.FlagFees, regFee); err != nil {
 				return err
 			}

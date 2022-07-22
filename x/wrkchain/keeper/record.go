@@ -212,21 +212,23 @@ func (k Keeper) RecordNewWrkchainHashes(
 
 	// update wrkchain metadata
 	wrkchain.Lastblock = height
-	wrkchain.NumBlocksInState = wrkchain.NumBlocksInState + 1
+	wrkchain.NumBlocks = wrkchain.NumBlocks + 1
 	deleteHeight := wrkchain.LowestHeight
 
 	if wrkchain.LowestHeight == 0 {
 		wrkchain.LowestHeight = height
 	}
 
-	if wrkchain.NumBlocksInState > wrkchain.InStateLimit {
+	storageInfo, _ := k.GetWrkChainStorageLimit(ctx, wrkchainId)
+
+	if wrkchain.NumBlocks > storageInfo.InStateLimit {
 		if deleteHeight > 0 {
 			err = k.deleteWrkChainHash(ctx, wrkchainId, deleteHeight)
 			if err != nil {
 				return 0, err
 			}
 			wrkchain.LowestHeight = k.GetLastWrkChainHeightInState(ctx, wrkchainId)
-			wrkchain.NumBlocksInState = wrkchain.NumBlocksInState - 1
+			wrkchain.NumBlocks = wrkchain.NumBlocks - 1
 			deletedHeight = deleteHeight
 		}
 	}

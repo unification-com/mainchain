@@ -14,20 +14,24 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 
 	for _, record := range data.RegisteredWrkchains {
 		wrkChain := types.WrkChain{
-			WrkchainId:       record.Wrkchain.WrkchainId,
-			Moniker:          record.Wrkchain.Moniker,
-			Name:             record.Wrkchain.Name,
-			Genesis:          record.Wrkchain.Genesis,
-			Type:             record.Wrkchain.Type,
-			Lastblock:        record.Wrkchain.Lastblock,
-			NumBlocksInState: record.Wrkchain.NumBlocksInState,
-			LowestHeight:     record.Wrkchain.LowestHeight,
-			RegTime:          record.Wrkchain.RegTime,
-			Owner:            record.Wrkchain.Owner,
-			InStateLimit:     record.Wrkchain.InStateLimit,
+			WrkchainId:   record.Wrkchain.WrkchainId,
+			Moniker:      record.Wrkchain.Moniker,
+			Name:         record.Wrkchain.Name,
+			Genesis:      record.Wrkchain.Genesis,
+			Type:         record.Wrkchain.Type,
+			Lastblock:    record.Wrkchain.Lastblock,
+			NumBlocks:    record.Wrkchain.NumBlocks,
+			LowestHeight: record.Wrkchain.LowestHeight,
+			RegTime:      record.Wrkchain.RegTime,
+			Owner:        record.Wrkchain.Owner,
 		}
 
 		err := keeper.SetWrkChain(ctx, wrkChain)
+		if err != nil {
+			panic(err)
+		}
+
+		err = keeper.SetWrkChainStorageLimit(ctx, record.Wrkchain.WrkchainId, record.InStateLimit)
 		if err != nil {
 			panic(err)
 		}
@@ -70,21 +74,23 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 			lowestHeight = blockHashList[0].He
 		}
 
+		wrkchainStorage, _ := k.GetWrkChainStorageLimit(ctx, wc.WrkchainId)
+
 		records = append(records, types.WrkChainExport{
 			Wrkchain: types.WrkChain{
-				WrkchainId:       wc.WrkchainId,
-				Moniker:          wc.Moniker,
-				Name:             wc.Name,
-				Genesis:          wc.Genesis,
-				Type:             wc.Type,
-				Lastblock:        wc.Lastblock,
-				NumBlocksInState: uint64(len(blockHashList)),
-				LowestHeight:     lowestHeight,
-				RegTime:          wc.RegTime,
-				Owner:            wc.Owner,
-				InStateLimit:     wc.InStateLimit,
+				WrkchainId:   wc.WrkchainId,
+				Moniker:      wc.Moniker,
+				Name:         wc.Name,
+				Genesis:      wc.Genesis,
+				Type:         wc.Type,
+				Lastblock:    wc.Lastblock,
+				NumBlocks:    uint64(len(blockHashList)),
+				LowestHeight: lowestHeight,
+				RegTime:      wc.RegTime,
+				Owner:        wc.Owner,
 			},
-			Blocks: blockHashList,
+			Blocks:       blockHashList,
+			InStateLimit: wrkchainStorage.InStateLimit,
 		})
 	}
 

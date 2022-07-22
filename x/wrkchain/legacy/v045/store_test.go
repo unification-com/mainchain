@@ -125,7 +125,7 @@ func TestStoreMigrate(t *testing.T) {
 	require.NoError(t, err)
 	// should be migrated
 	require.True(t, newWrkchain.Lastblock == lastBlockHeight)
-	require.True(t, newWrkchain.NumBlocksInState == types.DefaultStorageLimit)
+	require.True(t, newWrkchain.NumBlocks == types.DefaultStorageLimit)
 	require.True(t, newWrkchain.LowestHeight == expectedLowestHeight)
 
 	// should remain the same
@@ -136,6 +136,15 @@ func TestStoreMigrate(t *testing.T) {
 	require.True(t, newWrkchain.Type == "cosmos")
 	require.True(t, newWrkchain.RegTime == wcRegTime)
 	require.True(t, newWrkchain.Owner == testAddrs[0].String())
+
+	// should have new storage data
+	var newWrkchainStorage types.WrkChainStorageLimit
+
+	newWrkchainStorageBz := wrkchainStore.Get(types.WrkChainStorageLimitKey(1))
+
+	err = cdc.Unmarshal(newWrkchainStorageBz, &newWrkchainStorage)
+	require.NoError(t, err)
+	require.True(t, newWrkchainStorage.InStateLimit == types.DefaultStorageLimit)
 
 	// check expected prunes
 	for i := uint64(1); i <= lastBlockHeight; i++ {

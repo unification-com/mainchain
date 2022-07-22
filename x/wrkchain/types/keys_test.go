@@ -48,3 +48,14 @@ func TestWrkChainBlockKey(t *testing.T) {
 	require.True(t, wcIdFromBz == wcID)
 	require.True(t, heightFromBz == height)
 }
+
+func TestWrkChainStorageLimitKey(t *testing.T) {
+	wcID := uint64(24)
+	key := WrkChainStorageLimitKey(wcID)
+	require.True(t, len(key[1:]) == 8)
+	require.True(t, bytes.Equal(key[:1], WrkChainStorageLimitPrefix))
+	wcBz := key[1:]
+	wcFromBz := GetWrkChainIDFromBytes(wcBz)
+	require.True(t, wcFromBz == wcID)
+	require.True(t, bytes.Equal(wcBz, GetWrkChainIDBytes(wcID)))
+}

@@ -42,17 +42,20 @@ func TestSetGetWrkChain(t *testing.T) {
 	for _, addr := range testAddrs {
 
 		wc := types.WrkChain{
-			WrkchainId:   wcID,
-			Moniker:      test_helpers.GenerateRandomString(12),
-			Name:         test_helpers.GenerateRandomString(20),
-			Genesis:      test_helpers.GenerateRandomString(32),
-			Type:         "tendemrint",
-			RegTime:      uint64(time.Now().Unix()),
-			Owner:        addr.String(),
-			InStateLimit: types.DefaultStorageLimit,
+			WrkchainId: wcID,
+			Moniker:    test_helpers.GenerateRandomString(12),
+			Name:       test_helpers.GenerateRandomString(20),
+			Genesis:    test_helpers.GenerateRandomString(32),
+			Type:       "tendemrint",
+			RegTime:    uint64(time.Now().Unix()),
+			Owner:      addr.String(),
 		}
 
 		err := app.WrkchainKeeper.SetWrkChain(ctx, wc)
+		require.NoError(t, err)
+
+		// set the record limit
+		err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, wcID, types.DefaultStorageLimit)
 		require.NoError(t, err)
 
 		isRegistered := app.WrkchainKeeper.IsWrkChainRegistered(ctx, wcID)
@@ -64,6 +67,10 @@ func TestSetGetWrkChain(t *testing.T) {
 
 		wcDbOwner := app.WrkchainKeeper.GetWrkChainOwner(ctx, wcID)
 		require.True(t, wcDbOwner.String() == addr.String())
+
+		wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
+		require.True(t, found)
+		require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit)
 
 		wcID = wcID + 1
 	}
@@ -92,7 +99,6 @@ func TestRegisterWrkChain(t *testing.T) {
 		expectedWc.Name = name
 		expectedWc.Genesis = genesisHash
 		expectedWc.Type = "geth"
-		expectedWc.InStateLimit = types.DefaultStorageLimit
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -110,6 +116,10 @@ func TestRegisterWrkChain(t *testing.T) {
 
 		wcDbOwner := app.WrkchainKeeper.GetWrkChainOwner(ctx, wcID)
 		require.True(t, wcDbOwner.String() == addr.String())
+
+		wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
+		require.True(t, found)
+		require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit)
 
 		i = i + 1
 	}

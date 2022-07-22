@@ -21,15 +21,15 @@ type WrkChainBlockLegacy struct {
 func NewWrkchain(wrkchainId uint64, moniker, name, genesis, wcType string,
 	lastBlock, numBlocksInState, regTime uint64, owner string) (WrkChain, error) {
 	wc := WrkChain{
-		WrkchainId:       wrkchainId,
-		Moniker:          moniker,
-		Name:             name,
-		Genesis:          genesis,
-		Type:             wcType,
-		Lastblock:        lastBlock,
-		NumBlocksInState: numBlocksInState,
-		RegTime:          regTime,
-		Owner:            owner,
+		WrkchainId: wrkchainId,
+		Moniker:    moniker,
+		Name:       name,
+		Genesis:    genesis,
+		Type:       wcType,
+		Lastblock:  lastBlock,
+		NumBlocks:  numBlocksInState,
+		RegTime:    regTime,
+		Owner:      owner,
 	}
 
 	return wc, nil

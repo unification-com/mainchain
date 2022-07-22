@@ -164,9 +164,7 @@ func TestRecordWrkchainHashes(t *testing.T) {
 	require.NoError(t, err)
 
 	// set the record limit
-	wc, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
-	wc.InStateLimit = recordLimit
-	err = app.WrkchainKeeper.SetWrkChain(ctx, wc)
+	err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, wcID, recordLimit)
 	require.NoError(t, err)
 
 	for h := startHeight; h < endHeight; h++ {
@@ -194,9 +192,12 @@ func TestRecordWrkchainHashes(t *testing.T) {
 	}
 
 	wrkChainDb, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcID)
-	require.True(t, wrkChainDb.NumBlocksInState == recordLimit)
 	require.True(t, wrkChainDb.Lastblock == endHeight-1)
 	require.True(t, wrkChainDb.LowestHeight == numToRecord-recordLimit+startHeight)
+
+	wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
+	require.True(t, found)
+	require.True(t, wcSt.InStateLimit == recordLimit)
 
 	// should still be in state
 	blockCount := uint64(0)
@@ -225,16 +226,16 @@ func TestIncreaseInStateStorage(t *testing.T) {
 	wcId, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, "moniker", "name", "ghash", "tm", testAddrs[0])
 	require.NoError(t, err)
 
-	wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
+	wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.InStateLimit == types.DefaultStorageLimit)
+	require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit)
 
 	err = app.WrkchainKeeper.IncreaseInStateStorage(ctx, wcId, recordLimitIncrease)
 	require.NoError(t, err)
 
-	wrkchain, found = app.WrkchainKeeper.GetWrkChain(ctx, wcId)
+	wcSt, found = app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.InStateLimit == types.DefaultStorageLimit+recordLimitIncrease)
+	require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit+recordLimitIncrease)
 }
 
 func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
@@ -250,9 +251,7 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 	require.NoError(t, err)
 
 	// set the record limit
-	wc, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
-	wc.InStateLimit = recordLimit
-	err = app.WrkchainKeeper.SetWrkChain(ctx, wc)
+	err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, wcId, recordLimit)
 	require.NoError(t, err)
 
 	// record initial hashes
@@ -274,15 +273,19 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 	// sanity check
 	wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.NumBlocksInState == recordLimit)
+	require.True(t, wrkchain.NumBlocks == recordLimit)
 	require.True(t, wrkchain.LowestHeight == numToRecord-recordLimit+1)
+
+	wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcId)
+	require.True(t, found)
+	require.True(t, wcSt.InStateLimit == recordLimit)
 
 	// increase storage capacity
 	err = app.WrkchainKeeper.IncreaseInStateStorage(ctx, wcId, increaseAmount)
 	require.NoError(t, err)
-	wrkchain, found = app.WrkchainKeeper.GetWrkChain(ctx, wcId)
+	wcSt, found = app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.InStateLimit == recordLimit+increaseAmount)
+	require.True(t, wcSt.InStateLimit == recordLimit+increaseAmount)
 
 	// record new timestamps
 	for i := numToRecord + 1; i <= numToRecord+numToRecord; i++ {
@@ -299,7 +302,7 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 	// check final result
 	wrkchain, found = app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.NumBlocksInState == recordLimit+increaseAmount)
+	require.True(t, wrkchain.NumBlocks == recordLimit+increaseAmount)
 	require.True(t, wrkchain.LowestHeight == (numToRecord*2)-recordLimit-increaseAmount+1)
 }
 
@@ -321,9 +324,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
 	require.NoError(t, err)
 
 	// set the record limit
-	wc, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
-	wc.InStateLimit = 5
-	err = app.WrkchainKeeper.SetWrkChain(ctx, wc)
+	err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, wcId, 5)
 	require.NoError(t, err)
 
 	for i := 0; i < 10; i++ {
@@ -343,7 +344,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
 
 		wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 		require.True(t, found)
-		require.True(t, wrkchain.NumBlocksInState == expectedNumBlock)
+		require.True(t, wrkchain.NumBlocks == expectedNumBlock)
 		require.True(t, wrkchain.LowestHeight == expectedLowest)
 		require.True(t, wrkchain.Lastblock == expectedHighest)
 
@@ -372,7 +373,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
 	// final check
 	wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.NumBlocksInState == 5)
+	require.True(t, wrkchain.NumBlocks == 5)
 	require.True(t, wrkchain.LowestHeight == 24)
 	require.True(t, wrkchain.Lastblock == 50)
 
@@ -447,9 +448,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOldWithIncrease(t *testing.T)
 	require.NoError(t, err)
 
 	// set the record limit
-	wc, _ := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
-	wc.InStateLimit = 5
-	err = app.WrkchainKeeper.SetWrkChain(ctx, wc)
+	err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, wcId, 5)
 	require.NoError(t, err)
 
 	for i := 0; i < 15; i++ {
@@ -492,7 +491,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOldWithIncrease(t *testing.T)
 
 		wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 		require.True(t, found)
-		require.True(t, wrkchain.NumBlocksInState == expectedNumBlock)
+		require.True(t, wrkchain.NumBlocks == expectedNumBlock)
 		require.True(t, wrkchain.LowestHeight == expectedLowest)
 		require.True(t, wrkchain.Lastblock == expectedHighest)
 		_, found = app.WrkchainKeeper.GetWrkChainBlock(ctx, wcId, expectedDeleted)
@@ -515,7 +514,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOldWithIncrease(t *testing.T)
 
 	wrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wrkchain.NumBlocksInState == 8)
+	require.True(t, wrkchain.NumBlocks == 8)
 	require.True(t, wrkchain.LowestHeight == 34)
 	require.True(t, wrkchain.Lastblock == 108)
 

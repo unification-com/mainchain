@@ -129,6 +129,15 @@ func TestStoreMigrate(t *testing.T) {
 	require.True(t, newBeacon.RegTime == bRegTime)
 	require.True(t, newBeacon.Owner == testAddrs[0].String())
 
+	// should have new storage data
+	var newBeaconStorage types.BeaconStorageLimit
+
+	newBeaconStorageBz := beaconStore.Get(types.BeaconStorageLimitKey(1))
+
+	err = cdc.Unmarshal(newBeaconStorageBz, &newBeaconStorage)
+	require.NoError(t, err)
+	require.True(t, newBeaconStorage.InStateLimit == types.DefaultStorageLimit)
+
 	// check expected prunes
 	for i := uint64(1); i <= lastTimestampId; i++ {
 		has := beaconStore.Has(types.BeaconTimestampKey(1, i))

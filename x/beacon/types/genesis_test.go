@@ -69,7 +69,7 @@ func TestValidateGenesis(t *testing.T) {
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())
 
-	state3.RegisteredBeacons[0].Beacon.InStateLimit = 100
+	state3.RegisteredBeacons[0].InStateLimit = 100
 	err = ValidateGenesis(*state3)
 	require.NoError(t, err)
 

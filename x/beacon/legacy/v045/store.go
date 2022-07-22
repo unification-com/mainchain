@@ -89,7 +89,6 @@ func pruneBeacons(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec)
 			LastTimestampId: oldBeacon.LastTimestampId,
 			FirstIdInState:  firstIdInState,
 			NumInState:      numInState,
-			InStateLimit:    types.DefaultStorageLimit,
 			RegTime:         oldBeacon.RegTime,
 			Owner:           oldBeacon.Owner,
 		}
@@ -102,6 +101,19 @@ func pruneBeacons(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec)
 		}
 
 		store.Set(types.BeaconKey(newBeacon.BeaconId), newBeaconBz)
+
+		newBeaconStorage := types.BeaconStorageLimit{
+			BeaconId:     oldBeacon.BeaconId,
+			InStateLimit: types.DefaultStorageLimit,
+		}
+
+		newBeaconStorageBz, err := cdc.Marshal(&newBeaconStorage)
+
+		if err != nil {
+			return err
+		}
+
+		store.Set(types.BeaconStorageLimitKey(newBeacon.BeaconId), newBeaconStorageBz)
 	}
 
 	return nil

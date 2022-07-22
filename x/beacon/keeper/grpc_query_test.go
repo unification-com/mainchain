@@ -73,7 +73,6 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeacon() {
 				expectedB.LastTimestampId = 0
 				expectedB.Moniker = "moniker"
 				expectedB.Name = "name"
-				expectedB.InStateLimit = types.DefaultStorageLimit
 
 				bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 				suite.Require().NoError(err)
@@ -137,7 +136,6 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
 					expectedB.Moniker = test_helpers.GenerateRandomString(12)
 					expectedB.Name = test_helpers.GenerateRandomString(24)
 					expectedB.RegTime = uint64(ctx.BlockTime().Unix())
-					expectedB.InStateLimit = types.DefaultStorageLimit
 
 					bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 					suite.Require().NoError(err)

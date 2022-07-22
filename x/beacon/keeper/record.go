@@ -162,8 +162,10 @@ func (k Keeper) RecordNewBeaconTimestamp(
 
 	beacon.NumInState = beacon.NumInState + 1
 
+	storageInfo, _ := k.GetBeaconStorageLimit(ctx, beacon.BeaconId)
+
 	// check in-state storage and prune old timestamp from state if required
-	if beacon.NumInState > beacon.InStateLimit {
+	if beacon.NumInState > storageInfo.InStateLimit {
 		deleteTimestampId = beacon.FirstIdInState
 		err = k.deleteBeaconTimestamp(ctx, beaconId, deleteTimestampId)
 		if err != nil {

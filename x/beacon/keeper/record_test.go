@@ -138,9 +138,7 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 	require.NoError(t, err)
 
 	// set the record limit
-	b, _ := app.BeaconKeeper.GetBeacon(ctx, bID)
-	b.InStateLimit = recordLimit
-	err = app.BeaconKeeper.SetBeacon(ctx, b)
+	err = app.BeaconKeeper.SetBeaconStorageLimit(ctx, bID, recordLimit)
 	require.NoError(t, err)
 
 	for tsID := uint64(1); tsID <= numToRecord; tsID++ {
@@ -209,14 +207,14 @@ func TestIncreaseInStateStorage(t *testing.T) {
 	bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 	require.NoError(t, err)
 
-	beacon, found := app.BeaconKeeper.GetBeacon(ctx, bID)
+	beacon, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
 	require.True(t, beacon.InStateLimit == types.DefaultStorageLimit)
 
 	err = app.BeaconKeeper.IncreaseInStateStorage(ctx, bID, recordLimitIncrease)
 	require.NoError(t, err)
 
-	beacon, found = app.BeaconKeeper.GetBeacon(ctx, bID)
+	beacon, found = app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
 	require.True(t, beacon.InStateLimit == types.DefaultStorageLimit+recordLimitIncrease)
 }
@@ -242,9 +240,7 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 	require.NoError(t, err)
 
 	// set the record limit
-	b, _ := app.BeaconKeeper.GetBeacon(ctx, bID)
-	b.InStateLimit = recordLimit
-	err = app.BeaconKeeper.SetBeacon(ctx, b)
+	err = app.BeaconKeeper.SetBeaconStorageLimit(ctx, bID, recordLimit)
 	require.NoError(t, err)
 
 	// record initial timestamps
@@ -264,9 +260,9 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 	// increase storage capacity
 	err = app.BeaconKeeper.IncreaseInStateStorage(ctx, bID, increaseAmount)
 	require.NoError(t, err)
-	beacon, found = app.BeaconKeeper.GetBeacon(ctx, bID)
+	beaconStorage, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.InStateLimit == recordLimit+increaseAmount)
+	require.True(t, beaconStorage.InStateLimit == recordLimit+increaseAmount)
 
 	// record new timestamps
 	for i := uint64(1); i <= numToRecord; i++ {

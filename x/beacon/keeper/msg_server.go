@@ -153,7 +153,7 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
 	}
 
-	beacon, found := k.GetBeacon(ctx, msg.BeaconId)
+	_, found := k.GetBeacon(ctx, msg.BeaconId)
 
 	if !found { // Checks if the BEACON is registered
 		return nil, sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
@@ -163,9 +163,11 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 		return nil, sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon")
 	}
 
+	beaconStorage, _ := k.GetBeaconStorageLimit(ctx, msg.BeaconId)
+
 	// check not exceeding max
 	maxParam := k.GetParamMaxStorageLimit(ctx)
-	beaconStorageAfter := beacon.InStateLimit + msg.Number
+	beaconStorageAfter := beaconStorage.InStateLimit + msg.Number
 
 	if beaconStorageAfter > maxParam {
 		return nil, sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", beaconStorageAfter, maxParam))

@@ -147,14 +147,16 @@ func (q Keeper) BeaconStorage(c context.Context, req *types.QueryBeaconStorageRe
 		return nil, status.Errorf(codes.NotFound, "beacon %d doesn't exist in state", req.BeaconId)
 	}
 
+	beaconStorage, _ := q.GetBeaconStorageLimit(ctx, req.BeaconId)
+
 	maxStorageLimit := q.GetParamMaxStorageLimit(ctx)
 
 	return &types.QueryBeaconStorageResponse{
 		BeaconId:       beacon.BeaconId,
 		Owner:          beacon.Owner,
-		CurrentLimit:   beacon.InStateLimit,
+		CurrentLimit:   beaconStorage.InStateLimit,
 		CurrentUsed:    beacon.NumInState,
 		Max:            maxStorageLimit,
-		MaxPurchasable: maxStorageLimit - beacon.InStateLimit,
+		MaxPurchasable: maxStorageLimit - beaconStorage.InStateLimit,
 	}, nil
 }

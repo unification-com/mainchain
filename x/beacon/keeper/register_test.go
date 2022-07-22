@@ -50,9 +50,12 @@ func TestSetGetBeacon(t *testing.T) {
 		b.LastTimestampId = 1
 		b.Moniker = moniker
 		b.Name = name
-		b.InStateLimit = types.DefaultStorageLimit
 
 		err := app.BeaconKeeper.SetBeacon(ctx, b)
+		require.NoError(t, err)
+
+		// set the record limit
+		err = app.BeaconKeeper.SetBeaconStorageLimit(ctx, bID, types.DefaultStorageLimit)
 		require.NoError(t, err)
 
 		isRegistered := app.BeaconKeeper.IsBeaconRegistered(ctx, bID)
@@ -66,7 +69,10 @@ func TestSetGetBeacon(t *testing.T) {
 		require.True(t, bDb.LastTimestampId == 1)
 		require.True(t, bDb.Moniker == moniker)
 		require.True(t, bDb.Name == name)
-		require.True(t, bDb.InStateLimit == types.DefaultStorageLimit)
+
+		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
+		require.True(t, found)
+		require.True(t, bSt.InStateLimit == types.DefaultStorageLimit)
 
 		bID = bID + 1
 	}
@@ -92,7 +98,6 @@ func TestRegisterBeacon(t *testing.T) {
 		expectedB.Moniker = moniker
 		expectedB.Name = name
 		expectedB.RegTime = uint64(ctx.BlockTime().Unix())
-		expectedB.InStateLimit = types.DefaultStorageLimit
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)
@@ -108,6 +113,10 @@ func TestRegisterBeacon(t *testing.T) {
 
 		bDbOwner := app.BeaconKeeper.GetBeaconOwner(ctx, bID)
 		require.True(t, bDbOwner.String() == addr.String())
+
+		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
+		require.True(t, found)
+		require.True(t, bSt.InStateLimit == types.DefaultStorageLimit)
 
 		i = i + 1
 	}
@@ -128,7 +137,6 @@ func TestHighestBeaconIdAfterRegister(t *testing.T) {
 		expectedB.LastTimestampId = 0
 		expectedB.Moniker = moniker
 		expectedB.Name = name
-		expectedB.InStateLimit = types.DefaultStorageLimit
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)
@@ -155,13 +163,16 @@ func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
 		expectedB.LastTimestampId = 0
 		expectedB.Moniker = moniker
 		expectedB.Name = name
-		expectedB.InStateLimit = types.DefaultStorageLimit
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)
 
 		isRegistered := app.BeaconKeeper.IsBeaconRegistered(ctx, bID)
 		require.True(t, isRegistered)
+
+		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
+		require.True(t, found)
+		require.True(t, bSt.InStateLimit == types.DefaultStorageLimit)
 	}
 }
 
@@ -179,7 +190,6 @@ func TestGetBeaconFilter(t *testing.T) {
 		expectedB.Owner = owner.String()
 		expectedB.Moniker = moniker
 		expectedB.Name = name
-		expectedB.InStateLimit = types.DefaultStorageLimit
 
 		_, _ = app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		lastMoniker = moniker

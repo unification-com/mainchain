@@ -119,8 +119,14 @@ func setTotalSpentEFUNDByAddress(ctx sdk.Context, storeKey sdk.StoreKey, paramsS
 		// Total eFUND used to pay towards fees to date is (total purchased - total currently locked)
 		totalUsed := totalCompleted.Sub(lockedUnd.Amount)
 
+		// Needs to be types.SpentEFUND
+		spent := types.SpentEFUND{
+			Owner:  lockedUnd.Owner,
+			Amount: totalUsed,
+		}
+
 		// save it to the new store key
-		store.Set(types.SpentEFUNDAddressStoreKey(accAddr), cdc.MustMarshal(&totalUsed))
+		store.Set(types.SpentEFUNDAddressStoreKey(accAddr), cdc.MustMarshal(&spent))
 	}
 
 	return nil

@@ -1,8 +1,8 @@
 syntax = "proto3";
-package mainchain.wrkchain.v2;
+package mainchain.wrkchain.v1;
 
 import "gogoproto/gogo.proto";
-import "mainchain/wrkchain/v2/wrkchain.proto";
+import "mainchain/wrkchain/v1/wrkchain.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 

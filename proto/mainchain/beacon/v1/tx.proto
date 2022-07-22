@@ -1,8 +1,8 @@
 syntax = "proto3";
-package mainchain.beacon.v2;
+package mainchain.beacon.v1;
 
 import "gogoproto/gogo.proto";
-import "mainchain/beacon/v2/beacon.proto";
+import "mainchain/beacon/v1/beacon.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 

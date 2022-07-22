@@ -3,36 +3,70 @@ package mainchain.wrkchain.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/unification-com/mainchain/x/wrkchain/legacy/v040";
+option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
 // WrkChain holds metadata about a registered wrkchain
 message WrkChain {
+  // wrkchain_id is the id of the wrkchain
   uint64 wrkchain_id = 1;
+  // moniker is the readable id of the wrkchain
   string moniker = 2;
+  // name is the human friendly name of the wrkchain
   string name = 3;
+  // genesis is an optional hash of the wrkchain's genesis block
   string genesis = 4;
+  // type is the wrkchain type, e.g. geth, cosmos etc.
   string type = 5;
+  // lastblock is the current highest recorded height for the wrkchain
   uint64 lastblock = 6;
+  // num_blocks is the current number of block hashes stored in state for the wrkchain
   uint64 num_blocks = 7;
+  // lowest_height is the lowest recorded height currently held in state for the wrkchain
   uint64 lowest_height = 8;
+  // reg_time is the unix epoch of the wrkchain's registration time
   uint64 reg_time = 9;
+  // owner is the owner address of the wrkchain
   string owner = 10;
+}
+
+// WrkChainStorageLimit holds tata about the wrkchain's current in-state storage limit
+message WrkChainStorageLimit {
+  // wrkchain_id is the id of the wrkchain
+  uint64 wrkchain_id = 1;
+  // in_state_limit is the current maximum number of blocks that will be held in state for the wrkchain
+  uint64 in_state_limit = 2;
 }
 
 // WrkChainBlock holds data about a wrkchain's block hash submission
 message WrkChainBlock {
+  // height is the block number/height of the stored wrkchain block hash
   uint64 height = 1;
+  // blockhash is the block hash of the stored wrkchain block
   string blockhash = 2;
+  // parenthash is the optional hash of the parent block of the stored wrkchain block hash
   string parenthash = 3;
+  // hash1 is an optional hash of any type of the stored wrkchain block hash
   string hash1 = 4;
+  // hash2 is an optional hash of any type of the stored wrkchain block hash
   string hash2 = 5;
+  // hash3 is an optional hash of any type of the stored wrkchain block hash
   string hash3 = 6;
+  // sub_time is the unix epoch of the wkrchain hash submission
   uint64 sub_time = 7;
 }
 
 // Params defines the parameters for the wrkchain module.
 message Params {
+  // fee_register is the cost to register a wkrchain
   uint64 fee_register = 1;
+  // fee_record is the cost to record a single wkrchain hash
   uint64 fee_record = 2;
-  string denom = 3;
+  // fee_purchase_storage is the cost to purchase a single additional unit of in-state storage
+  uint64 fee_purchase_storage = 3;
+  // denom is the expected denomination to pay for fees, e.g. nund
+  string denom = 4;
+  // default_storage_limit is the default in-state storage limit for all new wkrchains
+  uint64 default_storage_limit = 5;
+  // max_storage_limit is the maximum in-state storage slots any one wkrchain can have
+  uint64 max_storage_limit = 6;
 }

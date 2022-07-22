@@ -7,7 +7,7 @@
   },
   "apis": [
     {
-      "url": "./tmp-swagger-gen/mainchain/enterprise/v2/query.swagger.json",
+      "url": "./tmp-swagger-gen/mainchain/enterprise/v1/query.swagger.json",
       "tags": {
         "rename": {
           "Query": "Enterprise"
@@ -26,7 +26,7 @@
     }
     },
     {
-      "url": "./tmp-swagger-gen/mainchain/beacon/v2/query.swagger.json",
+      "url": "./tmp-swagger-gen/mainchain/beacon/v1/query.swagger.json",
       "tags": {
         "rename": {
           "Query": "BEACON"
@@ -39,7 +39,7 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/mainchain/wrkchain/v2/query.swagger.json",
+      "url": "./tmp-swagger-gen/mainchain/wrkchain/v1/query.swagger.json",
       "tags": {
         "rename": {
           "Query": "WrkChain"

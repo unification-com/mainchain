@@ -1249,12 +1249,6 @@ paths:
                     title: >-
                       num_in_state is the current number of timestamps stored in
                       state for the beacon
-                  in_state_limit:
-                    type: string
-                    format: uint64
-                    title: >-
-                      in_state_limit is the current maximum number of
-                      timestmamps that will be held in state for the beacon
                   reg_time:
                     type: string
                     format: uint64
@@ -1486,12 +1480,6 @@ paths:
                       title: >-
                         num_in_state is the current number of timestamps stored
                         in state for the beacon
-                    in_state_limit:
-                      type: string
-                      format: uint64
-                      title: >-
-                        in_state_limit is the current maximum number of
-                        timestmamps that will be held in state for the beacon
                     reg_time:
                       type: string
                       format: uint64
@@ -1786,7 +1774,7 @@ paths:
                     title: >-
                       lastblock is the current highest recorded height for the
                       wrkchain
-                  num_blocks_in_state:
+                  num_blocks:
                     type: string
                     format: uint64
                     title: >-
@@ -1798,12 +1786,6 @@ paths:
                     title: >-
                       lowest_height is the lowest recorded height currently held
                       in state for the wrkchain
-                  in_state_limit:
-                    type: string
-                    format: uint64
-                    title: >-
-                      in_state_limit is the current maximum number of block
-                      hashes that will be held in state for the wrkchain
                   reg_time:
                     type: string
                     format: uint64
@@ -2053,7 +2035,7 @@ paths:
                       title: >-
                         lastblock is the current highest recorded height for the
                         wrkchain
-                    num_blocks_in_state:
+                    num_blocks:
                       type: string
                       format: uint64
                       title: >-
@@ -2065,12 +2047,6 @@ paths:
                       title: >-
                         lowest_height is the lowest recorded height currently
                         held in state for the wrkchain
-                    in_state_limit:
-                      type: string
-                      format: uint64
-                      title: >-
-                        in_state_limit is the current maximum number of block
-                        hashes that will be held in state for the wrkchain
                     reg_time:
                       type: string
                       format: uint64
@@ -33247,7 +33223,7 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
-  mainchain.enterprise.v2.EnterpriseUndPurchaseOrder:
+  mainchain.enterprise.v1.EnterpriseUndPurchaseOrder:
     type: object
     properties:
       id:
@@ -33341,7 +33317,7 @@ definitions:
     title: >-
       EnterpriseUndPurchaseOrder defines a purchase order raised by a
       whitelisted address
-  mainchain.enterprise.v2.EnterpriseUserAccount:
+  mainchain.enterprise.v1.EnterpriseUserAccount:
     type: object
     properties:
       owner:
@@ -33414,7 +33390,7 @@ definitions:
 
           BEACON/Wrkchain fees all together
     title: EnterpriseUserAccount defines data about an enterprise user
-  mainchain.enterprise.v2.Params:
+  mainchain.enterprise.v1.Params:
     type: object
     properties:
       ent_signers:
@@ -33438,7 +33414,7 @@ definitions:
           decision_time_limit is the time limit within which all decisions must
           be made for a raised purchase order.
     description: Params defines the parameters for the enterprise module.
-  mainchain.enterprise.v2.PurchaseOrderDecision:
+  mainchain.enterprise.v1.PurchaseOrderDecision:
     type: object
     properties:
       signer:
@@ -33472,7 +33448,7 @@ definitions:
       ie,
 
       whether to accept or reject
-  mainchain.enterprise.v2.PurchaseOrderStatus:
+  mainchain.enterprise.v1.PurchaseOrderStatus:
     type: string
     enum:
       - STATUS_NIL
@@ -33490,7 +33466,7 @@ definitions:
        - STATUS_ACCEPTED: STATUS_ACCEPTED defines an accepted status.
        - STATUS_REJECTED: STATUS_REJECTED defines a rejected status.
        - STATUS_COMPLETED: STATUS_COMPLETED defines a completed status.
-  mainchain.enterprise.v2.QueryEnterpriseAccountResponse:
+  mainchain.enterprise.v1.QueryEnterpriseAccountResponse:
     type: object
     properties:
       account:
@@ -33581,7 +33557,7 @@ definitions:
     description: >-
       QueryEnterpriseAccountResponse is the response type for the
       Query/EnterpriseAccount RPC method.
-  mainchain.enterprise.v2.QueryEnterpriseSupplyResponse:
+  mainchain.enterprise.v1.QueryEnterpriseSupplyResponse:
     type: object
     properties:
       supply:
@@ -33606,7 +33582,7 @@ definitions:
     title: >-
       QueryEnterpriseSupplyResponse is the response type for the
       Query/EnterpriseSupply RPC method
-  mainchain.enterprise.v2.QueryEnterpriseUndPurchaseOrderResponse:
+  mainchain.enterprise.v1.QueryEnterpriseUndPurchaseOrderResponse:
     type: object
     properties:
       purchase_order:
@@ -33709,7 +33685,7 @@ definitions:
     description: >-
       QueryEnterpriseUndPurchaseOrderResponse is the response type for the
       Query/EnterpriseUndPurchaseOrder RPC method.
-  mainchain.enterprise.v2.QueryEnterpriseUndPurchaseOrdersResponse:
+  mainchain.enterprise.v1.QueryEnterpriseUndPurchaseOrdersResponse:
     type: object
     properties:
       purchase_orders:
@@ -33842,7 +33818,7 @@ definitions:
       Query/EnterpriseUndPurchaseOrders RPC
 
       method
-  mainchain.enterprise.v2.QueryLockedUndByAddressResponse:
+  mainchain.enterprise.v1.QueryLockedUndByAddressResponse:
     type: object
     properties:
       amount:
@@ -33860,7 +33836,7 @@ definitions:
     title: >-
       QueryLockedUndByAddressResponse is the response type for the
       Query/LockedUndByAddress RPC method
-  mainchain.enterprise.v2.QueryParamsResponse:
+  mainchain.enterprise.v1.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -33888,7 +33864,7 @@ definitions:
               must be made for a raised purchase order.
         description: Params defines the parameters for the enterprise module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
-  mainchain.enterprise.v2.QuerySpentEFUNDByAddressResponse:
+  mainchain.enterprise.v1.QuerySpentEFUNDByAddressResponse:
     type: object
     properties:
       amount:
@@ -33906,7 +33882,7 @@ definitions:
     description: >-
       QuerySpentEFUNDByAddressResponse is the response type for the
       Query/SpentEFUNDByAddress RPC method.
-  mainchain.enterprise.v2.QuerySupplyOfResponse:
+  mainchain.enterprise.v1.QuerySupplyOfResponse:
     type: object
     properties:
       amount:
@@ -33924,7 +33900,7 @@ definitions:
     description: >-
       QuerySupplyOfResponse is the response type for the Query/SupplyOf RPC
       method.
-  mainchain.enterprise.v2.QueryTotalLockedResponse:
+  mainchain.enterprise.v1.QueryTotalLockedResponse:
     type: object
     properties:
       amount:
@@ -33942,7 +33918,7 @@ definitions:
     title: >-
       QueryTotalLockedResponse is the response type for the Query/TotalLocked
       RPC method
-  mainchain.enterprise.v2.QueryTotalSpentEFUNDResponse:
+  mainchain.enterprise.v1.QueryTotalSpentEFUNDResponse:
     type: object
     properties:
       amount:
@@ -33960,7 +33936,7 @@ definitions:
     description: >-
       QueryTotalSpentEFUNDResponse is the response type for the
       Query/TotalSpentEFUND RPC method.
-  mainchain.enterprise.v2.QueryTotalSupplyResponse:
+  mainchain.enterprise.v1.QueryTotalSupplyResponse:
     type: object
     properties:
       supply:
@@ -34005,7 +33981,7 @@ definitions:
     title: >-
       QueryTotalSupplyResponse is the response type for the Query/TotalSupply
       RPC method
-  mainchain.enterprise.v2.QueryTotalUnlockedResponse:
+  mainchain.enterprise.v1.QueryTotalUnlockedResponse:
     type: object
     properties:
       amount:
@@ -34023,7 +33999,7 @@ definitions:
     title: >-
       QueryTotalUnlockedResponse is the response type for the
       Query/TotalUnlocked RPC method
-  mainchain.enterprise.v2.QueryWhitelistResponse:
+  mainchain.enterprise.v1.QueryWhitelistResponse:
     type: object
     properties:
       addresses:
@@ -34033,7 +34009,7 @@ definitions:
     description: >-
       QueryWhitelistResponse is the response type for the Query/Whitelist RPC
       method.
-  mainchain.enterprise.v2.QueryWhitelistedResponse:
+  mainchain.enterprise.v1.QueryWhitelistedResponse:
     type: object
     properties:
       address:
@@ -34044,7 +34020,7 @@ definitions:
     description: >-
       QueryWhitelistedResponse is the response type for the Query/Whitelisted
       RPC method.
-  mainchain.enterprise.v2.UndSupply:
+  mainchain.enterprise.v1.UndSupply:
     type: object
     properties:
       denom:
@@ -34063,7 +34039,7 @@ definitions:
         format: uint64
         title: amount is the sum of locked and unlocked FUND
     title: UndSupply defines the current FUND supply, including locked
-  mainchain.beacon.v2.Beacon:
+  mainchain.beacon.v1.Beacon:
     type: object
     properties:
       beacon_id:
@@ -34094,12 +34070,6 @@ definitions:
         title: >-
           num_in_state is the current number of timestamps stored in state for
           the beacon
-      in_state_limit:
-        type: string
-        format: uint64
-        title: >-
-          in_state_limit is the current maximum number of timestmamps that will
-          be held in state for the beacon
       reg_time:
         type: string
         format: uint64
@@ -34108,7 +34078,7 @@ definitions:
         type: string
         title: owner is the owner address of the beacon
     title: Beacon holds metadata about a registered beacon
-  mainchain.beacon.v2.BeaconTimestamp:
+  mainchain.beacon.v1.BeaconTimestamp:
     type: object
     properties:
       timestamp_id:
@@ -34123,7 +34093,7 @@ definitions:
         type: string
         title: hash is the actual data stored for the timestamp
     title: BeaconTimestamp holds each hash submitted to a registered beacon
-  mainchain.beacon.v2.Params:
+  mainchain.beacon.v1.Params:
     type: object
     properties:
       fee_register:
@@ -34156,7 +34126,7 @@ definitions:
           max_storage_limit is the maximum in-state storage slots any one beacon
           can have
     description: Params defines the parameters for the beacon module.
-  mainchain.beacon.v2.QueryBeaconResponse:
+  mainchain.beacon.v1.QueryBeaconResponse:
     type: object
     properties:
       beacon:
@@ -34190,12 +34160,6 @@ definitions:
             title: >-
               num_in_state is the current number of timestamps stored in state
               for the beacon
-          in_state_limit:
-            type: string
-            format: uint64
-            title: >-
-              in_state_limit is the current maximum number of timestmamps that
-              will be held in state for the beacon
           reg_time:
             type: string
             format: uint64
@@ -34205,7 +34169,7 @@ definitions:
             title: owner is the owner address of the beacon
         title: Beacon holds metadata about a registered beacon
     title: QueryBeaconResponse is the response type for the Query/Beacon RPC method
-  mainchain.beacon.v2.QueryBeaconStorageResponse:
+  mainchain.beacon.v1.QueryBeaconStorageResponse:
     type: object
     properties:
       beacon_id:
@@ -34236,7 +34200,7 @@ definitions:
     title: >-
       QueryBeaconStorageResponse is the response type for the
       Query/BeaconStorage RPC method
-  mainchain.beacon.v2.QueryBeaconTimestampResponse:
+  mainchain.beacon.v1.QueryBeaconTimestampResponse:
     type: object
     properties:
       timestamp:
@@ -34262,7 +34226,7 @@ definitions:
     title: >-
       QueryBeaconTimestampResponse is the response type for the
       Query/BeaconTimestamp RPC method
-  mainchain.beacon.v2.QueryBeaconsFilteredResponse:
+  mainchain.beacon.v1.QueryBeaconsFilteredResponse:
     type: object
     properties:
       beacons:
@@ -34298,12 +34262,6 @@ definitions:
               title: >-
                 num_in_state is the current number of timestamps stored in state
                 for the beacon
-            in_state_limit:
-              type: string
-              format: uint64
-              title: >-
-                in_state_limit is the current maximum number of timestmamps that
-                will be held in state for the beacon
             reg_time:
               type: string
               format: uint64
@@ -34333,7 +34291,7 @@ definitions:
     title: >-
       QueryBeaconsFilteredResponse is the response type for the
       Query/BeaconsFiltered RPC method
-  mainchain.beacon.v2.QueryParamsResponse:
+  mainchain.beacon.v1.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -34370,7 +34328,7 @@ definitions:
               beacon can have
         description: Params defines the parameters for the beacon module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
-  mainchain.wrkchain.v2.Params:
+  mainchain.wrkchain.v1.Params:
     type: object
     properties:
       fee_register:
@@ -34403,7 +34361,7 @@ definitions:
           max_storage_limit is the maximum in-state storage slots any one
           wkrchain can have
     description: Params defines the parameters for the wrkchain module.
-  mainchain.wrkchain.v2.QueryParamsResponse:
+  mainchain.wrkchain.v1.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -34440,7 +34398,7 @@ definitions:
               wkrchain can have
         description: Params defines the parameters for the wrkchain module.
     title: QueryParamsResponse is the response type for the Query/Params RPC method
-  mainchain.wrkchain.v2.QueryWrkChainBlockResponse:
+  mainchain.wrkchain.v1.QueryWrkChainBlockResponse:
     type: object
     properties:
       block:
@@ -34488,7 +34446,7 @@ definitions:
     title: >-
       QueryWrkChainBlockResponse is the response type for the
       Query/WrkChainBlock RPC method
-  mainchain.wrkchain.v2.QueryWrkChainResponse:
+  mainchain.wrkchain.v1.QueryWrkChainResponse:
     type: object
     properties:
       wrkchain:
@@ -34514,7 +34472,7 @@ definitions:
             type: string
             format: uint64
             title: lastblock is the current highest recorded height for the wrkchain
-          num_blocks_in_state:
+          num_blocks:
             type: string
             format: uint64
             title: >-
@@ -34526,12 +34484,6 @@ definitions:
             title: >-
               lowest_height is the lowest recorded height currently held in
               state for the wrkchain
-          in_state_limit:
-            type: string
-            format: uint64
-            title: >-
-              in_state_limit is the current maximum number of block hashes that
-              will be held in state for the wrkchain
           reg_time:
             type: string
             format: uint64
@@ -34543,7 +34495,7 @@ definitions:
     title: >-
       QueryWrkChainResponse is the response type for the Query/WrkChain RPC
       method
-  mainchain.wrkchain.v2.QueryWrkChainStorageResponse:
+  mainchain.wrkchain.v1.QueryWrkChainStorageResponse:
     type: object
     properties:
       wrkchain_id:
@@ -34574,7 +34526,7 @@ definitions:
     title: >-
       QueryWrkChainStorageResponse is the response type for the
       Query/WrkChainStorage RPC method
-  mainchain.wrkchain.v2.QueryWrkChainsFilteredResponse:
+  mainchain.wrkchain.v1.QueryWrkChainsFilteredResponse:
     type: object
     properties:
       wrkchains:
@@ -34604,7 +34556,7 @@ definitions:
               title: >-
                 lastblock is the current highest recorded height for the
                 wrkchain
-            num_blocks_in_state:
+            num_blocks:
               type: string
               format: uint64
               title: >-
@@ -34616,12 +34568,6 @@ definitions:
               title: >-
                 lowest_height is the lowest recorded height currently held in
                 state for the wrkchain
-            in_state_limit:
-              type: string
-              format: uint64
-              title: >-
-                in_state_limit is the current maximum number of block hashes
-                that will be held in state for the wrkchain
             reg_time:
               type: string
               format: uint64
@@ -34651,7 +34597,7 @@ definitions:
     title: >-
       QueryWrkChainsFilteredResponse is the response type for the
       Query/WrkChainsFiltered RPC method
-  mainchain.wrkchain.v2.WrkChain:
+  mainchain.wrkchain.v1.WrkChain:
     type: object
     properties:
       wrkchain_id:
@@ -34674,7 +34620,7 @@ definitions:
         type: string
         format: uint64
         title: lastblock is the current highest recorded height for the wrkchain
-      num_blocks_in_state:
+      num_blocks:
         type: string
         format: uint64
         title: >-
@@ -34686,12 +34632,6 @@ definitions:
         title: >-
           lowest_height is the lowest recorded height currently held in state
           for the wrkchain
-      in_state_limit:
-        type: string
-        format: uint64
-        title: >-
-          in_state_limit is the current maximum number of block hashes that will
-          be held in state for the wrkchain
       reg_time:
         type: string
         format: uint64
@@ -34700,7 +34640,7 @@ definitions:
         type: string
         title: owner is the owner address of the wrkchain
     title: WrkChain holds metadata about a registered wrkchain
-  mainchain.wrkchain.v2.WrkChainBlock:
+  mainchain.wrkchain.v1.WrkChainBlock:
     type: object
     properties:
       height:

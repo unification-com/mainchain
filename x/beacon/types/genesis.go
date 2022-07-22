@@ -9,13 +9,13 @@ const (
 	// BEACON fees, in nano FUND
 	RegFee             = 1000000000000                // 1000 FUND - used in init genesis
 	RecordFee          = 1000000000                   // 1 FUND - used in init genesis
-	PurchaseStorageFee = 1000000000                   // 1 FUND - used in init genesis
+	PurchaseStorageFee = 5000000000                   // 5 FUND - used in init genesis
 	FeeDenom           = undtypes.DefaultDenomination // used in init genesis
 
 	DefaultStartingBeaconID uint64 = 1 // used in init genesis
 
-	DefaultStorageLimit    uint64 = 50000   // used in init genesis
-	DefaultMaxStorageLimit uint64 = 1000000 // used in init genesis
+	DefaultStorageLimit    uint64 = 50000  // used in init genesis
+	DefaultMaxStorageLimit uint64 = 600000 // used in init genesis
 )
 
 // NewGenesisState creates a new GenesisState object
@@ -53,8 +53,8 @@ func ValidateGenesis(data GenesisState) error {
 		if record.Beacon.Moniker == "" {
 			return fmt.Errorf("invalid Beacon: Moniker: %s. Error: Missing Moniker", record.Beacon.Moniker)
 		}
-		if record.Beacon.InStateLimit == 0 {
-			return fmt.Errorf("invalid Beacon: InStateLimit: %d. Error: Missing InStateLimit", record.Beacon.InStateLimit)
+		if record.InStateLimit == 0 {
+			return fmt.Errorf("invalid Beacon: InStateLimit: %d. Error: Missing InStateLimit", record.InStateLimit)
 		}
 		for _, timestamp := range record.Timestamps {
 			if timestamp.Id == 0 {

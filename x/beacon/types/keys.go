@@ -25,6 +25,9 @@ var (
 
 	// RecordedBeaconTimestampPrefix prefix for BEACON Timestamps store
 	RecordedBeaconTimestampPrefix = []byte{0x02}
+
+	// BeaconStorageLimitPrefix prefix for BEACON storage limit store
+	BeaconStorageLimitPrefix = []byte{0x03}
 )
 
 // GetBeaconIDBytes returns the byte representation of the BeaconID
@@ -66,4 +69,9 @@ func GetTimestampIDBytes(timestampID uint64) (timestampIDBz []byte) {
 
 func GetTimestampIDFromBytes(bz []byte) (timestampID uint64) {
 	return binary.BigEndian.Uint64(bz)
+}
+
+// BeaconStorageLimitKey gets the key for a single BEACON's specific storage limit
+func BeaconStorageLimitKey(beaconID uint64) []byte {
+	return append(BeaconStorageLimitPrefix, GetBeaconIDBytes(beaconID)...)
 }

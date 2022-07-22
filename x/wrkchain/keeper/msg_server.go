@@ -166,7 +166,7 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
 	}
 
-	wrkchain, found := k.GetWrkChain(ctx, msg.WrkchainId)
+	_, found := k.GetWrkChain(ctx, msg.WrkchainId)
 
 	if !found { // Checks if the WrkChain is registered
 		return nil, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet") // If not, throw an error
@@ -176,9 +176,11 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 		return nil, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain")
 	}
 
+	wrkchainStorage, _ := k.GetWrkChainStorageLimit(ctx, msg.WrkchainId)
+
 	// check not exceeding max
 	maxParam := k.GetParamMaxStorageLimit(ctx)
-	wrkchainStorageAfter := wrkchain.InStateLimit + msg.Number
+	wrkchainStorageAfter := wrkchainStorage.InStateLimit + msg.Number
 
 	if wrkchainStorageAfter > maxParam {
 		return nil, sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", wrkchainStorageAfter, maxParam))

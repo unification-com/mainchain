@@ -75,6 +75,8 @@ sed -i -e 's/"stake"/"nund"/gi' "${UND_HOME}/config/genesis.json"
 sed -i -e 's/"historical_entries": 10000/"historical_entries": 3/gi' "${UND_HOME}/config/genesis.json"
 
 sed -i -e 's/pruning = "default"/pruning = "nothing"/gi' "${UND_HOME}/config/app.toml"
+sed -i -e 's/enable = false/enable = true/gi' "${UND_HOME}/config/app.toml"
+sed -i -e 's/swagger = false/swagger = true/gi' "${UND_HOME}/config/app.toml"
 
 # accounts
 "${UND_GEN_BIN}" keys add validator --home "${UND_HOME}" --keyring-backend test

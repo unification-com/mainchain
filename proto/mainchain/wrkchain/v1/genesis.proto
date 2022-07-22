@@ -1,8 +1,8 @@
 syntax = "proto3";
-package mainchain.wrkchain.v2;
+package mainchain.wrkchain.v1;
 
 import "gogoproto/gogo.proto";
-import "mainchain/wrkchain/v2/wrkchain.proto";
+import "mainchain/wrkchain/v1/wrkchain.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
@@ -29,5 +29,6 @@ message WrkChainBlockGenesisExport {
 // WrkChainExport holds genesis export data for a wrkchain, including hashes
 message WrkChainExport {
   WrkChain wrkchain = 1 [(gogoproto.nullable) = false];
-  repeated WrkChainBlockGenesisExport blocks = 2 [(gogoproto.castrepeated) = "WrkChainBlockGenesisExports", (gogoproto.nullable) = false];
+  uint64 in_state_limit = 2;
+  repeated WrkChainBlockGenesisExport blocks = 3 [(gogoproto.castrepeated) = "WrkChainBlockGenesisExports", (gogoproto.nullable) = false];
 }

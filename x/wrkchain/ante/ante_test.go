@@ -556,19 +556,22 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 
 	// PurchaseStorageAction
 	err = app.WrkchainKeeper.SetWrkChain(ctx, types.WrkChain{
-		WrkchainId:       1,
-		Moniker:          "test",
-		Name:             "test",
-		Type:             "test",
-		Genesis:          "genesishash",
-		LowestHeight:     0,
-		Lastblock:        0,
-		NumBlocksInState: 0,
-		InStateLimit:     10,
-		RegTime:          0,
-		Owner:            addr.String(),
+		WrkchainId:   1,
+		Moniker:      "test",
+		Name:         "test",
+		Type:         "test",
+		Genesis:      "genesishash",
+		LowestHeight: 0,
+		Lastblock:    0,
+		NumBlocks:    0,
+		RegTime:      0,
+		Owner:        addr.String(),
 	})
 	require.NoError(t, err)
+
+	err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, 1, 10)
+	require.NoError(t, err)
+
 	numToPurchase := uint64(10)
 	feeInt2 := int64(actualPurchaseAmt * numToPurchase)
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
@@ -644,18 +647,21 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 
 	// PurchaseStorageAction
 	_ = app.WrkchainKeeper.SetWrkChain(ctx, types.WrkChain{
-		WrkchainId:       1,
-		Moniker:          "test",
-		Name:             "test",
-		Type:             "test",
-		Genesis:          "genesishash",
-		LowestHeight:     0,
-		Lastblock:        0,
-		NumBlocksInState: 0,
-		InStateLimit:     10,
-		RegTime:          0,
-		Owner:            addr.String(),
+		WrkchainId:   1,
+		Moniker:      "test",
+		Name:         "test",
+		Type:         "test",
+		Genesis:      "genesishash",
+		LowestHeight: 0,
+		Lastblock:    0,
+		NumBlocks:    0,
+		RegTime:      0,
+		Owner:        addr.String(),
 	})
+
+	err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, 1, 10)
+	require.NoError(t, err)
+
 	numToPurchase := uint64(10)
 	feeInt2 := int64(actualPurchaseAmt * numToPurchase)
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
@@ -705,18 +711,20 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 
 	// PurchaseStorageAction
 	_ = app.WrkchainKeeper.SetWrkChain(ctx, types.WrkChain{
-		WrkchainId:       wcId,
-		Moniker:          "test",
-		Name:             "test",
-		Type:             "test",
-		Genesis:          "genesishash",
-		LowestHeight:     0,
-		Lastblock:        0,
-		NumBlocksInState: 0,
-		InStateLimit:     startInStateLimit,
-		RegTime:          0,
-		Owner:            addr.String(),
+		WrkchainId:   wcId,
+		Moniker:      "test",
+		Name:         "test",
+		Type:         "test",
+		Genesis:      "genesishash",
+		LowestHeight: 0,
+		Lastblock:    0,
+		NumBlocks:    0,
+		RegTime:      0,
+		Owner:        addr.String(),
 	})
+
+	err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, 1, startInStateLimit)
+	require.NoError(t, err)
 
 	feeInt := int64(actualPurchaseAmt * numToPurchase)
 	msg := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)

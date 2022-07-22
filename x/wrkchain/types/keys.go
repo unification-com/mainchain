@@ -27,6 +27,9 @@ var (
 
 	// RegisteredWrkChainPrefix prefix for WRKChain Hashes store
 	RecordedWrkChainBlockHashPrefix = []byte{0x02}
+
+	// WrkChainStorageLimitPrefix prefix for WRKChain storage limit store
+	WrkChainStorageLimitPrefix = []byte{0x03}
 )
 
 // GetWrkChainIDBytes returns the byte representation of the wrkChainID
@@ -57,4 +60,9 @@ func WrkChainBlockKey(wrkChainID, height uint64) []byte {
 	heightBz := make([]byte, 8)
 	binary.BigEndian.PutUint64(heightBz, height)
 	return append(blocksKey, heightBz...)
+}
+
+// WrkChainStorageLimitKey gets the key for a single wrkChain's specific storage limit
+func WrkChainStorageLimitKey(wrkChainID uint64) []byte {
+	return append(WrkChainStorageLimitPrefix, GetWrkChainIDBytes(wrkChainID)...)
 }

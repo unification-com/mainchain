@@ -572,11 +572,14 @@ func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 		LastTimestampId: 0,
 		FirstIdInState:  0,
 		NumInState:      0,
-		InStateLimit:    10,
 		RegTime:         0,
 		Owner:           addr.String(),
 	})
 	require.NoError(t, err)
+
+	err = app.BeaconKeeper.SetBeaconStorageLimit(ctx, 1, 10)
+	require.NoError(t, err)
+
 	numToPurchase := uint64(10)
 	feeInt2 := int64(actualPurchaseAmt * numToPurchase)
 	msg2 := types.NewMsgPurchaseBeaconStateStorage(1, numToPurchase, addr)
@@ -658,10 +661,13 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 		LastTimestampId: 0,
 		FirstIdInState:  0,
 		NumInState:      0,
-		InStateLimit:    10,
 		RegTime:         0,
 		Owner:           addr.String(),
 	})
+
+	err = app.BeaconKeeper.SetBeaconStorageLimit(ctx, 1, 10)
+	require.NoError(t, err)
+
 	numToPurchase := uint64(10)
 	feeInt2 := int64(actualPurchaseAmt * numToPurchase)
 	msg2 := types.NewMsgPurchaseBeaconStateStorage(1, numToPurchase, addr)
@@ -717,10 +723,12 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 		LastTimestampId: 0,
 		FirstIdInState:  0,
 		NumInState:      0,
-		InStateLimit:    startInStateLimit,
 		RegTime:         0,
 		Owner:           addr.String(),
 	})
+
+	err = app.BeaconKeeper.SetBeaconStorageLimit(ctx, bId, startInStateLimit)
+	require.NoError(t, err)
 
 	feeInt := int64(actualPurchaseAmt * numToPurchase)
 	msg := types.NewMsgPurchaseBeaconStateStorage(1, numToPurchase, addr)

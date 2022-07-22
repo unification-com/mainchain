@@ -1,8 +1,8 @@
 syntax = "proto3";
-package mainchain.beacon.v2;
+package mainchain.beacon.v1;
 
 import "gogoproto/gogo.proto";
-import "mainchain/beacon/v2/beacon.proto";
+import "mainchain/beacon/v1/beacon.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
@@ -25,5 +25,6 @@ message BeaconTimestampGenesisExport {
 // BeaconExport holds genesis export data for a beacon, including submitted timestamps
 message BeaconExport {
   Beacon beacon = 1 [(gogoproto.nullable) = false];
-  repeated BeaconTimestampGenesisExport timestamps = 2 [(gogoproto.castrepeated) = "BeaconTimestampGenesisExports", (gogoproto.nullable) = false];
+  uint64 in_state_limit = 2;
+  repeated BeaconTimestampGenesisExport timestamps = 3 [(gogoproto.castrepeated) = "BeaconTimestampGenesisExports", (gogoproto.nullable) = false];
 }

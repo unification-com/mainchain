@@ -3,6 +3,7 @@ package v045
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	v040 "github.com/unification-com/mainchain/x/wrkchain/legacy/v040"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
@@ -32,7 +33,7 @@ func migrateParams(ctx sdk.Context, paramsSubspace paramstypes.Subspace) {
 	paramsSubspace.SetParamSet(ctx, &params)
 }
 
-func pruneWrkChainHeights(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec, wrkchainId uint64) (uint64, uint64) {
+func pruneWrkChainHeights(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec, wrkchainId uint64) (uint64, uint64, error) {
 	store := ctx.KVStore(storeKey)
 	// reverse order (desc) to get newest first. Only want to prune old heights
 	// when default in-state storage limit is reached
@@ -45,7 +46,10 @@ func pruneWrkChainHeights(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.Bina
 
 	for ; iterator.Valid(); iterator.Next() {
 		var oldWrkChainBlockHash v040.WrkChainBlock
-		cdc.MustUnmarshal(iterator.Value(), &oldWrkChainBlockHash)
+		if err := cdc.Unmarshal(iterator.Value(), &oldWrkChainBlockHash); err != nil {
+			return 0, 0, sdkerrors.Wrap(err, "failed to unmarshal wrkchains hash")
+		}
+
 		limitCounter = limitCounter + 1
 
 		if limitCounter > types.DefaultStorageLimit {
@@ -55,10 +59,10 @@ func pruneWrkChainHeights(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.Bina
 			numInState = numInState + 1
 		}
 	}
-	return numInState, lowestHeightInState
+	return numInState, lowestHeightInState, nil
 }
 
-func pruneWrkChains(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec) {
+func pruneWrkChains(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCodec) error {
 	// loop through WrkChains, then each WrkChain's hashes
 	store := ctx.KVStore(storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
@@ -69,25 +73,49 @@ func pruneWrkChains(ctx sdk.Context, storeKey sdk.StoreKey, cdc codec.BinaryCode
 		var oldWrkchain v040.WrkChain
 		cdc.MustUnmarshal(iterator.Value(), &oldWrkchain)
 
-		numInState, lowestHeightInState := pruneWrkChainHeights(ctx, storeKey, cdc, oldWrkchain.WrkchainId)
+		numInState, lowestHeightInState, err := pruneWrkChainHeights(ctx, storeKey, cdc, oldWrkchain.WrkchainId)
+
+		if err != nil {
+			return err
+		}
 
 		newWrkchain := types.WrkChain{
-			WrkchainId:       oldWrkchain.WrkchainId,
-			Moniker:          oldWrkchain.Moniker,
-			Name:             oldWrkchain.Name,
-			Genesis:          oldWrkchain.Genesis,
-			Type:             oldWrkchain.Type,
-			Lastblock:        oldWrkchain.Lastblock,
-			NumBlocksInState: numInState,
-			LowestHeight:     lowestHeightInState,
-			InStateLimit:     types.DefaultStorageLimit,
-			RegTime:          oldWrkchain.RegTime,
-			Owner:            oldWrkchain.Owner,
+			WrkchainId:   oldWrkchain.WrkchainId,
+			Moniker:      oldWrkchain.Moniker,
+			Name:         oldWrkchain.Name,
+			Genesis:      oldWrkchain.Genesis,
+			Type:         oldWrkchain.Type,
+			Lastblock:    oldWrkchain.Lastblock,
+			NumBlocks:    numInState,
+			LowestHeight: lowestHeightInState,
+			RegTime:      oldWrkchain.RegTime,
+			Owner:        oldWrkchain.Owner,
 		}
 
 		// save the updated WrkChain
-		store.Set(types.WrkChainKey(oldWrkchain.WrkchainId), cdc.MustMarshal(&newWrkchain))
+		newWrkchainBz, err := cdc.Marshal(&newWrkchain)
+
+		if err != nil {
+			return err
+		}
+
+		store.Set(types.WrkChainKey(oldWrkchain.WrkchainId), newWrkchainBz)
+
+		newWrkChainStorage := types.WrkChainStorageLimit{
+			WrkchainId:   oldWrkchain.WrkchainId,
+			InStateLimit: types.DefaultStorageLimit,
+		}
+
+		newWrkChainStorageBz, err := cdc.Marshal(&newWrkChainStorage)
+
+		if err != nil {
+			return err
+		}
+
+		store.Set(types.WrkChainStorageLimitKey(newWrkchain.WrkchainId), newWrkChainStorageBz)
 	}
+
+	return nil
 }
 
 // MigrateStore performs in-place store migrations from SDK v0.42 of the Wrkchain module to SDK v0.45.
@@ -102,7 +130,5 @@ func MigrateStore(ctx sdk.Context, storeKey sdk.StoreKey, paramsSubspace paramst
 	migrateParams(ctx, paramsSubspace)
 
 	// prune hashes
-	pruneWrkChains(ctx, storeKey, cdc)
-
-	return nil
+	return pruneWrkChains(ctx, storeKey, cdc)
 }

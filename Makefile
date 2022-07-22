@@ -76,7 +76,7 @@ test-no-cache:
 clean:
 	rm -rf build/
 
-update-swagger-docs: statik
+update-swagger-docs: statik proto-swagger-gen
 	$(BINDIR)/statik -src=client/docs/swagger-ui -dest=client/docs -f -m
 	@if [ -n "$(git status --porcelain)" ]; then \
         echo "\033[91mSwagger docs are out of sync!!!\033[0m";\

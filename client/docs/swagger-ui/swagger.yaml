@@ -255,33 +255,21 @@ paths:
           schema:
             type: object
             properties:
-              owner:
-                type: string
-              locked_und:
+              amount:
                 type: object
                 properties:
-                  owner:
+                  denom:
                     type: string
-                    title: owner is the address of the locked FUND owner
                   amount:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
 
 
-                      NOTE: The amount field is an Int which implements the
-                      custom method
+                  NOTE: The amount field is an Int which implements the custom
+                  method
 
-                      signatures required by gogoproto.
-                    title: >-
-                      amount is the amount currently locked and available to pay
-                      for beacon/wrkchain fees
-                title: LockedUnd defines the amount of locked FUND for an account
+                  signatures required by gogoproto.
             title: >-
               QueryLockedUndByAddressResponse is the response type for the
               Query/LockedUndByAddress RPC method
@@ -1798,7 +1786,7 @@ paths:
                     title: >-
                       lastblock is the current highest recorded height for the
                       wrkchain
-                  num_blocks:
+                  num_blocks_in_state:
                     type: string
                     format: uint64
                     title: >-
@@ -2065,7 +2053,7 @@ paths:
                       title: >-
                         lastblock is the current highest recorded height for the
                         wrkchain
-                    num_blocks:
+                    num_blocks_in_state:
                       type: string
                       format: uint64
                       title: >-
@@ -33426,28 +33414,6 @@ definitions:
 
           BEACON/Wrkchain fees all together
     title: EnterpriseUserAccount defines data about an enterprise user
-  mainchain.enterprise.v2.LockedUnd:
-    type: object
-    properties:
-      owner:
-        type: string
-        title: owner is the address of the locked FUND owner
-      amount:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
-        title: >-
-          amount is the amount currently locked and available to pay for
-          beacon/wrkchain fees
-    title: LockedUnd defines the amount of locked FUND for an account
   mainchain.enterprise.v2.Params:
     type: object
     properties:
@@ -33879,33 +33845,18 @@ definitions:
   mainchain.enterprise.v2.QueryLockedUndByAddressResponse:
     type: object
     properties:
-      owner:
-        type: string
-      locked_und:
+      amount:
         type: object
         properties:
-          owner:
+          denom:
             type: string
-            title: owner is the address of the locked FUND owner
           amount:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              Coin defines a token with a denomination and an amount.
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
 
-
-              NOTE: The amount field is an Int which implements the custom
-              method
-
-              signatures required by gogoproto.
-            title: >-
-              amount is the amount currently locked and available to pay for
-              beacon/wrkchain fees
-        title: LockedUnd defines the amount of locked FUND for an account
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
     title: >-
       QueryLockedUndByAddressResponse is the response type for the
       Query/LockedUndByAddress RPC method
@@ -34563,7 +34514,7 @@ definitions:
             type: string
             format: uint64
             title: lastblock is the current highest recorded height for the wrkchain
-          num_blocks:
+          num_blocks_in_state:
             type: string
             format: uint64
             title: >-
@@ -34653,7 +34604,7 @@ definitions:
               title: >-
                 lastblock is the current highest recorded height for the
                 wrkchain
-            num_blocks:
+            num_blocks_in_state:
               type: string
               format: uint64
               title: >-
@@ -34723,7 +34674,7 @@ definitions:
         type: string
         format: uint64
         title: lastblock is the current highest recorded height for the wrkchain
-      num_blocks:
+      num_blocks_in_state:
         type: string
         format: uint64
         title: >-

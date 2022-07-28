@@ -143,8 +143,7 @@ done
 # upgrade gov proposal
 set_current_height
 UPGRADE_HEIGHT=$(awk "BEGIN {print $CURRENT_HEIGHT+$UPGRADE_AFTER}")
-"${UND_GEN_BIN}" tx gov submit-proposal software-upgrade 1-ibc --title upgrade --description upgrade --upgrade-height ${UPGRADE_HEIGHT} --from validator --yes --home "${UND_HOME}"
-"${UND_GEN_BIN}" tx gov deposit 1 10000000nund --from validator --yes --home "${UND_HOME}"
+"${UND_GEN_BIN}" tx gov submit-proposal software-upgrade 1-ibc --deposit 10000000nund --title upgrade --description upgrade --upgrade-height ${UPGRADE_HEIGHT} --from validator --yes --home "${UND_HOME}"
 "${UND_GEN_BIN}" tx gov vote 1 yes --from validator --yes --home "${UND_HOME}"
 
 echo "UPGRADE_HEIGHT=${UPGRADE_HEIGHT}"

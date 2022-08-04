@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.6.1 - 04/08/2022
+
+A minor client update to fix the `und query bank total` query, replacing it with the Enterprise module's version that 
+returns to total `nund` supply with the locked Enterprise FUND subtracted.
+
+**Full Changelog**: https://github.com/unification-com/mainchain/compare/1.6.0...v1.6.1
+
+## v1.6.0 - 28/07/2022
+
+The initial IBC-enabled release of `und`, with several improvements to WrkChain & BEACON modules:
+
+* Upgraded Cosmos SDK to 0.45.6
+* Integrated IBC and IBC Transfers
+* BEACON module in-state storage pruning & storage purchase Msg
+* Wrkchain module in-state storage pruning & storage purchase Msg
+* Enterprise module supports using Enterprise FUND for storage payments
+
+**Full Changelog**: https://github.com/unification-com/mainchain/compare/1.5.1...1.6.0
+
 ## v1.5.1 - 23/05/2022
 
 A minor update that:

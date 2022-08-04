@@ -183,6 +183,21 @@ func queryCommand() *cobra.Command {
 		GetTotalSupplyCmd(),
 	)
 
+	// replace bank total command with Enterprise version to get correct total supply
+	// since the Enterprise module's balance is not part of the circulating supply until
+	// it is used to pay for BEACON/WrkChain Tx fees
+	origBankCmd, _, _ := cmd.Find([]string{"bank"})
+	origTotalSupplyCmd, _, _ := origBankCmd.Find([]string{"total"})
+
+	// remove "bank" command from "query" command
+	cmd.RemoveCommand(origBankCmd)
+	// remove "total" command from "bank" cmd
+	origBankCmd.RemoveCommand(origTotalSupplyCmd)
+	// add Enterprise version of "total" command to "bank" cmd
+	origBankCmd.AddCommand(GetCmdQueryTotalSupplyOverrideBankDefault())
+	// re-add "bank" command to "query"
+	cmd.AddCommand(origBankCmd)
+
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd

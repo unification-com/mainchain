@@ -162,64 +162,6 @@ func TestValidMsgProcessUndPurchaseOrder(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestValidMsgProcessUndPurchaseOrderMultipleDecisions(t *testing.T) {
-	app := test_helpers.Setup(false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
-
-	entSignerAddr1 := testAddrs[0]
-	entSignerAddr2 := testAddrs[1]
-
-	signers := []string{entSignerAddr1.String(), entSignerAddr2.String()}
-
-	app.EnterpriseKeeper.SetParams(ctx, types.Params{
-		EntSigners:        strings.Join(signers, ","),
-		Denom:             test_helpers.TestDenomination,
-		MinAccepts:        2,
-		DecisionTimeLimit: 1000,
-	})
-
-	err := app.EnterpriseKeeper.AddAddressToWhitelist(ctx, testAddrs[0])
-	require.Nil(t, err)
-
-	po := types.EnterpriseUndPurchaseOrder{
-		Id:             1,
-		Purchaser:      testAddrs[2].String(),
-		Amount:         sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
-		Status:         types.StatusRaised,
-		RaiseTime:      uint64(time.Now().Unix()),
-		CompletionTime: 0,
-		Decisions:      nil,
-	}
-	err = app.EnterpriseKeeper.SetPurchaseOrder(ctx, po)
-	require.Nil(t, err)
-
-	h := enterprise.NewHandler(app.EnterpriseKeeper)
-
-	msg1 := &types.MsgProcessUndPurchaseOrder{
-		PurchaseOrderId: 1,
-		Decision:        types.StatusAccepted,
-		Signer:          entSignerAddr1.String(),
-	}
-
-	res, err := h(ctx, msg1)
-
-	require.NotNil(t, res)
-	require.Nil(t, err)
-
-	msg2 := &types.MsgProcessUndPurchaseOrder{
-		PurchaseOrderId: 1,
-		Decision:        types.StatusAccepted,
-		Signer:          entSignerAddr2.String(),
-	}
-
-	res, err = h(ctx, msg2)
-
-	require.NotNil(t, res)
-	require.Nil(t, err)
-}
-
 func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 	app := test_helpers.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})

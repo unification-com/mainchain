@@ -30,23 +30,23 @@ func TestDecodeStore(t *testing.T) {
 		types.StatusRaised, 1234, 5678)
 	require.NoError(t, err)
 
-	purchaseOrderBz, err := cdc.MarshalBinaryBare(&purchaseOrder)
+	purchaseOrderBz, err := cdc.Marshal(&purchaseOrder)
 	require.NoError(t, err)
 
 	lockedUnd, err := types.NewLockedUnd(delAddr1.String(), sdk.NewInt64Coin(denom, 100000000))
 	require.NoError(t, err)
 
-	lockedUndBz, err := cdc.MarshalBinaryBare(&lockedUnd)
+	lockedUndBz, err := cdc.Marshal(&lockedUnd)
 	require.NoError(t, err)
 
 	totalLocked := sdk.NewInt64Coin(denom, 100000000)
-	totalLockedBz, err := cdc.MarshalBinaryBare(&totalLocked)
+	totalLockedBz, err := cdc.Marshal(&totalLocked)
 	require.NoError(t, err)
 
 	kvPairs := kv.Pairs{
 		Pairs: []kv.Pair{
 			{Key: types.PurchaseOrderKey(1), Value: purchaseOrderBz},
-			{Key: types.AddressStoreKey(delAddr1), Value: lockedUndBz},
+			{Key: types.LockedUndAddressStoreKey(delAddr1), Value: lockedUndBz},
 			{Key: types.TotalLockedUndKey, Value: totalLockedBz},
 			{Key: []byte{0x99}, Value: []byte{0x99}},
 		},

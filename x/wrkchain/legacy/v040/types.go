@@ -1,6 +1,6 @@
 package v040
 
-const (
-	// ModuleName module name
-	ModuleName = "wrkchain"
-)
+const ModuleName = "wrkchain"
+
+type WrkChainExports []WrkChainExport
+type WrkChainBlockGenesisExports []WrkChainBlockGenesisExport

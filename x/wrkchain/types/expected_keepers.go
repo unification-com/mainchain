@@ -3,7 +3,6 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	bankexported "github.com/cosmos/cosmos-sdk/x/bank/exported"
 )
 
 // EnterpriseKeeper defines the expected enterprise keeper
@@ -19,7 +18,7 @@ type ParamSubspace interface {
 
 // BankKeeper defines the expected bank keeper
 type BankKeeper interface {
-	GetSupply(ctx sdk.Context) bankexported.SupplyI
+	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin

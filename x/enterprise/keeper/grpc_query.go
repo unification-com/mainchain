@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/query"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain/x/enterprise/types"
@@ -57,14 +57,27 @@ func (q Keeper) EnterpriseUndPurchaseOrders(c context.Context, req *types.QueryE
 	var purchaseOrders []types.EnterpriseUndPurchaseOrder
 
 	poStore := prefix.NewStore(store, types.PurchaseOrderIDKeyPrefix)
-	pageRes, err := query.Paginate(poStore, req.Pagination, func(key []byte, value []byte) error {
+
+	pageRes, err := query.FilteredPaginate(poStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
 		var info types.EnterpriseUndPurchaseOrder
-		err := q.cdc.UnmarshalBinaryBare(value, &info)
+		err := q.cdc.Unmarshal(value, &info)
 		if err != nil {
-			return err
+			return false, err
 		}
-		purchaseOrders = append(purchaseOrders, info)
-		return nil
+
+		if req.Status.String() != "STATUS_NIL" && !strings.EqualFold(info.GetStatus().String(), req.Status.String()) {
+			return false, nil
+		}
+
+		if req.Purchaser != "" && !strings.EqualFold(info.Purchaser, req.Purchaser) {
+			return false, nil
+		}
+
+		if accumulate {
+			purchaseOrders = append(purchaseOrders, info)
+		}
+
+		return true, nil
 	})
 	if err != nil {
 		return nil, err
@@ -87,9 +100,9 @@ func (q Keeper) LockedUndByAddress(c context.Context, req *types.QueryLockedUndB
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	lockedUnd := q.GetLockedUndForAccount(ctx, addr)
+	lockedUnd := q.GetLockedUndAmountForAccount(ctx, addr)
 
-	return &types.QueryLockedUndByAddressResponse{LockedUnd: &lockedUnd}, nil
+	return &types.QueryLockedUndByAddressResponse{Amount: lockedUnd}, nil
 }
 
 func (q Keeper) TotalLocked(c context.Context, req *types.QueryTotalLockedRequest) (*types.QueryTotalLockedResponse, error) {
@@ -121,9 +134,12 @@ func (q Keeper) EnterpriseSupply(c context.Context, req *types.QueryEnterpriseSu
 func (q Keeper) TotalSupply(c context.Context, req *types.QueryTotalSupplyRequest) (*types.QueryTotalSupplyResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-	totalSupply := q.GetTotalSupplyWithLockedNundRemoved(ctx)
+	totalSupply, pageResp, err := q.GetTotalSupplyWithLockedNundRemoved(ctx, req.Pagination)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
-	return &types.QueryTotalSupplyResponse{Supply: totalSupply}, nil
+	return &types.QueryTotalSupplyResponse{Supply: totalSupply, Pagination: pageResp}, nil
 }
 
 func (q Keeper) TotalSupplyOverwrite(c context.Context, req *types.QueryTotalSupplyRequest) (*types.QueryTotalSupplyResponse, error) {
@@ -145,7 +161,7 @@ func (q Keeper) SupplyOf(c context.Context, req *types.QuerySupplyOfRequest) (*t
 	ctx := sdk.UnwrapSDKContext(c)
 	supply := q.GetSupplyOfWithLockedNundRemoved(ctx, req.Denom)
 
-	return &types.QuerySupplyOfResponse{Amount: sdk.NewCoin(req.Denom, supply)}, nil
+	return &types.QuerySupplyOfResponse{Amount: supply}, nil
 }
 
 func (q Keeper) SupplyOfOverwrite(c context.Context, req *types.QuerySupplyOfRequest) (*types.QuerySupplyOfResponse, error) {
@@ -201,5 +217,34 @@ func (q Keeper) EnterpriseAccount(c context.Context, req *types.QueryEnterpriseA
 
 	return &types.QueryEnterpriseAccountResponse{
 		Account: userAcc,
+	}, nil
+}
+
+func (q Keeper) TotalSpentEFUND(c context.Context, req *types.QueryTotalSpentEFUNDRequest) (*types.QueryTotalSpentEFUNDResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	totalSpent := q.GetTotalSpentEFUND(ctx)
+
+	return &types.QueryTotalSpentEFUNDResponse{
+		Amount: totalSpent,
+	}, nil
+}
+
+func (q Keeper) SpentEFUNDByAddress(c context.Context, req *types.QuerySpentEFUNDByAddressRequest) (*types.QuerySpentEFUNDByAddressResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	if req.Address == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid request")
+	}
+
+	addr, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	spent := q.GetSpentEFUNDAmountForAccount(ctx, addr)
+
+	return &types.QuerySpentEFUNDByAddressResponse{
+		Amount: spent,
 	}, nil
 }

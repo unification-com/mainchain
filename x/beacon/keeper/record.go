@@ -9,7 +9,7 @@ import (
 func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconId uint64, beaconTimestamp types.BeaconTimestamp) error {
 
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.BeaconTimestampKey(beaconId, beaconTimestamp.TimestampId), k.cdc.MustMarshalBinaryBare(&beaconTimestamp))
+	store.Set(types.BeaconTimestampKey(beaconId, beaconTimestamp.TimestampId), k.cdc.MustMarshal(&beaconTimestamp))
 
 	return nil
 }
@@ -40,7 +40,7 @@ func (k Keeper) GetBeaconTimestampByID(ctx sdk.Context, beaconID uint64, timesta
 
 	bz := store.Get(timestampKey)
 	var beaconTimestamp types.BeaconTimestamp
-	k.cdc.MustUnmarshalBinaryBare(bz, &beaconTimestamp)
+	k.cdc.MustUnmarshal(bz, &beaconTimestamp)
 	return beaconTimestamp, true
 }
 
@@ -52,7 +52,7 @@ func (k Keeper) IterateBeaconTimestamps(ctx sdk.Context, beaconID uint64, cb fun
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &bts)
+		k.cdc.MustUnmarshal(iterator.Value(), &bts)
 
 		if cb(bts) {
 			break
@@ -68,7 +68,7 @@ func (k Keeper) IterateBeaconTimestampsReverse(ctx sdk.Context, beaconID uint64,
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &bts)
+		k.cdc.MustUnmarshal(iterator.Value(), &bts)
 
 		if cb(bts) {
 			break
@@ -113,16 +113,29 @@ func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64
 	return
 }
 
+// deleteBeaconTimestamp deletes a timestamp from the store
+func (k Keeper) deleteBeaconTimestamp(ctx sdk.Context, beaconId, beaconTimestampId uint64) error {
+
+	if !k.IsBeaconTimestampRecordedByID(ctx, beaconId, beaconTimestampId) {
+		return nil
+	}
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.BeaconTimestampKey(beaconId, beaconTimestampId))
+
+	return nil
+}
+
 // RecordBeaconTimestamp records a BEACON timestamp hash for a registered BEACON
 func (k Keeper) RecordNewBeaconTimestamp(
 	ctx sdk.Context,
 	beaconId uint64,
 	hash string,
-	submitTime uint64) (uint64, error) {
+	submitTime uint64) (uint64, uint64, error) {
 
 	beacon, _ := k.GetBeacon(ctx, beaconId)
 
 	timestampId := beacon.LastTimestampId + 1
+	deleteTimestampId := uint64(0)
 
 	// we're only ever recording new BEACON hashes, never updating existing. Handler has already run
 	// checks for authorisation etc.
@@ -135,7 +148,7 @@ func (k Keeper) RecordNewBeaconTimestamp(
 	err := k.SetBeaconTimestamp(ctx, beacon.BeaconId, beaconTimestamp)
 
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	// update beacon metadata
@@ -149,11 +162,24 @@ func (k Keeper) RecordNewBeaconTimestamp(
 
 	beacon.NumInState = beacon.NumInState + 1
 
+	storageInfo, _ := k.GetBeaconStorageLimit(ctx, beacon.BeaconId)
+
+	// check in-state storage and prune old timestamp from state if required
+	if beacon.NumInState > storageInfo.InStateLimit {
+		deleteTimestampId = beacon.FirstIdInState
+		err = k.deleteBeaconTimestamp(ctx, beaconId, deleteTimestampId)
+		if err != nil {
+			return 0, 0, err
+		}
+		beacon.FirstIdInState = beacon.FirstIdInState + 1
+		beacon.NumInState = beacon.NumInState - 1
+	}
+
 	err = k.SetBeacon(ctx, beacon)
 
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
-	return timestampId, nil
+	return timestampId, deleteTimestampId, nil
 }

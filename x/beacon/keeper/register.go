@@ -34,7 +34,7 @@ func (k Keeper) SetHighestBeaconID(ctx sdk.Context, beaconID uint64) {
 // SetBeacon Sets the BEACON metadata struct for a beaconID
 func (k Keeper) SetBeacon(ctx sdk.Context, beacon types.Beacon) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.BeaconKey(beacon.BeaconId), k.cdc.MustMarshalBinaryBare(&beacon))
+	store.Set(types.BeaconKey(beacon.BeaconId), k.cdc.MustMarshal(&beacon))
 
 	return nil
 }
@@ -48,7 +48,7 @@ func (k Keeper) GetBeacon(ctx sdk.Context, beaconID uint64) (types.Beacon, bool)
 	}
 	bz := store.Get(types.BeaconKey(beaconID))
 	var beacon types.Beacon
-	k.cdc.MustUnmarshalBinaryBare(bz, &beacon)
+	k.cdc.MustUnmarshal(bz, &beacon)
 	return beacon, true
 }
 
@@ -87,7 +87,7 @@ func (k Keeper) IterateBeacons(ctx sdk.Context, cb func(beacon types.Beacon) (st
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var b types.Beacon
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &b)
+		k.cdc.MustUnmarshal(iterator.Value(), &b)
 
 		if cb(b) {
 			break
@@ -140,10 +140,69 @@ func (k Keeper) GetBeaconsFiltered(ctx sdk.Context, params types.QueryBeaconsFil
 	return filteredBeacons
 }
 
+func (k Keeper) GetBeaconStorageLimit(ctx sdk.Context, beaconID uint64) (types.BeaconStorageLimit, bool) {
+	store := ctx.KVStore(k.storeKey)
+	if !k.HasBeaconStorageLimit(ctx, beaconID) {
+		return types.BeaconStorageLimit{
+			BeaconId:     beaconID,
+			InStateLimit: types.DefaultStorageLimit,
+		}, false
+	}
+
+	storageKey := types.BeaconStorageLimitKey(beaconID)
+	bz := store.Get(storageKey)
+	var storage types.BeaconStorageLimit
+	k.cdc.MustUnmarshal(bz, &storage)
+	return storage, true
+}
+
+func (k Keeper) HasBeaconStorageLimit(ctx sdk.Context, beaconID uint64) bool {
+	store := ctx.KVStore(k.storeKey)
+	storageKey := types.BeaconStorageLimitKey(beaconID)
+	return store.Has(storageKey)
+}
+
+func (k Keeper) SetBeaconStorageLimit(ctx sdk.Context, beaconId, limit uint64) error {
+
+	store := ctx.KVStore(k.storeKey)
+	storageLimit := types.BeaconStorageLimit{
+		BeaconId:     beaconId,
+		InStateLimit: limit,
+	}
+	store.Set(types.BeaconStorageLimitKey(beaconId), k.cdc.MustMarshal(&storageLimit))
+
+	return nil
+}
+
+func (k Keeper) IncreaseInStateStorage(ctx sdk.Context, beaconId, amount uint64) error {
+	beaconStorage, _ := k.GetBeaconStorageLimit(ctx, beaconId)
+	newInStateLimit := beaconStorage.InStateLimit + amount
+	err := k.SetBeaconStorageLimit(ctx, beaconId, newInStateLimit)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) GetMaxPurchasableSlots(ctx sdk.Context, beaconId uint64) uint64 {
+	beaconStorage, found := k.GetBeaconStorageLimit(ctx, beaconId)
+	if !found {
+		return 0
+	}
+
+	maxStorageLimit := k.GetParamMaxStorageLimit(ctx)
+
+	if beaconStorage.InStateLimit >= maxStorageLimit {
+		return 0
+	}
+
+	return maxStorageLimit - beaconStorage.InStateLimit
+}
+
 // RegisterBeacon registers a BEACON in the store
 func (k Keeper) RegisterNewBeacon(ctx sdk.Context, beacon types.Beacon) (uint64, error) {
-
-	logger := k.Logger(ctx)
 
 	beaconId, err := k.GetHighestBeaconID(ctx)
 	if err != nil {
@@ -161,11 +220,12 @@ func (k Keeper) RegisterNewBeacon(ctx sdk.Context, beacon types.Beacon) (uint64,
 		return 0, err
 	}
 
-	k.SetHighestBeaconID(ctx, beaconId+1)
-
-	if !ctx.IsCheckTx() {
-		logger.Debug("beacon registered", "id", beaconId, "moniker", beacon.Moniker, "owner", beacon.Owner)
+	err = k.SetBeaconStorageLimit(ctx, beaconId, k.GetParamDefaultStorageLimit(ctx))
+	if err != nil {
+		return 0, err
 	}
+
+	k.SetHighestBeaconID(ctx, beaconId+1)
 
 	return beaconId, nil
 }

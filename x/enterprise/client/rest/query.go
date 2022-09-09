@@ -16,18 +16,18 @@ import (
 
 // registerQueryRoutes - define REST query routes
 func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
-	r.HandleFunc("/enterprise/params", enterpriseParamsHandler(clientCtx)).Methods("GET")
-	r.HandleFunc("/enterprise/locked", enterpriseTotalLockedHandler(clientCtx)).Methods("GET")
-	r.HandleFunc("/enterprise/unlocked", enterpriseTotalUnLockedHandler(clientCtx)).Methods("GET")
-	r.HandleFunc("/enterprise/ent_supply", enterpriseEnterpriseSupplyHandler(clientCtx)).Methods("GET")
-
-	r.HandleFunc("/enterprise/whitelist", enterpriseWhitelistHandler(clientCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/enterprise/whitelisted/{%s}", RestWhitelistAddr), enterpriseWhitelistedHandler(clientCtx)).Methods("GET")
-
-	r.HandleFunc("/enterprise/pos", enterprisePosWithParametersHandler(clientCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/enterprise/po/{%s}", RestPurchaseOrderId), enterprisePurchaseOrderHandler(clientCtx)).Methods("GET")
-
-	r.HandleFunc(fmt.Sprintf("/enterprise/{%s}/locked", RestPurchaserAddr), enterpriseLockedForAddressHandler(clientCtx)).Methods("GET")
+	//r.HandleFunc("/enterprise/params", enterpriseParamsHandler(clientCtx)).Methods("GET")
+	//r.HandleFunc("/enterprise/locked", enterpriseTotalLockedHandler(clientCtx)).Methods("GET")
+	//r.HandleFunc("/enterprise/unlocked", enterpriseTotalUnLockedHandler(clientCtx)).Methods("GET")
+	//r.HandleFunc("/enterprise/ent_supply", enterpriseEnterpriseSupplyHandler(clientCtx)).Methods("GET")
+	//
+	//r.HandleFunc("/enterprise/whitelist", enterpriseWhitelistHandler(clientCtx)).Methods("GET")
+	//r.HandleFunc(fmt.Sprintf("/enterprise/whitelisted/{%s}", RestWhitelistAddr), enterpriseWhitelistedHandler(clientCtx)).Methods("GET")
+	//
+	//r.HandleFunc("/enterprise/pos", enterprisePosWithParametersHandler(clientCtx)).Methods("GET")
+	//r.HandleFunc(fmt.Sprintf("/enterprise/po/{%s}", RestPurchaseOrderId), enterprisePurchaseOrderHandler(clientCtx)).Methods("GET")
+	//
+	//r.HandleFunc(fmt.Sprintf("/enterprise/{%s}/locked", RestPurchaserAddr), enterpriseLockedForAddressHandler(clientCtx)).Methods("GET")
 }
 
 func registerEnterpriseTotalSupplyOverride(cliCtx client.Context, r *mux.Router) {

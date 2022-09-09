@@ -16,21 +16,24 @@ import (
 )
 
 const (
-	OpWeightMsgRegisterBeacon        = "op_weight_msg_register_beacon"
-	OpWeightMsgRecordBeaconTimestamp = "op_weight_msg_record_beacon_timestamp"
+	OpWeightMsgRegisterBeacon             = "op_weight_msg_register_beacon"
+	OpWeightMsgRecordBeaconTimestamp      = "op_weight_msg_record_beacon_timestamp"
+	OpWeightMsgPurchaseBeaconStateStorage = "op_weight_msg_beacon_purchase_storage"
 
-	DefaultMsgRegisterBeacon        = 10
-	DefaultMsgRecordBeaconTimestamp = 30
+	DefaultMsgRegisterBeacon             = 10
+	DefaultMsgRecordBeaconTimestamp      = 30
+	DefaultMsgPurchaseBeaconStateStorage = 5
 )
 
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONMarshaler,
+	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 ) simulation.WeightedOperations {
 
 	var (
-		weightMsgRegisterBeacon        int
-		weightMsgRecordBeaconTimestamp int
+		weightMsgRegisterBeacon             int
+		weightMsgRecordBeaconTimestamp      int
+		weightMsgPurchaseBeaconStateStorage int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgRegisterBeacon, &weightMsgRegisterBeacon, nil,
@@ -45,6 +48,12 @@ func WeightedOperations(
 		},
 	)
 
+	appParams.GetOrGenerate(cdc, OpWeightMsgPurchaseBeaconStateStorage, &weightMsgPurchaseBeaconStateStorage, nil,
+		func(_ *rand.Rand) {
+			weightMsgPurchaseBeaconStateStorage = DefaultMsgPurchaseBeaconStateStorage
+		},
+	)
+
 	wEntOps := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgRegisterBeacon,
@@ -53,6 +62,10 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgRecordBeaconTimestamp,
 			SimulateMsgRecordBeaconTimestamp(k, bk, ak),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgPurchaseBeaconStateStorage,
+			SimulateMsgPurchaseBeaconStateStorage(k, bk, ak),
 		),
 	}
 
@@ -108,7 +121,7 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "")
+		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
 
 		return opMsg, nil, nil
 	}
@@ -172,7 +185,83 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "")
+		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+
+		return opMsg, nil, nil
+	}
+}
+
+func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
+		accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		beacon, err := getRandomBeacon(r, k, ctx)
+
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.PurchaseStorageAction, "no beacons"), nil, nil // skip
+		}
+
+		beaconOwnerAddr, err := sdk.AccAddressFromBech32(beacon.Owner)
+
+		simAccount, found := simtypes.FindAccount(accs, beaconOwnerAddr)
+		if !found {
+			return simtypes.NoOpMsg(types.ModuleName, types.RecordAction, "unable to find account"), nil, nil // skip
+		}
+
+		account := ak.GetAccount(ctx, beaconOwnerAddr)
+		spendable := bk.SpendableCoins(ctx, account.GetAddress())
+
+		maxCanPurchase := k.GetMaxPurchasableSlots(ctx, beacon.BeaconId)
+		if maxCanPurchase == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, types.PurchaseStorageAction, "max storage reached"), nil, nil // skip
+		}
+
+		randNumToPurchase := uint64(1)
+		if maxCanPurchase > 1 {
+			randNumToPurchase = uint64(simtypes.RandIntBetween(r, 1, int(maxCanPurchase)))
+		}
+
+		bParams := k.GetParams(ctx)
+		actualPurchaseAmt := bParams.FeePurchaseStorage
+		actualFeeDenom := bParams.Denom
+
+		feeInt := int64(actualPurchaseAmt * randNumToPurchase)
+		fees := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
+
+		_, hasNeg := spendable.SafeSub(fees)
+
+		if hasNeg {
+			return simtypes.NoOpMsg(types.ModuleName, types.PurchaseStorageAction, "not enough to pay beacon purchase storage fee"), nil, nil // skip
+		}
+
+		msg := types.NewMsgPurchaseBeaconStateStorage(beacon.BeaconId, uint64(randNumToPurchase), account.GetAddress())
+
+		txGen := simparams.MakeTestEncodingConfig().TxConfig
+
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			simAccount.PrivKey,
+		)
+
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+		}
+
+		// submit the PO
+		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
 
 		return opMsg, nil, nil
 	}

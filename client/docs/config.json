@@ -15,9 +15,15 @@
       },
       "operationIds": {
         "rename": {
-          "Params": "EnterpriseParams"
+          "Params": "EnterpriseParams",
+          "TotalSupply": "EnterpriseTotalSupply",
+          "SupplyOf": "EnterpriseSupplyOf"
         }
-      }
+      },"paths": {
+      "exclude": [
+        "^/cosmos/bank/.*"
+      ]
+    }
     },
     {
       "url": "./tmp-swagger-gen/mainchain/beacon/v1/query.swagger.json",
@@ -58,15 +64,24 @@
       },
       "paths": {
         "exclude": [
-          "^/cosmos/authz/.*",
-          "^/cosmos/feegrant/.*",
-          "^/cosmos/ibc/.*",
           "^/cosmos/mint/.*",
-          "/bank/total",
-          "/bank/total/{denomination}",
-          "/cosmos/bank/v1beta1/supply",
-          "/cosmos/bank/v1beta1/supply/{denom}",
           "/minting/.*"
+        ]
+      }
+    },
+    {
+      "url": "./client/docs/ibc-v3-swagger.yml",
+      "tags": {
+        "rename": {
+          "Query": "IBC"
+        }
+      },
+      "dereference": {
+        "circular": "ignore"
+      },
+      "paths": {
+        "exclude": [
+          "^/ibc/apps/interchain_accounts/.*"
         ]
       }
     }

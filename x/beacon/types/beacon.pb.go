@@ -25,14 +25,22 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Beacon holds metadata about a registered beacon
 type Beacon struct {
-	BeaconId        uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
-	Moniker         string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
-	Name            string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// beacon_id is the id of the beacon
+	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
+	// moniker is the readable id of the beacon
+	Moniker string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
+	// name is the human friendly name of the beacon
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// last_timestamp_id is the current highest recorded timestamp id for the beacon
 	LastTimestampId uint64 `protobuf:"varint,4,opt,name=last_timestamp_id,json=lastTimestampId,proto3" json:"last_timestamp_id,omitempty"`
-	FirstIdInState  uint64 `protobuf:"varint,5,opt,name=first_id_in_state,json=firstIdInState,proto3" json:"first_id_in_state,omitempty"`
-	NumInState      uint64 `protobuf:"varint,6,opt,name=num_in_state,json=numInState,proto3" json:"num_in_state,omitempty"`
-	RegTime         uint64 `protobuf:"varint,7,opt,name=reg_time,json=regTime,proto3" json:"reg_time,omitempty"`
-	Owner           string `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"`
+	// first_id_in_state is the lowest recorded timestamp id currently held in state for the beacon
+	FirstIdInState uint64 `protobuf:"varint,5,opt,name=first_id_in_state,json=firstIdInState,proto3" json:"first_id_in_state,omitempty"`
+	// num_in_state is the current number of timestamps stored in state for the beacon
+	NumInState uint64 `protobuf:"varint,6,opt,name=num_in_state,json=numInState,proto3" json:"num_in_state,omitempty"`
+	// reg_time is the unix epoch of the beacon's registration time
+	RegTime uint64 `protobuf:"varint,7,opt,name=reg_time,json=regTime,proto3" json:"reg_time,omitempty"`
+	// owner is the owner address of the beacon
+	Owner string `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *Beacon) Reset()         { *m = Beacon{} }
@@ -124,18 +132,76 @@ func (m *Beacon) GetOwner() string {
 	return ""
 }
 
+// BeaconStorageLimit holds tata about the beacon's current in-state storage limit
+type BeaconStorageLimit struct {
+	// beacon_id is the id of the beacon
+	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
+	// in_state_limit is the current maximum number of timestmamps that will be held in state for the beacon
+	InStateLimit uint64 `protobuf:"varint,2,opt,name=in_state_limit,json=inStateLimit,proto3" json:"in_state_limit,omitempty"`
+}
+
+func (m *BeaconStorageLimit) Reset()         { *m = BeaconStorageLimit{} }
+func (m *BeaconStorageLimit) String() string { return proto.CompactTextString(m) }
+func (*BeaconStorageLimit) ProtoMessage()    {}
+func (*BeaconStorageLimit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4006bd3edf0fdcf3, []int{1}
+}
+func (m *BeaconStorageLimit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BeaconStorageLimit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BeaconStorageLimit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BeaconStorageLimit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BeaconStorageLimit.Merge(m, src)
+}
+func (m *BeaconStorageLimit) XXX_Size() int {
+	return m.Size()
+}
+func (m *BeaconStorageLimit) XXX_DiscardUnknown() {
+	xxx_messageInfo_BeaconStorageLimit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BeaconStorageLimit proto.InternalMessageInfo
+
+func (m *BeaconStorageLimit) GetBeaconId() uint64 {
+	if m != nil {
+		return m.BeaconId
+	}
+	return 0
+}
+
+func (m *BeaconStorageLimit) GetInStateLimit() uint64 {
+	if m != nil {
+		return m.InStateLimit
+	}
+	return 0
+}
+
 // BeaconTimestamp holds each hash submitted to a registered beacon
 type BeaconTimestamp struct {
+	// timestamp_id is the id of the timestamp
 	TimestampId uint64 `protobuf:"varint,1,opt,name=timestamp_id,json=timestampId,proto3" json:"timestamp_id,omitempty"`
-	SubmitTime  uint64 `protobuf:"varint,2,opt,name=submit_time,json=submitTime,proto3" json:"submit_time,omitempty"`
-	Hash        string `protobuf:"bytes,3,opt,name=hash,proto3" json:"hash,omitempty"`
+	// submit_time is the unix epoch of the timestamp's record time
+	SubmitTime uint64 `protobuf:"varint,2,opt,name=submit_time,json=submitTime,proto3" json:"submit_time,omitempty"`
+	// hash is the actual data stored for the timestamp
+	Hash string `protobuf:"bytes,3,opt,name=hash,proto3" json:"hash,omitempty"`
 }
 
 func (m *BeaconTimestamp) Reset()         { *m = BeaconTimestamp{} }
 func (m *BeaconTimestamp) String() string { return proto.CompactTextString(m) }
 func (*BeaconTimestamp) ProtoMessage()    {}
 func (*BeaconTimestamp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4006bd3edf0fdcf3, []int{1}
+	return fileDescriptor_4006bd3edf0fdcf3, []int{2}
 }
 func (m *BeaconTimestamp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -187,16 +253,25 @@ func (m *BeaconTimestamp) GetHash() string {
 
 // Params defines the parameters for the beacon module.
 type Params struct {
+	// fee_register is the cost to register a beacon
 	FeeRegister uint64 `protobuf:"varint,1,opt,name=fee_register,json=feeRegister,proto3" json:"fee_register,omitempty"`
-	FeeRecord   uint64 `protobuf:"varint,2,opt,name=fee_record,json=feeRecord,proto3" json:"fee_record,omitempty"`
-	Denom       string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
+	// fee_record is the cost to record a single timestamp
+	FeeRecord uint64 `protobuf:"varint,2,opt,name=fee_record,json=feeRecord,proto3" json:"fee_record,omitempty"`
+	// fee_purchase_storage is the cost to purchase a single additional unit of in-state storage
+	FeePurchaseStorage uint64 `protobuf:"varint,3,opt,name=fee_purchase_storage,json=feePurchaseStorage,proto3" json:"fee_purchase_storage,omitempty"`
+	// denom is the expected denomination to pay for fees, e.g. nund
+	Denom string `protobuf:"bytes,4,opt,name=denom,proto3" json:"denom,omitempty"`
+	// default_storage_limit is the default in-state storage limit for all new beacons
+	DefaultStorageLimit uint64 `protobuf:"varint,5,opt,name=default_storage_limit,json=defaultStorageLimit,proto3" json:"default_storage_limit,omitempty"`
+	// max_storage_limit is the maximum in-state storage slots any one beacon can have
+	MaxStorageLimit uint64 `protobuf:"varint,6,opt,name=max_storage_limit,json=maxStorageLimit,proto3" json:"max_storage_limit,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
 func (m *Params) String() string { return proto.CompactTextString(m) }
 func (*Params) ProtoMessage()    {}
 func (*Params) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4006bd3edf0fdcf3, []int{2}
+	return fileDescriptor_4006bd3edf0fdcf3, []int{3}
 }
 func (m *Params) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -239,6 +314,13 @@ func (m *Params) GetFeeRecord() uint64 {
 	return 0
 }
 
+func (m *Params) GetFeePurchaseStorage() uint64 {
+	if m != nil {
+		return m.FeePurchaseStorage
+	}
+	return 0
+}
+
 func (m *Params) GetDenom() string {
 	if m != nil {
 		return m.Denom
@@ -246,8 +328,23 @@ func (m *Params) GetDenom() string {
 	return ""
 }
 
+func (m *Params) GetDefaultStorageLimit() uint64 {
+	if m != nil {
+		return m.DefaultStorageLimit
+	}
+	return 0
+}
+
+func (m *Params) GetMaxStorageLimit() uint64 {
+	if m != nil {
+		return m.MaxStorageLimit
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Beacon)(nil), "mainchain.beacon.v1.Beacon")
+	proto.RegisterType((*BeaconStorageLimit)(nil), "mainchain.beacon.v1.BeaconStorageLimit")
 	proto.RegisterType((*BeaconTimestamp)(nil), "mainchain.beacon.v1.BeaconTimestamp")
 	proto.RegisterType((*Params)(nil), "mainchain.beacon.v1.Params")
 }
@@ -255,33 +352,39 @@ func init() {
 func init() { proto.RegisterFile("mainchain/beacon/v1/beacon.proto", fileDescriptor_4006bd3edf0fdcf3) }
 
 var fileDescriptor_4006bd3edf0fdcf3 = []byte{
-	// 403 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x92, 0xc1, 0x8e, 0xd3, 0x30,
-	0x10, 0x86, 0x1b, 0xc8, 0xa6, 0xed, 0xec, 0x8a, 0xd5, 0x9a, 0x3d, 0x04, 0x10, 0x21, 0xf4, 0xb4,
-	0x20, 0xd1, 0x68, 0xb5, 0x6f, 0xb0, 0xb7, 0x1c, 0x90, 0x50, 0xe0, 0xc4, 0x25, 0x38, 0xc9, 0x24,
-	0xb1, 0xc0, 0x76, 0x65, 0x3b, 0x05, 0xde, 0x82, 0xc7, 0xe2, 0xd8, 0x23, 0x47, 0xd4, 0x3e, 0x07,
-	0x12, 0xb2, 0x9d, 0xb4, 0x70, 0x9b, 0xf9, 0xe7, 0xd3, 0xfc, 0x33, 0xa3, 0x81, 0x94, 0x53, 0x26,
-	0xea, 0x9e, 0x32, 0x91, 0x55, 0x48, 0x6b, 0x29, 0xb2, 0xed, 0xed, 0x18, 0xad, 0x37, 0x4a, 0x1a,
-	0x49, 0x1e, 0x1f, 0x89, 0xf5, 0xa8, 0x6f, 0x6f, 0x9f, 0x5e, 0x77, 0xb2, 0x93, 0xae, 0x9e, 0xd9,
-	0xc8, 0xa3, 0xab, 0x3f, 0x01, 0x44, 0xf7, 0x8e, 0x21, 0xcf, 0x60, 0xe9, 0xe9, 0x92, 0x35, 0x71,
-	0x90, 0x06, 0x37, 0x61, 0xb1, 0xf0, 0x42, 0xde, 0x90, 0x18, 0xe6, 0x5c, 0x0a, 0xf6, 0x19, 0x55,
-	0xfc, 0x20, 0x0d, 0x6e, 0x96, 0xc5, 0x94, 0x12, 0x02, 0xa1, 0xa0, 0x1c, 0xe3, 0x87, 0x4e, 0x76,
-	0x31, 0x79, 0x0d, 0x57, 0x5f, 0xa8, 0x36, 0xa5, 0x61, 0x1c, 0xb5, 0xa1, 0x7c, 0x63, 0x5b, 0x86,
-	0xae, 0xe5, 0xa5, 0x2d, 0x7c, 0x98, 0xf4, 0xbc, 0x21, 0xaf, 0xe0, 0xaa, 0x65, 0x4a, 0x9b, 0x92,
-	0x35, 0x25, 0x13, 0xa5, 0x36, 0xd4, 0x60, 0x7c, 0xe6, 0xd8, 0x47, 0xae, 0x90, 0x37, 0xb9, 0x78,
-	0x6f, 0x55, 0x92, 0xc2, 0x85, 0x18, 0xf8, 0x89, 0x8a, 0x1c, 0x05, 0x62, 0xe0, 0x13, 0xf1, 0x04,
-	0x16, 0x0a, 0x3b, 0xe7, 0x1b, 0xcf, 0x5d, 0x75, 0xae, 0xb0, 0xb3, 0x76, 0xe4, 0x1a, 0xce, 0xe4,
-	0x57, 0x81, 0x2a, 0x5e, 0xb8, 0x41, 0x7d, 0xb2, 0x62, 0x70, 0xe9, 0xd7, 0x3f, 0x8e, 0x44, 0x5e,
-	0xc2, 0xc5, 0x7f, 0x73, 0xfb, 0x53, 0x9c, 0x9b, 0x7f, 0x66, 0x7e, 0x01, 0xe7, 0x7a, 0xa8, 0x38,
-	0xf3, 0x1b, 0xba, 0x8b, 0x84, 0x05, 0x78, 0xc9, 0x99, 0x11, 0x08, 0x7b, 0xaa, 0xfb, 0xe9, 0x28,
-	0x36, 0x5e, 0x7d, 0x82, 0xe8, 0x1d, 0x55, 0x94, 0x6b, 0xeb, 0xd0, 0x22, 0x96, 0x0a, 0x3b, 0xa6,
-	0x0d, 0xaa, 0xc9, 0xa1, 0x45, 0x2c, 0x46, 0x89, 0x3c, 0x07, 0xf0, 0x48, 0x2d, 0x55, 0x33, 0x1a,
-	0x2c, 0x1d, 0x60, 0x05, 0xbb, 0x4c, 0x83, 0x42, 0xf2, 0xd1, 0xc0, 0x27, 0xf7, 0x6f, 0x7f, 0xee,
-	0x93, 0x60, 0xb7, 0x4f, 0x82, 0xdf, 0xfb, 0x24, 0xf8, 0x71, 0x48, 0x66, 0xbb, 0x43, 0x32, 0xfb,
-	0x75, 0x48, 0x66, 0x1f, 0xef, 0x3a, 0x66, 0xfa, 0xa1, 0x5a, 0xd7, 0x92, 0x67, 0x83, 0x60, 0x2d,
-	0xab, 0xa9, 0x61, 0x52, 0xbc, 0xb1, 0xf9, 0xe9, 0x9d, 0xbe, 0x4d, 0x0f, 0x65, 0xbe, 0x6f, 0x50,
-	0x57, 0x91, 0x7b, 0x91, 0xbb, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0xf9, 0x5c, 0xb3, 0x52, 0x71,
-	0x02, 0x00, 0x00,
+	// 502 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x93, 0xcd, 0x6e, 0x13, 0x3f,
+	0x14, 0xc5, 0x33, 0xff, 0xff, 0x34, 0x1f, 0xb7, 0x51, 0xa3, 0xb8, 0x41, 0x1a, 0x40, 0x0c, 0x21,
+	0x62, 0x51, 0x2a, 0x91, 0x50, 0xfa, 0x06, 0xdd, 0x45, 0x02, 0xa9, 0x9a, 0x22, 0x21, 0xb1, 0x19,
+	0x39, 0x33, 0x77, 0x66, 0x2c, 0x62, 0x3b, 0xb2, 0x3d, 0x25, 0xbc, 0x05, 0x8f, 0xc5, 0xb2, 0x4b,
+	0x96, 0x28, 0x79, 0x03, 0xf6, 0x48, 0xc8, 0xf6, 0x4c, 0x3f, 0x58, 0xb0, 0xbb, 0xf7, 0xdc, 0x9f,
+	0xce, 0xb5, 0x8f, 0x65, 0x98, 0x72, 0xca, 0x44, 0x56, 0x51, 0x26, 0x16, 0x2b, 0xa4, 0x99, 0x14,
+	0x8b, 0xeb, 0xb3, 0xa6, 0x9a, 0x6f, 0x94, 0x34, 0x92, 0x1c, 0xdf, 0x12, 0xf3, 0x46, 0xbf, 0x3e,
+	0x7b, 0x32, 0x29, 0x65, 0x29, 0xdd, 0x7c, 0x61, 0x2b, 0x8f, 0xce, 0x7e, 0x07, 0xd0, 0xbd, 0x70,
+	0x0c, 0x79, 0x0a, 0x03, 0x4f, 0xa7, 0x2c, 0x8f, 0x82, 0x69, 0x70, 0x12, 0x26, 0x7d, 0x2f, 0x2c,
+	0x73, 0x12, 0x41, 0x8f, 0x4b, 0xc1, 0x3e, 0xa3, 0x8a, 0xfe, 0x9b, 0x06, 0x27, 0x83, 0xa4, 0x6d,
+	0x09, 0x81, 0x50, 0x50, 0x8e, 0xd1, 0xff, 0x4e, 0x76, 0x35, 0x39, 0x85, 0xf1, 0x9a, 0x6a, 0x93,
+	0x1a, 0xc6, 0x51, 0x1b, 0xca, 0x37, 0xd6, 0x32, 0x74, 0x96, 0x23, 0x3b, 0xf8, 0xd0, 0xea, 0xcb,
+	0x9c, 0xbc, 0x82, 0x71, 0xc1, 0x94, 0x36, 0x29, 0xcb, 0x53, 0x26, 0x52, 0x6d, 0xa8, 0xc1, 0xe8,
+	0xc0, 0xb1, 0x47, 0x6e, 0xb0, 0xcc, 0x97, 0xe2, 0xca, 0xaa, 0x64, 0x0a, 0x43, 0x51, 0xf3, 0x3b,
+	0xaa, 0xeb, 0x28, 0x10, 0x35, 0x6f, 0x89, 0xc7, 0xd0, 0x57, 0x58, 0xba, 0xbd, 0x51, 0xcf, 0x4d,
+	0x7b, 0x0a, 0x4b, 0xbb, 0x8e, 0x4c, 0xe0, 0x40, 0x7e, 0x11, 0xa8, 0xa2, 0xbe, 0x3b, 0xa8, 0x6f,
+	0x66, 0x1f, 0x81, 0xf8, 0xeb, 0x5f, 0x19, 0xa9, 0x68, 0x89, 0xef, 0x18, 0x67, 0xe6, 0xdf, 0x51,
+	0xbc, 0x84, 0xa3, 0xf6, 0x04, 0xe9, 0xda, 0xe2, 0x2e, 0x91, 0x30, 0x19, 0x32, 0x7f, 0x08, 0x67,
+	0x31, 0x63, 0x30, 0xf2, 0xc6, 0xb7, 0x77, 0x25, 0x2f, 0x60, 0xf8, 0x20, 0x10, 0x6f, 0x7c, 0x68,
+	0xee, 0x85, 0xf1, 0x1c, 0x0e, 0x75, 0xbd, 0xe2, 0xcc, 0x47, 0xd7, 0x18, 0x83, 0x97, 0xdc, 0x2d,
+	0x08, 0x84, 0x15, 0xd5, 0x55, 0x9b, 0xb6, 0xad, 0x67, 0xbf, 0x02, 0xe8, 0x5e, 0x52, 0x45, 0xb9,
+	0xb6, 0x2b, 0x0a, 0xc4, 0x54, 0x61, 0xc9, 0xb4, 0x41, 0xd5, 0xae, 0x28, 0x10, 0x93, 0x46, 0x22,
+	0xcf, 0x00, 0x3c, 0x92, 0x49, 0x95, 0x37, 0x1b, 0x06, 0x0e, 0xb0, 0x02, 0x79, 0x03, 0x13, 0x3b,
+	0xde, 0xd4, 0x2a, 0xab, 0xa8, 0xc6, 0x54, 0xfb, 0x5c, 0xdc, 0xc2, 0x30, 0x21, 0x05, 0xe2, 0x65,
+	0x33, 0x6a, 0x12, 0xb3, 0xc1, 0xe6, 0x28, 0x24, 0x77, 0x0f, 0x3c, 0x48, 0x7c, 0x43, 0xde, 0xc2,
+	0xa3, 0x1c, 0x0b, 0x5a, 0xaf, 0x4d, 0x6b, 0xd1, 0x84, 0xe5, 0x9f, 0xf6, 0xb8, 0x19, 0x3e, 0x88,
+	0xfd, 0x14, 0xc6, 0x9c, 0x6e, 0xff, 0xe2, 0xfd, 0x23, 0x8f, 0x38, 0xdd, 0xde, 0x67, 0x2f, 0xde,
+	0x7f, 0xdf, 0xc5, 0xc1, 0xcd, 0x2e, 0x0e, 0x7e, 0xee, 0xe2, 0xe0, 0xdb, 0x3e, 0xee, 0xdc, 0xec,
+	0xe3, 0xce, 0x8f, 0x7d, 0xdc, 0xf9, 0x74, 0x5e, 0x32, 0x53, 0xd5, 0xab, 0x79, 0x26, 0xf9, 0xa2,
+	0x16, 0xac, 0x60, 0x19, 0x35, 0x4c, 0x8a, 0xd7, 0xb6, 0xbf, 0xfb, 0x3a, 0xdb, 0xf6, 0xf3, 0x98,
+	0xaf, 0x1b, 0xd4, 0xab, 0xae, 0xfb, 0x0e, 0xe7, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x83, 0x62,
+	0x80, 0xab, 0x5d, 0x03, 0x00, 0x00,
 }
 
 func (m *Beacon) Marshal() (dAtA []byte, err error) {
@@ -353,6 +456,39 @@ func (m *Beacon) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *BeaconStorageLimit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BeaconStorageLimit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BeaconStorageLimit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.InStateLimit != 0 {
+		i = encodeVarintBeacon(dAtA, i, uint64(m.InStateLimit))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.BeaconId != 0 {
+		i = encodeVarintBeacon(dAtA, i, uint64(m.BeaconId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *BeaconTimestamp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -413,12 +549,27 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.MaxStorageLimit != 0 {
+		i = encodeVarintBeacon(dAtA, i, uint64(m.MaxStorageLimit))
+		i--
+		dAtA[i] = 0x30
+	}
+	if m.DefaultStorageLimit != 0 {
+		i = encodeVarintBeacon(dAtA, i, uint64(m.DefaultStorageLimit))
+		i--
+		dAtA[i] = 0x28
+	}
 	if len(m.Denom) > 0 {
 		i -= len(m.Denom)
 		copy(dAtA[i:], m.Denom)
 		i = encodeVarintBeacon(dAtA, i, uint64(len(m.Denom)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x22
+	}
+	if m.FeePurchaseStorage != 0 {
+		i = encodeVarintBeacon(dAtA, i, uint64(m.FeePurchaseStorage))
+		i--
+		dAtA[i] = 0x18
 	}
 	if m.FeeRecord != 0 {
 		i = encodeVarintBeacon(dAtA, i, uint64(m.FeeRecord))
@@ -480,6 +631,21 @@ func (m *Beacon) Size() (n int) {
 	return n
 }
 
+func (m *BeaconStorageLimit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BeaconId != 0 {
+		n += 1 + sovBeacon(uint64(m.BeaconId))
+	}
+	if m.InStateLimit != 0 {
+		n += 1 + sovBeacon(uint64(m.InStateLimit))
+	}
+	return n
+}
+
 func (m *BeaconTimestamp) Size() (n int) {
 	if m == nil {
 		return 0
@@ -511,9 +677,18 @@ func (m *Params) Size() (n int) {
 	if m.FeeRecord != 0 {
 		n += 1 + sovBeacon(uint64(m.FeeRecord))
 	}
+	if m.FeePurchaseStorage != 0 {
+		n += 1 + sovBeacon(uint64(m.FeePurchaseStorage))
+	}
 	l = len(m.Denom)
 	if l > 0 {
 		n += 1 + l + sovBeacon(uint64(l))
+	}
+	if m.DefaultStorageLimit != 0 {
+		n += 1 + sovBeacon(uint64(m.DefaultStorageLimit))
+	}
+	if m.MaxStorageLimit != 0 {
+		n += 1 + sovBeacon(uint64(m.MaxStorageLimit))
 	}
 	return n
 }
@@ -765,6 +940,94 @@ func (m *Beacon) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *BeaconStorageLimit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowBeacon
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BeaconStorageLimit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BeaconStorageLimit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BeaconId", wireType)
+			}
+			m.BeaconId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBeacon
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BeaconId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InStateLimit", wireType)
+			}
+			m.InStateLimit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBeacon
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.InStateLimit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipBeacon(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthBeacon
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *BeaconTimestamp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -953,6 +1216,25 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FeePurchaseStorage", wireType)
+			}
+			m.FeePurchaseStorage = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBeacon
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.FeePurchaseStorage |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
 			}
@@ -984,6 +1266,44 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			}
 			m.Denom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefaultStorageLimit", wireType)
+			}
+			m.DefaultStorageLimit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBeacon
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.DefaultStorageLimit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxStorageLimit", wireType)
+			}
+			m.MaxStorageLimit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowBeacon
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxStorageLimit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipBeacon(dAtA[iNdEx:])

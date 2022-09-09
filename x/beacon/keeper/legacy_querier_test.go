@@ -105,7 +105,7 @@ func TestQueryParams(t *testing.T) {
 
 	testApp, ctx, legacyQuerierCdc, querier := setupTest()
 
-	paramsNew := types.NewParams(9999, 999, "somecoin")
+	paramsNew := types.NewParams(9999, 999, 999, "somecoin", 9999, 99999)
 	testApp.BeaconKeeper.SetParams(ctx, paramsNew)
 
 	params := getQueriedParams(t, ctx, legacyQuerierCdc, querier)

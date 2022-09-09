@@ -91,7 +91,7 @@ func (q Keeper) BeaconsFiltered(c context.Context, req *types.QueryBeaconsFilter
 
 	pageRes, err := query.FilteredPaginate(beaconsStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
 		var b types.Beacon
-		if err := q.cdc.UnmarshalBinaryBare(value, &b); err != nil {
+		if err := q.cdc.Unmarshal(value, &b); err != nil {
 			return false, status.Error(codes.Internal, err.Error())
 		}
 
@@ -127,5 +127,36 @@ func (q Keeper) BeaconsFiltered(c context.Context, req *types.QueryBeaconsFilter
 
 	return &types.QueryBeaconsFilteredResponse{
 		Beacons: beacons, Pagination: pageRes,
+	}, nil
+}
+
+func (q Keeper) BeaconStorage(c context.Context, req *types.QueryBeaconStorageRequest) (*types.QueryBeaconStorageResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	if req.BeaconId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "beacon id can not be 0")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	beacon, found := q.GetBeacon(ctx, req.BeaconId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "beacon %d doesn't exist in state", req.BeaconId)
+	}
+
+	beaconStorage, _ := q.GetBeaconStorageLimit(ctx, req.BeaconId)
+
+	maxStorageLimit := q.GetParamMaxStorageLimit(ctx)
+
+	return &types.QueryBeaconStorageResponse{
+		BeaconId:       beacon.BeaconId,
+		Owner:          beacon.Owner,
+		CurrentLimit:   beaconStorage.InStateLimit,
+		CurrentUsed:    beacon.NumInState,
+		Max:            maxStorageLimit,
+		MaxPurchasable: maxStorageLimit - beaconStorage.InStateLimit,
 	}, nil
 }

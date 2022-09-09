@@ -69,7 +69,21 @@
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
           "account_number": "0",
+          "address": "und1svk5ukmzymwfdk4k4jwltw0a54nts9e4mx76c7",
+          "pub_key": null,
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "0",
           "address": "und10wl769hge8nhszv70uxc9zu0lgrc2lggkhst8v",
+          "pub_key": null,
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "account_number": "0",
+          "address": "und1d3ercl9mpg2skhpfeaahvhvytltt3khacpunnr",
           "pub_key": null,
           "sequence": "0"
         }
@@ -81,6 +95,9 @@
         "tx_sig_limit": "7",
         "tx_size_cost_per_byte": "10"
       }
+    },
+    "authz": {
+      "authorization": []
     },
     "bank": {
       "balances": [
@@ -173,6 +190,24 @@
               "denom": "nund"
             }
           ]
+        },
+        {
+          "address": "und1svk5ukmzymwfdk4k4jwltw0a54nts9e4mx76c7",
+          "coins": [
+            {
+              "amount": "100000000000000",
+              "denom": "nund"
+            }
+          ]
+        },
+        {
+          "address": "und1d3ercl9mpg2skhpfeaahvhvytltt3khacpunnr",
+          "coins": [
+            {
+              "amount": "89900000000000000",
+              "denom": "nund"
+            }
+          ]
         }
       ],
       "denom_metadata": [],
@@ -186,10 +221,17 @@
       "params": {
         "denom": "nund",
         "fee_record": "1000000000",
-        "fee_register": "1000000000000"
+        "fee_purchase_storage": "1000000000",
+        "fee_register": "1000000000000",
+        "default_storage_limit": "100",
+        "max_storage_limit": "200"
       },
       "registered_beacons": [],
       "starting_beacon_id": "1"
+    },
+    "capability": {
+      "index": "1",
+      "owners": []
     },
     "crisis": {
       "constant_fee": {
@@ -217,16 +259,21 @@
       "validator_slash_events": []
     },
     "enterprise": {
-      "locked_und": null,
+      "locked_und": [],
       "params": {
         "decision_time_limit": "120",
         "denom": "nund",
         "ent_signers": "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6,und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
         "min_accepts": "1"
       },
-      "purchase_orders": null,
+      "purchase_orders": [],
+      "spent_efund": [],
       "starting_purchase_order_id": "1",
       "total_locked": {
+        "amount": "0",
+        "denom": "nund"
+      },
+      "total_spent": {
         "amount": "0",
         "denom": "nund"
       },
@@ -237,11 +284,14 @@
     "evidence": {
       "evidence": []
     },
+    "feegrant": {
+      "allowances": []
+    },
     "genutil": {
       "gen_txs": [
-        {"body":{"messages":[{"@type":"/cosmos.staking.v1beta1.MsgCreateValidator","description":{"moniker":"node1","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed","validator_address":"undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet","pubkey":{"@type":"/cosmos.crypto.ed25519.PubKey","key":"AEs4VnmCsuvtqVMPs6otpGEwDwPtp8ZuN5zShTAIGv0="},"value":{"denom":"nund","amount":"2000000000000000"}}],"memo":"3da95f113600fc324ecf759915993c13d701ed80@10.0.0.32:26656","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[{"public_key":{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"A1qL4KCBiGgrE/PYIrUtpN08HxA7+Up+Q7eh3XNbCdSD"},"mode_info":{"single":{"mode":"SIGN_MODE_DIRECT"}},"sequence":"0"}],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":["07K80gQ8YT68Rb4BCpv3kJ4pgExFhdW+fGEgNBH3ETdoh8wffHRZ4HZrEXO990od7RzuBLdflRnXtI0T7WJO4g=="]},
-        {"body":{"messages":[{"@type":"/cosmos.staking.v1beta1.MsgCreateValidator","description":{"moniker":"node2","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und13lyhcfekkdczaugqaexya60ckn23l5waflr4pq","validator_address":"undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px","pubkey":{"@type":"/cosmos.crypto.ed25519.PubKey","key":"O/TPRtudbDJbKXsFHWn9/lmmHBDYGTWZSaVGvYvjDiQ="},"value":{"denom":"nund","amount":"1000000000000000"}}],"memo":"53e857acc2df7127d5ef33b0dd98c55e7068ae06@10.0.0.32:26656","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[{"public_key":{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AqLU9yc0aXttGQYygMHhV+vEGi6L/KD8wkJyWKoR8orD"},"mode_info":{"single":{"mode":"SIGN_MODE_DIRECT"}},"sequence":"0"}],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":["19XyErwDfnt/3RvUYYzLQR1li8XEvlGrV6D51c17MYU9o0i6FvO9egBt0xzK6dvNkZ/VeMTBUna6QCWrd6mcAA=="]},
-        {"body":{"messages":[{"@type":"/cosmos.staking.v1beta1.MsgCreateValidator","description":{"moniker":"node3","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und104ha8uwqlwyazv8r2zy8h76pcv6mypm3met3ah","validator_address":"undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3","pubkey":{"@type":"/cosmos.crypto.ed25519.PubKey","key":"a4x3/9Qh2gDhWqOnkshFlJlOilTavXC4uOW0gWd+hL0="},"value":{"denom":"nund","amount":"500000000000000"}}],"memo":"33a49c1eae31ce82ffab25ed821e8cec7f8bbd00@10.0.0.32:26656","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[{"public_key":{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"As8uTge3ko/fWLVWRPR/+epj5pCbTztiX5Bifs3BQXYi"},"mode_info":{"single":{"mode":"SIGN_MODE_DIRECT"}},"sequence":"0"}],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":["3qdCvCn2u/9KnOuxMbvUqXcKPbZU3eIbuIDzw8LTWJMtBqSoIvLx5mBBnT1x+yJpVA3gQVY9G0iYR8EFdlfViA=="]}
+        {"body":{"messages":[{"@type":"/cosmos.staking.v1beta1.MsgCreateValidator","description":{"moniker":"node1","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed","validator_address":"undvaloper1eq239sgefyzm4crl85nfyvt7kw83vrna6lrjet","pubkey":{"@type":"/cosmos.crypto.ed25519.PubKey","key":"AEs4VnmCsuvtqVMPs6otpGEwDwPtp8ZuN5zShTAIGv0="},"value":{"denom":"nund","amount":"2000000000000000"}}],"memo":"3da95f113600fc324ecf759915993c13d701ed80@172.25.0.3:26656","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[{"public_key":{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"A1qL4KCBiGgrE/PYIrUtpN08HxA7+Up+Q7eh3XNbCdSD"},"mode_info":{"single":{"mode":"SIGN_MODE_DIRECT"}},"sequence":"0"}],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":["74GZKHLnd0EAP4Fq7uhwVwrHSWw/RbWuBxwpcH6HXcslorrQOdeUjPpXBXuKkTtKOrs55jS+rxuL1oRVLYxf4w=="]},
+        {"body":{"messages":[{"@type":"/cosmos.staking.v1beta1.MsgCreateValidator","description":{"moniker":"node2","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und13lyhcfekkdczaugqaexya60ckn23l5waflr4pq","validator_address":"undvaloper13lyhcfekkdczaugqaexya60ckn23l5wazf07px","pubkey":{"@type":"/cosmos.crypto.ed25519.PubKey","key":"O/TPRtudbDJbKXsFHWn9/lmmHBDYGTWZSaVGvYvjDiQ="},"value":{"denom":"nund","amount":"1000000000000000"}}],"memo":"53e857acc2df7127d5ef33b0dd98c55e7068ae06@172.25.0.4:26656","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[{"public_key":{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AqLU9yc0aXttGQYygMHhV+vEGi6L/KD8wkJyWKoR8orD"},"mode_info":{"single":{"mode":"SIGN_MODE_DIRECT"}},"sequence":"0"}],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":["dsf9B/x7V5ePQ2CvygjwE8kyoiuJTfiJ+XqIP5VHYMoqIdOxW9AzOIGiEEtPGTkPzEJi0bDY3aLOxQRgv4jNFA=="]},
+        {"body":{"messages":[{"@type":"/cosmos.staking.v1beta1.MsgCreateValidator","description":{"moniker":"node3","identity":"","website":"","security_contact":"","details":""},"commission":{"rate":"0.100000000000000000","max_rate":"0.200000000000000000","max_change_rate":"0.010000000000000000"},"min_self_delegation":"1","delegator_address":"und104ha8uwqlwyazv8r2zy8h76pcv6mypm3met3ah","validator_address":"undvaloper104ha8uwqlwyazv8r2zy8h76pcv6mypm3s086a3","pubkey":{"@type":"/cosmos.crypto.ed25519.PubKey","key":"a4x3/9Qh2gDhWqOnkshFlJlOilTavXC4uOW0gWd+hL0="},"value":{"denom":"nund","amount":"500000000000000"}}],"memo":"33a49c1eae31ce82ffab25ed821e8cec7f8bbd00@172.25.0.5:26656","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[{"public_key":{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"As8uTge3ko/fWLVWRPR/+epj5pCbTztiX5Bifs3BQXYi"},"mode_info":{"single":{"mode":"SIGN_MODE_DIRECT"}},"sequence":"0"}],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":["WelrjpaRvK8mUHZzMvD0qLs1EQ2MfDzbbVw76Jht6mEvNiGEkC0jeKZGrYxfLriur0VIDt1h65HCoqSkh6iXjQ=="]}
       ]
     },
     "gov": {
@@ -267,18 +317,37 @@
         "voting_period": "180s"
       }
     },
-    "mint": {
-      "minter": {
-        "annual_provisions": "0.000000000000000000",
-        "inflation": "0.000000000000000000"
+    "ibc": {
+      "client_genesis": {
+        "clients": [],
+        "clients_consensus": [],
+        "clients_metadata": [],
+        "params": {
+          "allowed_clients": [
+            "06-solomachine",
+            "07-tendermint"
+          ]
+        },
+        "create_localhost": false,
+        "next_client_sequence": "0"
       },
-      "params": {
-        "blocks_per_year": "6311520",
-        "goal_bonded": "0.670000000000000000",
-        "inflation_max": "0.000000000000000000",
-        "inflation_min": "0.000000000000000000",
-        "inflation_rate_change": "0.000000000000000000",
-        "mint_denom": "nund"
+      "connection_genesis": {
+        "connections": [],
+        "client_connection_paths": [],
+        "next_connection_sequence": "0",
+        "params": {
+          "max_expected_time_per_block": "30000000000"
+        }
+      },
+      "channel_genesis": {
+        "channels": [],
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "send_sequences": [],
+        "recv_sequences": [],
+        "ack_sequences": [],
+        "next_channel_sequence": "0"
       }
     },
     "params": null,
@@ -300,26 +369,39 @@
       "last_validator_powers": [],
       "params": {
         "bond_denom": "nund",
-        "historical_entries": 0,
+        "historical_entries": 100,
         "max_entries": 7,
         "max_validators": 96,
-        "unbonding_time": "180s"
+        "unbonding_time": "1814400s"
       },
       "redelegations": [],
       "unbonding_delegations": [],
       "validators": []
     },
+    "transfer": {
+      "port_id": "transfer",
+      "denom_traces": [],
+      "params": {
+        "send_enabled": true,
+        "receive_enabled": true
+      }
+    },
+    "upgrade": {},
+    "vesting": {},
     "wrkchain": {
       "params": {
         "denom": "nund",
         "fee_record": "1000000000",
-        "fee_register": "1000000000000"
+        "fee_purchase_storage": "1000000000",
+        "fee_register": "1000000000000",
+        "default_storage_limit": "100",
+        "max_storage_limit": "200"
       },
       "registered_wrkchains": [],
       "starting_wrkchain_id": "1"
     }
   },
-  "chain_id": "FUND-Mainchain-DevNet",
+  "chain_id": "FUND-DevNet-2",
   "consensus_params": {
     "block": {
       "max_bytes": "22020096",

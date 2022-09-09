@@ -25,16 +25,26 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // WrkChain holds metadata about a registered wrkchain
 type WrkChain struct {
-	WrkchainId   uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
-	Moniker      string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
-	Name         string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Genesis      string `protobuf:"bytes,4,opt,name=genesis,proto3" json:"genesis,omitempty"`
-	Type         string `protobuf:"bytes,5,opt,name=type,proto3" json:"type,omitempty"`
-	Lastblock    uint64 `protobuf:"varint,6,opt,name=lastblock,proto3" json:"lastblock,omitempty"`
-	NumBlocks    uint64 `protobuf:"varint,7,opt,name=num_blocks,json=numBlocks,proto3" json:"num_blocks,omitempty"`
+	// wrkchain_id is the id of the wrkchain
+	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
+	// moniker is the readable id of the wrkchain
+	Moniker string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
+	// name is the human friendly name of the wrkchain
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// genesis is an optional hash of the wrkchain's genesis block
+	Genesis string `protobuf:"bytes,4,opt,name=genesis,proto3" json:"genesis,omitempty"`
+	// type is the wrkchain type, e.g. geth, cosmos etc.
+	Type string `protobuf:"bytes,5,opt,name=type,proto3" json:"type,omitempty"`
+	// lastblock is the current highest recorded height for the wrkchain
+	Lastblock uint64 `protobuf:"varint,6,opt,name=lastblock,proto3" json:"lastblock,omitempty"`
+	// num_blocks is the current number of block hashes stored in state for the wrkchain
+	NumBlocks uint64 `protobuf:"varint,7,opt,name=num_blocks,json=numBlocks,proto3" json:"num_blocks,omitempty"`
+	// lowest_height is the lowest recorded height currently held in state for the wrkchain
 	LowestHeight uint64 `protobuf:"varint,8,opt,name=lowest_height,json=lowestHeight,proto3" json:"lowest_height,omitempty"`
-	RegTime      uint64 `protobuf:"varint,9,opt,name=reg_time,json=regTime,proto3" json:"reg_time,omitempty"`
-	Owner        string `protobuf:"bytes,10,opt,name=owner,proto3" json:"owner,omitempty"`
+	// reg_time is the unix epoch of the wrkchain's registration time
+	RegTime uint64 `protobuf:"varint,9,opt,name=reg_time,json=regTime,proto3" json:"reg_time,omitempty"`
+	// owner is the owner address of the wrkchain
+	Owner string `protobuf:"bytes,10,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *WrkChain) Reset()         { *m = WrkChain{} }
@@ -140,22 +150,84 @@ func (m *WrkChain) GetOwner() string {
 	return ""
 }
 
+// WrkChainStorageLimit holds tata about the wrkchain's current in-state storage limit
+type WrkChainStorageLimit struct {
+	// wrkchain_id is the id of the wrkchain
+	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
+	// in_state_limit is the current maximum number of blocks that will be held in state for the wrkchain
+	InStateLimit uint64 `protobuf:"varint,2,opt,name=in_state_limit,json=inStateLimit,proto3" json:"in_state_limit,omitempty"`
+}
+
+func (m *WrkChainStorageLimit) Reset()         { *m = WrkChainStorageLimit{} }
+func (m *WrkChainStorageLimit) String() string { return proto.CompactTextString(m) }
+func (*WrkChainStorageLimit) ProtoMessage()    {}
+func (*WrkChainStorageLimit) Descriptor() ([]byte, []int) {
+	return fileDescriptor_02a2970309ba545c, []int{1}
+}
+func (m *WrkChainStorageLimit) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *WrkChainStorageLimit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_WrkChainStorageLimit.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *WrkChainStorageLimit) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WrkChainStorageLimit.Merge(m, src)
+}
+func (m *WrkChainStorageLimit) XXX_Size() int {
+	return m.Size()
+}
+func (m *WrkChainStorageLimit) XXX_DiscardUnknown() {
+	xxx_messageInfo_WrkChainStorageLimit.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WrkChainStorageLimit proto.InternalMessageInfo
+
+func (m *WrkChainStorageLimit) GetWrkchainId() uint64 {
+	if m != nil {
+		return m.WrkchainId
+	}
+	return 0
+}
+
+func (m *WrkChainStorageLimit) GetInStateLimit() uint64 {
+	if m != nil {
+		return m.InStateLimit
+	}
+	return 0
+}
+
 // WrkChainBlock holds data about a wrkchain's block hash submission
 type WrkChainBlock struct {
-	Height     uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
-	Blockhash  string `protobuf:"bytes,2,opt,name=blockhash,proto3" json:"blockhash,omitempty"`
+	// height is the block number/height of the stored wrkchain block hash
+	Height uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
+	// blockhash is the block hash of the stored wrkchain block
+	Blockhash string `protobuf:"bytes,2,opt,name=blockhash,proto3" json:"blockhash,omitempty"`
+	// parenthash is the optional hash of the parent block of the stored wrkchain block hash
 	Parenthash string `protobuf:"bytes,3,opt,name=parenthash,proto3" json:"parenthash,omitempty"`
-	Hash1      string `protobuf:"bytes,4,opt,name=hash1,proto3" json:"hash1,omitempty"`
-	Hash2      string `protobuf:"bytes,5,opt,name=hash2,proto3" json:"hash2,omitempty"`
-	Hash3      string `protobuf:"bytes,6,opt,name=hash3,proto3" json:"hash3,omitempty"`
-	SubTime    uint64 `protobuf:"varint,7,opt,name=sub_time,json=subTime,proto3" json:"sub_time,omitempty"`
+	// hash1 is an optional hash of any type of the stored wrkchain block hash
+	Hash1 string `protobuf:"bytes,4,opt,name=hash1,proto3" json:"hash1,omitempty"`
+	// hash2 is an optional hash of any type of the stored wrkchain block hash
+	Hash2 string `protobuf:"bytes,5,opt,name=hash2,proto3" json:"hash2,omitempty"`
+	// hash3 is an optional hash of any type of the stored wrkchain block hash
+	Hash3 string `protobuf:"bytes,6,opt,name=hash3,proto3" json:"hash3,omitempty"`
+	// sub_time is the unix epoch of the wkrchain hash submission
+	SubTime uint64 `protobuf:"varint,7,opt,name=sub_time,json=subTime,proto3" json:"sub_time,omitempty"`
 }
 
 func (m *WrkChainBlock) Reset()         { *m = WrkChainBlock{} }
 func (m *WrkChainBlock) String() string { return proto.CompactTextString(m) }
 func (*WrkChainBlock) ProtoMessage()    {}
 func (*WrkChainBlock) Descriptor() ([]byte, []int) {
-	return fileDescriptor_02a2970309ba545c, []int{1}
+	return fileDescriptor_02a2970309ba545c, []int{2}
 }
 func (m *WrkChainBlock) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -235,16 +307,25 @@ func (m *WrkChainBlock) GetSubTime() uint64 {
 
 // Params defines the parameters for the wrkchain module.
 type Params struct {
+	// fee_register is the cost to register a wkrchain
 	FeeRegister uint64 `protobuf:"varint,1,opt,name=fee_register,json=feeRegister,proto3" json:"fee_register,omitempty"`
-	FeeRecord   uint64 `protobuf:"varint,2,opt,name=fee_record,json=feeRecord,proto3" json:"fee_record,omitempty"`
-	Denom       string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
+	// fee_record is the cost to record a single wkrchain hash
+	FeeRecord uint64 `protobuf:"varint,2,opt,name=fee_record,json=feeRecord,proto3" json:"fee_record,omitempty"`
+	// fee_purchase_storage is the cost to purchase a single additional unit of in-state storage
+	FeePurchaseStorage uint64 `protobuf:"varint,3,opt,name=fee_purchase_storage,json=feePurchaseStorage,proto3" json:"fee_purchase_storage,omitempty"`
+	// denom is the expected denomination to pay for fees, e.g. nund
+	Denom string `protobuf:"bytes,4,opt,name=denom,proto3" json:"denom,omitempty"`
+	// default_storage_limit is the default in-state storage limit for all new wkrchains
+	DefaultStorageLimit uint64 `protobuf:"varint,5,opt,name=default_storage_limit,json=defaultStorageLimit,proto3" json:"default_storage_limit,omitempty"`
+	// max_storage_limit is the maximum in-state storage slots any one wkrchain can have
+	MaxStorageLimit uint64 `protobuf:"varint,6,opt,name=max_storage_limit,json=maxStorageLimit,proto3" json:"max_storage_limit,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
 func (m *Params) String() string { return proto.CompactTextString(m) }
 func (*Params) ProtoMessage()    {}
 func (*Params) Descriptor() ([]byte, []int) {
-	return fileDescriptor_02a2970309ba545c, []int{2}
+	return fileDescriptor_02a2970309ba545c, []int{3}
 }
 func (m *Params) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -287,6 +368,13 @@ func (m *Params) GetFeeRecord() uint64 {
 	return 0
 }
 
+func (m *Params) GetFeePurchaseStorage() uint64 {
+	if m != nil {
+		return m.FeePurchaseStorage
+	}
+	return 0
+}
+
 func (m *Params) GetDenom() string {
 	if m != nil {
 		return m.Denom
@@ -294,8 +382,23 @@ func (m *Params) GetDenom() string {
 	return ""
 }
 
+func (m *Params) GetDefaultStorageLimit() uint64 {
+	if m != nil {
+		return m.DefaultStorageLimit
+	}
+	return 0
+}
+
+func (m *Params) GetMaxStorageLimit() uint64 {
+	if m != nil {
+		return m.MaxStorageLimit
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*WrkChain)(nil), "mainchain.wrkchain.v1.WrkChain")
+	proto.RegisterType((*WrkChainStorageLimit)(nil), "mainchain.wrkchain.v1.WrkChainStorageLimit")
 	proto.RegisterType((*WrkChainBlock)(nil), "mainchain.wrkchain.v1.WrkChainBlock")
 	proto.RegisterType((*Params)(nil), "mainchain.wrkchain.v1.Params")
 }
@@ -305,36 +408,42 @@ func init() {
 }
 
 var fileDescriptor_02a2970309ba545c = []byte{
-	// 450 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x4c, 0x92, 0xbf, 0x8e, 0x13, 0x31,
-	0x10, 0xc6, 0xb3, 0x47, 0x2e, 0x7f, 0xe6, 0xee, 0x1a, 0xeb, 0x40, 0x06, 0xc1, 0x72, 0x04, 0x8a,
-	0x6b, 0x48, 0x14, 0x22, 0x5e, 0xe0, 0x68, 0xa0, 0x02, 0x45, 0x48, 0x48, 0x34, 0xcb, 0xee, 0x66,
-	0xb2, 0x6b, 0x25, 0xb6, 0x23, 0xdb, 0x7b, 0x81, 0xb7, 0xa0, 0xe6, 0x71, 0xa8, 0x28, 0xaf, 0xa4,
-	0x44, 0xc9, 0x8b, 0x20, 0x8f, 0xbd, 0xc9, 0x55, 0x3b, 0xdf, 0x6f, 0xbe, 0xd5, 0x78, 0x3e, 0x0d,
-	0xbc, 0x92, 0xb9, 0x50, 0x65, 0x9d, 0x0b, 0x35, 0xd9, 0x9a, 0x55, 0x28, 0x6e, 0xa7, 0x87, 0x7a,
-	0xbc, 0x31, 0xda, 0x69, 0xf6, 0xf0, 0xe0, 0x1a, 0x1f, 0x3a, 0xb7, 0xd3, 0x27, 0x97, 0x95, 0xae,
-	0x34, 0x39, 0x26, 0xbe, 0x0a, 0xe6, 0xd1, 0xaf, 0x13, 0x18, 0x7c, 0x31, 0xab, 0x77, 0xde, 0xc5,
-	0x9e, 0xc3, 0x59, 0xfb, 0x47, 0x26, 0x16, 0x3c, 0xb9, 0x4a, 0xae, 0xbb, 0x73, 0x68, 0xd1, 0x87,
-	0x05, 0xe3, 0xd0, 0x97, 0x5a, 0x89, 0x15, 0x1a, 0x7e, 0x72, 0x95, 0x5c, 0x0f, 0xe7, 0xad, 0x64,
-	0x0c, 0xba, 0x2a, 0x97, 0xc8, 0x1f, 0x10, 0xa6, 0xda, 0xbb, 0x2b, 0x54, 0x68, 0x85, 0xe5, 0xdd,
-	0xe0, 0x8e, 0xd2, 0xbb, 0xdd, 0x8f, 0x0d, 0xf2, 0xd3, 0xe0, 0xf6, 0x35, 0x7b, 0x0a, 0xc3, 0x75,
-	0x6e, 0x5d, 0xb1, 0xd6, 0xe5, 0x8a, 0xf7, 0x68, 0xf4, 0x11, 0xb0, 0x67, 0x00, 0xaa, 0x91, 0x19,
-	0x09, 0xcb, 0xfb, 0xa1, 0xad, 0x1a, 0x79, 0x43, 0x80, 0xbd, 0x84, 0x8b, 0xb5, 0xde, 0xa2, 0x75,
-	0x59, 0x8d, 0xa2, 0xaa, 0x1d, 0x1f, 0x90, 0xe3, 0x3c, 0xc0, 0xf7, 0xc4, 0xd8, 0x63, 0x18, 0x18,
-	0xac, 0x32, 0x27, 0x24, 0xf2, 0x21, 0xf5, 0xfb, 0x06, 0xab, 0xcf, 0x42, 0x22, 0xbb, 0x84, 0x53,
-	0xbd, 0x55, 0x68, 0x38, 0xd0, 0x8b, 0x82, 0x18, 0xfd, 0x4e, 0xe0, 0xa2, 0x0d, 0x87, 0x06, 0xb1,
-	0x47, 0xd0, 0x8b, 0x03, 0x42, 0x38, 0x51, 0xf9, 0xc7, 0xd3, 0xd3, 0xea, 0xdc, 0xd6, 0x31, 0x9a,
-	0x23, 0x60, 0x29, 0xc0, 0x26, 0x37, 0xa8, 0x1c, 0xb5, 0x43, 0x44, 0xf7, 0x88, 0x9f, 0xee, 0xbf,
-	0xd3, 0x18, 0x53, 0x10, 0x2d, 0x7d, 0x13, 0x53, 0x0a, 0xa2, 0xa5, 0x33, 0x8a, 0x28, 0xd2, 0x99,
-	0x5f, 0xcd, 0x36, 0x45, 0x58, 0x2d, 0x84, 0xd3, 0xb7, 0x4d, 0xe1, 0x57, 0x1b, 0x7d, 0x83, 0xde,
-	0xa7, 0xdc, 0xe4, 0xd2, 0xb2, 0x17, 0x70, 0xbe, 0x44, 0xcc, 0x0c, 0x56, 0xc2, 0x3a, 0x34, 0x71,
-	0x85, 0xb3, 0x25, 0xe2, 0x3c, 0x22, 0x1f, 0x73, 0xb0, 0x94, 0xda, 0x2c, 0x68, 0x91, 0xee, 0x7c,
-	0x48, 0x06, 0x0f, 0xfc, 0xf0, 0x05, 0x2a, 0x2d, 0xe3, 0x0e, 0x41, 0xdc, 0x7c, 0xfc, 0xb3, 0x4b,
-	0x93, 0xbb, 0x5d, 0x9a, 0xfc, 0xdb, 0xa5, 0xc9, 0xcf, 0x7d, 0xda, 0xb9, 0xdb, 0xa7, 0x9d, 0xbf,
-	0xfb, 0xb4, 0xf3, 0xf5, 0x6d, 0x25, 0x5c, 0xdd, 0x14, 0xe3, 0x52, 0xcb, 0x49, 0xa3, 0xc4, 0x52,
-	0x94, 0xb9, 0x13, 0x5a, 0xbd, 0xf6, 0xfa, 0x78, 0xcb, 0xdf, 0x8f, 0xd7, 0xec, 0x2f, 0xc1, 0x16,
-	0x3d, 0xba, 0xcd, 0xd9, 0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2b, 0x5e, 0xf5, 0x40, 0xf0, 0x02,
-	0x00, 0x00,
+	// 555 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x53, 0xcd, 0x6e, 0x13, 0x3d,
+	0x14, 0xed, 0xf4, 0x4b, 0xf3, 0x73, 0x9b, 0x7e, 0x08, 0x93, 0xa2, 0x01, 0xc1, 0x50, 0x42, 0x17,
+	0x15, 0x12, 0x09, 0x69, 0xc4, 0x0b, 0x94, 0x0d, 0x48, 0x48, 0x54, 0x01, 0x09, 0x09, 0x09, 0x8d,
+	0x9c, 0xc9, 0xcd, 0x8c, 0x95, 0xd8, 0x8e, 0x6c, 0x4f, 0x13, 0xde, 0x82, 0x35, 0x8f, 0xc3, 0x8a,
+	0x65, 0x97, 0x2c, 0x51, 0xf2, 0x06, 0x3c, 0x01, 0xf2, 0xcf, 0x24, 0x85, 0x0d, 0xab, 0xdc, 0x73,
+	0xee, 0x99, 0x1b, 0xdf, 0x73, 0x6c, 0x38, 0xe5, 0x94, 0x89, 0xac, 0xa0, 0x4c, 0xf4, 0x97, 0x6a,
+	0xe6, 0x8b, 0xab, 0xc1, 0xb6, 0xee, 0x2d, 0x94, 0x34, 0x92, 0x1c, 0x6f, 0x55, 0xbd, 0x6d, 0xe7,
+	0x6a, 0x70, 0xbf, 0x93, 0xcb, 0x5c, 0x3a, 0x45, 0xdf, 0x56, 0x5e, 0xdc, 0xfd, 0xba, 0x0f, 0xcd,
+	0x0f, 0x6a, 0xf6, 0xd2, 0xaa, 0xc8, 0x23, 0x38, 0xac, 0xbe, 0x48, 0xd9, 0x24, 0x8e, 0x4e, 0xa2,
+	0xb3, 0xda, 0x08, 0x2a, 0xea, 0xf5, 0x84, 0xc4, 0xd0, 0xe0, 0x52, 0xb0, 0x19, 0xaa, 0x78, 0xff,
+	0x24, 0x3a, 0x6b, 0x8d, 0x2a, 0x48, 0x08, 0xd4, 0x04, 0xe5, 0x18, 0xff, 0xe7, 0x68, 0x57, 0x5b,
+	0x75, 0x8e, 0x02, 0x35, 0xd3, 0x71, 0xcd, 0xab, 0x03, 0xb4, 0x6a, 0xf3, 0x79, 0x81, 0xf1, 0x81,
+	0x57, 0xdb, 0x9a, 0x3c, 0x80, 0xd6, 0x9c, 0x6a, 0x33, 0x9e, 0xcb, 0x6c, 0x16, 0xd7, 0xdd, 0x5f,
+	0xef, 0x08, 0xf2, 0x10, 0x40, 0x94, 0x3c, 0x75, 0x40, 0xc7, 0x0d, 0xdf, 0x16, 0x25, 0xbf, 0x70,
+	0x04, 0x79, 0x02, 0x47, 0x73, 0xb9, 0x44, 0x6d, 0xd2, 0x02, 0x59, 0x5e, 0x98, 0xb8, 0xe9, 0x14,
+	0x6d, 0x4f, 0xbe, 0x72, 0x1c, 0xb9, 0x07, 0x4d, 0x85, 0x79, 0x6a, 0x18, 0xc7, 0xb8, 0xe5, 0xfa,
+	0x0d, 0x85, 0xf9, 0x7b, 0xc6, 0x91, 0x74, 0xe0, 0x40, 0x2e, 0x05, 0xaa, 0x18, 0xdc, 0x89, 0x3c,
+	0xe8, 0x7e, 0x82, 0x4e, 0xe5, 0xcd, 0x3b, 0x23, 0x15, 0xcd, 0xf1, 0x0d, 0xe3, 0xcc, 0xfc, 0xdb,
+	0xa7, 0x53, 0xf8, 0x9f, 0x89, 0x54, 0x1b, 0x6a, 0x30, 0x9d, 0xdb, 0x4f, 0x9c, 0x5d, 0xb5, 0x51,
+	0xdb, 0x0e, 0xa2, 0xc6, 0x8f, 0xe9, 0x7e, 0x8b, 0xe0, 0xa8, 0x9a, 0xef, 0xf6, 0x20, 0x77, 0xa1,
+	0x1e, 0xce, 0xef, 0x67, 0x06, 0x64, 0xbd, 0x71, 0x9b, 0x17, 0x54, 0x17, 0xc1, 0xf9, 0x1d, 0x41,
+	0x12, 0x80, 0x05, 0x55, 0x28, 0x8c, 0x6b, 0xfb, 0x04, 0x6e, 0x30, 0x76, 0x39, 0xfb, 0x3b, 0x08,
+	0x29, 0x78, 0x50, 0xb1, 0xe7, 0x21, 0x04, 0x0f, 0x2a, 0x76, 0xe8, 0x12, 0x08, 0xec, 0xd0, 0x3a,
+	0xa7, 0xcb, 0xb1, 0x77, 0xce, 0x7b, 0xdf, 0xd0, 0xe5, 0xd8, 0x3a, 0xd7, 0xfd, 0x15, 0x41, 0xfd,
+	0x92, 0x2a, 0xca, 0x35, 0x79, 0x0c, 0xed, 0x29, 0x62, 0xaa, 0x30, 0x67, 0xda, 0xa0, 0x0a, 0x3b,
+	0x1c, 0x4e, 0x11, 0x47, 0x81, 0xb2, 0x31, 0x7a, 0x49, 0x26, 0xd5, 0x24, 0x98, 0xd2, 0x72, 0x02,
+	0x4b, 0x90, 0xe7, 0xd0, 0xb1, 0xed, 0x45, 0xa9, 0xb2, 0x82, 0x6a, 0x4c, 0xb5, 0x77, 0xdd, 0xed,
+	0x54, 0x1b, 0x91, 0x29, 0xe2, 0x65, 0x68, 0x85, 0x3c, 0xec, 0x79, 0x27, 0x28, 0x24, 0xaf, 0x76,
+	0x73, 0x80, 0x9c, 0xc3, 0xf1, 0x04, 0xa7, 0xb4, 0x9c, 0x9b, 0x6a, 0x44, 0x88, 0xe1, 0xc0, 0x0d,
+	0xba, 0x13, 0x9a, 0x7f, 0x84, 0xfa, 0x14, 0x6e, 0x73, 0xba, 0xfa, 0x4b, 0xef, 0xef, 0xe1, 0x2d,
+	0x4e, 0x57, 0x37, 0xb5, 0x17, 0x6f, 0xbf, 0xaf, 0x93, 0xe8, 0x7a, 0x9d, 0x44, 0x3f, 0xd7, 0x49,
+	0xf4, 0x65, 0x93, 0xec, 0x5d, 0x6f, 0x92, 0xbd, 0x1f, 0x9b, 0x64, 0xef, 0xe3, 0x8b, 0x9c, 0x99,
+	0xa2, 0x1c, 0xf7, 0x32, 0xc9, 0xfb, 0xa5, 0x60, 0x53, 0x96, 0x51, 0xc3, 0xa4, 0x78, 0x66, 0xf1,
+	0xee, 0xf5, 0xae, 0x76, 0xef, 0xd7, 0xde, 0x7d, 0x3d, 0xae, 0xbb, 0xd7, 0x38, 0xfc, 0x1d, 0x00,
+	0x00, 0xff, 0xff, 0xe5, 0x3d, 0xbc, 0x07, 0xe2, 0x03, 0x00, 0x00,
 }
 
 func (m *WrkChain) Marshal() (dAtA []byte, err error) {
@@ -411,6 +520,39 @@ func (m *WrkChain) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintWrkchain(dAtA, i, uint64(len(m.Moniker)))
 		i--
 		dAtA[i] = 0x12
+	}
+	if m.WrkchainId != 0 {
+		i = encodeVarintWrkchain(dAtA, i, uint64(m.WrkchainId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *WrkChainStorageLimit) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *WrkChainStorageLimit) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *WrkChainStorageLimit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.InStateLimit != 0 {
+		i = encodeVarintWrkchain(dAtA, i, uint64(m.InStateLimit))
+		i--
+		dAtA[i] = 0x10
 	}
 	if m.WrkchainId != 0 {
 		i = encodeVarintWrkchain(dAtA, i, uint64(m.WrkchainId))
@@ -508,12 +650,27 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.MaxStorageLimit != 0 {
+		i = encodeVarintWrkchain(dAtA, i, uint64(m.MaxStorageLimit))
+		i--
+		dAtA[i] = 0x30
+	}
+	if m.DefaultStorageLimit != 0 {
+		i = encodeVarintWrkchain(dAtA, i, uint64(m.DefaultStorageLimit))
+		i--
+		dAtA[i] = 0x28
+	}
 	if len(m.Denom) > 0 {
 		i -= len(m.Denom)
 		copy(dAtA[i:], m.Denom)
 		i = encodeVarintWrkchain(dAtA, i, uint64(len(m.Denom)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x22
+	}
+	if m.FeePurchaseStorage != 0 {
+		i = encodeVarintWrkchain(dAtA, i, uint64(m.FeePurchaseStorage))
+		i--
+		dAtA[i] = 0x18
 	}
 	if m.FeeRecord != 0 {
 		i = encodeVarintWrkchain(dAtA, i, uint64(m.FeeRecord))
@@ -583,6 +740,21 @@ func (m *WrkChain) Size() (n int) {
 	return n
 }
 
+func (m *WrkChainStorageLimit) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.WrkchainId != 0 {
+		n += 1 + sovWrkchain(uint64(m.WrkchainId))
+	}
+	if m.InStateLimit != 0 {
+		n += 1 + sovWrkchain(uint64(m.InStateLimit))
+	}
+	return n
+}
+
 func (m *WrkChainBlock) Size() (n int) {
 	if m == nil {
 		return 0
@@ -630,9 +802,18 @@ func (m *Params) Size() (n int) {
 	if m.FeeRecord != 0 {
 		n += 1 + sovWrkchain(uint64(m.FeeRecord))
 	}
+	if m.FeePurchaseStorage != 0 {
+		n += 1 + sovWrkchain(uint64(m.FeePurchaseStorage))
+	}
 	l = len(m.Denom)
 	if l > 0 {
 		n += 1 + l + sovWrkchain(uint64(l))
+	}
+	if m.DefaultStorageLimit != 0 {
+		n += 1 + sovWrkchain(uint64(m.DefaultStorageLimit))
+	}
+	if m.MaxStorageLimit != 0 {
+		n += 1 + sovWrkchain(uint64(m.MaxStorageLimit))
 	}
 	return n
 }
@@ -927,6 +1108,94 @@ func (m *WrkChain) Unmarshal(dAtA []byte) error {
 			}
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipWrkchain(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthWrkchain
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *WrkChainStorageLimit) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowWrkchain
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: WrkChainStorageLimit: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: WrkChainStorageLimit: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WrkchainId", wireType)
+			}
+			m.WrkchainId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowWrkchain
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.WrkchainId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InStateLimit", wireType)
+			}
+			m.InStateLimit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowWrkchain
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.InStateLimit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipWrkchain(dAtA[iNdEx:])
@@ -1264,6 +1533,25 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FeePurchaseStorage", wireType)
+			}
+			m.FeePurchaseStorage = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowWrkchain
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.FeePurchaseStorage |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
 			}
@@ -1295,6 +1583,44 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			}
 			m.Denom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefaultStorageLimit", wireType)
+			}
+			m.DefaultStorageLimit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowWrkchain
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.DefaultStorageLimit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxStorageLimit", wireType)
+			}
+			m.MaxStorageLimit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowWrkchain
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxStorageLimit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipWrkchain(dAtA[iNdEx:])

@@ -4,6 +4,7 @@ import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type EnterpriseUndPurchaseOrders []EnterpriseUndPurchaseOrder
 type LockedUnds []LockedUnd
+type SpentEFUNDs []SpentEFUND
 type Whitelists []string
 type PurchaseOrderDecisions []PurchaseOrderDecision
 

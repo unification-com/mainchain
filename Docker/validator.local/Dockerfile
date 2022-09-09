@@ -1,4 +1,4 @@
-FROM golang:alpine3.12
+FROM golang:1.18-alpine3.15
 
 RUN apk update && \
     apk upgrade && \
@@ -15,7 +15,7 @@ RUN mkdir -p /root/src/mainchain && \
 WORKDIR /root/src/mainchain
 
 COPY ./go.mod ./go.sum ./
-RUN cd /root/src/mainchain && go mod download -x
+RUN cd /root/src/mainchain && go mod download && go mod tidy
 
 COPY . ./
 

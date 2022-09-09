@@ -1,6 +1,6 @@
 package v040
 
-const (
-	// ModuleName module name
-	ModuleName = "beacon"
-)
+const ModuleName = "beacon"
+
+type BeaconExports []BeaconExport
+type BeaconTimestampGenesisExports []BeaconTimestampGenesisExport

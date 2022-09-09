@@ -28,6 +28,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdBeacon(),
 		GetCmdBeaconTimestamp(),
 		GetCmdSearchBeacons(),
+		GetCmdBeaconStorage(),
 	)
 	return beaconQueryCmd
 }
@@ -55,7 +56,7 @@ func GetCmdQueryParams() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintObjectLegacy(params)
+			return clientCtx.PrintProto(params)
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
@@ -179,6 +180,41 @@ func GetCmdBeaconTimestamp() *cobra.Command {
 			res, err := queryClient.BeaconTimestamp(context.Background(), &types.QueryBeaconTimestampRequest{
 				BeaconId:    beaconId,
 				TimestampId: timestampId,
+			})
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdBeaconStorage queries information about a beacon's storage
+func GetCmdBeaconStorage() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "storage [beacon_id]",
+		Short: "Query a BEACON for given ID to retrieve storage info",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			// validate that the beacon id is a uint
+			beaconId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("beacon_id %s not a valid int, please input a valid beacon_id", args[0])
+			}
+
+			res, err := queryClient.BeaconStorage(context.Background(), &types.QueryBeaconStorageRequest{
+				BeaconId: beaconId,
 			})
 
 			if err != nil {

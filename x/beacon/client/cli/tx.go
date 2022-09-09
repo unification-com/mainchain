@@ -38,6 +38,7 @@ func GetTxCmd() *cobra.Command {
 	beaconTxCmd.AddCommand(
 		GetCmdRegisterBeacon(),
 		GetCmdRecordBeaconTimestamp(),
+		GetCmdPurchaseStorage(),
 	)
 
 	return beaconTxCmd
@@ -91,7 +92,6 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 				return err
 			}
 
-			// todo - check this works
 			if err := cmd.Flags().Set(flags.FlagFees, regFee); err != nil {
 				return err
 			}
@@ -178,4 +178,76 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 	cmd.Flags().Uint64(FlagSubmitTime, 0, "BEACON's timestamp submission time")
 	return cmd
 
+}
+
+// GetCmdPurchaseStorage is the CLI command for sending a PurchaseStorageAction transaction
+func GetCmdPurchaseStorage() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "purchase_storage [beacon_id] [num_slots]",
+		Short: "purchase more in-state storage for a BEACON",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Purchase more in-state storage for a BEACON, allowing more
+timestamps to be kept in-state
+
+Example:
+$ %s tx %s purchase_storage 1 100
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// used for getting fees and checking beacon
+			queryClient := types.NewQueryClient(clientCtx)
+
+			from := clientCtx.GetFromAddress()
+
+			beaconId, err := strconv.Atoi(args[0])
+
+			if err != nil {
+				return err
+			}
+
+			if beaconId == 0 {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "beacon_id must be > 0")
+			}
+
+			numToPurchase, err := strconv.Atoi(args[1])
+
+			if err != nil {
+				return err
+			}
+
+			if numToPurchase == 0 {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "num_slots must be > 0")
+			}
+
+			params, err := queryClient.Params(
+				context.Background(),
+				&types.QueryParamsRequest{},
+			)
+
+			purchaseFee := strconv.Itoa(int(params.Params.FeePurchaseStorage)*numToPurchase) + params.Params.Denom
+
+			msg := types.NewMsgPurchaseBeaconStateStorage(uint64(beaconId), uint64(numToPurchase), from)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			if err := cmd.Flags().Set(flags.FlagFees, purchaseFee); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

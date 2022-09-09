@@ -46,12 +46,34 @@ func ValidateGenesis(data GenesisState) error {
 		}
 	}
 
+	for _, locked := range data.LockedUnd {
+		_, err := sdk.AccAddressFromBech32(locked.Owner)
+		if err != nil {
+			return fmt.Errorf("invalid locked eFUND: Owner: %s. Error: Missing Owner", locked.Owner)
+		}
+
+		if !locked.Amount.IsValid() {
+			return fmt.Errorf("invalid locked eFUND: Amount: %s. Error: Missing Amount", locked.Amount.Amount)
+		}
+	}
+
+	for _, spent := range data.SpentEfund {
+		_, err := sdk.AccAddressFromBech32(spent.Owner)
+		if err != nil {
+			return fmt.Errorf("invalid spent eFUND: Owner: %s. Error: Missing Owner", spent.Owner)
+		}
+
+		if !spent.Amount.IsValid() {
+			return fmt.Errorf("invalid spent eFUND: Amount: %s. Error: Missing Amount", spent.Amount.Amount)
+		}
+	}
+
 	return nil
 }
 
 // NewGenesisState creates a new GenesisState object
 func NewGenesisState(params Params, startingPurchaseOrderId uint64, totalLocked sdk.Coin,
-	purchaseOrders EnterpriseUndPurchaseOrders, locked LockedUnds, whitelist Whitelists) *GenesisState {
+	purchaseOrders EnterpriseUndPurchaseOrders, locked LockedUnds, whitelist Whitelists, totalSpent sdk.Coin, spentEFUND SpentEFUNDs) *GenesisState {
 	return &GenesisState{
 		Params:                  params,
 		StartingPurchaseOrderId: startingPurchaseOrderId,
@@ -59,6 +81,8 @@ func NewGenesisState(params Params, startingPurchaseOrderId uint64, totalLocked 
 		LockedUnd:               locked,
 		TotalLocked:             totalLocked,
 		Whitelist:               whitelist,
+		TotalSpent:              totalSpent,
+		SpentEfund:              spentEFUND,
 	}
 }
 
@@ -69,5 +93,7 @@ func DefaultGenesisState() *GenesisState {
 		1,
 		sdk.NewInt64Coin(undtypes.DefaultDenomination, 0),
 		nil, nil, nil,
+		sdk.NewInt64Coin(undtypes.DefaultDenomination, 0),
+		nil,
 	)
 }

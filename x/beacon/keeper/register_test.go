@@ -54,6 +54,10 @@ func TestSetGetBeacon(t *testing.T) {
 		err := app.BeaconKeeper.SetBeacon(ctx, b)
 		require.NoError(t, err)
 
+		// set the record limit
+		err = app.BeaconKeeper.SetBeaconStorageLimit(ctx, bID, types.DefaultStorageLimit)
+		require.NoError(t, err)
+
 		isRegistered := app.BeaconKeeper.IsBeaconRegistered(ctx, bID)
 		require.True(t, isRegistered)
 
@@ -65,6 +69,10 @@ func TestSetGetBeacon(t *testing.T) {
 		require.True(t, bDb.LastTimestampId == 1)
 		require.True(t, bDb.Moniker == moniker)
 		require.True(t, bDb.Name == name)
+
+		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
+		require.True(t, found)
+		require.True(t, bSt.InStateLimit == types.DefaultStorageLimit)
 
 		bID = bID + 1
 	}
@@ -105,6 +113,10 @@ func TestRegisterBeacon(t *testing.T) {
 
 		bDbOwner := app.BeaconKeeper.GetBeaconOwner(ctx, bID)
 		require.True(t, bDbOwner.String() == addr.String())
+
+		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
+		require.True(t, found)
+		require.True(t, bSt.InStateLimit == types.DefaultStorageLimit)
 
 		i = i + 1
 	}
@@ -157,6 +169,10 @@ func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
 
 		isRegistered := app.BeaconKeeper.IsBeaconRegistered(ctx, bID)
 		require.True(t, isRegistered)
+
+		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
+		require.True(t, found)
+		require.True(t, bSt.InStateLimit == types.DefaultStorageLimit)
 	}
 }
 

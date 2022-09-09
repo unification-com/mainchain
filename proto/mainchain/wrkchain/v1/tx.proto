@@ -16,6 +16,9 @@ service Msg {
   rpc RecordWrkChainBlock(MsgRecordWrkChainBlock)
       returns (MsgRecordWrkChainBlockResponse);
 
+  // PurchaseWrkChainStateStorage defines the method to purchase more state storage
+  rpc PurchaseWrkChainStateStorage(MsgPurchaseWrkChainStateStorage)
+      returns (MsgPurchaseWrkChainStateStorageResponse);
 }
 
 // MsgRegisterWrkChain represents a message to register a new wrkchain
@@ -70,4 +73,27 @@ message MsgRecordWrkChainBlockResponse {
   uint64 wrkchain_id = 1;
   // height is the height of the submitted block hashes
   uint64 height = 2;
+}
+
+message MsgPurchaseWrkChainStateStorage {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // wrkchain_id is the id of the wrkchain the storage is being purchased for
+  uint64 wrkchain_id = 1;
+
+  // number is the number of state storage spaces to purchase
+  uint64 number = 2;
+
+  // owner is the address of the owner of the wrkchain
+  string owner = 3;
+}
+
+message MsgPurchaseWrkChainStateStorageResponse {
+  // wrkchain_id is the id of the wrkchain the storage is being purchased for
+  uint64 wrkchain_id = 1;
+  // number_purchased is the number of state storage spaces purchased
+  uint64 number_purchased = 2;
+  // num_can_purchase is the number of remaining slots available for purchase
+  uint64 num_can_purchase = 3;
 }

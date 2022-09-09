@@ -13,9 +13,12 @@ func (suite *KeeperTestSuite) TestGRPCQueryParams() {
 	app, ctx, queryClient := suite.app, suite.ctx, suite.queryClient
 
 	testParams := types.Params{
-		FeeRegister: 240,
-		FeeRecord:   24,
-		Denom:       "tnund",
+		FeeRegister:         240,
+		FeeRecord:           24,
+		FeePurchaseStorage:  12,
+		Denom:               "tnund",
+		DefaultStorageLimit: 200,
+		MaxStorageLimit:     300,
 	}
 
 	app.BeaconKeeper.SetParams(ctx, testParams)
@@ -299,6 +302,82 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 			testCase.malleate()
 
 			timestampRes, err := queryClient.BeaconTimestamp(gocontext.Background(), req)
+
+			if testCase.expPass {
+				suite.Require().NoError(err)
+				suite.Require().Equal(&expRes, timestampRes)
+			} else {
+				suite.Require().Error(err)
+				suite.Require().Nil(timestampRes)
+			}
+		})
+	}
+}
+
+func (suite *KeeperTestSuite) TestGRPCQueryBeaconStorage() {
+	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+
+	var (
+		req    *types.QueryBeaconStorageRequest
+		expRes types.QueryBeaconStorageResponse
+	)
+
+	testCases := []struct {
+		msg      string
+		malleate func()
+		expPass  bool
+	}{
+		{
+			"empty request",
+			func() {
+				req = &types.QueryBeaconStorageRequest{}
+			},
+			false,
+		},
+		{
+			"zero beacon id request",
+			func() {
+				req = &types.QueryBeaconStorageRequest{BeaconId: 0}
+			},
+			false,
+		},
+		{
+			"valid request",
+			func() {
+				req = &types.QueryBeaconStorageRequest{BeaconId: 1}
+
+				expectedB := types.Beacon{}
+				expectedB.Owner = addrs[0].String()
+				expectedB.LastTimestampId = 0
+				expectedB.Moniker = "moniker"
+				expectedB.Name = "name"
+
+				bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
+				suite.Require().NoError(err)
+				suite.Require().Equal(uint64(1), bID)
+
+				_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, "somehash", uint64(time.Now().Unix()))
+				suite.Require().NoError(err)
+
+				expRes = types.QueryBeaconStorageResponse{
+					BeaconId:       bID,
+					Owner:          addrs[0].String(),
+					CurrentLimit:   types.DefaultStorageLimit,
+					CurrentUsed:    1,
+					Max:            types.DefaultMaxStorageLimit,
+					MaxPurchasable: types.DefaultMaxStorageLimit - types.DefaultStorageLimit,
+				}
+
+			},
+			true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+			testCase.malleate()
+
+			timestampRes, err := queryClient.BeaconStorage(gocontext.Background(), req)
 
 			if testCase.expPass {
 				suite.Require().NoError(err)

@@ -54,6 +54,10 @@ func TestSetGetWrkChain(t *testing.T) {
 		err := app.WrkchainKeeper.SetWrkChain(ctx, wc)
 		require.NoError(t, err)
 
+		// set the record limit
+		err = app.WrkchainKeeper.SetWrkChainStorageLimit(ctx, wcID, types.DefaultStorageLimit)
+		require.NoError(t, err)
+
 		isRegistered := app.WrkchainKeeper.IsWrkChainRegistered(ctx, wcID)
 		require.True(t, isRegistered)
 
@@ -63,6 +67,10 @@ func TestSetGetWrkChain(t *testing.T) {
 
 		wcDbOwner := app.WrkchainKeeper.GetWrkChainOwner(ctx, wcID)
 		require.True(t, wcDbOwner.String() == addr.String())
+
+		wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
+		require.True(t, found)
+		require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit)
 
 		wcID = wcID + 1
 	}
@@ -108,6 +116,10 @@ func TestRegisterWrkChain(t *testing.T) {
 
 		wcDbOwner := app.WrkchainKeeper.GetWrkChainOwner(ctx, wcID)
 		require.True(t, wcDbOwner.String() == addr.String())
+
+		wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
+		require.True(t, found)
+		require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit)
 
 		i = i + 1
 	}

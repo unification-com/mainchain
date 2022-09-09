@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -36,21 +34,9 @@ func (k Keeper) SetHighestWrkChainID(ctx sdk.Context, wrkChainID uint64) {
 // SetWrkChain Sets the WrkChain metadata struct for a wrkchainId
 func (k Keeper) SetWrkChain(ctx sdk.Context, wrkchain types.WrkChain) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.WrkChainKey(wrkchain.WrkchainId), k.cdc.MustMarshalBinaryBare(&wrkchain))
+	store.Set(types.WrkChainKey(wrkchain.WrkchainId), k.cdc.MustMarshal(&wrkchain))
 
 	return nil
-}
-
-func (k Keeper) SetNumBlocks(ctx sdk.Context, wrkchainId uint64) error {
-	wrkchain, found := k.GetWrkChain(ctx, wrkchainId)
-	if !found {
-		// doesn't exist. Don't update
-		return sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, fmt.Sprintf("WRKChain %v does not exist", wrkchainId))
-	}
-
-	wrkchain.NumBlocks = wrkchain.NumBlocks + 1
-
-	return k.SetWrkChain(ctx, wrkchain)
 }
 
 // GetWrkChain Gets the entire WRKChain metadata struct for a wrkchainId
@@ -62,7 +48,7 @@ func (k Keeper) GetWrkChain(ctx sdk.Context, wrkchainId uint64) (types.WrkChain,
 	}
 	bz := store.Get(types.WrkChainKey(wrkchainId))
 	var wrkchain types.WrkChain
-	k.cdc.MustUnmarshalBinaryBare(bz, &wrkchain)
+	k.cdc.MustUnmarshal(bz, &wrkchain)
 	return wrkchain, true
 }
 
@@ -99,7 +85,7 @@ func (k Keeper) IterateWrkChains(ctx sdk.Context, cb func(wrkChain types.WrkChai
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wc types.WrkChain
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &wc)
+		k.cdc.MustUnmarshal(iterator.Value(), &wc)
 
 		if cb(wc) {
 			break
@@ -152,6 +138,67 @@ func (k Keeper) GetWrkChainsFiltered(ctx sdk.Context, params types.QueryWrkChain
 	return filteredWrkChains
 }
 
+func (k Keeper) GetWrkChainStorageLimit(ctx sdk.Context, wrkchainId uint64) (types.WrkChainStorageLimit, bool) {
+	store := ctx.KVStore(k.storeKey)
+	if !k.HasWrkChainStorageLimit(ctx, wrkchainId) {
+		return types.WrkChainStorageLimit{
+			WrkchainId:   wrkchainId,
+			InStateLimit: types.DefaultStorageLimit,
+		}, false
+	}
+
+	storageKey := types.WrkChainStorageLimitKey(wrkchainId)
+	bz := store.Get(storageKey)
+	var storage types.WrkChainStorageLimit
+	k.cdc.MustUnmarshal(bz, &storage)
+	return storage, true
+}
+
+func (k Keeper) HasWrkChainStorageLimit(ctx sdk.Context, wrkchainId uint64) bool {
+	store := ctx.KVStore(k.storeKey)
+	storageKey := types.WrkChainStorageLimitKey(wrkchainId)
+	return store.Has(storageKey)
+}
+
+func (k Keeper) SetWrkChainStorageLimit(ctx sdk.Context, wrkchainId, limit uint64) error {
+
+	store := ctx.KVStore(k.storeKey)
+	storageLimit := types.WrkChainStorageLimit{
+		WrkchainId:   wrkchainId,
+		InStateLimit: limit,
+	}
+	store.Set(types.WrkChainStorageLimitKey(wrkchainId), k.cdc.MustMarshal(&storageLimit))
+
+	return nil
+}
+
+func (k Keeper) IncreaseInStateStorage(ctx sdk.Context, wrkchainId, amount uint64) error {
+	wrkchainStorage, _ := k.GetWrkChainStorageLimit(ctx, wrkchainId)
+	newInStateLimit := wrkchainStorage.InStateLimit + amount
+	err := k.SetWrkChainStorageLimit(ctx, wrkchainId, newInStateLimit)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) GetMaxPurchasableSlots(ctx sdk.Context, wrkchainId uint64) uint64 {
+	wrkchainStorage, found := k.GetWrkChainStorageLimit(ctx, wrkchainId)
+	if !found {
+		return 0
+	}
+
+	maxStorageLimit := k.GetParamMaxStorageLimit(ctx)
+
+	if wrkchainStorage.InStateLimit >= maxStorageLimit {
+		return 0
+	}
+
+	return maxStorageLimit - wrkchainStorage.InStateLimit
+}
+
 // RegisterNewWrkChain registers a WRKChain in the store
 func (k Keeper) RegisterNewWrkChain(ctx sdk.Context, moniker string, wrkchainName string, genesisHash string, baseType string, owner sdk.AccAddress) (uint64, error) {
 
@@ -173,6 +220,12 @@ func (k Keeper) RegisterNewWrkChain(ctx sdk.Context, moniker string, wrkchainNam
 	wrkchain.RegTime = uint64(ctx.BlockTime().Unix())
 
 	err = k.SetWrkChain(ctx, wrkchain)
+	if err != nil {
+		return 0, err
+	}
+
+	err = k.SetWrkChainStorageLimit(ctx, wrkChainId, k.GetParamDefaultStorageLimit(ctx))
+
 	if err != nil {
 		return 0, err
 	}

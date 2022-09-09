@@ -15,19 +15,21 @@ var (
 	ErrIncorrectFeeDenomination = types.ErrIncorrectFeeDenomination
 	ErrInsufficientWrkChainFee  = types.ErrInsufficientWrkChainFee
 	ErrTooMuchWrkChainFee       = types.ErrTooMuchWrkChainFee
+	ErrExceedsMaxStorage        = types.ErrExceedsMaxStorage
 )
 
 func CheckIsWrkChainTx(tx sdk.Tx) bool {
 	msgs := tx.GetMsgs()
 	for _, msg := range msgs {
-		if msg.Route() == types.RouterKey {
-			switch msg.Type() {
-			case types.RecordAction:
-				return true
-			case types.RegisterAction:
-				return true
-			}
+		switch msg.(type) {
+		case *types.MsgRegisterWrkChain:
+			return true
+		case *types.MsgRecordWrkChainBlock:
+			return true
+		case *types.MsgPurchaseWrkChainStateStorage:
+			return true
 		}
+
 	}
 	return false
 }

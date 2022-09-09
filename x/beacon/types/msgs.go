@@ -8,8 +8,9 @@ import (
 const (
 	RouterKey = ModuleName // defined in keys.go file
 
-	RegisterAction = "register_beacon"
-	RecordAction   = "record_beacon_timestamp"
+	RegisterAction        = "register_beacon"
+	RecordAction          = "record_beacon_timestamp"
+	PurchaseStorageAction = "purchase_beacon_storage"
 )
 
 // --- Register a BEACON Msg ---
@@ -121,6 +122,59 @@ func (msg MsgRecordBeaconTimestamp) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgRecordBeaconTimestamp) GetSigners() []sdk.AccAddress {
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{owner}
+}
+
+// --- Purchase state storage Msg ---
+
+var _ sdk.Msg = &MsgPurchaseBeaconStateStorage{}
+
+// NewMsgRecordBeaconTimestamp is a constructor function for MsgRecordBeaconTimestamp
+func NewMsgPurchaseBeaconStateStorage(
+	beaconId uint64,
+	number uint64,
+	owner sdk.AccAddress) *MsgPurchaseBeaconStateStorage {
+
+	return &MsgPurchaseBeaconStateStorage{
+		BeaconId: beaconId,
+		Number:   number,
+		Owner:    owner.String(),
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgPurchaseBeaconStateStorage) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgPurchaseBeaconStateStorage) Type() string { return PurchaseStorageAction }
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgPurchaseBeaconStateStorage) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+	}
+	if msg.BeaconId == 0 {
+		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
+	}
+	if msg.Number == 0 {
+		return sdkerrors.Wrap(ErrMissingData, "number cannot be zero")
+	}
+
+	return nil
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgPurchaseBeaconStateStorage) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgPurchaseBeaconStateStorage) GetSigners() []sdk.AccAddress {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)

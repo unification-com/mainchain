@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/x/wrkchain/exported"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 // CorrectWrkChainFeeDecorator checks if the correct fees have been sent to pay for a
@@ -40,13 +41,20 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "WRKChain Tx must be a FeeTx")
 	}
 
-	// check if it's a WRKChain Tx
+	// check if the Tx contains WrkChain Msgs. If not, move on to the next decorator in the chain
+	// Current WrkChain Msgs:
+	// MsgRegisterWrkChain
+	// MsgRecordWrkChainBlock
+	// MsgPurchaseWrkChainStateStorage
 	if !exported.CheckIsWrkChainTx(feeTx) {
 		// ignore and move on to the next decorator in the chain
 		return next(ctx, tx, simulate)
 	}
 
-	// Check fees amount sent in Tx. Check during CheckTx
+	// Check fees amount sent in Tx. Check during CheckTx. Since WrkChains have set fees that are not
+	// based on gas/gas prices, we need to check the Tx has the correct fees according to the WrkChain
+	// module parameters. E.g. 10,000 to register, 1 to submit a hash etc.
+	// Reject the Tx if the fees are incorrect
 	if ctx.IsCheckTx() && !simulate {
 		err := checkWrkchainFees(ctx, feeTx, wfd.wrkchainKeeper)
 		if err != nil {
@@ -60,7 +68,55 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 		return ctx, err
 	}
 
+	// check not exceeding max purchasable slots
+	// we want to check and reject early so that the DeductFee Ante decorator later in the list
+	// does not deduct a large amount before the module handler rejects for the same reason!
+	// If this fails, the Tx should not even be broadcast.
+	err = checkWrkChainMaxSlots(ctx, feeTx, wfd.wrkchainKeeper)
+
+	if err != nil {
+		return ctx, err
+	}
+
 	return next(ctx, tx, simulate)
+}
+
+func checkWrkChainMaxSlots(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error {
+	msgs := tx.GetMsgs()
+
+	type b struct {
+		max  uint64
+		want uint64
+	}
+
+	purchaseData := make(map[uint64]b)
+
+	// go through Msgs wrapped in the Tx, and check for WrkChain messages
+	for _, msg := range msgs {
+		switch msg.(type) {
+		case *types.MsgPurchaseWrkChainStateStorage:
+			m := msg.(*types.MsgPurchaseWrkChainStateStorage)
+			numSlots := m.Number
+			wrkchainId := m.WrkchainId
+			if purchaseData[wrkchainId].want == 0 {
+				maxCanPurchase := wck.GetMaxPurchasableSlots(ctx, wrkchainId)
+				purchaseData[wrkchainId] = b{max: maxCanPurchase, want: numSlots}
+			} else {
+				pd := purchaseData[wrkchainId]
+				pd.want = pd.want + numSlots
+				purchaseData[wrkchainId] = pd
+			}
+		}
+	}
+
+	for bId, pd := range purchaseData {
+		if pd.want > pd.max {
+			errMsg := fmt.Sprintf("num slots exceeds max for wrkchain %d. Max can purchase: %d. Want in Msgs: %d", bId, pd.max, pd.want)
+			return sdkerrors.Wrap(exported.ErrExceedsMaxStorage, errMsg)
+		}
+	}
+
+	return nil
 }
 
 func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error {
@@ -83,15 +139,21 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 
 	// go through Msgs wrapped in the Tx, and check for WRKChain messages
 	for _, msg := range msgs {
-		if msg.Route() == exported.RouterKey {
-			switch msg.Type() {
-			case exported.RegisterAction:
-				expectedFees = expectedFees.Add(wck.GetRegistrationFeeAsCoin(ctx))
-				numMsgs = numMsgs + 1
-			case exported.RecordAction:
-				expectedFees = expectedFees.Add(wck.GetRecordFeeAsCoin(ctx))
-				numMsgs = numMsgs + 1
-			}
+		switch msg.(type) {
+		case *types.MsgRegisterWrkChain:
+			expectedFees = expectedFees.Add(wck.GetRegistrationFeeAsCoin(ctx))
+			numMsgs = numMsgs + 1
+		case *types.MsgRecordWrkChainBlock:
+			expectedFees = expectedFees.Add(wck.GetRecordFeeAsCoin(ctx))
+			numMsgs = numMsgs + 1
+		case *types.MsgPurchaseWrkChainStateStorage:
+			m := msg.(*types.MsgPurchaseWrkChainStateStorage)
+			numSlots := m.Number
+			feePerSlot := wck.GetPurchaseStorageFeeAsCoin(ctx)
+			totalForSlotsAmt := feePerSlot.Amount.Mul(sdk.NewInt(int64(numSlots)))
+			totalForSlotsCoin := sdk.NewCoin(feePerSlot.Denom, totalForSlotsAmt)
+			expectedFees = expectedFees.Add(totalForSlotsCoin)
+			numMsgs = numMsgs + 1
 		}
 	}
 

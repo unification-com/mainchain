@@ -2,6 +2,7 @@ package wrkchain_test
 
 import (
 	"errors"
+	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/unification-com/mainchain/app/test_helpers"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
@@ -298,14 +299,138 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			expectedError: nil,
 		},
 		{
-			name: "height already recorded",
+			name: "height too low",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[0].String(),
 				BlockHash:  test_helpers.GenerateRandomString(24),
 				WrkchainId: 1,
 				Height:     1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "wrkchain block hashes have already been recorded for this height"),
+			expectedError: sdkerrors.Wrap(types.ErrNewHeightMustBeHigher, "wrkchain block hashes height must be > last height recorded"),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := h(ctx, tc.msg)
+			if tc.expectedError != nil {
+				require.EqualError(t, err, tc.expectedError.Error())
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestValidMsgPurchaseWrkChainStateStorage(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+
+	h := wrkchain.NewHandler(app.WrkchainKeeper)
+
+	wc := types.WrkChain{
+		Moniker: test_helpers.GenerateRandomString(24),
+		Name:    "new wrkchain",
+		Owner:   testAddrs[0].String(),
+		Genesis: "genesis",
+	}
+
+	_, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, wc.Moniker, wc.Name, wc.Genesis, "test", testAddrs[0])
+	require.Nil(t, err)
+
+	msg := &types.MsgPurchaseWrkChainStateStorage{
+		WrkchainId: 1,
+		Number:     100,
+		Owner:      testAddrs[0].String(),
+	}
+
+	res, err := h(ctx, msg)
+
+	require.NotNil(t, res)
+	require.Nil(t, err)
+
+}
+
+func TestInvalidMsgPurchaseWrkChainStateStorage(t *testing.T) {
+	app := test_helpers.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
+
+	h := wrkchain.NewHandler(app.WrkchainKeeper)
+
+	wc := types.WrkChain{
+		Moniker: test_helpers.GenerateRandomString(24),
+		Name:    "new wrkchain",
+		Owner:   testAddrs[0].String(),
+		Genesis: "genesis",
+	}
+
+	_, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, wc.Moniker, wc.Name, wc.Genesis, "test", testAddrs[0])
+	require.Nil(t, err)
+
+	tests := []struct {
+		name          string
+		expectedError error
+		msg           *types.MsgPurchaseWrkChainStateStorage
+	}{
+		{
+			name:          "empty owner address",
+			msg:           &types.MsgPurchaseWrkChainStateStorage{},
+			expectedError: errors.New("empty address string is not allowed"),
+		},
+		{
+			name: "invalid owner address",
+			msg: &types.MsgPurchaseWrkChainStateStorage{
+				Owner: "rubbish",
+			},
+			expectedError: errors.New("decoding bech32 failed: invalid bech32 string length 7"),
+		},
+		{
+			name: "cannot purchase zero",
+			msg: &types.MsgPurchaseWrkChainStateStorage{
+				Owner:  testAddrs[0].String(),
+				Number: 0,
+			},
+			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero"),
+		},
+		{
+			name: "wrkchain not registered",
+			msg: &types.MsgPurchaseWrkChainStateStorage{
+				Owner:      testAddrs[0].String(),
+				Number:     10,
+				WrkchainId: 2,
+			},
+			expectedError: sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet"),
+		},
+		{
+			name: "not wrkchain owner",
+			msg: &types.MsgPurchaseWrkChainStateStorage{
+				Owner:      testAddrs[1].String(),
+				Number:     10,
+				WrkchainId: 1,
+			},
+			expectedError: sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain"),
+		},
+		{
+			name: "exceeds max storage",
+			msg: &types.MsgPurchaseWrkChainStateStorage{
+				Owner:      testAddrs[0].String(),
+				Number:     test_helpers.TestMaxStorage,
+				WrkchainId: 1,
+			},
+			expectedError: sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", test_helpers.TestDefaultStorage+test_helpers.TestMaxStorage, test_helpers.TestMaxStorage)),
+		},
+		{
+			name: "successful",
+			msg: &types.MsgPurchaseWrkChainStateStorage{
+				Owner:      testAddrs[0].String(),
+				Number:     10,
+				WrkchainId: 1,
+			},
+			expectedError: nil,
 		},
 	}
 

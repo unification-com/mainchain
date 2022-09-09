@@ -83,6 +83,16 @@ service Query {
   rpc EnterpriseAccount(QueryEnterpriseAccountRequest) returns (QueryEnterpriseAccountResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/account/{address}";
   }
+
+  // TotalSpentEFUND queries the total eFUND usage to date - i.e. the amount used to pay fees
+  rpc TotalSpentEFUND(QueryTotalSpentEFUNDRequest) returns (QueryTotalSpentEFUNDResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/total_spent";
+  }
+
+  // SpentEFUNDByAddress queries the total eFUND usage to date for a given address, i.e. the amount used to pay fees
+  rpc SpentEFUNDByAddress(QuerySpentEFUNDByAddressRequest) returns (QuerySpentEFUNDByAddressResponse) {
+    option (google.api.http).get = "/mainchain/enterprise/v1/spent/{address}";
+  }
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method
@@ -129,8 +139,7 @@ message QueryLockedUndByAddressRequest {
 
 // QueryLockedUndByAddressResponse is the response type for the Query/LockedUndByAddress RPC method
 message QueryLockedUndByAddressResponse {
-  string owner = 1;
-  LockedUnd locked_und = 2;
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryTotalLockedRequest is the request type for the Query/TotalLocked RPC method
@@ -158,12 +167,16 @@ message QueryEnterpriseSupplyResponse {
 }
 
 // QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC method
-message QueryTotalSupplyRequest {}
+message QueryTotalSupplyRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
 
 // QueryTotalSupplyResponse is the response type for the Query/TotalSupply RPC method
 message QueryTotalSupplyResponse {
   repeated cosmos.base.v1beta1.Coin supply = 1
   [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QuerySupplyOfRequest is the request type for the Query/SupplyOf RPC method.
@@ -207,4 +220,23 @@ message QueryEnterpriseAccountRequest {
 // QueryEnterpriseAccountResponse is the response type for the Query/EnterpriseAccount RPC method.
 message QueryEnterpriseAccountResponse {
   EnterpriseUserAccount account = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryTotalSpentEFUNDRequest is the request type for the Query/TotalSpentEFUND RPC method.
+message QueryTotalSpentEFUNDRequest {}
+
+// QueryTotalSpentEFUNDResponse is the response type for the Query/TotalSpentEFUND RPC method.
+message QueryTotalSpentEFUNDResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
+}
+
+// QuerySpentEFUNDByAddressRequest is the request type for the Query/SpentEFUNDByAddress RPC method.
+message QuerySpentEFUNDByAddressRequest {
+  // address is the address to query
+  string address = 1;
+}
+
+// QuerySpentEFUNDByAddressResponse is the response type for the Query/SpentEFUNDByAddress RPC method.
+message QuerySpentEFUNDByAddressResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
 }

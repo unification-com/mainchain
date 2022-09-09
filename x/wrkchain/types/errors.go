@@ -14,6 +14,8 @@ const (
 	CodeMissingData                  = 205
 	CodeInvalidData                  = 206
 	CodeContentTooLarge              = 207
+	CodeExceedsMaxStorage            = 208
+	CodeNewHeightMustBeHigher        = 209
 
 	CodeWrkChainInsufficientFee   = 301
 	CodeWrkChainTooMuchFee        = 302
@@ -35,4 +37,6 @@ var (
 	ErrFeePayerNotOwner             = sdkerrors.Register(ModuleName, CodeWrkChainFeePayerNotOwner, "fee payer not wrkchain owner")
 	ErrIncorrectFeeDenomination     = sdkerrors.Register(ModuleName, CodeWrkChainIncorrectFeeDenom, "incorrect wrkchain fee doenomination")
 	ErrContentTooLarge              = sdkerrors.Register(ModuleName, CodeContentTooLarge, "msg content too large")
+	ErrExceedsMaxStorage            = sdkerrors.Register(ModuleName, CodeExceedsMaxStorage, "exceeds max storage")
+	ErrNewHeightMustBeHigher        = sdkerrors.Register(ModuleName, CodeNewHeightMustBeHigher, "invalid height")
 )

@@ -29,6 +29,11 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 			panic(err)
 		}
 
+		err = keeper.SetBeaconStorageLimit(ctx, record.Beacon.BeaconId, record.InStateLimit)
+		if err != nil {
+			panic(err)
+		}
+
 		for _, timestamp := range record.Timestamps {
 
 			bts := types.BeaconTimestamp{
@@ -59,6 +64,12 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	for _, b := range beacons {
 		timestamps := k.GetAllBeaconTimestampsForExport(ctx, b.BeaconId)
+		firstInState := uint64(0)
+		if len(timestamps) > 0 {
+			firstInState = timestamps[0].Id
+		}
+
+		storage, _ := k.GetBeaconStorageLimit(ctx, b.BeaconId)
 
 		records = append(records, types.BeaconExport{
 			Beacon: types.Beacon{
@@ -67,11 +78,12 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 				Name:            b.Name,
 				LastTimestampId: b.LastTimestampId,
 				Owner:           b.Owner,
-				NumInState:      b.NumInState,
-				FirstIdInState:  b.FirstIdInState,
+				NumInState:      uint64(len(timestamps)),
+				FirstIdInState:  firstInState,
 				RegTime:         b.RegTime,
 			},
-			Timestamps: timestamps,
+			Timestamps:   timestamps,
+			InStateLimit: storage.InStateLimit,
 		})
 	}
 	return types.NewGenesisState(params, initialBeaconID, records)

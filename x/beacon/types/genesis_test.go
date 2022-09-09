@@ -65,6 +65,11 @@ func TestValidateGenesis(t *testing.T) {
 	require.Error(t, expectedErr, err.Error())
 
 	state3.RegisteredBeacons[0].Beacon.Moniker = "beacon"
+	expectedErr = fmt.Errorf("invalid Beacon: InStateLimit: 0. Error: Missing InStateLimit")
+	err = ValidateGenesis(*state3)
+	require.Error(t, expectedErr, err.Error())
+
+	state3.RegisteredBeacons[0].InStateLimit = 100
 	err = ValidateGenesis(*state3)
 	require.NoError(t, err)
 

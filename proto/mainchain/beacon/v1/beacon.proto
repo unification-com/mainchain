@@ -7,26 +7,54 @@ option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
 // Beacon holds metadata about a registered beacon
 message Beacon {
+  // beacon_id is the id of the beacon
   uint64 beacon_id = 1;
+  // moniker is the readable id of the beacon
   string moniker = 2;
+  // name is the human friendly name of the beacon
   string name = 3;
+  // last_timestamp_id is the current highest recorded timestamp id for the beacon
   uint64 last_timestamp_id = 4;
+  // first_id_in_state is the lowest recorded timestamp id currently held in state for the beacon
   uint64 first_id_in_state = 5;
+  // num_in_state is the current number of timestamps stored in state for the beacon
   uint64 num_in_state = 6;
+  // reg_time is the unix epoch of the beacon's registration time
   uint64 reg_time = 7;
+  // owner is the owner address of the beacon
   string owner = 8;
+}
+
+// BeaconStorageLimit holds tata about the beacon's current in-state storage limit
+message BeaconStorageLimit {
+  // beacon_id is the id of the beacon
+  uint64 beacon_id = 1;
+  // in_state_limit is the current maximum number of timestmamps that will be held in state for the beacon
+  uint64 in_state_limit = 2;
 }
 
 // BeaconTimestamp holds each hash submitted to a registered beacon
 message BeaconTimestamp {
+  // timestamp_id is the id of the timestamp
   uint64 timestamp_id = 1;
+  // submit_time is the unix epoch of the timestamp's record time
   uint64 submit_time = 2;
+  // hash is the actual data stored for the timestamp
   string hash = 3;
 }
 
 // Params defines the parameters for the beacon module.
 message Params {
+  // fee_register is the cost to register a beacon
   uint64 fee_register = 1;
+  // fee_record is the cost to record a single timestamp
   uint64 fee_record = 2;
-  string denom = 3;
+  // fee_purchase_storage is the cost to purchase a single additional unit of in-state storage
+  uint64 fee_purchase_storage = 3;
+  // denom is the expected denomination to pay for fees, e.g. nund
+  string denom = 4;
+  // default_storage_limit is the default in-state storage limit for all new beacons
+  uint64 default_storage_limit = 5;
+  // max_storage_limit is the maximum in-state storage slots any one beacon can have
+  uint64 max_storage_limit = 6;
 }

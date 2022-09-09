@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -112,11 +113,11 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 		return nil, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain")
 	}
 
-	if k.QuickCheckHeightIsRecorded(ctx, msg.WrkchainId, msg.Height) {
-		return nil, sdkerrors.Wrap(types.ErrWrkChainBlockAlreadyRecorded, "wrkchain block hashes have already been recorded for this height")
+	if !k.QuickCheckHeightIsNew(ctx, msg.WrkchainId, msg.Height) {
+		return nil, sdkerrors.Wrap(types.ErrNewHeightMustBeHigher, "wrkchain block hashes height must be > last height recorded")
 	}
 
-	err := k.RecordNewWrkchainHashes(ctx, msg.WrkchainId, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3)
+	deletedHeight, err := k.RecordNewWrkchainHashes(ctx, msg.WrkchainId, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3)
 
 	if err != nil {
 		return nil, err
@@ -136,6 +137,7 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 			types.EventTypeRecordWrkChainBlock,
 			sdk.NewAttribute(types.AttributeKeyWrkChainId, strconv.FormatUint(msg.WrkchainId, 10)),
 			sdk.NewAttribute(types.AttributeKeyBlockHeight, strconv.FormatUint(msg.Height, 10)),
+			sdk.NewAttribute(types.AttributeKeyPrunedBlockHeight, strconv.FormatUint(deletedHeight, 10)),
 			sdk.NewAttribute(types.AttributeKeyBlockHash, msg.BlockHash),
 			sdk.NewAttribute(types.AttributeKeyParentHash, msg.ParentHash),
 			sdk.NewAttribute(types.AttributeKeyHash1, msg.Hash1),
@@ -148,6 +150,74 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 	return &types.MsgRecordWrkChainBlockResponse{
 		WrkchainId: msg.WrkchainId,
 		Height:     msg.Height,
+	}, nil
+
+}
+
+func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *types.MsgPurchaseWrkChainStateStorage) (*types.MsgPurchaseWrkChainStateStorageResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	ownerAddr, accErr := sdk.AccAddressFromBech32(msg.Owner)
+	if accErr != nil {
+		return nil, accErr
+	}
+
+	if msg.Number == 0 {
+		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
+	}
+
+	_, found := k.GetWrkChain(ctx, msg.WrkchainId)
+
+	if !found { // Checks if the WrkChain is registered
+		return nil, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet") // If not, throw an error
+	}
+
+	if !k.IsAuthorisedToRecord(ctx, msg.WrkchainId, ownerAddr) {
+		return nil, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain")
+	}
+
+	wrkchainStorage, _ := k.GetWrkChainStorageLimit(ctx, msg.WrkchainId)
+
+	// check not exceeding max
+	maxParam := k.GetParamMaxStorageLimit(ctx)
+	wrkchainStorageAfter := wrkchainStorage.InStateLimit + msg.Number
+
+	if wrkchainStorageAfter > maxParam {
+		return nil, sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", wrkchainStorageAfter, maxParam))
+	}
+
+	err := k.IncreaseInStateStorage(ctx, msg.WrkchainId, msg.Number)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// get remianing can purchase
+	numCanPurchase := k.GetMaxPurchasableSlots(ctx, msg.WrkchainId)
+
+	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+		),
+	)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypePurchaseStorage,
+			sdk.NewAttribute(types.AttributeKeyWrkChainId, strconv.FormatUint(msg.WrkchainId, 10)),
+			sdk.NewAttribute(types.AttributeKeyWrkChainStorageNumPurchased, strconv.FormatUint(msg.Number, 10)),
+			sdk.NewAttribute(types.AttributeKeyWrkChainStorageNumCanPurchase, strconv.FormatUint(numCanPurchase, 10)),
+			sdk.NewAttribute(types.AttributeKeyOwner, ownerAddr.String()),
+		),
+	)
+
+	return &types.MsgPurchaseWrkChainStateStorageResponse{
+		WrkchainId:      msg.WrkchainId,
+		NumberPurchased: msg.Number,
+		NumCanPurchase:  numCanPurchase,
 	}, nil
 
 }

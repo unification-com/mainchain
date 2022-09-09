@@ -29,7 +29,7 @@ const (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONMarshaler,
+	appParams simtypes.AppParams, cdc codec.JSONCodec,
 	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 ) simulation.WeightedOperations {
 
@@ -130,7 +130,7 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "")
+		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
 
 		poId, err := k.GetHighestPurchaseOrderID(ctx)
 
@@ -230,7 +230,7 @@ func SimulateMsgWhitelistAddress(k keeper.Keeper, bk types.BankKeeper, ak types.
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, errors.New(res.Log)
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 
 	}
 }
@@ -307,7 +307,7 @@ func operationSimulateMsgProcessUndPurchaseOrder(k keeper.Keeper, bk types.BankK
 				nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 

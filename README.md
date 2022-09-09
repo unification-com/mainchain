@@ -13,7 +13,7 @@ BEACONs submit their hashes, and FUND transactions take place.
 
 ## Quick start installation
 
-See [Documentation](https://docs.unification.io) for full guides.
+See [Documentation](https://docs.unification.io/mainchain) for full guides.
 
 There are several options for installing the binaries
 
@@ -104,7 +104,7 @@ $ docker run -it -p 26657:26657 -p 26656:26656 -v $HOME/.und_mainchain:/root/.un
 
 A complete DevNet environment, comprising of 3 EVs, a REST server, a reverse proxy server and several test wallets
 loaded with FUND is available via Docker Compose compositions for development and testing purposes.
-See [DevNet documentation](docs/local-devnet.md) for more detailed information.
+See [DevNet documentation](https://docs.unification.io/mainchain/networks/local-devnet.html) for more detailed information.
 
 ## Unit Tests & Chain Simulation
 

@@ -47,3 +47,15 @@ func TestBeaconTimestampKey(t *testing.T) {
 	require.True(t, wcIdFromBz == bID)
 	require.True(t, tsIdFromBz == tsID)
 }
+
+func TestBeaconStorageLimitKey(t *testing.T) {
+	bID := uint64(24)
+	key := BeaconStorageLimitKey(bID)
+	require.True(t, len(key[1:]) == 8)
+	require.True(t, bytes.Equal(key[:1], BeaconStorageLimitPrefix))
+
+	bBz := key[1:]
+	bFromBz := GetBeaconIDFromBytes(bBz)
+	require.True(t, bFromBz == bID)
+	require.True(t, bytes.Equal(bBz, GetBeaconIDBytes(bID)))
+}

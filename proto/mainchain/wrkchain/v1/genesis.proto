@@ -6,7 +6,7 @@ import "mainchain/wrkchain/v1/wrkchain.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
-// GenesisState defines the beacon module's genesis state.
+// GenesisState defines the wrkchain module's genesis state.
 message GenesisState {
   // params defines all the paramaters of the module.
   Params params = 1 [(gogoproto.nullable) = false];
@@ -29,5 +29,6 @@ message WrkChainBlockGenesisExport {
 // WrkChainExport holds genesis export data for a wrkchain, including hashes
 message WrkChainExport {
   WrkChain wrkchain = 1 [(gogoproto.nullable) = false];
-  repeated WrkChainBlockGenesisExport blocks = 2 [(gogoproto.castrepeated) = "WrkChainBlockGenesisExports", (gogoproto.nullable) = false];
+  uint64 in_state_limit = 2;
+  repeated WrkChainBlockGenesisExport blocks = 3 [(gogoproto.castrepeated) = "WrkChainBlockGenesisExports", (gogoproto.nullable) = false];
 }

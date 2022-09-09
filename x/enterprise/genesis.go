@@ -37,6 +37,11 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 		panic(err)
 	}
 
+	err = keeper.SetTotalSpentEFUND(ctx, data.TotalSpent)
+	if err != nil {
+		panic(err)
+	}
+
 	for _, po := range data.PurchaseOrders {
 		epo := types.EnterpriseUndPurchaseOrder{
 			Id:             po.Id,
@@ -73,16 +78,24 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 		}
 	}
 
-	// ensure locked FUND is registered with supply keeper
-	balances := bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
-	if balances.IsZero() {
-		var moduleHoldings sdk.Coins
-		moduleHoldings = moduleHoldings.Add(data.TotalLocked)
-		if err := bankKeeper.SetBalances(ctx, moduleAcc.GetAddress(), moduleHoldings); err != nil {
+	for _, spent := range data.SpentEfund {
+		err = keeper.SetSpentEFUNDForAccount(ctx, spent)
+		if err != nil {
 			panic(err)
 		}
+	}
 
+	// ensure locked FUND is registered with supply keeper
+	var moduleHoldings sdk.Coins
+	moduleHoldings = moduleHoldings.Add(data.TotalLocked)
+
+	balances := bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
+	if balances.IsZero() {
 		accountKeeper.SetModuleAccount(ctx, moduleAcc)
+	}
+
+	if !balances.IsEqual(moduleHoldings) {
+		panic(fmt.Sprintf("enterprise module balance does not match the module holdings: %s <-> %s", balances, moduleHoldings))
 	}
 
 	return []abci.ValidatorUpdate{}
@@ -96,6 +109,8 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 	lockedUnds := keeper.GetAllLockedUnds(ctx)
 	totalLocked := keeper.GetTotalLockedUnd(ctx)
 	whitelist := keeper.GetAllWhitelistedAddresses(ctx)
+	totalSpent := keeper.GetTotalSpentEFUND(ctx)
+	spentEFUNDs := keeper.GetAllSpentEFUNDs(ctx)
 
 	return &types.GenesisState{
 		Params:                  params,
@@ -104,5 +119,7 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) *types.GenesisState {
 		LockedUnd:               lockedUnds,
 		TotalLocked:             totalLocked,
 		Whitelist:               whitelist,
+		TotalSpent:              totalSpent,
+		SpentEfund:              spentEFUNDs,
 	}
 }

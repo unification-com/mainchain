@@ -1,11 +1,5 @@
 # Changelog
 
-## v1.6.2 - 09/09/2022
-
-Fixes a bug in the `enterprise` module's `MsgServer` and handler preventing multiple decisions being made on purchase orders
-
-**Full Changelog**: https://github.com/unification-com/mainchain/compare/v1.6.1...v1.6.2
-
 ## v1.6.1 - 04/08/2022
 
 A minor client update to fix the `und query bank total` query, replacing it with the Enterprise module's version that 

@@ -112,9 +112,8 @@ func (k msgServer) ProcessUndPurchaseOrder(goCtx context.Context, msg *types.Msg
 
 	currentDecisions := purchaseOrder.Decisions
 	for _, d := range currentDecisions {
-		dSigner, _ := sdk.AccAddressFromBech32(msg.Signer)
-		if dSigner.Equals(signer) {
-			return nil, sdkerrors.Wrapf(types.ErrSignerAlreadyMadeDecision, "signer %s already decided: %s", signer.String(), d.Decision.String())
+		if msg.Signer == d.Signer {
+			return nil, sdkerrors.Wrapf(types.ErrSignerAlreadyMadeDecision, "signer %s already decided: %s", msg.Signer, d.Decision.String())
 		}
 	}
 

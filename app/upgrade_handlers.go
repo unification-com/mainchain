@@ -8,21 +8,30 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
-// UpdateName this will be changed with each new release that requires migrations
-const UpdateName = "1-ibc"
+// UpdateNameTn this will be changed with each new release that requires migrations
+// "1-ibc" was used for FUND-TestNet-2
+const UpdateNameTn = "1-ibc"
+
+// UpdateNameMn this will be changed with each new release that requires migrations
+// "1-ibc_mn" will be used for FUND-MainNet-2, as this version of und onwards contains a fix for the
+// enterprise module's PO decision handler that requires all validators and nodes to upgrade to.
+const UpdateNameMn = "1-init_ibc"
 
 // see https://docs.cosmos.network/v0.45/migrations/chain-upgrade-guide-044.html
 func (app *App) registerUpgradeHandlers() {
-	// first upgrade 1-ibc, integrates IBC
-	app.UpgradeKeeper.SetUpgradeHandler(UpdateName, app.upgradeHandler)
+
+	// first upgrade 1-ibc, integrates IBC - FUND-TestNet-2 & DevNets
+	app.UpgradeKeeper.SetUpgradeHandler(UpdateNameTn, app.upgradeHandler)
+	// first upgrade 1-ibc, integrates IBC - FUND-MainNet-2
+	app.UpgradeKeeper.SetUpgradeHandler(UpdateNameMn, app.upgradeHandler)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
 	}
 
-	// add new modules in 1-ibc upgrade
-	if upgradeInfo.Name == UpdateName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	// add new modules in 1-ibc upgrade for both FUND-TestNet-2/DevNets and FUND-MainNet-2
+	if (upgradeInfo.Name == UpdateNameTn || upgradeInfo.Name == UpdateNameMn) && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
 			Added: []string{"authz", "feegrant", "capability", "ibc", "transfer"},
 		}

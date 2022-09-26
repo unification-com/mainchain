@@ -17,6 +17,7 @@ services:
       - "26651:26651"
       - "1317:1317"
       - "9092:9092"
+      - "9093:9093"
 
   dn_node2:
     hostname: dn_node2
@@ -76,7 +77,8 @@ services:
         ipv4_address: 172.25.0.7
     ports:
       - "1318:1318"
-      - "9092:9092"
+      - "9094:9094"
+      - "9095:9095"
 
 networks:
   mainchain_devnet:

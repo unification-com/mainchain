@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.6.3 - 17/10/2022
+
+As per the Cosmos/Interchain [security advisory](https://forum.cosmos.network/t/ibc-security-advisory-dragonberry/7702),
+the Cosmos SDK has been updated to v0.45.9.
+
+**Full Changelog**: https://github.com/unification-com/mainchain/compare/1.6.2...v1.6.3
+
+## v1.6.2 - 26/09/2022
+
+Fixed bugs found during TestNet testing phase
+
+**Full Changelog**: https://github.com/unification-com/mainchain/compare/1.6.1...v1.6.2
+
 ## v1.6.1 - 04/08/2022
 
 A minor client update to fix the `und query bank total` query, replacing it with the Enterprise module's version that 

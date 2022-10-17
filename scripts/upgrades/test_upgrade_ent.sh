@@ -35,8 +35,8 @@ cp "./build/und" "${COSMOVISOR_HOME}/upgrades/${UPGRADE_PLAN_NAME}/bin"
 
 cd "${TEST_PATH}"
 
-wget https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.1.0/cosmovisor-v1.1.0-linux-amd64.tar.gz
-tar -zxvf cosmovisor-v1.1.0-linux-amd64.tar.gz
+wget https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.2.0/cosmovisor-v1.2.0-linux-amd64.tar.gz
+tar -zxvf cosmovisor-v1.2.0-linux-amd64.tar.gz
 
 wget https://github.com/unification-com/mainchain/releases/download/1.5.1/und_v1.5.1_linux_x86_64.tar.gz
 tar -zxvf und_v1.5.1_linux_x86_64.tar.gz

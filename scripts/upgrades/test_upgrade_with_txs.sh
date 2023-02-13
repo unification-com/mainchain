@@ -21,6 +21,8 @@ NUM_TO_SUB=50
 CURRENT_HEIGHT=0
 UPPER_CASE_HASH=0
 CHAIN_ID="test-$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 10 | head -n 1)"
+UPGRADE_PLAN_NAME="2-grog"
+UND_GENESIS_VERSION="v1.6.3"
 
 # cosmovisor will run as a background process.
 # Catch and kill when ctrl-c is hit
@@ -47,19 +49,19 @@ function gen_hash() {
 rm -rf "${TEST_PATH}"
 
 mkdir -p "${COSMOVISOR_HOME}/genesis/bin"
-mkdir -p "${COSMOVISOR_HOME}/upgrades/1-ibc/bin"
+mkdir -p "${COSMOVISOR_HOME}/upgrades/${UPGRADE_PLAN_NAME}/bin"
 
 make build
 
-cp "./build/und" "${COSMOVISOR_HOME}/upgrades/1-ibc/bin"
+cp "./build/und" "${COSMOVISOR_HOME}/upgrades/${UPGRADE_PLAN_NAME}/bin"
 
 cd "${TEST_PATH}"
 
 wget https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.2.0/cosmovisor-v1.2.0-linux-amd64.tar.gz
 tar -zxvf cosmovisor-v1.2.0-linux-amd64.tar.gz
 
-wget https://github.com/unification-com/mainchain/releases/download/1.5.1/und_v1.5.1_linux_x86_64.tar.gz
-tar -zxvf und_v1.5.1_linux_x86_64.tar.gz
+wget "https://github.com/unification-com/mainchain/releases/download/${UND_GENESIS_VERSION}/und_${UND_GENESIS_VERSION}_linux_x86_64.tar.gz"
+tar -zxvf "und_${UND_GENESIS_VERSION}_linux_x86_64.tar.gz"
 mv und "${UND_GEN_BIN}"
 
 "${UND_GEN_BIN}" init test --home "${UND_HOME}"
@@ -72,7 +74,6 @@ mv und "${UND_GEN_BIN}"
 
 sed -i -e 's/"voting_period": "172800s"/"voting_period": "20s"/gi' "${UND_HOME}/config/genesis.json"
 sed -i -e 's/"stake"/"nund"/gi' "${UND_HOME}/config/genesis.json"
-sed -i -e 's/"historical_entries": 10000/"historical_entries": 3/gi' "${UND_HOME}/config/genesis.json"
 
 sed -i -e 's/pruning = "default"/pruning = "nothing"/gi' "${UND_HOME}/config/app.toml"
 sed -i -e 's/enable = false/enable = true/gi' "${UND_HOME}/config/app.toml"
@@ -108,19 +109,19 @@ export DAEMON_RESTART_AFTER_UPGRADE=true
 sleep 6s
 
 # ent POs
-"${UND_GEN_BIN}" tx enterprise purchase 1000000000000000nund --from wc --yes --home "${UND_HOME}"
-"${UND_GEN_BIN}" tx enterprise purchase 1000000000000000nund --from bc --yes --home "${UND_HOME}"
+"${UND_GEN_BIN}" tx enterprise purchase 1000000000000000nund --from wc --yes --home "${UND_HOME}" --gas=auto --gas-adjustment=1.5 --gas-prices=25.0nund
+"${UND_GEN_BIN}" tx enterprise purchase 1000000000000000nund --from bc --yes --home "${UND_HOME}" --gas=auto --gas-adjustment=1.5 --gas-prices=25.0nund
 
 sleep 6s
-"${UND_GEN_BIN}" tx enterprise process 1 accept --from ent --yes --home "${UND_HOME}" --sequence 0
+"${UND_GEN_BIN}" tx enterprise process 1 accept --from ent --yes --home "${UND_HOME}" --sequence 0 --gas=auto --gas-adjustment=1.5 --gas-prices=25.0nund
 sleep 1s
-"${UND_GEN_BIN}" tx enterprise process 2 accept --from ent --yes --home "${UND_HOME}" --sequence 1
+"${UND_GEN_BIN}" tx enterprise process 2 accept --from ent --yes --home "${UND_HOME}" --sequence 1 --gas=auto --gas-adjustment=1.5 --gas-prices=25.0nund
 
 sleep 15s
 
 # register WC/BEACON
-"${UND_GEN_BIN}" tx wrkchain register --moniker="wc1" --genesis="genhash" --name="WC 1" --base="geth" --from wc --yes --home "${UND_HOME}"
-"${UND_GEN_BIN}" tx beacon register --moniker="bc1" --name="BC 1" --from bc --yes --home "${UND_HOME}"
+"${UND_GEN_BIN}" tx wrkchain register --moniker="wc1" --genesis="genhash" --name="WC 1" --base="geth" --from wc --yes --home "${UND_HOME}" --gas=auto --gas-adjustment=1.5
+"${UND_GEN_BIN}" tx beacon register --moniker="bc1" --name="BC 1" --from bc --yes --home "${UND_HOME}" --gas=auto --gas-adjustment=1.5
 
 sleep 10s
 
@@ -133,8 +134,8 @@ do
   HEIGHT=$(awk "BEGIN {print $i+1}")
   B_HASH=$(gen_hash)
   W_HASH=$(gen_hash)
-  "${UND_GEN_BIN}" tx wrkchain record 1 --wc_height "${HEIGHT}" --block_hash "${W_HASH}" --from wc --yes --home "${UND_HOME}" --sequence "${WC_SEQ}" --broadcast-mode sync
-  "${UND_GEN_BIN}" tx beacon record 1 --hash "${B_HASH}" --from bc --yes --home "${UND_HOME}" --sequence "${B_SEQ}" --broadcast-mode sync
+  "${UND_GEN_BIN}" tx wrkchain record 1 --wc_height "${HEIGHT}" --block_hash "${W_HASH}" --from wc --yes --home "${UND_HOME}" --sequence "${WC_SEQ}" --broadcast-mode sync --gas=auto --gas-adjustment=1.5
+  "${UND_GEN_BIN}" tx beacon record 1 --hash "${B_HASH}" --from bc --yes --home "${UND_HOME}" --sequence "${B_SEQ}" --broadcast-mode sync --gas=auto --gas-adjustment=1.5
 
   WC_SEQ=$(awk "BEGIN {print $WC_SEQ+1}")
   B_SEQ=$(awk "BEGIN {print $B_SEQ+1}")
@@ -143,8 +144,8 @@ done
 # upgrade gov proposal
 set_current_height
 UPGRADE_HEIGHT=$(awk "BEGIN {print $CURRENT_HEIGHT+$UPGRADE_AFTER}")
-"${UND_GEN_BIN}" tx gov submit-proposal software-upgrade 1-ibc --deposit 10000000nund --title upgrade --description upgrade --upgrade-height ${UPGRADE_HEIGHT} --from validator --yes --home "${UND_HOME}"
-"${UND_GEN_BIN}" tx gov vote 1 yes --from validator --yes --home "${UND_HOME}"
+"${UND_GEN_BIN}" tx gov submit-proposal software-upgrade "${UPGRADE_PLAN_NAME}" --deposit 10000000nund --title upgrade --description upgrade --upgrade-height ${UPGRADE_HEIGHT} --from validator --yes --home "${UND_HOME}" --gas=auto --gas-adjustment=1.5 --gas-prices=25.0nund
+"${UND_GEN_BIN}" tx gov vote 1 yes --from validator --yes --home "${UND_HOME}" --gas=auto --gas-adjustment=1.5 --gas-prices=25.0nund
 
 echo "UPGRADE_HEIGHT=${UPGRADE_HEIGHT}"
 

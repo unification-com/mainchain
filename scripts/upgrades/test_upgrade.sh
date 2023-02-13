@@ -18,7 +18,8 @@ COSMOVISOR_BIN="${TEST_PATH}/cosmovisor"
 UND_GEN_BIN="${COSMOVISOR_HOME}/genesis/bin/und"
 UPGRADE_HEIGHT=10
 CHAIN_ID="test-$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 10 | head -n 1)"
-UPGRADE_PLAN_NAME="1-init_ibc"
+UPGRADE_PLAN_NAME="2-grog"
+UND_GENESIS_VERSION="v1.6.3"
 
 # cosmovisor will run as a background process.
 # Catch and kill when ctrl-c is hit
@@ -38,8 +39,8 @@ cd "${TEST_PATH}"
 wget https://github.com/cosmos/cosmos-sdk/releases/download/cosmovisor%2Fv1.2.0/cosmovisor-v1.2.0-linux-amd64.tar.gz
 tar -zxvf cosmovisor-v1.2.0-linux-amd64.tar.gz
 
-wget https://github.com/unification-com/mainchain/releases/download/1.5.1/und_v1.5.1_linux_x86_64.tar.gz
-tar -zxvf und_v1.5.1_linux_x86_64.tar.gz
+wget "https://github.com/unification-com/mainchain/releases/download/${UND_GENESIS_VERSION}/und_${UND_GENESIS_VERSION}_linux_x86_64.tar.gz"
+tar -zxvf "und_${UND_GENESIS_VERSION}_linux_x86_64.tar.gz"
 mv und "${UND_GEN_BIN}"
 
 "${UND_GEN_BIN}" init test --home "${UND_HOME}"
@@ -54,7 +55,6 @@ mv und "${UND_GEN_BIN}"
 
 sed -i -e 's/"voting_period": "172800s"/"voting_period": "20s"/gi' "${UND_HOME}/config/genesis.json"
 sed -i -e 's/"stake"/"nund"/gi' "${UND_HOME}/config/genesis.json"
-sed -i -e 's/"historical_entries": 10000/"historical_entries": 3/gi' "${UND_HOME}/config/genesis.json"
 
 "${UND_GEN_BIN}" add-genesis-account validator 5000000000nund --keyring-backend test --home "${UND_HOME}"
 

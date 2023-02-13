@@ -13,9 +13,9 @@
 
 TEST_PATH="/tmp/und_migrate_test"
 UND_HOME="${TEST_PATH}/.und_mainchain"
-UND_151_BIN="${TEST_PATH}/und_151"
-UND_16X_BIN="${TEST_PATH}/und_16x"
-CURR_UND_BIN="${UND_151_BIN}"
+UND_163_BIN="${TEST_PATH}/und_163"
+UND_17X_BIN="${TEST_PATH}/und_17x"
+CURR_UND_BIN="${UND_163_BIN}"
 NUM_TO_SUB=100
 CURRENT_HEIGHT=0
 UPPER_CASE_HASH=0
@@ -75,16 +75,14 @@ function query_wc_b() {
   ${CURR_UND_BIN} query wrkchain wrkchain 1 --home "${UND_HOME}"
   echo "B 1"
   ${CURR_UND_BIN} query beacon beacon 1 --home "${UND_HOME}"
-  if [ "$CURR_UND_BIN" = "$UND_16X_BIN" ]; then
-    echo "WC 1 STORAGE"
-    ${CURR_UND_BIN} query wrkchain storage 1 --home "${UND_HOME}"
-    echo "WC 1 SPENT eFUND"
-    ${CURR_UND_BIN} query enterprise spent "${WC_ADDRESS}" --home "${UND_HOME}"
-    echo "B 1 STORAGE"
-    ${CURR_UND_BIN} query beacon storage 1 --home "${UND_HOME}"
-    echo "B 1 SPENT eFUND"
-    ${CURR_UND_BIN} query enterprise spent "${BC_ADDRESS}" --home "${UND_HOME}"
-  fi
+  echo "WC 1 STORAGE"
+  ${CURR_UND_BIN} query wrkchain storage 1 --home "${UND_HOME}"
+  echo "WC 1 SPENT eFUND"
+  ${CURR_UND_BIN} query enterprise spent "${WC_ADDRESS}" --home "${UND_HOME}"
+  echo "B 1 STORAGE"
+  ${CURR_UND_BIN} query beacon storage 1 --home "${UND_HOME}"
+  echo "B 1 SPENT eFUND"
+  ${CURR_UND_BIN} query enterprise spent "${BC_ADDRESS}" --home "${UND_HOME}"
 }
 
 rm -rf "${TEST_PATH}"
@@ -92,13 +90,13 @@ mkdir -p "${TEST_PATH}"
 
 make build
 
-cp "./build/und" "${UND_16X_BIN}"
+cp "./build/und" "${UND_17X_BIN}"
 
 cd "${TEST_PATH}"
 
-wget https://github.com/unification-com/mainchain/releases/download/1.5.1/und_v1.5.1_linux_x86_64.tar.gz
-tar -zxvf und_v1.5.1_linux_x86_64.tar.gz
-mv und "${UND_151_BIN}"
+wget https://github.com/unification-com/mainchain/releases/download/v1.6.3/und_v1.6.3_linux_x86_64.tar.gz
+tar -zxvf und_v1.6.3_linux_x86_64.tar.gz
+mv und "${UND_163_BIN}"
 
 "${CURR_UND_BIN}" init test --home "${UND_HOME}"
 "${CURR_UND_BIN}" unsafe-reset-all --home "${UND_HOME}"
@@ -114,7 +112,7 @@ sed -i -e 's/"historical_entries": 10000/"historical_entries": 3/gi' "${UND_HOME
 sed -i -e 's/pruning = "default"/pruning = "nothing"/gi' "${UND_HOME}/config/app.toml"
 sed -i -e 's/enable = false/enable = true/gi' "${UND_HOME}/config/app.toml"
 sed -i -e 's/swagger = false/swagger = true/gi' "${UND_HOME}/config/app.toml"
-sed -i -e 's/minimum-gas-prices = ""/minimum-gas-prices = "1.0nund"/gi' "${UND_HOME}/config/app.toml"
+sed -i -e 's/minimum-gas-prices = "25.0nund"/minimum-gas-prices = "1.0nund"/gi' "${UND_HOME}/config/app.toml"
 
 # accounts
 "${CURR_UND_BIN}" keys add validator --home "${UND_HOME}" --keyring-backend test
@@ -180,15 +178,15 @@ kill "${UND_PID}"
 
 sleep 7s
 
-echo "Exporting und v1.5.1 state"
+echo "Exporting und v1.6.3 state"
 
 "${CURR_UND_BIN}" export --for-zero-height --home "${UND_HOME}" > "${UND_HOME}"/v042_exported_state.json
 
 cat "${UND_HOME}"/v042_exported_state.json | jq > "${UND_HOME}"/v042_exported_state_pretty.json
 
-CURR_UND_BIN="${UND_16X_BIN}"
+CURR_UND_BIN="${UND_17X_BIN}"
 
-echo "Migrating state to v1.6.x format"
+echo "Migrating state to v1.7.x format"
 
 "${CURR_UND_BIN}" migrate "${UND_HOME}"/v042_exported_state.json --chain-id ${CHAIN_ID_V2} --genesis-time "2022-07-27T07:00:00Z" --log_level "" > "${UND_HOME}"/new_v045_genesis.json
 

@@ -37,10 +37,12 @@ archives:
     id: "und"
     builds:
       - und
-    name_template: "{{ .Binary }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: >-
+      {{ .Binary }}_v
+      {{ .Version }}_
+      {{ .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
     format: tar.gz
-    replacements:
-      amd64: x86_64
 
 checksum:
   name_template: 'checksums.txt'

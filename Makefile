@@ -125,10 +125,10 @@ check-updates:
 	@echo "go get github.com/user/repo to update. E.g. go get github.com/cosmos/cosmos-sdk"
 
 snapshot: goreleaser
-	TM_CORE_SEM_VERSION="${TM_CORE_SEM_VERSION}" goreleaser --snapshot --skip-publish --rm-dist --debug
+	TM_CORE_SEM_VERSION="${TM_CORE_SEM_VERSION}" goreleaser --snapshot --skip-publish --clean --debug
 
 release: goreleaser
-	TM_CORE_SEM_VERSION="${TM_CORE_SEM_VERSION}" goreleaser --rm-dist
+	TM_CORE_SEM_VERSION="${TM_CORE_SEM_VERSION}" goreleaser --clean
 
 ###############################################################################
 ###                                Protobuf                                 ###

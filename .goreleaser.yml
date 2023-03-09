@@ -37,11 +37,8 @@ archives:
     id: "und"
     builds:
       - und
-    name_template: >-
-      {{ .Binary }}_v
-      {{ .Version }}_
-      {{ .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
+    name_template: >- 
+      {{ .Binary }}_v{{ .Version }}_{{ .Os }}_{{- if eq .Arch "amd64" }}x86_64{{ end }}
     format: tar.gz
 
 checksum:

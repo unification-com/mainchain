@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.7.0 - 09/03/2023
+
+Updates Cosmos SDK to v0.45.14 and `ibc-go` to v3.4.0
+
+**Full Changelog**: https://github.com/unification-com/mainchain/compare/1.6.3...v1.7.0
+
 ## v1.6.3 - 17/10/2022
 
 As per the Cosmos/Interchain [security advisory](https://forum.cosmos.network/t/ibc-security-advisory-dragonberry/7702),

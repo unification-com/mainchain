@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"io"
 	"os"
 	"path/filepath"
@@ -122,7 +123,9 @@ func initAppConfig() (string, interface{}) {
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
-	//authclient.Codec = encodingConfig.Marshaler
+	a := appCreator{
+		encCfg: encodingConfig,
+	}
 
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
@@ -134,11 +137,8 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		config.Cmd(),
+		pruning.PruningCmd(a.newApp),
 	)
-
-	a := appCreator{
-		encCfg: encodingConfig,
-	}
 	server.AddCommands(rootCmd, app.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands

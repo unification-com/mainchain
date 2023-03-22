@@ -10,7 +10,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
-	v043 "github.com/cosmos/cosmos-sdk/x/genutil/legacy/v043"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/cobra"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -25,7 +24,7 @@ const chainUpgradeGuide = "https://docs.cosmos.network/master/migrations/chain-u
 func MigrateGenesisCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "migrate [genesis-file]",
-		Short: "Migrate 0.40 genesis to the latest version",
+		Short: "Migrate genesis to the latest version",
 		Long: fmt.Sprintf(`Migrate the source genesis into the latest version and print to STDOUT.
 Example:
 $ %s migrate /path/to/genesis.json --chain-id=FUND-MainNet-3 --genesis-time=2022-06-01T10:00:00Z
@@ -48,10 +47,8 @@ $ %s migrate /path/to/genesis.json --chain-id=FUND-MainNet-3 --genesis-time=2022
 				return errors.Wrap(err, "failed to JSON unmarshal initial genesis state")
 			}
 
-			// Run 0.40 -> 0.43 for Cosmos modules
-			newGenState := v043.Migrate(initialState, clientCtx)
-			// Run und modules 0.40 -> 0.43 (0.45)
-			newGenState = v045fund.Migrate(newGenState, clientCtx)
+			// Run ICS20 - Transfer ibc v3.0.0 -> 3.4.0
+			newGenState := v045fund.Migrate(initialState, clientCtx)
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {

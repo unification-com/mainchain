@@ -89,13 +89,13 @@ sed -i "s/stake/nund/g" "${DATA_DIR}/config/genesis.json"
 
 # add test keys to keychain
 # add a validator
-"${UND_BIN}" --home ${DATA_DIR} keys add validator
+"${UND_BIN}" --home ${DATA_DIR} keys add validator --keyring-backend test
 # add a test key for account 0. If v < 1.6.x, do not use account 0 in testing.
-"${UND_BIN}" --home ${DATA_DIR} keys add t0
+"${UND_BIN}" --home ${DATA_DIR} keys add t0 --keyring-backend test
 # add a test key
-"${UND_BIN}" --home ${DATA_DIR} keys add t1
-"${UND_BIN}" --home ${DATA_DIR} keys add t2
-E_ADDR_RES=$("${UND_BIN}" --home ${DATA_DIR} keys add ent1 --output json 2>&1)
+"${UND_BIN}" --home ${DATA_DIR} keys add t1 --keyring-backend test
+"${UND_BIN}" --home ${DATA_DIR} keys add t2 --keyring-backend test
+E_ADDR_RES=$("${UND_BIN}" --home ${DATA_DIR} keys add ent1 --output json --keyring-backend test 2>&1)
 ENT1=$(echo "${E_ADDR_RES}" | jq --raw-output '.address')
 
 sed -i "s/\"ent_signers\": \"und1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq5x8kpm\"/\"ent_signers\": \"$ENT1\"/g" "${DATA_DIR}/config/genesis.json"

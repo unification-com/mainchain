@@ -12,7 +12,7 @@ import (
 )
 
 func TestSetGetBeaconTimestamp(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 
@@ -47,7 +47,7 @@ func TestSetGetBeaconTimestamp(t *testing.T) {
 }
 
 func TestGetBeaconTimestamp(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(100)
@@ -92,7 +92,7 @@ func TestGetBeaconTimestamp(t *testing.T) {
 }
 
 func TestIsAuthorisedToRecord(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 
@@ -119,7 +119,7 @@ func TestIsAuthorisedToRecord(t *testing.T) {
 }
 
 func TestRecordBeaconTimestamps(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 
@@ -190,7 +190,7 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 }
 
 func TestIncreaseInStateStorage(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 
@@ -220,7 +220,7 @@ func TestIncreaseInStateStorage(t *testing.T) {
 }
 
 func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 

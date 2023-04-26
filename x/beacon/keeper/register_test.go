@@ -12,7 +12,7 @@ import (
 // Tests for Highest BEACON ID
 
 func TestSetGetHighestBeaconID(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	for i := uint64(1); i <= 1000; i++ {
@@ -23,18 +23,10 @@ func TestSetGetHighestBeaconID(t *testing.T) {
 	}
 }
 
-func TestSetGetHighestBeaconIDNotSet(t *testing.T) {
-	app := test_helpers.Setup(true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-
-	_, err := app.BeaconKeeper.GetHighestBeaconID(ctx)
-	require.Error(t, err)
-}
-
 // Tests for Get/Set BEACONs
 
 func TestSetGetBeacon(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 
@@ -81,7 +73,7 @@ func TestSetGetBeacon(t *testing.T) {
 // Tests for Registering a new BEACON
 
 func TestRegisterBeacon(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 
@@ -123,7 +115,7 @@ func TestRegisterBeacon(t *testing.T) {
 }
 
 func TestHighestBeaconIdAfterRegister(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 
@@ -148,7 +140,7 @@ func TestHighestBeaconIdAfterRegister(t *testing.T) {
 }
 
 func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 
@@ -177,7 +169,7 @@ func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
 }
 
 func TestGetBeaconFilter(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	numToReg := 100
 	lastMoniker := ""

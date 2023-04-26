@@ -92,8 +92,8 @@ func getQueriedBeaconsFiltered(t *testing.T, ctx sdk.Context, cdc *codec.LegacyA
 	return matchingWcs
 }
 
-func setupTest() (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
-	testApp := test_helpers.Setup(false)
+func setupTest(t *testing.T) (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
+	testApp := test_helpers.Setup(t, false)
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
 	legacyQuerierCdc := testApp.LegacyAmino()
 	querier := keeper.NewLegacyQuerier(testApp.BeaconKeeper, legacyQuerierCdc)
@@ -103,7 +103,7 @@ func setupTest() (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
 
 func TestQueryParams(t *testing.T) {
 
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	paramsNew := types.NewParams(9999, 999, 999, "somecoin", 9999, 99999)
 	testApp.BeaconKeeper.SetParams(ctx, paramsNew)
@@ -114,7 +114,7 @@ func TestQueryParams(t *testing.T) {
 
 func TestInvalidQuerier(t *testing.T) {
 
-	_, ctx, _, querier := setupTest()
+	_, ctx, _, querier := setupTest(t)
 
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, "nosuchpath"}, "/"),
@@ -130,7 +130,7 @@ func TestInvalidQuerier(t *testing.T) {
 
 func TestQueryBeaconByID(t *testing.T) {
 
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	var testBeacons []types.Beacon
 
@@ -156,7 +156,7 @@ func TestQueryBeaconByID(t *testing.T) {
 }
 
 func TestQueryBeaconTimestampByID(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	var testBeaconTs []types.BeaconTimestampLegacy
 	numTimestamps := uint64(100)
@@ -201,7 +201,7 @@ func TestQueryBeaconTimestampByID(t *testing.T) {
 }
 
 func TestQueryBeaconsFiltered(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	numToRegister := 10
 

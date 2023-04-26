@@ -85,8 +85,9 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
 		fees := k.GetRegistrationFeeAsCoins(ctx)
+		feeAsCoin := k.GetRegistrationFeeAsCoin(ctx)
 
-		_, hasNeg := spendable.SafeSub(fees)
+		_, hasNeg := spendable.SafeSub(feeAsCoin)
 
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.RegisterAction, "not enough to pay beacon registration fee"), nil, nil // skip
@@ -99,7 +100,8 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -114,7 +116,7 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
@@ -150,8 +152,9 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
 		fees := k.GetRecordFeeAsCoins(ctx)
+		feeAsCoin := k.GetRecordFeeAsCoin(ctx)
 
-		_, hasNeg := spendable.SafeSub(fees)
+		_, hasNeg := spendable.SafeSub(feeAsCoin)
 
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.RecordAction, "not enough to pay beacon record timestamp fee"), nil, nil // skip
@@ -163,7 +166,8 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -178,7 +182,7 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
@@ -227,9 +231,10 @@ func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper,
 		actualFeeDenom := bParams.Denom
 
 		feeInt := int64(actualPurchaseAmt * randNumToPurchase)
-		fees := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
+		feeAsCoin := sdk.NewInt64Coin(actualFeeDenom, feeInt)
+		fees := sdk.NewCoins(feeAsCoin)
 
-		_, hasNeg := spendable.SafeSub(fees)
+		_, hasNeg := spendable.SafeSub(feeAsCoin)
 
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.PurchaseStorageAction, "not enough to pay beacon purchase storage fee"), nil, nil // skip
@@ -239,7 +244,8 @@ func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper,
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -254,7 +260,7 @@ func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper,
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err

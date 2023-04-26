@@ -93,8 +93,8 @@ func getQueriedWrkChainsFiltered(t *testing.T, ctx sdk.Context, cdc *codec.Legac
 	return matchingWcs
 }
 
-func setupTest() (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
-	testApp := test_helpers.Setup(false)
+func setupTest(t *testing.T) (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
+	testApp := test_helpers.Setup(t, false)
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
 	legacyQuerierCdc := testApp.LegacyAmino()
 	querier := keeper.NewLegacyQuerier(testApp.WrkchainKeeper, legacyQuerierCdc)
@@ -103,7 +103,7 @@ func setupTest() (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
 }
 
 func TestQueryParams(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	paramsNew := types.NewParams(9999, 999, 999, "somecoin", 999, 9999)
 
@@ -113,7 +113,7 @@ func TestQueryParams(t *testing.T) {
 }
 
 func TestInvalidQuerier(t *testing.T) {
-	_, ctx, _, querier := setupTest()
+	_, ctx, _, querier := setupTest(t)
 
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, "nosuchpath"}, "/"),
@@ -128,7 +128,7 @@ func TestInvalidQuerier(t *testing.T) {
 }
 
 func TestQueryWrkChainByID(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	var testWcs []types.WrkChain
 
@@ -156,7 +156,7 @@ func TestQueryWrkChainByID(t *testing.T) {
 }
 
 func TestQueryWrkChainBlockByHeight(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	var testWcBlocks []types.WrkChainBlockLegacy
 	numBlocks := uint64(100)
@@ -209,7 +209,7 @@ func TestQueryWrkChainBlockByHeight(t *testing.T) {
 }
 
 func TestQueryWrkChainsFiltered(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	numToRegister := 10
 

@@ -63,7 +63,7 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	}
 
 	// check sender has sufficient funds
-	err := checkFeePayerHasFunds(ctx, wfd.bankKeeper, wfd.accKeeper, wfd.entKeeper, feeTx)
+	err := checkFeePayerHasFunds(ctx, wfd.bankKeeper, wfd.accKeeper, wfd.entKeeper, wfd.wrkchainKeeper, feeTx)
 	if err != nil {
 		return ctx, err
 	}
@@ -171,10 +171,11 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 	return nil
 }
 
-func checkFeePayerHasFunds(ctx sdk.Context, bankKeeper BankKeeper, accKeeper AccountKeeper, ek EnterpriseKeeper, tx sdk.FeeTx) error {
+func checkFeePayerHasFunds(ctx sdk.Context, bankKeeper BankKeeper, accKeeper AccountKeeper, ek EnterpriseKeeper, wk WrkchainKeeper, tx sdk.FeeTx) error {
 	feePayer := tx.FeePayer()
 	feePayerAcc := accKeeper.GetAccount(ctx, feePayer)
 	//blockTime := ctx.BlockHeader().Time
+	expectedFeeDenom := wk.GetParamDenom(ctx)
 	fees := tx.GetFee()
 
 	if feePayerAcc == nil {
@@ -197,8 +198,9 @@ func checkFeePayerHasFunds(ctx sdk.Context, bankKeeper BankKeeper, accKeeper Acc
 	// the locked FUND will be unlocked in the next decorator
 	potentialCoins = potentialCoins.Add(lockedUndCoins...)
 
+	_, fee := fees.Find(expectedFeeDenom)
 	// verify the account has enough funds to pay for fees, including any locked enterprise FUND
-	_, hasNeg := potentialCoins.SafeSub(fees)
+	_, hasNeg := potentialCoins.SafeSub(fee)
 	if hasNeg {
 		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", coins, potentialCoins, fees)
@@ -214,7 +216,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, bankKeeper BankKeeper, accKeeper Acc
 	// the locked FUND will be unlocked in the next decorator
 	potentialSpendableCoins = potentialSpendableCoins.Add(lockedUndCoins...)
 
-	if _, hasNeg := potentialSpendableCoins.SafeSub(fees); hasNeg {
+	if _, hasNeg := potentialSpendableCoins.SafeSub(fee); hasNeg {
 		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"insufficient spendable und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", spendableCoins, potentialSpendableCoins, fees)
 		return err

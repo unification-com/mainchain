@@ -7,14 +7,13 @@ import (
 )
 
 // UpdateName this will be changed with each new release that requires migrations
-const UpdateName = "2-grog"
+const UpdateName = "3-keyleth"
 
 // see https://docs.cosmos.network/v0.45/migrations/chain-upgrade-guide-044.html
 func (app *App) registerUpgradeHandlers() {
 
-	// second upgrade 2-grog upgrades ibc-go to v3.4.0
-	// See https://github.com/cosmos/ibc-go/blob/v3.4.0/docs/migrations/support-denoms-with-slashes.md
-	// Note: Cosmos SDK upgrade to v0.45.13 does not have any migrations
+	// third upgrade 3-keyleth upgrades ibc-go to v5.2.0
+	// and Cosmos SDK to v0.46.x
 	app.UpgradeKeeper.SetUpgradeHandler(UpdateName, app.upgradeHandler)
 
 	_, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()

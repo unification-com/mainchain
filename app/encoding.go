@@ -2,12 +2,12 @@ package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/unification-com/mainchain/app/params"
+	simappparams "github.com/unification-com/mainchain/app/params"
 )
 
 // MakeEncodingConfig creates an EncodingConfig for testing
-func MakeEncodingConfig() params.EncodingConfig {
-	encodingConfig := params.MakeTestEncodingConfig()
+func MakeEncodingConfig() simappparams.EncodingConfig {
+	encodingConfig := simappparams.MakeTestEncodingConfig()
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)

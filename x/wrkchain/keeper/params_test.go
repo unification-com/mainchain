@@ -13,7 +13,7 @@ import (
 var testParams = types.NewParams(24, 2, 2, test_helpers.TestDenomination, 100, 200)
 
 func TestSetGetParams(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -29,7 +29,7 @@ func TestSetGetParams(t *testing.T) {
 }
 
 func TestGetParamDenom(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -40,7 +40,7 @@ func TestGetParamDenom(t *testing.T) {
 }
 
 func TestGetParamRegistrationFee(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -51,7 +51,7 @@ func TestGetParamRegistrationFee(t *testing.T) {
 }
 
 func TestGetParamRecordFee(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -62,7 +62,7 @@ func TestGetParamRecordFee(t *testing.T) {
 }
 
 func TestGetParamPurchaseStorageFee(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -73,7 +73,7 @@ func TestGetParamPurchaseStorageFee(t *testing.T) {
 }
 
 func TestGetParamDefaultStorageLimit(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -84,7 +84,7 @@ func TestGetParamDefaultStorageLimit(t *testing.T) {
 }
 
 func TestGetParamMaxStorageLimit(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -95,7 +95,7 @@ func TestGetParamMaxStorageLimit(t *testing.T) {
 }
 
 func TestGetZeroFeeAsCoin(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -108,7 +108,7 @@ func TestGetZeroFeeAsCoin(t *testing.T) {
 }
 
 func TestGetRegistrationFeeAsCoin(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -121,7 +121,7 @@ func TestGetRegistrationFeeAsCoin(t *testing.T) {
 }
 
 func TestGetRecordFeeAsCoin(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -134,7 +134,7 @@ func TestGetRecordFeeAsCoin(t *testing.T) {
 }
 
 func TestGetPurchaseStorageFeeAsCoin(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -147,7 +147,7 @@ func TestGetPurchaseStorageFeeAsCoin(t *testing.T) {
 }
 
 func TestGetZeroFeeAsCoins(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -160,7 +160,7 @@ func TestGetZeroFeeAsCoins(t *testing.T) {
 }
 
 func TestGetRegistrationFeeAsCoins(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -173,7 +173,7 @@ func TestGetRegistrationFeeAsCoins(t *testing.T) {
 }
 
 func TestGetRecordFeeAsCoins(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
@@ -186,7 +186,7 @@ func TestGetRecordFeeAsCoins(t *testing.T) {
 }
 
 func TestGetPurchaseStorageFeeAsCoins(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)

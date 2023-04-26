@@ -10,7 +10,7 @@ import (
 )
 
 func TestSetGetParams(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)

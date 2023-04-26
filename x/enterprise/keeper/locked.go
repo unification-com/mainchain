@@ -240,10 +240,13 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 	logger := k.Logger(ctx)
 	lockedUnd := k.GetLockedUndForAccount(ctx, feePayer).Amount
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
+	feeNund := feesToPay.AmountOf(k.GetParamDenom(ctx))
+	feeNundCoin := sdk.NewCoin(k.GetParamDenom(ctx), feeNund)
+	_, feeToPay := feesToPay.Find(k.GetParamDenom(ctx))
 	//blockTime := uint64(ctx.BlockHeader().Time.Unix())
 
 	// calculate how much Locked FUND would be left over after deducting Tx fees
-	_, hasNeg := lockedUndCoins.SafeSub(feesToPay)
+	_, hasNeg := lockedUndCoins.SafeSub(feeToPay)
 
 	if !hasNeg {
 		// locked FUND >= total fees
@@ -255,8 +258,6 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		}
 
 		// decrement the tracked locked eFUND
-		feeNund := feesToPay.AmountOf(k.GetParamDenom(ctx))
-		feeNundCoin := sdk.NewCoin(k.GetParamDenom(ctx), feeNund)
 		err = k.decrementLockedUnd(ctx, feePayer, feeNundCoin)
 		if err != nil {
 			return err
@@ -290,7 +291,7 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		potentiallyAvailable := spendableCoins.Add(lockedUndCoins...)
 
 		// is this enough to pay for the fees
-		_, hasNeg := potentiallyAvailable.SafeSub(feesToPay)
+		_, hasNeg := potentiallyAvailable.SafeSub(feeToPay)
 
 		// only undelegate & unlock if the resulting unlock will be enough to pay for the fees.
 		if !hasNeg {
@@ -460,9 +461,9 @@ func (k Keeper) decrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 
 	lockedUnd := k.GetLockedUndForAccount(ctx, address)
 	lockedCoins := sdk.NewCoins(lockedUnd.Amount)
-	subAmountCoins := sdk.NewCoins(amount)
+	//subAmountCoins := sdk.NewCoins(amount)
 
-	_, hasNeg := lockedCoins.SafeSub(subAmountCoins)
+	_, hasNeg := lockedCoins.SafeSub(amount)
 
 	if hasNeg {
 		lockedUnd.Amount = sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
@@ -478,7 +479,7 @@ func (k Keeper) decrementLockedUnd(ctx sdk.Context, address sdk.AccAddress, amou
 	// update total
 	totalLocked := k.GetTotalLockedUnd(ctx)
 	totalLockedCoins := sdk.NewCoins(totalLocked)
-	_, hasNeg = totalLockedCoins.SafeSub(subAmountCoins)
+	_, hasNeg = totalLockedCoins.SafeSub(amount)
 
 	if hasNeg {
 		err = k.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(k.GetParamDenom(ctx), 0))

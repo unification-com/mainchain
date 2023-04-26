@@ -70,7 +70,12 @@
       }
     },
     {
-      "url": "./client/docs/ibc-v3-swagger.yml",
+      "url": "./client/docs/ibc-swagger.yml",
+      "operationIds": {
+        "rename": {
+          "UpgradedConsensusState": "IBC-UpgradedConsensusState"
+        }
+      },
       "tags": {
         "rename": {
           "Query": "IBC"

@@ -172,8 +172,8 @@ func getQueriedIsAddressWhitelisted(t *testing.T, ctx sdk.Context, cdc *codec.Le
 	return isWhitelisted
 }
 
-func setupTest() (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
-	testApp := test_helpers.Setup(false)
+func setupTest(t *testing.T) (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
+	testApp := test_helpers.Setup(t, false)
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
 	legacyQuerierCdc := testApp.LegacyAmino()
 	querier := keeper.NewLegacyQuerier(testApp.EnterpriseKeeper, legacyQuerierCdc)
@@ -182,7 +182,7 @@ func setupTest() (*app.App, sdk.Context, *codec.LegacyAmino, sdk.Querier) {
 }
 
 func TestLegacyQueryParams(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	addresses := TestAddrs
 	entSigners := addresses[1].String() + "," + addresses[2].String()
@@ -194,7 +194,7 @@ func TestLegacyQueryParams(t *testing.T) {
 }
 
 func TestLegacyQueryTotalLocked(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	denom := TestDenomination
 	amount := int64(1000)
@@ -207,38 +207,48 @@ func TestLegacyQueryTotalLocked(t *testing.T) {
 }
 
 func TestLegacyQueryTotalUnLocked(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	denom := TestDenomination
 	amount := int64(1000)
 	locked := sdk.NewInt64Coin(denom, amount)
 	toUnlock := sdk.NewInt64Coin(denom, int64(500))
+
+	// should be whatever the test app was initialised with - staked nund, account balances etc.
+	totalSupply := testApp.BankKeeper.GetSupply(ctx, "nund")
+	// unlocking will add to the total supply
+	expectedTotalSupply := totalSupply.Add(toUnlock)
 
 	_ = testApp.EnterpriseKeeper.MintCoinsAndLock(ctx, TestAddrs[0], locked)
 	_ = testApp.EnterpriseKeeper.UnlockCoinsForFees(ctx, TestAddrs[0], sdk.NewCoins(toUnlock))
 
 	totalUnLocked := getQueriedTotalUnLocked(t, ctx, legacyQuerierCdc, querier)
 
-	require.Equal(t, toUnlock, totalUnLocked)
+	require.Equal(t, expectedTotalSupply, totalUnLocked)
 }
 
 func TestLegacyQueryTotalSupply(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	denom := TestDenomination
 	amount := int64(1000)
 	locked := sdk.NewInt64Coin(denom, amount)
 	toUnlock := sdk.NewInt64Coin(denom, int64(500))
 
+	// should be whatever the test app was initialised with - staked nund, account balances etc.
+	totalSupply := testApp.BankKeeper.GetSupply(ctx, "nund")
+	// unlocking will add to the total supply
+	expectedTotalSupply := totalSupply.Add(toUnlock)
+
 	_ = testApp.EnterpriseKeeper.MintCoinsAndLock(ctx, TestAddrs[0], locked)
 	_ = testApp.EnterpriseKeeper.UnlockCoinsForFees(ctx, TestAddrs[0], sdk.NewCoins(toUnlock))
 
 	totalSupplyFromEnt := getQueriedTotalSupply(t, ctx, legacyQuerierCdc, querier)
-	require.Equal(t, sdk.Coins{toUnlock}, totalSupplyFromEnt.Supply)
+	require.Equal(t, sdk.Coins{expectedTotalSupply}, totalSupplyFromEnt.Supply)
 }
 
 func TestLegacyQueryEnterpriseSupply(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	denom := TestDenomination
 	amount := int64(1000)
@@ -246,17 +256,23 @@ func TestLegacyQueryEnterpriseSupply(t *testing.T) {
 	toUnlock := sdk.NewInt64Coin(denom, int64(500))
 	stillLockedAfterUnlock := toMint.Sub(toUnlock)
 
+	// should be whatever the test app was initialised with - staked nund, account balances etc.
+	totalSupply := testApp.BankKeeper.GetSupply(ctx, "nund")
+	// unlocking will add to the total supply
+	expectedTotalSupply := totalSupply.Add(toUnlock)
+	expectedTotalLockedAndUnlocked := totalSupply.Add(toMint)
+
 	_ = testApp.EnterpriseKeeper.MintCoinsAndLock(ctx, TestAddrs[0], toMint)
 	_ = testApp.EnterpriseKeeper.UnlockCoinsForFees(ctx, TestAddrs[0], sdk.NewCoins(toUnlock))
 
 	totalSupplyFromEnt := getQueriedEnterpriseSupply(t, ctx, legacyQuerierCdc, querier)
-	require.Equal(t, toUnlock.Amount.Uint64(), totalSupplyFromEnt.Amount)
+	require.Equal(t, expectedTotalSupply.Amount.Uint64(), totalSupplyFromEnt.Amount)
 	require.Equal(t, stillLockedAfterUnlock.Amount.Uint64(), totalSupplyFromEnt.Locked)
-	require.Equal(t, toMint.Amount.Uint64(), totalSupplyFromEnt.Total)
+	require.Equal(t, expectedTotalLockedAndUnlocked.Amount.Uint64(), totalSupplyFromEnt.Total)
 }
 
 func TestLegacyQueryPurchaseOrder(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	testAddrs := TestAddrs
 	var testPos []types.EnterpriseUndPurchaseOrder
@@ -286,7 +302,7 @@ func TestLegacyQueryPurchaseOrder(t *testing.T) {
 }
 
 func TestLegacyQueryPurchaseOrdersFilters(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	numTests := 100
 	testAddrs := GenerateRandomAccounts(numTests)
@@ -379,7 +395,7 @@ func TestLegacyQueryPurchaseOrdersFilters(t *testing.T) {
 }
 
 func TestLegacyQueryWhitelist(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 
 	numTests := 100
 	testAddrs := GenerateRandomAccounts(numTests)
@@ -394,7 +410,7 @@ func TestLegacyQueryWhitelist(t *testing.T) {
 }
 
 func TestLegacyQueryAddressIsWhitelisted(t *testing.T) {
-	testApp, ctx, legacyQuerierCdc, querier := setupTest()
+	testApp, ctx, legacyQuerierCdc, querier := setupTest(t)
 	numTests := 100
 	testAddrs := GenerateRandomAccounts(numTests)
 

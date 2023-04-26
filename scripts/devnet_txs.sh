@@ -18,6 +18,7 @@ CHAIN_ID="FUND-DevNet-2"
 BROADCAST_MODE="sync"
 GAS_PRICES="25.0nund"
 UPPER_CASE_HASH=0
+UND_HOME="/tmp/.und_mainchain_devnet"
 
 NUM_TO_SUB=$1
 if [ -z "$NUM_TO_SUB" ]; then
@@ -46,13 +47,13 @@ function gen_hash() {
 }
 
 function get_addr() {
-  local ADDR=$(${UNDCLI_BIN} keys show $1 -a)
+  local ADDR=$(${UNDCLI_BIN} keys show $1 -a --home "${UND_HOME}" --keyring-backend test)
   echo "${ADDR}"
 }
 
-function get_base_flags() {
+function get_base_tx_flags() {
   local BROADCAST=${1:-$BROADCAST_MODE}
-  local FLAGS="--broadcast-mode=${BROADCAST} --output=json --chain-id=${CHAIN_ID} --node=${DEVNET_RPC_TCP} --gas=auto --gas-adjustment=1.5 -y"
+  local FLAGS="--broadcast-mode=${BROADCAST} --output=json --chain-id=${CHAIN_ID} --node=${DEVNET_RPC_TCP} --home ${UND_HOME} --keyring-backend test --gas=auto --gas-adjustment=1.5 -y"
   echo "${FLAGS}"
 }
 
@@ -62,7 +63,9 @@ function get_gas_flags() {
 }
 
 function check_accounts_exist() {
-  if { ${UNDCLI_BIN} keys show $1 2>&1 >&3 3>&- | grep '^' >&2; } 3>&1; then
+  local KEY_FILE
+  KEYFILE="${UND_HOME}/keyring-test/${1}.info"
+  if { ${UNDCLI_BIN} keys show $1 --home "${UND_HOME}" --keyring-backend test 2>&1 >&3 3>&- | grep '^' >&2; } 3>&1; then
     echo "${1} does not seem to exist in keyring. Exiting"
     exit 1
   else
@@ -72,7 +75,7 @@ function check_accounts_exist() {
 
 function get_curr_acc_sequence() {
   local ACC=$1
-  local CURR=$(${UNDCLI_BIN} query account $(get_addr ${ACC})  --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output=json | jq --raw-output '.sequence')
+  local CURR=$(${UNDCLI_BIN} query account $(get_addr ${ACC}) --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output=json | jq --raw-output '.sequence')
   local CURR_INT=$(awk "BEGIN {print $CURR}")
   echo "${CURR_INT}"
 }
@@ -86,6 +89,11 @@ function update_account_sequences() {
     ACC_SEQUENCESS[$i]=$(get_curr_acc_sequence "${ACC}")
   done
 }
+
+# init the home dir
+echo "init test environment"
+${UNDCLI_BIN} keys list --home "${UND_HOME}" --keyring-backend test
+cp ./Docker/assets/keychain/* "${UND_HOME}"/keyring-test/
 
 check_accounts_exist ${ENT_ACC}
 
@@ -121,12 +129,12 @@ update_account_sequences
 for i in ${!USER_ACCS[@]}
 do
   ACC=${USER_ACCS[$i]}
-  IS_WHITELISTED=$(${UNDCLI_BIN} query enterprise whitelisted $(get_addr ${ACC}) --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
+  IS_WHITELISTED=$(${UNDCLI_BIN} query enterprise whitelisted $(get_addr ${ACC}) --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
   if [ "$IS_WHITELISTED" = "true" ]; then
     echo "${ACC} already whitelisted"
   else
     echo "Whitelist  ${ACC} for Enterprise POs"
-    ${UNDCLI_BIN} tx enterprise whitelist add $(get_addr ${ACC}) --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=${ENT_ACC_SEQ}
+    ${UNDCLI_BIN} tx enterprise whitelist add $(get_addr ${ACC}) --from=${ENT_ACC} $(get_base_tx_flags) $(get_gas_flags) --sequence=${ENT_ACC_SEQ}
     ENT_ACC_SEQ=$(awk "BEGIN {print $ENT_ACC_SEQ+1}")
   fi
 done
@@ -141,7 +149,7 @@ do
   ACC=${USER_ACCS[$i]}
   ACC_SEQ=${ACC_SEQUENCESS[$i]}
   echo "${ACC} raise Enterprise POs"
-  ${UNDCLI_BIN} tx enterprise purchase 1000000000000000nund --from=${ACC} $(get_base_flags) $(get_gas_flags) --sequence="${ACC_SEQ}"
+  ${UNDCLI_BIN} tx enterprise purchase 1000000000000000nund --from=${ACC} $(get_base_tx_flags) $(get_gas_flags) --sequence="${ACC_SEQ}"
   ACC_SEQUENCESS[$i]=$(awk "BEGIN {print $ACC_SEQ+1}")
 done
 
@@ -150,7 +158,7 @@ sleep 6s
 
 update_account_sequences
 
-RAISED_POS=$(${UNDCLI_BIN} query enterprise orders --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
+RAISED_POS=$(${UNDCLI_BIN} query enterprise orders --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
 
 for row in $(echo "${RAISED_POS}" | jq -r ".purchase_orders[] | @base64"); do
   _jq() {
@@ -160,7 +168,7 @@ for row in $(echo "${RAISED_POS}" | jq -r ".purchase_orders[] | @base64"); do
   PO_STATUS=$(_jq '.status')
   echo "Process Enterprise PO ${POID} - status=${PO_STATUS}"
   if [ "$PO_STATUS" = "STATUS_RAISED" ]; then
-    ${UNDCLI_BIN} tx enterprise process ${POID} accept --from=${ENT_ACC} $(get_base_flags) $(get_gas_flags) --sequence=${ENT_ACC_SEQ}
+    ${UNDCLI_BIN} tx enterprise process ${POID} accept --from=${ENT_ACC} $(get_base_tx_flags) $(get_gas_flags) --sequence=${ENT_ACC_SEQ}
     ENT_ACC_SEQ=$(awk "BEGIN {print $ENT_ACC_SEQ+1}")
   fi
 done
@@ -170,7 +178,7 @@ sleep 15s
 
 update_account_sequences
 
-POS=$(${UNDCLI_BIN} query enterprise orders --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
+POS=$(${UNDCLI_BIN} query enterprise orders --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json)
 
 echo ${POS} | jq
 
@@ -181,13 +189,13 @@ do
   TYPE=${TYPES[$i]}
   MONIKER="${TYPE}_${ACC}"
   GEN_HASH="0x$(gen_hash)"
-  THING_EXISTS=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json | jq ".${TYPE}s[]")
+  THING_EXISTS=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json | jq ".${TYPE}s[]")
   if [ "$THING_EXISTS" = "" ]; then
     echo "Register ${TYPE} for ${ACC}"
     if [ "$TYPE" = "wrkchain" ]; then
-      ${UNDCLI_BIN} tx wrkchain register --moniker="${MONIKER}" --genesis="${GEN_HASH}" --name="${MONIKER}" --base="geth" --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ}
+      ${UNDCLI_BIN} tx wrkchain register --moniker="${MONIKER}" --genesis="${GEN_HASH}" --name="${MONIKER}" --base="geth" --from=${ACC} $(get_base_tx_flags) --sequence=${ACC_SEQ}
     else
-      ${UNDCLI_BIN} tx beacon register --moniker="${MONIKER}" --name="${MONIKER}" --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ}
+      ${UNDCLI_BIN} tx beacon register --moniker="${MONIKER}" --name="${MONIKER}" --from=${ACC} $(get_base_tx_flags) --sequence=${ACC_SEQ}
     fi
     ACC_SEQUENCESS[$i]=$(awk "BEGIN {print $ACC_SEQ+1}")
   else
@@ -211,19 +219,19 @@ do
     RES=""
     TX_HASH=""
     RAW_LOG=""
-    ID=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json | jq -r ".${TYPE}s[0].${TYPE}_id")
+    ID=$(${UNDCLI_BIN} query ${TYPE} search --moniker="${MONIKER}" --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID} --output json | jq -r ".${TYPE}s[0].${TYPE}_id")
     if [ "$TYPE" = "wrkchain" ]; then
       WC_HASH="0x$(gen_hash)"
       WC_HEIGHT=$(awk "BEGIN {print $i+1}")
       echo "record wrkchain block ${WC_HEIGHT} / ${NUM_TO_SUB} for ${MONIKER}"
-      RES=$(${UNDCLI_BIN} tx wrkchain record ${ID} --wc_height=${WC_HEIGHT} --block_hash="${WC_HASH}" --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ})
+      RES=$(${UNDCLI_BIN} tx wrkchain record ${ID} --wc_height=${WC_HEIGHT} --block_hash="${WC_HASH}" --from=${ACC} $(get_base_tx_flags) --sequence=${ACC_SEQ})
       RAW_LOG=$(echo ${RES} | jq -r ".raw_log")
       TX_HASH=$(echo ${RES} | jq -r ".txhash")
     else
       B_HASH="$(gen_hash)"
       TS=$(awk "BEGIN {print $i+1}")
       echo "record beacon timestamp block ${TS} / ${NUM_TO_SUB} for ${MONIKER}"
-      RES=$(${UNDCLI_BIN} tx beacon record ${ID} --hash="$(gen_hash)" --subtime=$(date +%s) --from=${ACC} $(get_base_flags) --sequence=${ACC_SEQ})
+      RES=$(${UNDCLI_BIN} tx beacon record ${ID} --hash="$(gen_hash)" --subtime=$(date +%s) --from=${ACC} $(get_base_tx_flags) --sequence=${ACC_SEQ})
       RAW_LOG=$(echo ${RES} | jq -r ".raw_log")
       TX_HASH=$(echo ${RES} | jq -r ".txhash")
     fi
@@ -246,10 +254,10 @@ done
 echo "Done. Wait for approx. 1 block and query"
 
 sleep 6s
-${UNDCLI_BIN} query wrkchain wrkchain 1 --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID}
-${UNDCLI_BIN} query wrkchain wrkchain 2 --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID}
-${UNDCLI_BIN} query beacon beacon 1 --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID}
-${UNDCLI_BIN} query beacon beacon 2 --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID}
+${UNDCLI_BIN} query wrkchain wrkchain 1 --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID}
+${UNDCLI_BIN} query wrkchain wrkchain 2 --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID}
+${UNDCLI_BIN} query beacon beacon 1 --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID}
+${UNDCLI_BIN} query beacon beacon 2 --home ${UND_HOME} --node=${DEVNET_RPC_TCP} --chain-id=${CHAIN_ID}
 
 echo "Finished in $(($(date +%s) - START_TIME)) seconds."
 echo ""

@@ -14,7 +14,7 @@ import (
 // Tests for Highest WRKChain ID
 
 func TestSetGetWrkChainBlock(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(100)
@@ -48,7 +48,7 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 }
 
 func TestIsWrkChainBlockRecorded(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(100)
@@ -81,7 +81,7 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 }
 
 func TestGetWrkChainBlockHashes(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 
@@ -123,7 +123,7 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 }
 
 func TestIsAuthorisedToRecord(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 
@@ -148,7 +148,7 @@ func TestIsAuthorisedToRecord(t *testing.T) {
 }
 
 func TestRecordWrkchainHashes(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(1000)
@@ -217,7 +217,7 @@ func TestRecordWrkchainHashes(t *testing.T) {
 }
 
 func TestIncreaseInStateStorage(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 
@@ -239,7 +239,7 @@ func TestIncreaseInStateStorage(t *testing.T) {
 }
 
 func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 
@@ -307,7 +307,7 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 }
 
 func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 
@@ -380,7 +380,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
 }
 
 func TestAsymmetricRecordNewWrkchainHashesAndDeleteOldWithIncrease(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
 

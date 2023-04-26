@@ -85,8 +85,9 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
 		fees := k.GetRegistrationFeeAsCoins(ctx)
+		feeAsCoin := k.GetRegistrationFeeAsCoin(ctx)
 
-		_, hasNeg := spendable.SafeSub(fees)
+		_, hasNeg := spendable.SafeSub(feeAsCoin)
 
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.RegisterAction, "not enough to pay wrkchain registration fee"), nil, nil // skip
@@ -101,7 +102,8 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -116,7 +118,7 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
@@ -152,8 +154,9 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
 
 		fees := k.GetRecordFeeAsCoins(ctx)
+		feeAsCoin := k.GetRecordFeeAsCoin(ctx)
 
-		_, hasNeg := spendable.SafeSub(fees)
+		_, hasNeg := spendable.SafeSub(feeAsCoin)
 
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.RecordAction, "not enough to pay wrkchain record timestamp fee"), nil, nil // skip
@@ -178,7 +181,8 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -193,7 +197,7 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
@@ -242,9 +246,10 @@ func SimulateMsgPurchaseWrkChainStateStorage(k keeper.Keeper, bk types.BankKeepe
 		actualFeeDenom := wcParams.Denom
 
 		feeInt := int64(actualPurchaseAmt * randNumToPurchase)
-		fees := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
+		feeAsCoin := sdk.NewInt64Coin(actualFeeDenom, feeInt)
+		fees := sdk.NewCoins(feeAsCoin)
 
-		_, hasNeg := spendable.SafeSub(fees)
+		_, hasNeg := spendable.SafeSub(feeAsCoin)
 
 		if hasNeg {
 			return simtypes.NoOpMsg(types.ModuleName, types.PurchaseStorageAction, "not enough to pay wrkchain purchase storage fee"), nil, nil // skip
@@ -254,7 +259,8 @@ func SimulateMsgPurchaseWrkChainStateStorage(k keeper.Keeper, bk types.BankKeepe
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -269,7 +275,7 @@ func SimulateMsgPurchaseWrkChainStateStorage(k keeper.Keeper, bk types.BankKeepe
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err

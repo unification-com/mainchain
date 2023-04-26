@@ -15,7 +15,7 @@ import (
 )
 
 func TestSetGetTotalLockedUnd(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -34,7 +34,7 @@ func TestSetGetTotalLockedUnd(t *testing.T) {
 }
 
 func TestGetTotalUnlocked(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	test_helpers.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
@@ -55,7 +55,7 @@ func TestGetTotalUnlocked(t *testing.T) {
 }
 
 func TestGetTotalUndSupply(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	test_helpers.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
@@ -66,7 +66,7 @@ func TestGetTotalUndSupply(t *testing.T) {
 }
 
 func TestSetGetLockedUndForAccount(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -148,7 +148,7 @@ func (suite *KeeperTestSuite) TestIsLocked() {
 }
 
 func TestMintCoinsAndLock(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -191,7 +191,7 @@ func TestMintCoinsAndLock(t *testing.T) {
 }
 
 func TestUnlockCoinsForFees(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -240,11 +240,13 @@ func TestUnlockCoinsForFees(t *testing.T) {
 }
 
 func TestGetTotalSupplyWithLockedNundRemoved(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
-	totalSupply := sdk.NewCoins(sdk.NewInt64Coin(test_helpers.TestDenomination, 0))
+	// should be whatever the test app was initialised with - staked nund, account balances etc.
+	initialBankSupply := app.BankKeeper.GetSupply(ctx, "nund")
+	totalSupply := sdk.NewCoins(initialBankSupply)
 	totalMinted := sdk.NewInt64Coin(test_helpers.TestDenomination, 0)
 
 	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
@@ -272,12 +274,12 @@ func TestGetTotalSupplyWithLockedNundRemoved(t *testing.T) {
 		require.True(t, totalSupplyDb.IsEqual(totalSupply))
 
 		totalMintedDb := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
-		require.True(t, totalMintedDb.IsEqual(totalMinted))
+		require.True(t, totalMintedDb.IsEqual(totalMinted.Add(initialBankSupply)))
 	}
 }
 
 func TestUnlockCoinsForFeesAndUsedCounter(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -311,7 +313,7 @@ func TestUnlockCoinsForFeesAndUsedCounter(t *testing.T) {
 }
 
 func TestUnlockCoinsForFeesAndUsedCounterWithHalfFunds(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 

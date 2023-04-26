@@ -29,7 +29,7 @@ func TestInvalidMsg(t *testing.T) {
 }
 
 func TestValidMsgUndPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
@@ -51,7 +51,7 @@ func TestValidMsgUndPurchaseOrder(t *testing.T) {
 }
 
 func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
@@ -125,7 +125,7 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 }
 
 func TestValidMsgProcessUndPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
@@ -163,7 +163,7 @@ func TestValidMsgProcessUndPurchaseOrder(t *testing.T) {
 }
 
 func TestValidMsgProcessUndPurchaseOrderMultipleDecisions(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
@@ -221,7 +221,7 @@ func TestValidMsgProcessUndPurchaseOrderMultipleDecisions(t *testing.T) {
 }
 
 func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
@@ -352,7 +352,7 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 }
 
 func TestValidMsgWhitelistAddress(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
@@ -375,7 +375,7 @@ func TestValidMsgWhitelistAddress(t *testing.T) {
 }
 
 func TestInvalidMsgWhitelistAddress(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)

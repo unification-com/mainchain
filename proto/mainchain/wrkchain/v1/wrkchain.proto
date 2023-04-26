@@ -1,7 +1,7 @@
 syntax = "proto3";
 package mainchain.wrkchain.v1;
 
-import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
@@ -26,7 +26,7 @@ message WrkChain {
   // reg_time is the unix epoch of the wrkchain's registration time
   uint64 reg_time = 9;
   // owner is the owner address of the wrkchain
-  string owner = 10;
+  string owner = 10 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 // WrkChainStorageLimit holds tata about the wrkchain's current in-state storage limit

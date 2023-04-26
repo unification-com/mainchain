@@ -1,9 +1,11 @@
 syntax = "proto3";
 package mainchain.enterprise.v1;
 
-import "mainchain/enterprise/v1/enterprise.proto";
-import "cosmos_sdk/base/v1beta1/coin.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
+import "mainchain/enterprise/v1/enterprise.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
 
@@ -25,11 +27,13 @@ service Msg {
 
 // MsgUndPurchaseOrder represents a message to raise a new purchase order
 message MsgUndPurchaseOrder {
+  option (cosmos.msg.v1.signer) = "purchaser";
+
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
   // purchaser is the address of the account raising the purchase order
-  string purchaser = 1;
+  string purchaser = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // amount is the amount of eFUND in nund
   cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
 }
@@ -39,6 +43,8 @@ message MsgUndPurchaseOrderResponse { uint64 purchase_order_id = 1; }
 
 // MsgProcessUndPurchaseOrder represents a message to processed a raised purchase order
 message MsgProcessUndPurchaseOrder {
+  option (cosmos.msg.v1.signer) = "signer";
+
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -47,7 +53,7 @@ message MsgProcessUndPurchaseOrder {
   // decision is an enumerated PurchaseOrderStatus representing, for example accepted/rejected
   PurchaseOrderStatus decision = 2;
   // signer is the address of the authorised decision maker
-  string signer = 3;
+  string signer = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 // MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder response type.
@@ -56,13 +62,15 @@ message MsgProcessUndPurchaseOrderResponse {}
 // MsgWhitelistAddress represents a message to processed an address whitelist action.
 // only addresses whitelisted by an authorised decision maker can raise new purchase orders
 message MsgWhitelistAddress {
+  option (cosmos.msg.v1.signer) = "signer";
+
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
   // address is the address for which the action is being executed
-  string address = 1;
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // signer is the address of the authorised decision maker
-  string signer = 2;
+  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // whitelist_action is the action being executed, and is either add or remove.
   WhitelistAction whitelist_action = 3 [ (gogoproto.customname) = "Action",  (gogoproto.jsontag) = "action", (gogoproto.moretags) = "yaml:\"action\"" ];
 }

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package mainchain.beacon.v1;
 
-import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
@@ -22,7 +22,7 @@ message Beacon {
   // reg_time is the unix epoch of the beacon's registration time
   uint64 reg_time = 7;
   // owner is the owner address of the beacon
-  string owner = 8;
+  string owner = 8 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 // BeaconStorageLimit holds tata about the beacon's current in-state storage limit

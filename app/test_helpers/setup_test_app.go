@@ -99,7 +99,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*app.App, app.GenesisState) {
 
 	testApp := app.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, encCdc, EmptyAppOptions{})
 	if withGenesis {
-		return testApp, NewDefaultGenesisState(encCdc.Marshaler)
+		return testApp, NewDefaultGenesisState(encCdc.Codec)
 	}
 	return testApp, app.GenesisState{}
 }

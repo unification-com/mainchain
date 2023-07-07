@@ -10,11 +10,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
+	v046 "github.com/cosmos/cosmos-sdk/x/genutil/migrations/v046"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/cobra"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmtypes "github.com/tendermint/tendermint/types"
-	v045fund "github.com/unification-com/mainchain/migrate/v045"
 )
 
 const flagGenesisTime = "genesis-time"
@@ -47,8 +47,10 @@ $ %s migrate /path/to/genesis.json --chain-id=FUND-MainNet-3 --genesis-time=2022
 				return errors.Wrap(err, "failed to JSON unmarshal initial genesis state")
 			}
 
-			// Run ICS20 - Transfer ibc v3.0.0 -> 3.4.0
-			newGenState := v045fund.Migrate(initialState, clientCtx)
+			// Run 0.44 -> 0.46 for Cosmos modules
+			newGenState := v046.Migrate(initialState, clientCtx)
+			
+			// no changes to FUND modules
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {

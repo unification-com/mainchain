@@ -11,6 +11,5 @@ func SetConfig() {
 	config.SetBech32PrefixForValidator(undtypes.Bech32PrefixValAddr, undtypes.Bech32PrefixValPub)
 	config.SetBech32PrefixForConsensusNode(undtypes.Bech32PrefixConsAddr, undtypes.Bech32PrefixConsPub)
 	config.SetCoinType(undtypes.CoinType)
-	config.SetFullFundraiserPath(undtypes.HdWalletPath)
 	config.Seal()
 }

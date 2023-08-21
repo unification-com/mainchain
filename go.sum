@@ -218,6 +218,8 @@ github.com/cosmos/cosmos-proto v1.0.0-alpha8 h1:d3pCRuMYYvGA5bM0ZbbjKn+AoQD4A7dy
 github.com/cosmos/cosmos-proto v1.0.0-alpha8/go.mod h1:6/p+Bc4O8JKeZqe0VqUGTX31eoYqemTT4C1hLCWsO7I=
 github.com/cosmos/cosmos-sdk v0.46.14 h1:xlrUaMZT6QACdtWputs+ZxbAMWGYktWK+zlc8J4tKoE=
 github.com/cosmos/cosmos-sdk v0.46.14/go.mod h1:9MRixWsgoJ2UmVsCRRePtENFPP3cM+gTC5azEpxgllo=
+github.com/cosmos/cosmos-sdk v0.46.15 h1:50QSEO4ZU9QUHJ8Ul9N/o/hn/IE5dL7DwL/OY1wcoMg=
+github.com/cosmos/cosmos-sdk v0.46.15/go.mod h1:9MRixWsgoJ2UmVsCRRePtENFPP3cM+gTC5azEpxgllo=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=

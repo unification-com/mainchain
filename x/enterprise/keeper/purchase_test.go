@@ -13,7 +13,7 @@ import (
 // Tests for Highest Purchase Order ID
 
 func TestSetGetHighestPurchaseOrderID(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -28,7 +28,7 @@ func TestSetGetHighestPurchaseOrderID(t *testing.T) {
 // Tests for Get/Set Purchase Order
 
 func TestSetGetPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
@@ -80,7 +80,7 @@ func TestSetGetPurchaseOrder(t *testing.T) {
 // Tests for Raise new Purchase Order
 
 func TestRaiseNewPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(100)
@@ -122,7 +122,7 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 }
 
 func TestHighestPurchaseOrderIdAfterRaise(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
@@ -145,7 +145,7 @@ func TestHighestPurchaseOrderIdAfterRaise(t *testing.T) {
 }
 
 func TestPurchaseOrderExistsAfterRaise(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
@@ -172,7 +172,7 @@ func TestPurchaseOrderExistsAfterRaise(t *testing.T) {
 // Tests for processing Purchase Orders
 
 func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -213,7 +213,7 @@ func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
 }
 
 func TestRaisedQueue(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -232,7 +232,7 @@ func TestRaisedQueue(t *testing.T) {
 }
 
 func TestPurchaseOrderAddedToRaisedQueue(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -254,7 +254,7 @@ func TestPurchaseOrderAddedToRaisedQueue(t *testing.T) {
 }
 
 func TestRaisedQueueIterator(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -276,7 +276,7 @@ func TestRaisedQueueIterator(t *testing.T) {
 }
 
 func TestAcceptedQueue(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
@@ -295,7 +295,7 @@ func TestAcceptedQueue(t *testing.T) {
 }
 
 func TestAcceptedQueueIterator(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 

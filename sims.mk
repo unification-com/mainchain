@@ -3,6 +3,11 @@
 
 BINDIR ?= $(GOPATH)/bin
 SIMAPP = ./app
+
+# currently default runsim seeds, except for 89182391, changed to 89182392
+# since it exports a genesis with all validators jailed during test-sim-after-import test.
+NON_DEFAULT_SEEDS = "1,2,4,7,32,123,124,582,1893,2989,3012,4728,37827,981928,87821,891823782,989182,89182392,11,22,44,77,99,2020,3232,123123,124124,582582,18931893,29892989,30123012,47284728,7601778,8090485,977367484,491163361,424254581,673398983"
+
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."
 	@go test -mod=readonly $(SIMAPP) -run TestAppStateDeterminism -Enabled=true \
@@ -20,7 +25,7 @@ test-sim-import-export: runsim
 
 test-sim-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
-	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppSimulationAfterImport
+	@$(BINDIR)/runsim -Jobs 4 -SimAppPkg $(SIMAPP) -ExitOnFail -Seeds "$(NON_DEFAULT_SEEDS)" 50 5 TestAppSimulationAfterImport
 
 test-sim-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."

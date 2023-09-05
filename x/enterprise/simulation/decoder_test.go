@@ -20,7 +20,7 @@ var (
 )
 
 func TestDecodeStore(t *testing.T) {
-	testApp := test_helpers.Setup(false)
+	testApp := test_helpers.Setup(t, false)
 	cdc := testApp.AppCodec()
 	dec := simulation.NewDecodeStore(cdc)
 

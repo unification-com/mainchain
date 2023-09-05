@@ -1,32 +1,29 @@
 #!/usr/bin/env bash
 
-# see pre-requests:
-# - https://grpc.io/docs/languages/go/quickstart/
-# - gocosmos plugin is automatically installed during scaffolding.
-
 set -eo pipefail
 
+COSMOS_VER=$(go list -m -f '{{ .Version }}' "github.com/cosmos/cosmos-sdk")
+echo "Cosmos version: ${COSMOS_VER}"
+
+# get protoc executions
 go get github.com/regen-network/cosmos-proto/protoc-gen-gocosmos 2>/dev/null
-go get -u github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc 2>/dev/null
 
-proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
+# get cosmos sdk from github
+go get github.com/cosmos/cosmos-sdk@"${COSMOS_VER}" 2>/dev/null
+
+echo "Generating gogo proto code"
+cd proto
+proto_dirs=$(find ./mainchain -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-  buf protoc \
-  -I "proto" \
-  -I "third_party/proto" \
-  --gocosmos_out=plugins=interfacetype+grpc,\
-Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
-  $(find "${dir}" -maxdepth 1 -name '*.proto')
-
-  # command to generate gRPC gateway (*.pb.gw.go in respective modules) files
-  buf protoc \
-  -I "proto" \
-  -I "third_party/proto" \
-  --grpc-gateway_out=logtostderr=true:. \
-  $(find "${dir}" -maxdepth 1 -name '*.proto')
+  for file in $(find "${dir}" -maxdepth 1 -name '*.proto'); do
+    if grep go_package $file &>/dev/null; then
+      buf generate --template buf.gen.gogo.yaml $file
+    fi
+  done
 done
 
+cd ..
 
 # move proto files to the right places
-cp -r github.com/unification-com/mainchain/* ./
-rm -rf github.com
+cp -r proto/github.com/unification-com/mainchain/* ./
+rm -rf proto/github.com

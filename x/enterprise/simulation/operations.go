@@ -108,7 +108,8 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -123,7 +124,7 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, res, err := app.Deliver(txGen.TxEncoder(), tx)
+		_, res, err := app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, errors.New(res.Log)
@@ -209,7 +210,8 @@ func SimulateMsgWhitelistAddress(k keeper.Keeper, bk types.BankKeeper, ak types.
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -224,7 +226,7 @@ func SimulateMsgWhitelistAddress(k keeper.Keeper, bk types.BankKeeper, ak types.
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, res, err := app.Deliver(txGen.TxEncoder(), tx)
+		_, res, err := app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, errors.New(res.Log)
@@ -283,7 +285,8 @@ func operationSimulateMsgProcessUndPurchaseOrder(k keeper.Keeper, bk types.BankK
 
 		txGen := simparams.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenTx(
+		tx, err := helpers.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -298,7 +301,7 @@ func operationSimulateMsgProcessUndPurchaseOrder(k keeper.Keeper, bk types.BankK
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(),

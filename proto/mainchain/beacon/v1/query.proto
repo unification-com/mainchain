@@ -1,9 +1,10 @@
 syntax = "proto3";
 package mainchain.beacon.v1;
 
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos_sdk/base/query/v1beta1/pagination.proto";
 import "mainchain/beacon/v1/beacon.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
@@ -77,7 +78,7 @@ message QueryBeaconsFilteredRequest {
   // moniker is the moniker of the beacon to search for
   string moniker = 1;
   // owner is an address to search for
-  string owner = 2;
+  string owner = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }

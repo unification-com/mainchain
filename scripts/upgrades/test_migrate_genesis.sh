@@ -11,11 +11,12 @@
 # the height is reached.                                                 #
 ##########################################################################
 
-TEST_PATH="/tmp/und_migrate_test"
+TEST_PATH="/tmp/und_migrate_genesis_json_test"
 UND_HOME="${TEST_PATH}/.und_mainchain"
-UND_163_BIN="${TEST_PATH}/und_163"
-UND_17X_BIN="${TEST_PATH}/und_17x"
-CURR_UND_BIN="${UND_163_BIN}"
+OLD_VER="1.7.0"
+UND_OLD_BIN="${TEST_PATH}/und_old"
+UND_NEW_BIN="${TEST_PATH}/und_new"
+CURR_UND_BIN="${UND_OLD_BIN}"
 NUM_TO_SUB=100
 CURRENT_HEIGHT=0
 UPPER_CASE_HASH=0
@@ -90,13 +91,13 @@ mkdir -p "${TEST_PATH}"
 
 make build
 
-cp "./build/und" "${UND_17X_BIN}"
+cp "./build/und" "${UND_NEW_BIN}"
 
-cd "${TEST_PATH}"
+cd "${TEST_PATH}" || exit
 
-wget https://github.com/unification-com/mainchain/releases/download/v1.6.3/und_v1.6.3_linux_x86_64.tar.gz
-tar -zxvf und_v1.6.3_linux_x86_64.tar.gz
-mv und "${UND_163_BIN}"
+wget "https://github.com/unification-com/mainchain/releases/download/v${OLD_VER}/und_v${OLD_VER}_linux_x86_64.tar.gz"
+tar -zxvf "und_v${OLD_VER}_linux_x86_64.tar.gz"
+mv und "${UND_OLD_BIN}"
 
 "${CURR_UND_BIN}" init test --home "${UND_HOME}"
 "${CURR_UND_BIN}" unsafe-reset-all --home "${UND_HOME}"
@@ -173,26 +174,26 @@ sleep 7s
 
 query_wc_b
 
-# stop und 1.5.1
+# stop und
 kill "${UND_PID}"
 
 sleep 7s
 
-echo "Exporting und v1.6.3 state"
+echo "Exporting und v${OLD_VER} state"
 
-"${CURR_UND_BIN}" export --for-zero-height --home "${UND_HOME}" > "${UND_HOME}"/v042_exported_state.json
+"${CURR_UND_BIN}" export --for-zero-height --home "${UND_HOME}" > "${UND_HOME}"/"v${OLD_VER}_exported_state.json"
 
-cat "${UND_HOME}"/v042_exported_state.json | jq > "${UND_HOME}"/v042_exported_state_pretty.json
+cat "${UND_HOME}"/"v${OLD_VER}_exported_state.json" | jq > "${UND_HOME}"/"v${OLD_VER}_exported_state_pretty.json"
 
-CURR_UND_BIN="${UND_17X_BIN}"
+CURR_UND_BIN="${UND_NEW_BIN}"
 
-echo "Migrating state to v1.7.x format"
+echo "Migrating state to new format"
 
-"${CURR_UND_BIN}" migrate "${UND_HOME}"/v042_exported_state.json --chain-id ${CHAIN_ID_V2} --genesis-time "2022-07-27T07:00:00Z" --log_level "" > "${UND_HOME}"/new_v045_genesis.json
+"${CURR_UND_BIN}" migrate "${UND_HOME}"/"v${OLD_VER}_exported_state.json" --chain-id ${CHAIN_ID_V2} --genesis-time "$(date +%Y-%m-%dT%H:%M:%SZ -u)" --log_level "" > "${UND_HOME}"/new_migrated_genesis.json
 
-cat "${UND_HOME}"/new_v045_genesis.json | jq > "${UND_HOME}"/new_v045_genesis_pretty.json
+cat "${UND_HOME}"/new_migrated_genesis.json | jq > "${UND_HOME}"/new_migrated_genesis_pretty.json
 
-cp "${UND_HOME}"/new_v045_genesis.json "${UND_HOME}"/config/genesis.json
+cp "${UND_HOME}"/new_migrated_genesis.json "${UND_HOME}"/config/genesis.json
 
 "${CURR_UND_BIN}" tendermint unsafe-reset-all --home "${UND_HOME}"
 

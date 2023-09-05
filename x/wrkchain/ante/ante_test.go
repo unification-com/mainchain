@@ -30,9 +30,10 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -64,9 +65,10 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -148,9 +150,10 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -231,9 +234,10 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -309,10 +313,11 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -404,10 +409,11 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -506,10 +512,11 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 }
 
 func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -592,10 +599,11 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -682,10 +690,11 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 }
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)

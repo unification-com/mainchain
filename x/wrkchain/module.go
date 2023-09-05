@@ -20,7 +20,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/unification-com/mainchain/x/wrkchain/client/cli"
-	"github.com/unification-com/mainchain/x/wrkchain/client/rest"
 	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/simulation"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
@@ -62,7 +61,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 
 // Register rest routes
 func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
-	rest.RegisterLegacyRESTRoutes(clientCtx, rtr)
+	//rest.RegisterLegacyRESTRoutes(clientCtx, rtr)
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the auth module.
@@ -129,8 +128,8 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 
-	m := keeper.NewMigrator(am.keeper)
-	cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2)
+	//m := keeper.NewMigrator(am.keeper)
+	//cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2)
 }
 
 // InitGenesis performs genesis initialization for the auth module. It returns

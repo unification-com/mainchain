@@ -23,7 +23,7 @@ type KeeperTestSuite struct {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	testApp := test_helpers.Setup(false)
+	testApp := test_helpers.Setup(suite.T(), false)
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(testApp, ctx)
 

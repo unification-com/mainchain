@@ -30,10 +30,11 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -74,10 +75,11 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 }
 
 func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -110,10 +112,11 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 }
 
 func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)

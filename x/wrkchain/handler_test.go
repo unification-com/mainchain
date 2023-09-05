@@ -31,7 +31,7 @@ func TestInvalidMsg(t *testing.T) {
 }
 
 func TestValidMsgRegisterWrkChain(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
@@ -53,7 +53,7 @@ func TestValidMsgRegisterWrkChain(t *testing.T) {
 }
 
 func TestInvalidMsgRegisterWrkChain(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
@@ -138,7 +138,7 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 }
 
 func TestValidMsgRecordWrkChainBlock(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
@@ -170,7 +170,7 @@ func TestValidMsgRecordWrkChainBlock(t *testing.T) {
 }
 
 func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
@@ -323,7 +323,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 }
 
 func TestValidMsgPurchaseWrkChainStateStorage(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
@@ -354,7 +354,7 @@ func TestValidMsgPurchaseWrkChainStateStorage(t *testing.T) {
 }
 
 func TestInvalidMsgPurchaseWrkChainStateStorage(t *testing.T) {
-	app := test_helpers.Setup(false)
+	app := test_helpers.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
 	testAddrs := test_helpers.GenerateRandomTestAccounts(2)

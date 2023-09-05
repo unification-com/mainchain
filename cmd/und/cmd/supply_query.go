@@ -12,7 +12,7 @@ import (
 
 const FlagDenom = "denom"
 
-// GetTotalSupplyCmd use din place of Cosmos SDK 'bank total' command
+// GetTotalSupplyCmd used in place of Cosmos SDK 'bank total' command
 func GetTotalSupplyCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "supply",

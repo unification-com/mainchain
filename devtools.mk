@@ -63,7 +63,7 @@ $(GOLANGCI_LINT): $(mkfile_dir)/install-golangci-lint.sh
 statik: $(STATIK)
 $(STATIK):
 	@echo "Installing statik..."
-	@(cd /tmp && go get github.com/rakyll/statik@v0.1.6)
+	@(cd /tmp && go install github.com/rakyll/statik@v0.1.6)
 
 # Install the runsim binary with a temporary workaround of entering an outside
 # directory as the "go get" command ignores the -mod option and will polute the
@@ -73,7 +73,7 @@ $(STATIK):
 runsim: $(RUNSIM)
 $(RUNSIM):
 	@echo "Installing runsim..."
-	@(cd /tmp && go get github.com/cosmos/tools/cmd/runsim@v1.0.0)
+	@(cd /tmp && go install github.com/cosmos/tools/cmd/runsim@v1.0.0)
 
 # Install the goreleaser binary with a temporary workaround of entering an outside
 # directory as the "go get" command ignores the -mod option and will polute the
@@ -83,7 +83,7 @@ $(RUNSIM):
 goreleaser: $(GORELEASER)
 $(GORELEASER):
 	@echo "Installing goreleaser..."
-	@(cd /tmp && go get github.com/goreleaser/goreleaser)
+	@(cd /tmp && go install github.com/goreleaser/goreleaser@latest)
 
 tools-clean:
 	rm -f $(STATIK) $(GOLANGCI_LINT) $(RUNSIM) $(GORELEASER)

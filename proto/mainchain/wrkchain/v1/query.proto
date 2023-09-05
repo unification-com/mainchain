@@ -1,9 +1,10 @@
 syntax = "proto3";
 package mainchain.wrkchain.v1;
 
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos_sdk/base/query/v1beta1/pagination.proto";
+import "cosmos_proto/cosmos.proto";
 import "mainchain/wrkchain/v1/wrkchain.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
@@ -76,7 +77,7 @@ message QueryWrkChainsFilteredRequest {
   // moniker is the moniker of the wrkchain to search for
   string moniker = 1;
   // owner is an address to search for
-  string owner = 2;
+  string owner = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }

@@ -2,12 +2,14 @@ package ante_test
 
 import (
 	"fmt"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/unification-com/mainchain/app/test_helpers"
@@ -31,9 +33,11 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
-	app := test_helpers.Setup(true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -51,7 +55,7 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 	msg := types.NewMsgRegisterBeacon("test", "Test", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, int64(actualFeeAmt)))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := test_helpers.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", addr)
 
@@ -64,9 +68,10 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -150,9 +155,10 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 
@@ -235,9 +241,10 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 
@@ -317,10 +324,11 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 
@@ -413,10 +421,11 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -516,10 +525,11 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 }
 
 func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -600,10 +610,11 @@ func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -688,10 +699,11 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 }
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
-	app := test_helpers.Setup(true)
+	app := test_helpers.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	txGen := test_helpers.EncodingConfig.TxConfig
+	encodingConfig := test_helpers.GetAppEncodingConfig()
+	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)

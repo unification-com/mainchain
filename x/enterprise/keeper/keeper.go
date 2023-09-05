@@ -2,7 +2,9 @@ package keeper
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -12,7 +14,7 @@ import (
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
-	storeKey   sdk.StoreKey // Unexposed key to access store from sdk.Context
+	storeKey   storetypes.StoreKey // Unexposed key to access store from sdk.Context
 	paramSpace paramtypes.Subspace
 	bankKeeper types.BankKeeper
 	accKeeper  types.AccountKeeper
@@ -20,7 +22,7 @@ type Keeper struct {
 }
 
 // NewKeeper creates new instances of the enterprise Keeper
-func NewKeeper(storeKey sdk.StoreKey, bankKeeper types.BankKeeper,
+func NewKeeper(storeKey storetypes.StoreKey, bankKeeper types.BankKeeper,
 	accKeeper types.AccountKeeper, paramSpace paramtypes.Subspace,
 	cdc codec.BinaryCodec) Keeper {
 

@@ -7,8 +7,8 @@
 # checked out repo as the version to upgrade to.                         #
 #                                                                        #
 # The script will run cosmovidor, then send an upgrade gov proposal to   #
-# run the 1-ibc upgrade at block 10. Cosmovisor will auto-upgrade when   #
-# the height is reached.                                                 #
+# run the specified upgrade at block 10. Cosmovisor will auto-upgrade    #
+# when the height is reached.                                            #
 ##########################################################################
 
 TEST_PATH="/tmp/und_upgrade_test"
@@ -18,8 +18,8 @@ COSMOVISOR_BIN="${TEST_PATH}/cosmovisor"
 UND_GEN_BIN="${COSMOVISOR_HOME}/genesis/bin/und"
 UPGRADE_HEIGHT=10
 CHAIN_ID="test-$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 10 | head -n 1)"
-UPGRADE_PLAN_NAME="2-grog"
-UND_GENESIS_VERSION="v1.6.3"
+UPGRADE_PLAN_NAME="3-keyleth"
+UND_GENESIS_VERSION="v1.7.0"
 
 # cosmovisor will run as a background process.
 # Catch and kill when ctrl-c is hit

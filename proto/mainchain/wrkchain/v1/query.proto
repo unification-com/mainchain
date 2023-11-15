@@ -9,6 +9,7 @@ import "mainchain/wrkchain/v1/wrkchain.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
+// Query defines the gRPC querier service.
 service Query {
   // Params queries the parameters of x/wrkchain module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
@@ -30,6 +31,7 @@ service Query {
     option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchains";
   }
 
+  // WrkChainStorage queries beacon storage for for given wrkchain ID
   rpc WrkChainStorage(QueryWrkChainStorageRequest) returns (QueryWrkChainStorageResponse) {
     option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/storage";
   }

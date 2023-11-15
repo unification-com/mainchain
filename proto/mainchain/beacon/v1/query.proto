@@ -31,6 +31,7 @@ service Query {
     option (google.api.http).get = "/mainchain/beacon/v1/beacons";
   }
 
+  // BeaconStorage queries beacon storage for for given beacon ID
   rpc BeaconStorage(QueryBeaconStorageRequest) returns (QueryBeaconStorageResponse) {
     option (google.api.http).get = "/mainchain/beacon/v1/beacon/{beacon_id}/storage";
   }

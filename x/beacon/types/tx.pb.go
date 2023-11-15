@@ -9,8 +9,8 @@ import (
 	_ "github.com/cosmos/cosmos-proto"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -219,6 +219,7 @@ func (m *MsgRecordBeaconTimestampResponse) GetTimestampId() uint64 {
 	return 0
 }
 
+// MsgPurchaseBeaconStateStorage represents a message to purchase mor ebeacon storage
 type MsgPurchaseBeaconStateStorage struct {
 	// beacon_id is the id of the beacon the storage is being purchased for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
@@ -261,6 +262,7 @@ func (m *MsgPurchaseBeaconStateStorage) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgPurchaseBeaconStateStorage proto.InternalMessageInfo
 
+// MsgPurchaseBeaconStateStorageResponse defines the Msg/PurchaseBeaconStateStorage response type.
 type MsgPurchaseBeaconStateStorageResponse struct {
 	// beacon_id is the id of the beacon the storage is being purchased for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`

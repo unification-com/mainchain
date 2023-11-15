@@ -80,6 +80,7 @@ message MsgRecordWrkChainBlockResponse {
   uint64 height = 2;
 }
 
+// MsgPurchaseWrkChainStateStorage represents a message to purchase more wrkchain storage
 message MsgPurchaseWrkChainStateStorage {
   option (cosmos.msg.v1.signer) = "owner";
 
@@ -96,6 +97,7 @@ message MsgPurchaseWrkChainStateStorage {
   string owner = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
+// MsgPurchaseWrkChainStateStorageResponse defines the Msg/PurchaseWrkChainStateStorage response type.
 message MsgPurchaseWrkChainStateStorageResponse {
   // wrkchain_id is the id of the wrkchain the storage is being purchased for
   uint64 wrkchain_id = 1;

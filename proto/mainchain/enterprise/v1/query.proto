@@ -10,6 +10,7 @@ import "mainchain/enterprise/v1/enterprise.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
 
+// Query defines the gRPC querier service.
 service Query {
   // Params queries the parameters of x/enterprise module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {

@@ -7,7 +7,7 @@ import (
 )
 
 // UpdateName this will be changed with each new release that requires migrations
-const UpdateName = "3-keyleth"
+const UpdateName = "4-percival"
 
 // see https://docs.cosmos.network/v0.45/migrations/chain-upgrade-guide-044.html
 func (app *App) registerUpgradeHandlers() {

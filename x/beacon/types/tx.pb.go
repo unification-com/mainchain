@@ -219,7 +219,7 @@ func (m *MsgRecordBeaconTimestampResponse) GetTimestampId() uint64 {
 	return 0
 }
 
-// MsgPurchaseBeaconStateStorage represents a message to purchase mor ebeacon storage
+// MsgPurchaseBeaconStateStorage represents a message to purchase more beacon storage
 type MsgPurchaseBeaconStateStorage struct {
 	// beacon_id is the id of the beacon the storage is being purchased for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`

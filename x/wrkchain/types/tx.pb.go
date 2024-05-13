@@ -231,6 +231,7 @@ func (m *MsgRecordWrkChainBlockResponse) GetHeight() uint64 {
 	return 0
 }
 
+// MsgPurchaseWrkChainStateStorage represents a message to purchase more wrkchain storage
 type MsgPurchaseWrkChainStateStorage struct {
 	// wrkchain_id is the id of the wrkchain the storage is being purchased for
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
@@ -273,6 +274,7 @@ func (m *MsgPurchaseWrkChainStateStorage) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgPurchaseWrkChainStateStorage proto.InternalMessageInfo
 
+// MsgPurchaseWrkChainStateStorageResponse defines the Msg/PurchaseWrkChainStateStorage response type.
 type MsgPurchaseWrkChainStateStorageResponse struct {
 	// wrkchain_id is the id of the wrkchain the storage is being purchased for
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`

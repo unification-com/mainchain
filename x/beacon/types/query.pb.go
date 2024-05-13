@@ -643,7 +643,7 @@ type QueryClient interface {
 	BeaconTimestamp(ctx context.Context, in *QueryBeaconTimestampRequest, opts ...grpc.CallOption) (*QueryBeaconTimestampResponse, error)
 	// BeaconsFiltered queries all beacon metadata for given search parameters
 	BeaconsFiltered(ctx context.Context, in *QueryBeaconsFilteredRequest, opts ...grpc.CallOption) (*QueryBeaconsFilteredResponse, error)
-	// BeaconStorage queries beacon storage infor for given beacon ID
+	// BeaconStorage queries beacon storage for for given beacon ID
 	BeaconStorage(ctx context.Context, in *QueryBeaconStorageRequest, opts ...grpc.CallOption) (*QueryBeaconStorageResponse, error)
 }
 
@@ -710,7 +710,7 @@ type QueryServer interface {
 	BeaconTimestamp(context.Context, *QueryBeaconTimestampRequest) (*QueryBeaconTimestampResponse, error)
 	// BeaconsFiltered queries all beacon metadata for given search parameters
 	BeaconsFiltered(context.Context, *QueryBeaconsFilteredRequest) (*QueryBeaconsFilteredResponse, error)
-	// BeaconStorage queries beacon storage infor for given beacon ID
+	// BeaconStorage queries beacon storage for for given beacon ID
 	BeaconStorage(context.Context, *QueryBeaconStorageRequest) (*QueryBeaconStorageResponse, error)
 }
 

@@ -135,11 +135,13 @@ release: goreleaser
 
 protoVer=0.14.0
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+#protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace --user $(shell id -u):$(shell id -g) $(protoImageName)
 
 proto-all: proto-format proto-lint proto-gen
 
 # NOTE: when using rootless docker, this will fail. Before running, run:
+#   chmod 777 proto/buf.lock
 #   mkdir github.com && chmod 777 github.com
 # After running, run:
 #   sudo chown -R $(id -u):$(id -g) github.com
@@ -147,6 +149,8 @@ proto-all: proto-format proto-lint proto-gen
 #   rm -rf github.com
 proto-gen:
 	@echo "Generating Protobuf files"
+	@chmod 777 proto/buf.lock
+	@mkdir github.com && chmod 777 github.com
 	@$(protoImage) sh ./scripts/protocgen.sh
 
 proto-swagger-gen:

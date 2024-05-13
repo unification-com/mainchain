@@ -4,8 +4,8 @@ import (
 	"github.com/unification-com/mainchain/app/test_helpers"
 	"testing"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/unification-com/mainchain/x/enterprise/types"

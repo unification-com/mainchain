@@ -1,15 +1,15 @@
 package keeper_test
 
 import (
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/app/test_helpers"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/unification-com/mainchain/x/enterprise/keeper"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	"strconv"

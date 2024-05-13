@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 
 	"github.com/unification-com/mainchain/app/test_helpers"
 	"github.com/unification-com/mainchain/x/enterprise/types"

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"

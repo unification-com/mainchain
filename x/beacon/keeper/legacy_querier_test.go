@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/app/test_helpers"
 	"strconv"
@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

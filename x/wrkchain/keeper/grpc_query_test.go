@@ -4,7 +4,7 @@ import (
 	gocontext "context"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 	"time"
 )
@@ -125,9 +125,9 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChainsFiltered() {
 				// create 5 test wrkchains
 				for i := 0; i < 5; i++ {
 
-					moniker := test_helpers.GenerateRandomString(12)
-					name := test_helpers.GenerateRandomString(24)
-					gHash := test_helpers.GenerateRandomString(64)
+					moniker := simapp.GenerateRandomString(12)
+					name := simapp.GenerateRandomString(24)
+					gHash := simapp.GenerateRandomString(64)
 
 					wcId, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, gHash, "tm", addrs[0])
 					suite.Require().NoError(err)
@@ -265,7 +265,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 				suite.Require().Equal(uint64(1), wcID)
 
 				expectedBlock := types.WrkChainBlock{
-					Blockhash: test_helpers.GenerateRandomString(32),
+					Blockhash: simapp.GenerateRandomString(32),
 					SubTime:   uint64(time.Now().Unix()),
 					Height:    1,
 				}

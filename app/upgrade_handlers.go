@@ -19,6 +19,7 @@ import (
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
+	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 // UpgradeName this will be changed with each new release that requires migrations
@@ -50,9 +51,11 @@ func (app *App) registerUpgradeHandlers() {
 		case crisistypes.ModuleName:
 			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck
 		case beacontypes.ModuleName:
-			keyTable = banktypes.ParamKeyTable() //nolint:staticcheck
+			keyTable = beacontypes.ParamKeyTable() //nolint:staticcheck
+		case wrkchaintypes.ModuleName:
+			keyTable = wrkchaintypes.ParamKeyTable() //nolint:staticcheck
 		}
-		// ToDo - add enterprise, wrkchain
+		// ToDo - add enterprise
 
 		if !subspace.HasKeyTable() {
 			subspace.WithKeyTable(keyTable)

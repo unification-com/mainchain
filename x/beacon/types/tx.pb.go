@@ -333,7 +333,7 @@ func (m *MsgPurchaseBeaconStateStorageResponse) GetNumCanPurchase() uint64 {
 type MsgUpdateParams struct {
 	// authority is the address that controls the module (defaults to x/gov unless overwritten).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// params defines the x/staking parameters to update.
+	// params defines the x/beacon parameters to update.
 	//
 	// NOTE: All parameters must be supplied.
 	Params Params `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
@@ -503,7 +503,7 @@ type MsgClient interface {
 	RecordBeaconTimestamp(ctx context.Context, in *MsgRecordBeaconTimestamp, opts ...grpc.CallOption) (*MsgRecordBeaconTimestampResponse, error)
 	// PurchaseBeaconStateStorage defines the method to purchase more state storage
 	PurchaseBeaconStateStorage(ctx context.Context, in *MsgPurchaseBeaconStateStorage, opts ...grpc.CallOption) (*MsgPurchaseBeaconStateStorageResponse, error)
-	// UpdateParams defines an operation for updating the x/staking module
+	// UpdateParams defines an operation for updating the x/beacon module
 	// parameters.
 	// Since: cosmos-sdk 0.47
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
@@ -561,7 +561,7 @@ type MsgServer interface {
 	RecordBeaconTimestamp(context.Context, *MsgRecordBeaconTimestamp) (*MsgRecordBeaconTimestampResponse, error)
 	// PurchaseBeaconStateStorage defines the method to purchase more state storage
 	PurchaseBeaconStateStorage(context.Context, *MsgPurchaseBeaconStateStorage) (*MsgPurchaseBeaconStateStorageResponse, error)
-	// UpdateParams defines an operation for updating the x/staking module
+	// UpdateParams defines an operation for updating the x/beacon module
 	// parameters.
 	// Since: cosmos-sdk 0.47
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)

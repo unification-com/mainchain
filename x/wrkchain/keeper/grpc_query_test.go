@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func (suite *KeeperTestSuite) TestGRPCQueryParams() {
-	app, ctx, queryClient := suite.app, suite.ctx, suite.queryClient
+func (s *KeeperTestSuite) TestGRPCQueryParams() {
+	app, ctx, queryClient := s.app, s.ctx, s.queryClient
 
 	testParams := types.Params{
 		FeeRegister:         240,
@@ -24,12 +24,12 @@ func (suite *KeeperTestSuite) TestGRPCQueryParams() {
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 	paramsResp, err := queryClient.Params(gocontext.Background(), &types.QueryParamsRequest{})
 
-	suite.NoError(err)
-	suite.Equal(testParams, paramsResp.Params)
+	s.NoError(err)
+	s.Equal(testParams, paramsResp.Params)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryWrkChain() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryWrkChain() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var (
 		req   *types.QueryWrkChainRequest
@@ -69,10 +69,10 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChain() {
 				req = &types.QueryWrkChainRequest{WrkchainId: 1}
 
 				bID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, "moniker", "name", "lhbohbob", "tm", addrs[0])
-				suite.Require().NoError(err)
-				suite.Require().Equal(uint64(1), bID)
+				s.Require().NoError(err)
+				s.Require().Equal(uint64(1), bID)
 				dbWrkchain, found := app.WrkchainKeeper.GetWrkChain(ctx, uint64(1))
-				suite.Require().True(found)
+				s.Require().True(found)
 
 				expWc = dbWrkchain
 			},
@@ -81,24 +81,24 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChain() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			wcRes, err := queryClient.WrkChain(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
-				suite.Require().Equal(&expWc, wcRes.Wrkchain)
+				s.Require().NoError(err)
+				s.Require().Equal(&expWc, wcRes.Wrkchain)
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(wcRes)
+				s.Require().Error(err)
+				s.Require().Nil(wcRes)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryWrkChainsFiltered() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryWrkChainsFiltered() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	testWrkchains := []types.WrkChain{}
 
@@ -130,9 +130,9 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChainsFiltered() {
 					gHash := simapp.GenerateRandomString(64)
 
 					wcId, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, gHash, "tm", addrs[0])
-					suite.Require().NoError(err)
+					s.Require().NoError(err)
 					expectedWc, found := app.WrkchainKeeper.GetWrkChain(ctx, wcId)
-					suite.Require().True(found)
+					s.Require().True(found)
 					testWrkchains = append(testWrkchains, expectedWc)
 				}
 
@@ -201,28 +201,28 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChainsFiltered() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			wrkchains, err := queryClient.WrkChainsFiltered(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
+				s.Require().NoError(err)
 
-				suite.Require().Len(wrkchains.GetWrkchains(), len(expRes.GetWrkchains()))
+				s.Require().Len(wrkchains.GetWrkchains(), len(expRes.GetWrkchains()))
 				for i := 0; i < len(wrkchains.GetWrkchains()); i++ {
-					suite.Require().Equal(wrkchains.GetWrkchains()[i].String(), expRes.GetWrkchains()[i].String())
+					s.Require().Equal(wrkchains.GetWrkchains()[i].String(), expRes.GetWrkchains()[i].String())
 				}
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(wrkchains)
+				s.Require().Error(err)
+				s.Require().Nil(wrkchains)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var (
 		req    *types.QueryWrkChainBlockRequest
@@ -261,8 +261,8 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, Height: 1}
 
 				wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, "moniker", "name", "ghash", "tm", addrs[0])
-				suite.Require().NoError(err)
-				suite.Require().Equal(uint64(1), wcID)
+				s.Require().NoError(err)
+				s.Require().Equal(uint64(1), wcID)
 
 				expectedBlock := types.WrkChainBlock{
 					Blockhash: simapp.GenerateRandomString(32),
@@ -271,7 +271,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 				}
 
 				err = app.WrkchainKeeper.SetWrkChainBlock(ctx, wcID, expectedBlock)
-				suite.Require().NoError(err)
+				s.Require().NoError(err)
 
 				expRes = types.QueryWrkChainBlockResponse{
 					Block:      &expectedBlock,
@@ -285,24 +285,24 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			blockRes, err := queryClient.WrkChainBlock(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
-				suite.Require().Equal(&expRes, blockRes)
+				s.Require().NoError(err)
+				s.Require().Equal(&expRes, blockRes)
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(blockRes)
+				s.Require().Error(err)
+				s.Require().Nil(blockRes)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryWrkChainStorage() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryWrkChainStorage() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var (
 		req    *types.QueryWrkChainStorageRequest
@@ -334,11 +334,11 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChainStorage() {
 				req = &types.QueryWrkChainStorageRequest{WrkchainId: 1}
 
 				wcId, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, "moniker", "name", "ghash", "tm", addrs[0])
-				suite.Require().NoError(err)
-				suite.Require().Equal(uint64(1), wcId)
+				s.Require().NoError(err)
+				s.Require().Equal(uint64(1), wcId)
 
 				_, err = app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcId, 24, "somehash", "parenthash", "hash1", "hash2", "hash3")
-				suite.Require().NoError(err)
+				s.Require().NoError(err)
 
 				expRes = types.QueryWrkChainStorageResponse{
 					WrkchainId:     wcId,
@@ -355,17 +355,17 @@ func (suite *KeeperTestSuite) TestGRPCQueryWrkChainStorage() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			timestampRes, err := queryClient.WrkChainStorage(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
-				suite.Require().Equal(&expRes, timestampRes)
+				s.Require().NoError(err)
+				s.Require().Equal(&expRes, timestampRes)
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(timestampRes)
+				s.Require().Error(err)
+				s.Require().Nil(timestampRes)
 			}
 		})
 	}

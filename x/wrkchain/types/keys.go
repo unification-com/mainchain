@@ -30,6 +30,8 @@ var (
 
 	// WrkChainStorageLimitPrefix prefix for WRKChain storage limit store
 	WrkChainStorageLimitPrefix = []byte{0x03}
+
+	ParamsKey = []byte{0x04}
 )
 
 // GetWrkChainIDBytes returns the byte representation of the wrkChainID

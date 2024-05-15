@@ -440,7 +440,7 @@ func NewApp(
 
 	app.BeaconKeeper = beaconkeeper.NewKeeper(keys[beacontypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	app.WrkchainKeeper = wrkchainkeeper.NewKeeper(keys[wrkchaintypes.StoreKey], app.GetSubspace(wrkchaintypes.ModuleName), appCodec)
+	app.WrkchainKeeper = wrkchainkeeper.NewKeeper(keys[wrkchaintypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	/****  Module Options ****/
 
@@ -475,7 +475,7 @@ func NewApp(
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 		enterprise.NewAppModule(appCodec, app.EnterpriseKeeper, app.BankKeeper, app.AccountKeeper),
 		beacon.NewAppModule(appCodec, app.BeaconKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(beacontypes.ModuleName)),
-		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper),
+		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(beacontypes.ModuleName)),
 		transferModule,
 	)
 

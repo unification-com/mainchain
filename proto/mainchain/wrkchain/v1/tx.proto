@@ -4,6 +4,8 @@ package mainchain.wrkchain.v1;
 import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
+import "amino/amino.proto";
+import "mainchain/wrkchain/v1/wrkchain.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
@@ -20,6 +22,11 @@ service Msg {
   // PurchaseWrkChainStateStorage defines the method to purchase more state storage
   rpc PurchaseWrkChainStateStorage(MsgPurchaseWrkChainStateStorage)
       returns (MsgPurchaseWrkChainStateStorageResponse);
+
+  // UpdateParams defines an operation for updating the x/wrkchain module
+  // parameters.
+  // Since: cosmos-sdk 0.47
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
 // MsgRegisterWrkChain represents a message to register a new wrkchain
@@ -106,3 +113,24 @@ message MsgPurchaseWrkChainStateStorageResponse {
   // num_can_purchase is the number of remaining slots available for purchase
   uint64 num_can_purchase = 3;
 }
+
+// MsgUpdateParams is the Msg/UpdateParams request type.
+//
+// Since: cosmos-sdk 0.47
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name)           = "mainchain/x/wrkchain/MsgUpdateParams";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // params defines the x/wrkchain parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+};
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+//
+// Since: cosmos-sdk 0.47
+message MsgUpdateParamsResponse {};

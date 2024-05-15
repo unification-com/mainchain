@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine3.15
+FROM golang:1.22-alpine
 
 RUN apk update && \
     apk upgrade && \
@@ -9,13 +9,16 @@ ENV GOROOT="/usr/local/go"
 ENV PATH="/usr/local/go/bin:/root/.go/bin:${PATH}"
 ENV LEDGER_ENABLED="false"
 
+WORKDIR /root
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
 RUN mkdir -p /root/src/mainchain && \
-    export GO111MODULE=off && go get -u github.com/go-delve/delve/cmd/dlv
+    export GO111MODULE=off
 
 WORKDIR /root/src/mainchain
 
 COPY ./go.mod ./go.sum ./
-RUN cd /root/src/mainchain && go mod download && go mod tidy
+RUN cd /root/src/mainchain && go mod tidy
 
 COPY . ./
 
@@ -24,6 +27,3 @@ ENV WITH_DELVE=$WITH_DELVE
 RUN export WITH_DELVE=$WITH_DELVE && make install && /root/.go/bin/und version
 
 COPY Docker/assets /root/.und_mainchain
-
-RUN echo "/root/.go/bin/und" >> /root/.bash_history && \
-    echo "alias ll='ls -la'" >> /root/.bashrc

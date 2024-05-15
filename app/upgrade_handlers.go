@@ -81,10 +81,6 @@ func (app *App) registerUpgradeHandlers() {
 				return nil, err
 			}
 
-			// see https://github.com/cosmos/ibc-go/blob/v7.0.1/testing/simapp/upgrades/v7/upgrades.go#L37
-			legacyBaseAppSubspace := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-			baseapp.MigrateParams(ctx, legacyBaseAppSubspace, &app.ConsensusParamsKeeper)
-
 			// explicitly update the IBC 02-client params, adding the localhost client type
 			// see https://github.com/cosmos/ibc-go/blob/main/docs/docs/05-migrations/09-v7-to-v7_1.md#chains
 			params := app.IBCKeeper.ClientKeeper.GetParams(ctx)

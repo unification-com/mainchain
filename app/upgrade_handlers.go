@@ -1,26 +1,113 @@
 package app
 
 import (
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
+	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	"github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 )
 
-// UpdateName this will be changed with each new release that requires migrations
-const UpdateName = "4-percival"
+// UpgradeName this will be changed with each new release that requires migrations
+const UpgradeName = "5-pike"
 
 // see https://docs.cosmos.network/v0.45/migrations/chain-upgrade-guide-044.html
 func (app *App) registerUpgradeHandlers() {
 
-	// 4-percival is a hotfix and updates Cosmos SDK to v0.46.16
-	app.UpgradeKeeper.SetUpgradeHandler(UpdateName, app.upgradeHandler)
+	// 5-pike updates Cosmos SDK to v0.47.11 andIBV to v7.5.0
 
-	_, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	// Set param key table for params module migration
+	for _, subspace := range app.ParamsKeeper.GetSubspaces() {
+		subspace := subspace
+
+		var keyTable paramstypes.KeyTable
+		switch subspace.Name() {
+		case authtypes.ModuleName:
+			keyTable = authtypes.ParamKeyTable() //nolint:staticcheck
+		case banktypes.ModuleName:
+			keyTable = banktypes.ParamKeyTable() //nolint:staticcheck
+		case stakingtypes.ModuleName:
+			keyTable = stakingtypes.ParamKeyTable() //nolint:staticcheck
+		case distrtypes.ModuleName:
+			keyTable = distrtypes.ParamKeyTable() //nolint:staticcheck
+		case slashingtypes.ModuleName:
+			keyTable = slashingtypes.ParamKeyTable() //nolint:staticcheck
+		case govtypes.ModuleName:
+			keyTable = govv1.ParamKeyTable() //nolint:staticcheck
+		case crisistypes.ModuleName:
+			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck
+		}
+		// ToDo - add beacon, enterprise, wrkchain
+
+		if !subspace.HasKeyTable() {
+			subspace.WithKeyTable(keyTable)
+		}
+	}
+
+	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
+
+	app.UpgradeKeeper.SetUpgradeHandler(
+		UpgradeName,
+		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			// Migrate Tendermint consensus parameters from x/params module to a dedicated x/consensus module.
+			baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
+
+			// Note: this migration is optional,
+			// You can include x/gov proposal migration documented in [UPGRADING.md](https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md)
+
+			// IBC
+			// prune expired tendermint consensus states to save storage space
+			// see https://github.com/cosmos/ibc-go/blob/main/docs/docs/05-migrations/08-v6-to-v7.md#chains
+			_, err := ibctmmigrations.PruneExpiredConsensusStates(ctx, app.AppCodec(), app.IBCKeeper.ClientKeeper)
+			if err != nil {
+				return nil, err
+			}
+
+			// see https://github.com/cosmos/ibc-go/blob/v7.0.1/testing/simapp/upgrades/v7/upgrades.go#L37
+			legacyBaseAppSubspace := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
+			baseapp.MigrateParams(ctx, legacyBaseAppSubspace, &app.ConsensusParamsKeeper)
+
+			// explicitly update the IBC 02-client params, adding the localhost client type
+			// see https://github.com/cosmos/ibc-go/blob/main/docs/docs/05-migrations/09-v7-to-v7_1.md#chains
+			params := app.IBCKeeper.ClientKeeper.GetParams(ctx)
+			params.AllowedClients = append(params.AllowedClients, exported.Localhost)
+			app.IBCKeeper.ClientKeeper.SetParams(ctx, params)
+
+			return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
+		},
+	)
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
 	}
+
+	// add new modules
+	if upgradeInfo.Name == UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				consensustypes.ModuleName,
+				crisistypes.ModuleName,
+			},
+		}
+
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
 }
 
-func (app *App) upgradeHandler(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-	return app.ModuleManager.RunMigrations(ctx, app.configurator, vm)
-}
+//func (app *App) upgradeHandler(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+//	return app.ModuleManager.RunMigrations(ctx, app.configurator, vm)
+//}

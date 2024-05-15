@@ -22,5 +22,5 @@ func (app *App) registerUpgradeHandlers() {
 }
 
 func (app *App) upgradeHandler(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-	return app.mm.RunMigrations(ctx, app.configurator, vm)
+	return app.ModuleManager.RunMigrations(ctx, app.configurator, vm)
 }

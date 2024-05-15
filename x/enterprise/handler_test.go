@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	"strings"
 	"testing"
@@ -29,10 +29,10 @@ func TestInvalidMsg(t *testing.T) {
 }
 
 func TestValidMsgUndPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(3)
 
 	h := enterprise.NewHandler(app.EnterpriseKeeper)
 
@@ -41,7 +41,7 @@ func TestValidMsgUndPurchaseOrder(t *testing.T) {
 
 	msg := &types.MsgUndPurchaseOrder{
 		Purchaser: testAddrs[0].String(),
-		Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+		Amount:    sdk.NewInt64Coin(simapp.TestDenomination, 100),
 	}
 
 	res, err := h(ctx, msg)
@@ -51,10 +51,10 @@ func TestValidMsgUndPurchaseOrder(t *testing.T) {
 }
 
 func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(3)
 
 	err := app.EnterpriseKeeper.AddAddressToWhitelist(ctx, testAddrs[0])
 	require.Nil(t, err)
@@ -84,13 +84,13 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 				Purchaser: testAddrs[0].String(),
 				Amount:    sdk.NewInt64Coin("rubbish", 100),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", test_helpers.TestDenomination)),
+			expectedError: sdkerrors.Wrap(types.ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", simapp.TestDenomination)),
 		},
 		{
 			name: "invalid amount",
 			msg: &types.MsgUndPurchaseOrder{
 				Purchaser: testAddrs[0].String(),
-				Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, 0),
+				Amount:    sdk.NewInt64Coin(simapp.TestDenomination, 0),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrInvalidData, "amount must be > 0"),
 		},
@@ -98,7 +98,7 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 			name: "purchaser not whitelisted",
 			msg: &types.MsgUndPurchaseOrder{
 				Purchaser: testAddrs[1].String(),
-				Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+				Amount:    sdk.NewInt64Coin(simapp.TestDenomination, 100),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", testAddrs[1].String())),
 		},
@@ -106,7 +106,7 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 			name: "successful",
 			msg: &types.MsgUndPurchaseOrder{
 				Purchaser: testAddrs[0].String(),
-				Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+				Amount:    sdk.NewInt64Coin(simapp.TestDenomination, 100),
 			},
 			expectedError: nil,
 		},
@@ -125,10 +125,10 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 }
 
 func TestValidMsgProcessUndPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(3)
 
 	entSigners := app.EnterpriseKeeper.GetParamEntSignersAsAddressArray(ctx)
 	entSignerAddr := entSigners[0]
@@ -139,7 +139,7 @@ func TestValidMsgProcessUndPurchaseOrder(t *testing.T) {
 	po := types.EnterpriseUndPurchaseOrder{
 		Id:             1,
 		Purchaser:      testAddrs[0].String(),
-		Amount:         sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+		Amount:         sdk.NewInt64Coin(simapp.TestDenomination, 100),
 		Status:         types.StatusRaised,
 		RaiseTime:      uint64(time.Now().Unix()),
 		CompletionTime: 0,
@@ -163,10 +163,10 @@ func TestValidMsgProcessUndPurchaseOrder(t *testing.T) {
 }
 
 func TestValidMsgProcessUndPurchaseOrderMultipleDecisions(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(3)
 
 	entSignerAddr1 := testAddrs[0]
 	entSignerAddr2 := testAddrs[1]
@@ -175,7 +175,7 @@ func TestValidMsgProcessUndPurchaseOrderMultipleDecisions(t *testing.T) {
 
 	app.EnterpriseKeeper.SetParams(ctx, types.Params{
 		EntSigners:        strings.Join(signers, ","),
-		Denom:             test_helpers.TestDenomination,
+		Denom:             simapp.TestDenomination,
 		MinAccepts:        2,
 		DecisionTimeLimit: 1000,
 	})
@@ -186,7 +186,7 @@ func TestValidMsgProcessUndPurchaseOrderMultipleDecisions(t *testing.T) {
 	po := types.EnterpriseUndPurchaseOrder{
 		Id:             1,
 		Purchaser:      testAddrs[2].String(),
-		Amount:         sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+		Amount:         sdk.NewInt64Coin(simapp.TestDenomination, 100),
 		Status:         types.StatusRaised,
 		RaiseTime:      uint64(time.Now().Unix()),
 		CompletionTime: 0,
@@ -221,10 +221,10 @@ func TestValidMsgProcessUndPurchaseOrderMultipleDecisions(t *testing.T) {
 }
 
 func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(3)
 
 	entSigners := app.EnterpriseKeeper.GetParamEntSignersAsAddressArray(ctx)
 	entSignerAddr := entSigners[0]
@@ -235,7 +235,7 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 	po := types.EnterpriseUndPurchaseOrder{
 		Id:             1,
 		Purchaser:      testAddrs[0].String(),
-		Amount:         sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+		Amount:         sdk.NewInt64Coin(simapp.TestDenomination, 100),
 		Status:         types.StatusRaised,
 		RaiseTime:      uint64(time.Now().Unix()),
 		CompletionTime: 0,
@@ -352,10 +352,10 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 }
 
 func TestValidMsgWhitelistAddress(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(3)
 
 	entSigners := app.EnterpriseKeeper.GetParamEntSignersAsAddressArray(ctx)
 	entSignerAddr := entSigners[0]
@@ -375,10 +375,10 @@ func TestValidMsgWhitelistAddress(t *testing.T) {
 }
 
 func TestInvalidMsgWhitelistAddress(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(3)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(3)
 
 	entSigners := app.EnterpriseKeeper.GetParamEntSignersAsAddressArray(ctx)
 	entSignerAddr := entSigners[0]

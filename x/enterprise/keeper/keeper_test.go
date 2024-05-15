@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	simapp "github.com/unification-com/mainchain/app"
 	"testing"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -9,7 +10,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/unification-com/mainchain/app"
-	"github.com/unification-com/mainchain/app/test_helpers"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -23,9 +23,9 @@ type KeeperTestSuite struct {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	testApp := test_helpers.Setup(suite.T(), false)
+	testApp := simapp.Setup(suite.T(), false)
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(testApp, ctx)
+	simapp.SetKeeperTestParamsAndDefaultValues(testApp, ctx)
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, testApp.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, testApp.EnterpriseKeeper)
@@ -34,7 +34,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 	suite.app = testApp
 	suite.ctx = ctx
 	suite.queryClient = queryClient
-	suite.addrs = test_helpers.AddTestAddrsIncremental(testApp, ctx, 10, sdk.NewInt(30000000))
+	suite.addrs = simapp.AddTestAddrsIncremental(testApp, ctx, 10, sdk.NewInt(30000000))
 }
 
 func TestKeeperTestSuite(t *testing.T) {

@@ -1,20 +1,20 @@
 package keeper_test
 
 import (
+	simapp "github.com/unification-com/mainchain/app"
 	"testing"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
-	"github.com/unification-com/mainchain/app/test_helpers"
 )
 
 func TestAddAddressesToWhitelist(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(10)
 
 	for _, addr := range testAddrs {
 		err := app.EnterpriseKeeper.AddAddressToWhitelist(ctx, addr)
@@ -27,10 +27,10 @@ func TestAddAddressesToWhitelist(t *testing.T) {
 }
 
 func TestRemoveAddressesToWhitelist(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(100)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddrs {
 		_ = app.EnterpriseKeeper.AddAddressToWhitelist(ctx, addr)
@@ -47,10 +47,10 @@ func TestRemoveAddressesToWhitelist(t *testing.T) {
 }
 
 func TestAddressIsWhitelisted(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(100)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddrs {
 		isWhitelisted := app.EnterpriseKeeper.AddressIsWhitelisted(ctx, addr)

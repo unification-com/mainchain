@@ -1,28 +1,13 @@
 package keeper_test
 
 import (
-	"math/rand"
-	"time"
-
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"math/rand"
 
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
-
-const (
-	TestDenomination = "nund"
-)
-
-var (
-	TestAddrs  = createRandomAccounts(10)
-	seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
-)
-
-func GenerateRandomAccounts(num int) []sdk.AccAddress {
-	return createRandomAccounts(num)
-}
 
 func createRandomAccounts(accNum int) []sdk.AccAddress {
 	testAddrs := make([]sdk.AccAddress, accNum)
@@ -51,7 +36,7 @@ func RandomDecision() types.PurchaseOrderStatus {
 }
 
 func RandomStatus() types.PurchaseOrderStatus {
-	rnd := test_helpers.RandInBetween(1, 5)
+	rnd := simapp.RandInBetween(1, 5)
 	switch rnd {
 	case 1:
 		return types.StatusRaised

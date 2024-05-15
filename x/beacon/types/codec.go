@@ -2,13 +2,15 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
 )
 
-// RegisterLegacyAminoCodec registers the necessary x/enterprise interfaces and concrete types
+// RegisterLegacyAminoCodec registers the necessary x/beacon interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(MsgRegisterBeacon{}, "beacon/RegisterBeacon", nil)
@@ -20,6 +22,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&Params{}, "beacon/Params", nil)
 	cdc.RegisterConcrete(&GenesisState{}, "beacon/GenesisState", nil)
 	cdc.RegisterConcrete(&BeaconExport{}, "beacon/BeaconExport", nil)
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/beacon/MsgUpdateParams")
 
 }
 
@@ -27,6 +30,7 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgRegisterBeacon{},
 		&MsgRecordBeaconTimestamp{},
+		&MsgUpdateParams{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
@@ -47,5 +51,9 @@ var (
 func init() {
 	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
-	amino.Seal()
+
+	// Register all Amino interfaces and concrete types on the authz Amino codec
+	// so that this can later be used to properly serialize MsgGrant and MsgExec
+	// instances.
+	RegisterLegacyAminoCodec(authzcodec.Amino)
 }

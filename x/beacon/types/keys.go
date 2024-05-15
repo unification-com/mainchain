@@ -28,6 +28,8 @@ var (
 
 	// BeaconStorageLimitPrefix prefix for BEACON storage limit store
 	BeaconStorageLimitPrefix = []byte{0x03}
+
+	ParamsKey = []byte{0x04}
 )
 
 // GetBeaconIDBytes returns the byte representation of the BeaconID

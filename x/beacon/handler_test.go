@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/beacon/types"
 	"strings"
 	"testing"
@@ -31,10 +31,10 @@ func TestInvalidMsg(t *testing.T) {
 }
 
 func TestValidMsgRegisterBeacon(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(1)
 
 	h := beacon.NewHandler(app.BeaconKeeper)
 
@@ -51,14 +51,14 @@ func TestValidMsgRegisterBeacon(t *testing.T) {
 }
 
 func TestInvalidMsgRegisterBeacon(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(2)
 
 	h := beacon.NewHandler(app.BeaconKeeper)
 
-	existsMoniker := test_helpers.GenerateRandomString(24)
+	existsMoniker := simapp.GenerateRandomString(24)
 	b := types.Beacon{
 		Moniker: existsMoniker,
 		Name:    "this exists",
@@ -94,7 +94,7 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 			name: "name too big",
 			msg: &types.MsgRegisterBeacon{
 				Moniker: "moniker",
-				Name:    test_helpers.GenerateRandomString(129),
+				Name:    simapp.GenerateRandomString(129),
 				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"),
@@ -102,7 +102,7 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 		{
 			name: "moniker too big",
 			msg: &types.MsgRegisterBeacon{
-				Moniker: test_helpers.GenerateRandomString(65),
+				Moniker: simapp.GenerateRandomString(65),
 				Name:    "name",
 				Owner:   testAddrs[0].String(),
 			},
@@ -120,8 +120,8 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 		{
 			name: "successful",
 			msg: &types.MsgRegisterBeacon{
-				Moniker: test_helpers.GenerateRandomString(24),
-				Name:    test_helpers.GenerateRandomString(24),
+				Moniker: simapp.GenerateRandomString(24),
+				Name:    simapp.GenerateRandomString(24),
 				Owner:   testAddrs[0].String(),
 			},
 			expectedError: nil,
@@ -141,15 +141,15 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 }
 
 func TestValidMsgRecordBeaconTimestamp(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(1)
 
 	h := beacon.NewHandler(app.BeaconKeeper)
 
 	b := types.Beacon{
-		Moniker: test_helpers.GenerateRandomString(24),
+		Moniker: simapp.GenerateRandomString(24),
 		Name:    "new beacon",
 		Owner:   testAddrs[0].String(),
 	}
@@ -159,7 +159,7 @@ func TestValidMsgRecordBeaconTimestamp(t *testing.T) {
 
 	msg := &types.MsgRecordBeaconTimestamp{
 		BeaconId: 1,
-		Hash:     test_helpers.GenerateRandomString(64),
+		Hash:     simapp.GenerateRandomString(64),
 		Owner:    testAddrs[0].String(),
 	}
 
@@ -171,15 +171,15 @@ func TestValidMsgRecordBeaconTimestamp(t *testing.T) {
 }
 
 func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(2)
 
 	h := beacon.NewHandler(app.BeaconKeeper)
 
 	b := types.Beacon{
-		Moniker: test_helpers.GenerateRandomString(24),
+		Moniker: simapp.GenerateRandomString(24),
 		Name:    "new beacon",
 		Owner:   testAddrs[0].String(),
 	}
@@ -208,7 +208,7 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 			name: "hash too large",
 			msg: &types.MsgRecordBeaconTimestamp{
 				Owner: testAddrs[0].String(),
-				Hash:  test_helpers.GenerateRandomString(67),
+				Hash:  simapp.GenerateRandomString(67),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit"),
 		},
@@ -216,7 +216,7 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 			name: "beacon not registered",
 			msg: &types.MsgRecordBeaconTimestamp{
 				Owner:    testAddrs[0].String(),
-				Hash:     test_helpers.GenerateRandomString(24),
+				Hash:     simapp.GenerateRandomString(24),
 				BeaconId: 2,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet"),
@@ -225,7 +225,7 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 			name: "not beacon owner",
 			msg: &types.MsgRecordBeaconTimestamp{
 				Owner:    testAddrs[1].String(),
-				Hash:     test_helpers.GenerateRandomString(24),
+				Hash:     simapp.GenerateRandomString(24),
 				BeaconId: 1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon"),
@@ -234,7 +234,7 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 			name: "successful",
 			msg: &types.MsgRecordBeaconTimestamp{
 				Owner:    testAddrs[0].String(),
-				Hash:     test_helpers.GenerateRandomString(24),
+				Hash:     simapp.GenerateRandomString(24),
 				BeaconId: 1,
 			},
 			expectedError: nil,
@@ -254,15 +254,15 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 }
 
 func TestValidMsgPurchaseBeaconStateStorage(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(1)
 
 	h := beacon.NewHandler(app.BeaconKeeper)
 
 	b := types.Beacon{
-		Moniker: test_helpers.GenerateRandomString(24),
+		Moniker: simapp.GenerateRandomString(24),
 		Name:    "new beacon",
 		Owner:   testAddrs[0].String(),
 	}
@@ -284,15 +284,15 @@ func TestValidMsgPurchaseBeaconStateStorage(t *testing.T) {
 }
 
 func TestInvalidMsgPurchaseBeaconStateStorage(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(2)
 
 	h := beacon.NewHandler(app.BeaconKeeper)
 
 	b := types.Beacon{
-		Moniker: test_helpers.GenerateRandomString(24),
+		Moniker: simapp.GenerateRandomString(24),
 		Name:    "new beacon",
 		Owner:   testAddrs[0].String(),
 	}
@@ -347,10 +347,10 @@ func TestInvalidMsgPurchaseBeaconStateStorage(t *testing.T) {
 			name: "exceeds max storage",
 			msg: &types.MsgPurchaseBeaconStateStorage{
 				Owner:    testAddrs[0].String(),
-				Number:   test_helpers.TestMaxStorage,
+				Number:   simapp.TestMaxStorage,
 				BeaconId: 1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", test_helpers.TestDefaultStorage+test_helpers.TestMaxStorage, test_helpers.TestMaxStorage)),
+			expectedError: sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", simapp.TestDefaultStorage+simapp.TestMaxStorage, simapp.TestMaxStorage)),
 		},
 		{
 			name: "successful",

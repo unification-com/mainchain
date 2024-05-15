@@ -6,11 +6,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	simparams "github.com/unification-com/mainchain/app/params"
 	"github.com/unification-com/mainchain/x/beacon/keeper"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
@@ -24,6 +24,13 @@ const (
 	DefaultMsgRecordBeaconTimestamp      = 30
 	DefaultMsgPurchaseBeaconStateStorage = 5
 )
+
+//func WeightedOperations(
+//	appParams simtypes.AppParams, cdc codec.JSONCodec,
+//	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
+//) simulation.WeightedOperations {
+//	return nil
+//}
 
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
@@ -98,14 +105,14 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 
 		msg := types.NewMsgRegisterBeacon(moniker, name, account.GetAddress())
 
-		txGen := simparams.MakeTestEncodingConfig().TxConfig
+		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -164,14 +171,14 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 
 		msg := types.NewMsgRecordBeaconTimestamp(beacon.BeaconId, hash, uint64(ctx.BlockTime().Unix()), account.GetAddress())
 
-		txGen := simparams.MakeTestEncodingConfig().TxConfig
+		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -242,14 +249,14 @@ func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper,
 
 		msg := types.NewMsgPurchaseBeaconStateStorage(beacon.BeaconId, uint64(randNumToPurchase), account.GetAddress())
 
-		txGen := simparams.MakeTestEncodingConfig().TxConfig
+		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},

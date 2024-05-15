@@ -4,7 +4,7 @@ import (
 	gocontext "context"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/beacon/types"
 	"time"
 )
@@ -133,8 +133,8 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
 					expectedB := types.Beacon{}
 					expectedB.Owner = addrs[0].String()
 					expectedB.LastTimestampId = 0
-					expectedB.Moniker = test_helpers.GenerateRandomString(12)
-					expectedB.Name = test_helpers.GenerateRandomString(24)
+					expectedB.Moniker = simapp.GenerateRandomString(12)
+					expectedB.Name = simapp.GenerateRandomString(24)
 					expectedB.RegTime = uint64(ctx.BlockTime().Unix())
 
 					bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
@@ -278,7 +278,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 				suite.Require().Equal(uint64(1), bID)
 
 				expectedTs := types.BeaconTimestamp{
-					Hash:        test_helpers.GenerateRandomString(32),
+					Hash:        simapp.GenerateRandomString(32),
 					SubmitTime:  uint64(time.Now().Unix()),
 					TimestampId: 1,
 				}

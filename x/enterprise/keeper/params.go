@@ -9,27 +9,19 @@ import (
 //__PARAMS______________________________________________________________
 
 func (k Keeper) GetParamDenom(ctx sdk.Context) string {
-	var paramDenom string
-	k.paramSpace.Get(ctx, types.KeyDenom, &paramDenom)
-	return paramDenom
+	return k.GetParams(ctx).Denom
 }
 
 func (k Keeper) GetParamMinAccepts(ctx sdk.Context) uint64 {
-	var paramMinAccepts uint64
-	k.paramSpace.Get(ctx, types.KeyMinAccepts, &paramMinAccepts)
-	return paramMinAccepts
+	return k.GetParams(ctx).MinAccepts
 }
 
 func (k Keeper) GetParamDecisionLimit(ctx sdk.Context) uint64 {
-	var paramDecisionLimit uint64
-	k.paramSpace.Get(ctx, types.KeyDecisionLimit, &paramDecisionLimit)
-	return paramDecisionLimit
+	return k.GetParams(ctx).DecisionTimeLimit
 }
 
 func (k Keeper) GetParamEntSigners(ctx sdk.Context) string {
-	var paramEntSigners string
-	k.paramSpace.Get(ctx, types.KeyEntSigners, &paramEntSigners)
-	return paramEntSigners
+	return k.GetParams(ctx).EntSigners
 }
 
 func (k Keeper) GetParamEntSignersAsAddressArray(ctx sdk.Context) []sdk.AccAddress {
@@ -47,15 +39,26 @@ func (k Keeper) GetParamEntSignersAsAddressArray(ctx sdk.Context) []sdk.AccAddre
 
 // GetParams returns the total set of Enterprise FUND parameters.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
-	return types.NewParams(
-		k.GetParamDenom(ctx),
-		k.GetParamMinAccepts(ctx),
-		k.GetParamDecisionLimit(ctx),
-		k.GetParamEntSigners(ctx),
-	)
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return params
+	}
+
+	k.cdc.MustUnmarshal(bz, &params)
+
+	return params
 }
 
 // SetParams sets the total set of Enterprise FUND parameters.
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramSpace.SetParamSet(ctx, &params)
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&params)
+	store.Set(types.ParamsKey, bz)
+
+	return nil
 }

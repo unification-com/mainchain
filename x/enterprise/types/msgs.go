@@ -13,9 +13,15 @@ const (
 
 // __Enterprise_UND_Purchase_Order_Msg__________________________________
 
-var _ sdk.Msg = &MsgUndPurchaseOrder{}
+var (
+	_ sdk.Msg = &MsgUndPurchaseOrder{}
+	_ sdk.Msg = &MsgProcessUndPurchaseOrder{}
+	_ sdk.Msg = &MsgWhitelistAddress{}
+	_ sdk.Msg = &MsgUpdateParams{}
+)
 
 // NewMsgUndPurchaseOrder is a constructor function for MsgUndPurchaseOrder
+//
 //nolint:interfacer
 func NewMsgUndPurchaseOrder(purchaser sdk.AccAddress, amount sdk.Coin) *MsgUndPurchaseOrder {
 	return &MsgUndPurchaseOrder{Purchaser: purchaser.String(), Amount: amount}
@@ -63,7 +69,6 @@ func (msg MsgUndPurchaseOrder) GetSigners() []sdk.AccAddress {
 // __Enterprise_UND_Process_Purchase_Order_Msg__________________________
 
 // MsgProcessUndPurchaseOrder defines a ProcessUndPurchaseOrder message - used to accept/reject a PO
-var _ sdk.Msg = &MsgProcessUndPurchaseOrder{}
 
 // NewMsgProcessUndPurchaseOrder is a constructor function for MsgProcessUndPurchaseOrder
 func NewMsgProcessUndPurchaseOrder(purchaseOrderID uint64, decision PurchaseOrderStatus, signer sdk.AccAddress) *MsgProcessUndPurchaseOrder {
@@ -115,7 +120,6 @@ func (msg MsgProcessUndPurchaseOrder) GetSigners() []sdk.AccAddress {
 
 // MsgWhitelistAddress defines a WhitelistAddress message - used to add/remove addresses from PO whitelist
 // and determine which addresses are allowed to raise purchase orders
-var _ sdk.Msg = &MsgWhitelistAddress{}
 
 // NewMsgWhitelistAddress is a constructor function for MsgWhitelistAddress
 func NewMsgWhitelistAddress(address sdk.AccAddress, action WhitelistAction, signer sdk.AccAddress) *MsgWhitelistAddress {
@@ -160,4 +164,31 @@ func (msg MsgWhitelistAddress) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{from}
+}
+
+// --- Modify Params Msg Type ---
+
+// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
+// the expected signer needs to sign.
+func (m MsgUpdateParams) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// GetSigners returns the expected signers for a MsgUpdateParams message.
+func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Authority)
+	return []sdk.AccAddress{addr}
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgUpdateParams) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
+		return sdkerrors.Wrap(err, "invalid authority address")
+	}
+
+	if err := m.Params.Validate(); err != nil {
+		return err
+	}
+
+	return nil
 }

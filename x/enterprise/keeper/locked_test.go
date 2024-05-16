@@ -94,8 +94,8 @@ func TestSetGetLockedUndForAccount(t *testing.T) {
 	}
 }
 
-func (suite *KeeperTestSuite) TestIsLocked() {
-	app, ctx, addrs := suite.app, suite.ctx, suite.addrs
+func (s *KeeperTestSuite) TestIsLocked() {
+	app, ctx, addrs := s.app, s.ctx, s.addrs
 
 	denom := simapp.TestDenomination
 
@@ -134,15 +134,15 @@ func (suite *KeeperTestSuite) TestIsLocked() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			err := app.EnterpriseKeeper.SetLockedUndForAccount(ctx, l)
-			suite.Require().NoError(err)
+			s.Require().NoError(err)
 
 			isLocked := app.EnterpriseKeeper.IsLocked(ctx, addr)
 
-			suite.Require().Equal(testCase.expIsLocked, isLocked)
+			s.Require().Equal(testCase.expIsLocked, isLocked)
 		})
 	}
 }

@@ -8,23 +8,23 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
 	storeKey   storetypes.StoreKey // Unexposed key to access store from sdk.Context
-	paramSpace paramtypes.Subspace
 	bankKeeper types.BankKeeper
 	accKeeper  types.AccountKeeper
 	cdc        codec.BinaryCodec // The wire codec for binary encoding/decoding.
+	// the address capable of executing a MsgUpdateParams message. Typically, this
+	// should be the x/gov module account.
+	authority string
 }
 
 // NewKeeper creates new instances of the enterprise Keeper
 func NewKeeper(storeKey storetypes.StoreKey, bankKeeper types.BankKeeper,
-	accKeeper types.AccountKeeper, paramSpace paramtypes.Subspace,
-	cdc codec.BinaryCodec) Keeper {
+	accKeeper types.AccountKeeper, cdc codec.BinaryCodec, authority string) Keeper {
 
 	// ensure module account is set in SupplyKeeper
 	if addr := accKeeper.GetModuleAddress(types.ModuleName); addr == nil {
@@ -33,11 +33,16 @@ func NewKeeper(storeKey storetypes.StoreKey, bankKeeper types.BankKeeper,
 
 	return Keeper{
 		storeKey:   storeKey,
-		paramSpace: paramSpace.WithKeyTable(types.ParamKeyTable()),
 		bankKeeper: bankKeeper,
 		accKeeper:  accKeeper,
 		cdc:        cdc,
+		authority:  authority,
 	}
+}
+
+// GetAuthority returns the x/mint module's authority.
+func (k Keeper) GetAuthority() string {
+	return k.authority
 }
 
 // Logger returns a module-specific logger.

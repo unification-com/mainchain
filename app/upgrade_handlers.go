@@ -19,6 +19,7 @@ import (
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
+	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
@@ -54,8 +55,9 @@ func (app *App) registerUpgradeHandlers() {
 			keyTable = beacontypes.ParamKeyTable() //nolint:staticcheck
 		case wrkchaintypes.ModuleName:
 			keyTable = wrkchaintypes.ParamKeyTable() //nolint:staticcheck
+		case enttypes.ModuleName:
+			keyTable = enttypes.ParamKeyTable() //nolint:staticcheck
 		}
-		// ToDo - add enterprise
 
 		if !subspace.HasKeyTable() {
 			subspace.WithKeyTable(keyTable)

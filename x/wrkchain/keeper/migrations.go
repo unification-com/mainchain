@@ -25,7 +25,7 @@ func NewMigrator(k Keeper, ss exported.Subspace) Migrator {
 //	return v045.MigrateStore(ctx, m.keeper.storeKey, m.keeper.paramSpace, m.keeper.cdc)
 //}
 
-// Migrate2to3 migrates the x/beacon module state from the consensus version 2 to
+// Migrate2to3 migrates the x/wrkchain module state from the consensus version 2 to
 // version 3. Specifically, it takes the parameters that are currently stored
 // and managed by the x/params modules and stores them directly into the x/mint
 // module state.

@@ -644,7 +644,7 @@ type QueryClient interface {
 	WrkChainBlock(ctx context.Context, in *QueryWrkChainBlockRequest, opts ...grpc.CallOption) (*QueryWrkChainBlockResponse, error)
 	// WrkChainsFiltered queries all wrkchain metadata for given search parameters
 	WrkChainsFiltered(ctx context.Context, in *QueryWrkChainsFilteredRequest, opts ...grpc.CallOption) (*QueryWrkChainsFilteredResponse, error)
-	// WrkChainStorage queries beacon storage for for given wrkchain ID
+	// WrkChainStorage queries wrkchain storage for for given wrkchain ID
 	WrkChainStorage(ctx context.Context, in *QueryWrkChainStorageRequest, opts ...grpc.CallOption) (*QueryWrkChainStorageResponse, error)
 }
 
@@ -711,7 +711,7 @@ type QueryServer interface {
 	WrkChainBlock(context.Context, *QueryWrkChainBlockRequest) (*QueryWrkChainBlockResponse, error)
 	// WrkChainsFiltered queries all wrkchain metadata for given search parameters
 	WrkChainsFiltered(context.Context, *QueryWrkChainsFilteredRequest) (*QueryWrkChainsFilteredResponse, error)
-	// WrkChainStorage queries beacon storage for for given wrkchain ID
+	// WrkChainStorage queries wrkchain storage for for given wrkchain ID
 	WrkChainStorage(context.Context, *QueryWrkChainStorageRequest) (*QueryWrkChainStorageResponse, error)
 }
 

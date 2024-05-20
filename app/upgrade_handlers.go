@@ -12,6 +12,7 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -104,6 +105,7 @@ func (app *App) registerUpgradeHandlers() {
 			Added: []string{
 				consensustypes.ModuleName,
 				crisistypes.ModuleName,
+				grouptypes.ModuleName,
 			},
 		}
 

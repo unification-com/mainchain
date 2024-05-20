@@ -18,8 +18,8 @@ COSMOVISOR_BIN="${TEST_PATH}/cosmovisor"
 UND_GEN_BIN="${COSMOVISOR_HOME}/genesis/bin/und"
 UPGRADE_HEIGHT=10
 CHAIN_ID="test-$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 10 | head -n 1)"
-UPGRADE_PLAN_NAME="3-keyleth"
-UND_GENESIS_VERSION="v1.7.0"
+UPGRADE_PLAN_NAME="5-pike"
+UND_GENESIS_VERSION="v1.9.0"
 
 # cosmovisor will run as a background process.
 # Catch and kill when ctrl-c is hit
@@ -61,6 +61,29 @@ sed -i -e 's/"stake"/"nund"/gi' "${UND_HOME}/config/genesis.json"
 "${UND_GEN_BIN}" gentx validator 1000000nund --chain-id "${CHAIN_ID}" --home "${UND_HOME}"
 "${UND_GEN_BIN}" collect-gentxs --home "${UND_HOME}"
 
+cat >"${TEST_PATH}/upgrade_proposal.json" <<EOL
+{
+ "messages": [
+  {
+   "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+   "authority": "und10d07y265gmmuvt4z0w9aw880jnsr700ja85vs4",
+   "plan": {
+    "name": "${UPGRADE_PLAN_NAME}",
+    "time": "0001-01-01T00:00:00Z",
+    "height": "${UPGRADE_HEIGHT}",
+    "info": "",
+    "upgraded_client_state": null
+   }
+  }
+ ],
+ "metadata": "ipfs://CID",
+ "deposit": "10000000nund",
+ "title": "test upgrade",
+ "summary": "test upgrade"
+}
+EOL
+
+
 export DAEMON_NAME=und
 export DAEMON_HOME="${UND_HOME}"
 export DAEMON_RESTART_AFTER_UPGRADE=true
@@ -72,7 +95,7 @@ echo "Start node & submit upgrade proposal "${UPGRADE_PLAN_NAME}" for height ${U
 "${COSMOVISOR_BIN}" run start --home "${UND_HOME}" &
 
 sleep 6s
-"${UND_GEN_BIN}" tx gov submit-proposal software-upgrade "${UPGRADE_PLAN_NAME}" --title upgrade --description upgrade --upgrade-height ${UPGRADE_HEIGHT} --deposit 10000000nund --from validator --yes --home "${UND_HOME}" --gas auto --gas-adjustment 1.5 --gas-prices=25.0nund
+"${UND_GEN_BIN}" tx gov submit-proposal "${TEST_PATH}/upgrade_proposal.json" --from validator --yes --home "${UND_HOME}" --gas auto --gas-adjustment 1.5 --gas-prices=25.0nund
 "${UND_GEN_BIN}" tx gov vote 1 yes --from validator --yes --home "${UND_HOME}" --gas auto --gas-adjustment 1.5 --gas-prices=25.0nund
 
 wait

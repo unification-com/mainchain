@@ -75,7 +75,7 @@ test-no-cache:
 clean:
 	rm -rf build/
 
-update-swagger-docs: statik proto-swagger-gen
+update-swagger-docs: statik
 	$(BINDIR)/statik -src=client/docs/swagger-ui -dest=client/docs -f -m
 	@if [ -n "$(git status --porcelain)" ]; then \
         echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
@@ -155,8 +155,9 @@ proto-gen:
 
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
+	@mkdir tmp-swagger-gen && chmod 777 tmp-swagger-gen
 	@$(protoImage) sh ./scripts/protoc-swagger-gen.sh
-	$(MAKE) update-swagger-docs
+	#$(MAKE) update-swagger-docs
 
 proto-format:
 	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;

@@ -19,7 +19,17 @@ cd ..
 # combine swagger files
 # uses nodejs package `swagger-combine`.
 # all the individual swagger files need to be configured in `config.json` for merging
-swagger-combine ./client/docs/config.json -o ./client/docs/swagger-ui/swagger.yaml -f yaml --continueOnConflictingPaths true --includeDefinitions true
+swagger-combine ./client/docs/config.json -o ./tmp-swagger-gen/swagger.yaml -f yaml --continueOnConflictingPaths true --includeDefinitions true
+
+
+echo ""
+echo "Now run:"
+echo ""
+echo "   sudo chown -R $(id -u):$(id -g) tmp-swagger-gen"
+echo "   cp tmp-swagger-gen/swagger.yaml client/docs/swagger-ui/swagger.yaml"
+echo "   make update-swagger-docs"
+echo "   rm -rf tmp-swagger-gen"
+echo ""
 
 # clean swagger files
-rm -rf ./tmp-swagger-gen
+#rm -rf ./tmp-swagger-gen

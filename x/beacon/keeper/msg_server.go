@@ -61,13 +61,6 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypeRegisterBeacon,
 			sdk.NewAttribute(types.AttributeKeyBeaconId, strconv.FormatUint(beaconID, 10)),
 			sdk.NewAttribute(types.AttributeKeyBeaconMoniker, msg.Moniker),
@@ -115,13 +108,6 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 	}
 
 	defer telemetry.IncrCounter(1, types.ModuleName, types.RecordAction)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -184,13 +170,6 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 	numCanPurchase := k.GetMaxPurchasableSlots(ctx, msg.BeaconId)
 
 	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

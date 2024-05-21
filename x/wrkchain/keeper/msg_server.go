@@ -55,13 +55,6 @@ func (k msgServer) RegisterWrkChain(goCtx context.Context, msg *types.MsgRegiste
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypeRegisterWrkChain,
 			sdk.NewAttribute(types.AttributeKeyWrkChainId, strconv.FormatUint(wrkchainId, 10)),
 			sdk.NewAttribute(types.AttributeKeyWrkChainMoniker, msg.Moniker),
@@ -128,13 +121,6 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypeRecordWrkChainBlock,
 			sdk.NewAttribute(types.AttributeKeyWrkChainId, strconv.FormatUint(msg.WrkchainId, 10)),
 			sdk.NewAttribute(types.AttributeKeyBlockHeight, strconv.FormatUint(msg.Height, 10)),
@@ -197,13 +183,6 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 	numCanPurchase := k.GetMaxPurchasableSlots(ctx, msg.WrkchainId)
 
 	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

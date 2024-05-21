@@ -7,21 +7,7 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
-
-// Parameter store keys
-var (
-	KeyEntSigners    = []byte("EntSigners")
-	KeyDenom         = []byte("Denom")
-	KeyMinAccepts    = []byte("MinAccepts")
-	KeyDecisionLimit = []byte("DecisionLimit")
-)
-
-// ParamTable for enterprise FUND module.
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
-}
 
 func NewParams(denom string, minAccepts uint64, decisionLimit uint64, entSigners string) Params {
 	return Params{
@@ -67,16 +53,6 @@ func (p Params) Validate() error {
 	}
 
 	return nil
-}
-
-// Implements params.ParamSet
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyEntSigners, &p.EntSigners, validateEntSigners),
-		paramtypes.NewParamSetPair(KeyDenom, &p.Denom, validateDenom),
-		paramtypes.NewParamSetPair(KeyMinAccepts, &p.MinAccepts, validateMinAccepts),
-		paramtypes.NewParamSetPair(KeyDecisionLimit, &p.DecisionTimeLimit, validateDecisionLimit),
-	}
 }
 
 func validateDenom(i interface{}) error {

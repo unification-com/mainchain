@@ -9,55 +9,52 @@ import (
 
 // GetParams returns the total set of Beacon parameters.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
-	return types.NewParams(
-		k.GetParamRegistrationFee(ctx),
-		k.GetParamRecordFee(ctx),
-		k.GetParamPurchaseStorageFee(ctx),
-		k.GetParamDenom(ctx),
-		k.GetParamDefaultStorageLimit(ctx),
-		k.GetParamMaxStorageLimit(ctx),
-	)
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return params
+	}
+
+	k.cdc.MustUnmarshal(bz, &params)
+
+	return params
 }
 
 // SetParams sets the total set of Beacon parameters.
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramSpace.SetParamSet(ctx, &params)
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&params)
+	store.Set(types.ParamsKey, bz)
+
+	return nil
 }
 
 func (k Keeper) GetParamDenom(ctx sdk.Context) string {
-	var denomParams string
-	k.paramSpace.Get(ctx, types.KeyDenom, &denomParams)
-	return denomParams
+	return k.GetParams(ctx).Denom
 }
 
 func (k Keeper) GetParamRegistrationFee(ctx sdk.Context) uint64 {
-	var feeRegParams uint64
-	k.paramSpace.Get(ctx, types.KeyFeeRegister, &feeRegParams)
-	return feeRegParams
+	return k.GetParams(ctx).FeeRegister
 }
 
 func (k Keeper) GetParamRecordFee(ctx sdk.Context) uint64 {
-	var feeRecordParams uint64
-	k.paramSpace.Get(ctx, types.KeyFeeRecord, &feeRecordParams)
-	return feeRecordParams
+	return k.GetParams(ctx).FeeRecord
 }
 
 func (k Keeper) GetParamPurchaseStorageFee(ctx sdk.Context) uint64 {
-	var feePurchaseStorageParams uint64
-	k.paramSpace.Get(ctx, types.KeyFeePurchaseStorage, &feePurchaseStorageParams)
-	return feePurchaseStorageParams
+	return k.GetParams(ctx).FeePurchaseStorage
 }
 
 func (k Keeper) GetParamDefaultStorageLimit(ctx sdk.Context) uint64 {
-	var defaultStorageLimitParams uint64
-	k.paramSpace.Get(ctx, types.KeyDefaultStorageLimit, &defaultStorageLimitParams)
-	return defaultStorageLimitParams
+	return k.GetParams(ctx).DefaultStorageLimit
 }
 
 func (k Keeper) GetParamMaxStorageLimit(ctx sdk.Context) uint64 {
-	var maxStorageLimitParams uint64
-	k.paramSpace.Get(ctx, types.KeyMaxStorageLimit, &maxStorageLimitParams)
-	return maxStorageLimitParams
+	return k.GetParams(ctx).MaxStorageLimit
 }
 
 func (k Keeper) GetZeroFeeAsCoin(ctx sdk.Context) sdk.Coin {

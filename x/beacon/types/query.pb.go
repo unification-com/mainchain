@@ -9,8 +9,8 @@ import (
 	_ "github.com/cosmos/cosmos-proto"
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -643,6 +643,7 @@ type QueryClient interface {
 	BeaconTimestamp(ctx context.Context, in *QueryBeaconTimestampRequest, opts ...grpc.CallOption) (*QueryBeaconTimestampResponse, error)
 	// BeaconsFiltered queries all beacon metadata for given search parameters
 	BeaconsFiltered(ctx context.Context, in *QueryBeaconsFilteredRequest, opts ...grpc.CallOption) (*QueryBeaconsFilteredResponse, error)
+	// BeaconStorage queries beacon storage for for given beacon ID
 	BeaconStorage(ctx context.Context, in *QueryBeaconStorageRequest, opts ...grpc.CallOption) (*QueryBeaconStorageResponse, error)
 }
 
@@ -709,6 +710,7 @@ type QueryServer interface {
 	BeaconTimestamp(context.Context, *QueryBeaconTimestampRequest) (*QueryBeaconTimestampResponse, error)
 	// BeaconsFiltered queries all beacon metadata for given search parameters
 	BeaconsFiltered(context.Context, *QueryBeaconsFilteredRequest) (*QueryBeaconsFilteredResponse, error)
+	// BeaconStorage queries beacon storage for for given beacon ID
 	BeaconStorage(context.Context, *QueryBeaconStorageRequest) (*QueryBeaconStorageResponse, error)
 }
 

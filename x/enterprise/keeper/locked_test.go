@@ -3,11 +3,11 @@ package keeper_test
 import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	simapp "github.com/unification-com/mainchain/app"
 	"math/rand"
 	"testing"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -15,11 +15,11 @@ import (
 )
 
 func TestSetGetTotalLockedUnd(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
-	denom := test_helpers.TestDenomination
+	denom := simapp.TestDenomination
 	amount := int64(1000)
 	locked := sdk.NewInt64Coin(denom, amount)
 
@@ -34,12 +34,12 @@ func TestSetGetTotalLockedUnd(t *testing.T) {
 }
 
 func TestGetTotalUnlocked(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	test_helpers.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
 
-	denom := test_helpers.TestDenomination
+	denom := simapp.TestDenomination
 	amount := int64(1000)
 	locked := sdk.NewInt64Coin(denom, amount)
 
@@ -55,26 +55,26 @@ func TestGetTotalUnlocked(t *testing.T) {
 }
 
 func TestGetTotalUndSupply(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	test_helpers.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
 
-	totalSupply := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
+	totalSupply := app.BankKeeper.GetSupply(ctx, simapp.TestDenomination)
 	totalSupplyFromEnt := app.EnterpriseKeeper.GetTotalUndSupply(ctx)
 	require.Equal(t, totalSupply, totalSupplyFromEnt)
 }
 
 func TestSetGetLockedUndForAccount(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
-	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
+	testAddresses := simapp.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddresses {
 		amount := int64(rand.Intn(10000) + 1)
-		denom := test_helpers.TestDenomination
+		denom := simapp.TestDenomination
 
 		locked := types.LockedUnd{
 			Owner:  addr.String(),
@@ -94,10 +94,10 @@ func TestSetGetLockedUndForAccount(t *testing.T) {
 	}
 }
 
-func (suite *KeeperTestSuite) TestIsLocked() {
-	app, ctx, addrs := suite.app, suite.ctx, suite.addrs
+func (s *KeeperTestSuite) TestIsLocked() {
+	app, ctx, addrs := s.app, s.ctx, s.addrs
 
-	denom := test_helpers.TestDenomination
+	denom := simapp.TestDenomination
 
 	var (
 		l    types.LockedUnd
@@ -134,33 +134,33 @@ func (suite *KeeperTestSuite) TestIsLocked() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			err := app.EnterpriseKeeper.SetLockedUndForAccount(ctx, l)
-			suite.Require().NoError(err)
+			s.Require().NoError(err)
 
 			isLocked := app.EnterpriseKeeper.IsLocked(ctx, addr)
 
-			suite.Require().Equal(testCase.expIsLocked, isLocked)
+			s.Require().Equal(testCase.expIsLocked, isLocked)
 		})
 	}
 }
 
 func TestMintCoinsAndLock(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
 	totalAmount := int64(0)
 
-	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
+	testAddresses := simapp.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddresses {
 		amount := int64(rand.Intn(10000) + 1)
 		totalAmount = totalAmount + amount
 
-		toMint := sdk.NewInt64Coin(test_helpers.TestDenomination, amount)
+		toMint := sdk.NewInt64Coin(simapp.TestDenomination, amount)
 
 		err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, toMint)
 		require.NoError(t, err)
@@ -172,7 +172,7 @@ func TestMintCoinsAndLock(t *testing.T) {
 		require.True(t, lockedDb.Amount.IsEqual(toMint))
 	}
 
-	totalLocked := sdk.NewInt64Coin(test_helpers.TestDenomination, totalAmount)
+	totalLocked := sdk.NewInt64Coin(simapp.TestDenomination, totalAmount)
 	totalLockedCoins := sdk.NewCoins(totalLocked)
 
 	totalLockedDb := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
@@ -191,21 +191,21 @@ func TestMintCoinsAndLock(t *testing.T) {
 }
 
 func TestUnlockCoinsForFees(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
 	totalAmount := int64(0)
 
-	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
+	testAddresses := simapp.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddresses {
-		amountToMint := int64(test_helpers.RandInBetween(1000, 100000))
-		amountToUnlock := int64(test_helpers.RandInBetween(1, 999))
+		amountToMint := int64(simapp.RandInBetween(1000, 100000))
+		amountToUnlock := int64(simapp.RandInBetween(1, 999))
 		totalAmount = totalAmount + amountToMint
 
-		toMint := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToMint)
-		toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToUnlock)
+		toMint := sdk.NewInt64Coin(simapp.TestDenomination, amountToMint)
+		toUnlock := sdk.NewInt64Coin(simapp.TestDenomination, amountToUnlock)
 		toUnlockCoins := sdk.NewCoins(toUnlock)
 
 		_ = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, toMint)
@@ -221,7 +221,7 @@ func TestUnlockCoinsForFees(t *testing.T) {
 		require.True(t, lockedDb.Amount.IsEqual(expectedLocked))
 	}
 
-	totalLocked := sdk.NewInt64Coin(test_helpers.TestDenomination, totalAmount)
+	totalLocked := sdk.NewInt64Coin(simapp.TestDenomination, totalAmount)
 	totalLockedCoins := sdk.NewCoins(totalLocked)
 
 	totalLockedDb := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
@@ -240,23 +240,23 @@ func TestUnlockCoinsForFees(t *testing.T) {
 }
 
 func TestGetTotalSupplyWithLockedNundRemoved(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
 	// should be whatever the test app was initialised with - staked nund, account balances etc.
-	initialBankSupply := app.BankKeeper.GetSupply(ctx, "nund")
+	initialBankSupply := app.BankKeeper.GetSupply(ctx, simapp.TestDenomination)
 	totalSupply := sdk.NewCoins(initialBankSupply)
-	totalMinted := sdk.NewInt64Coin(test_helpers.TestDenomination, 0)
+	totalMinted := sdk.NewInt64Coin(simapp.TestDenomination, 0)
 
-	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
+	testAddresses := simapp.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddresses {
-		amountToMint := int64(test_helpers.RandInBetween(1000, 100000))
-		amountToUnlock := int64(test_helpers.RandInBetween(1, 999))
+		amountToMint := int64(simapp.RandInBetween(1000, 100000))
+		amountToUnlock := int64(simapp.RandInBetween(1, 999))
 
-		toMint := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToMint)
-		toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToUnlock)
+		toMint := sdk.NewInt64Coin(simapp.TestDenomination, amountToMint)
+		toUnlock := sdk.NewInt64Coin(simapp.TestDenomination, amountToUnlock)
 		toUnlockCoins := sdk.NewCoins(toUnlock)
 
 		_ = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, toMint)
@@ -273,26 +273,26 @@ func TestGetTotalSupplyWithLockedNundRemoved(t *testing.T) {
 		totalSupplyDb, _, _ := app.EnterpriseKeeper.GetTotalSupplyWithLockedNundRemoved(ctx, pageReq)
 		require.True(t, totalSupplyDb.IsEqual(totalSupply))
 
-		totalMintedDb := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
+		totalMintedDb := app.BankKeeper.GetSupply(ctx, simapp.TestDenomination)
 		require.True(t, totalMintedDb.IsEqual(totalMinted.Add(initialBankSupply)))
 	}
 }
 
 func TestUnlockCoinsForFeesAndUsedCounter(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
 	totalUsed := int64(0)
 
-	testAddresses := test_helpers.GenerateRandomTestAccounts(100)
+	testAddresses := simapp.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddresses {
-		amountToMint := int64(test_helpers.RandInBetween(1000, 100000))
-		amountToUnlock := int64(test_helpers.RandInBetween(1, 999))
+		amountToMint := int64(simapp.RandInBetween(1000, 100000))
+		amountToUnlock := int64(simapp.RandInBetween(1, 999))
 
-		toMint := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToMint)
-		toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToUnlock)
+		toMint := sdk.NewInt64Coin(simapp.TestDenomination, amountToMint)
+		toUnlock := sdk.NewInt64Coin(simapp.TestDenomination, amountToUnlock)
 		toUnlockCoins := sdk.NewCoins(toUnlock)
 		totalUsed = totalUsed + amountToUnlock
 
@@ -306,30 +306,30 @@ func TestUnlockCoinsForFeesAndUsedCounter(t *testing.T) {
 		require.True(t, usedDb.Owner == addr.String())
 	}
 
-	expectedTotalUsedCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, totalUsed)
+	expectedTotalUsedCoin := sdk.NewInt64Coin(simapp.TestDenomination, totalUsed)
 
 	totalUsedDb := app.EnterpriseKeeper.GetTotalSpentEFUND(ctx)
 	require.True(t, totalUsedDb.IsEqual(expectedTotalUsedCoin))
 }
 
 func TestUnlockCoinsForFeesAndUsedCounterWithHalfFunds(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
 
 	totalUsed := int64(0)
 
-	testAddresses := test_helpers.AddTestAddrs(app, ctx, 100, sdk.NewInt(10000))
+	testAddresses := simapp.AddTestAddrs(app, ctx, 100, sdk.NewInt(10000))
 
 	for _, addr := range testAddresses {
-		amountToMint := int64(test_helpers.RandInBetween(1, 999))
+		amountToMint := int64(simapp.RandInBetween(1, 999))
 		// fee is more than minted, to test using account's normal fund supply in addition to minted efund
 		feeToPay := amountToMint * 2
 		// only minted will count as "used"
 		totalUsed = totalUsed + amountToMint
 
-		toMint := sdk.NewInt64Coin(test_helpers.TestDenomination, amountToMint)
-		fee := sdk.NewInt64Coin(test_helpers.TestDenomination, feeToPay)
+		toMint := sdk.NewInt64Coin(simapp.TestDenomination, amountToMint)
+		fee := sdk.NewInt64Coin(simapp.TestDenomination, feeToPay)
 		feeCoins := sdk.NewCoins(fee)
 
 		_ = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addr, toMint)
@@ -343,7 +343,7 @@ func TestUnlockCoinsForFeesAndUsedCounterWithHalfFunds(t *testing.T) {
 		require.True(t, usedDb.Owner == addr.String())
 	}
 
-	expectedTotalUsedCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, totalUsed)
+	expectedTotalUsedCoin := sdk.NewInt64Coin(simapp.TestDenomination, totalUsed)
 
 	totalUsedDb := app.EnterpriseKeeper.GetTotalSpentEFUND(ctx)
 	require.True(t, totalUsedDb.IsEqual(expectedTotalUsedCoin))

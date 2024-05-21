@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 	"strings"
 	"testing"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
@@ -31,10 +31,10 @@ func TestInvalidMsg(t *testing.T) {
 }
 
 func TestValidMsgRegisterWrkChain(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(1)
 
 	h := wrkchain.NewHandler(app.WrkchainKeeper)
 
@@ -53,14 +53,14 @@ func TestValidMsgRegisterWrkChain(t *testing.T) {
 }
 
 func TestInvalidMsgRegisterWrkChain(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(2)
 
 	h := wrkchain.NewHandler(app.WrkchainKeeper)
 
-	existsMoniker := test_helpers.GenerateRandomString(24)
+	existsMoniker := simapp.GenerateRandomString(24)
 
 	_, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, existsMoniker, "this exists", "boiob", "tendermint", testAddrs[1])
 	require.Nil(t, err)
@@ -91,7 +91,7 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 			name: "name too big",
 			msg: &types.MsgRegisterWrkChain{
 				Moniker: "moniker",
-				Name:    test_helpers.GenerateRandomString(129),
+				Name:    simapp.GenerateRandomString(129),
 				Owner:   testAddrs[0].String(),
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"),
@@ -99,7 +99,7 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 		{
 			name: "moniker too big",
 			msg: &types.MsgRegisterWrkChain{
-				Moniker: test_helpers.GenerateRandomString(65),
+				Moniker: simapp.GenerateRandomString(65),
 				Name:    "name",
 				Owner:   testAddrs[0].String(),
 			},
@@ -117,8 +117,8 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 		{
 			name: "successful",
 			msg: &types.MsgRegisterWrkChain{
-				Moniker: test_helpers.GenerateRandomString(24),
-				Name:    test_helpers.GenerateRandomString(24),
+				Moniker: simapp.GenerateRandomString(24),
+				Name:    simapp.GenerateRandomString(24),
 				Owner:   testAddrs[0].String(),
 			},
 			expectedError: nil,
@@ -138,17 +138,17 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 }
 
 func TestValidMsgRecordWrkChainBlock(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(1)
 
 	h := wrkchain.NewHandler(app.WrkchainKeeper)
 
 	_, err := app.WrkchainKeeper.RegisterNewWrkChain(
 		ctx,
-		test_helpers.GenerateRandomString(24),
-		test_helpers.GenerateRandomString(24),
+		simapp.GenerateRandomString(24),
+		simapp.GenerateRandomString(24),
 		"boiob",
 		"tendermint",
 		testAddrs[0],
@@ -157,7 +157,7 @@ func TestValidMsgRecordWrkChainBlock(t *testing.T) {
 
 	msg := &types.MsgRecordWrkChainBlock{
 		WrkchainId: 1,
-		BlockHash:  test_helpers.GenerateRandomString(64),
+		BlockHash:  simapp.GenerateRandomString(64),
 		Owner:      testAddrs[0].String(),
 		Height:     1,
 	}
@@ -170,17 +170,17 @@ func TestValidMsgRecordWrkChainBlock(t *testing.T) {
 }
 
 func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(2)
 
 	h := wrkchain.NewHandler(app.WrkchainKeeper)
 
 	_, err := app.WrkchainKeeper.RegisterNewWrkChain(
 		ctx,
-		test_helpers.GenerateRandomString(24),
-		test_helpers.GenerateRandomString(24),
+		simapp.GenerateRandomString(24),
+		simapp.GenerateRandomString(24),
 		"boiob",
 		"tendermint",
 		testAddrs[0],
@@ -208,7 +208,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "zero height",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:     testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(66),
+				BlockHash: simapp.GenerateRandomString(66),
 				Height:    0,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrInvalidData, "height must be > 0"),
@@ -217,7 +217,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "blockhash too large",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:     testAddrs[0].String(),
-				BlockHash: test_helpers.GenerateRandomString(67),
+				BlockHash: simapp.GenerateRandomString(67),
 				Height:    1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit"),
@@ -226,8 +226,8 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "parenthash too large",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[0].String(),
-				BlockHash:  test_helpers.GenerateRandomString(64),
-				ParentHash: test_helpers.GenerateRandomString(67),
+				BlockHash:  simapp.GenerateRandomString(64),
+				ParentHash: simapp.GenerateRandomString(67),
 				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit"),
@@ -236,9 +236,9 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "hash1 too large",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[0].String(),
-				BlockHash:  test_helpers.GenerateRandomString(64),
-				ParentHash: test_helpers.GenerateRandomString(66),
-				Hash1:      test_helpers.GenerateRandomString(67),
+				BlockHash:  simapp.GenerateRandomString(64),
+				ParentHash: simapp.GenerateRandomString(66),
+				Hash1:      simapp.GenerateRandomString(67),
 				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit"),
@@ -247,10 +247,10 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "hash2 too large",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[0].String(),
-				BlockHash:  test_helpers.GenerateRandomString(64),
-				ParentHash: test_helpers.GenerateRandomString(66),
-				Hash1:      test_helpers.GenerateRandomString(66),
-				Hash2:      test_helpers.GenerateRandomString(67),
+				BlockHash:  simapp.GenerateRandomString(64),
+				ParentHash: simapp.GenerateRandomString(66),
+				Hash1:      simapp.GenerateRandomString(66),
+				Hash2:      simapp.GenerateRandomString(67),
 				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit"),
@@ -259,11 +259,11 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "hash3 too large",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[0].String(),
-				BlockHash:  test_helpers.GenerateRandomString(64),
-				ParentHash: test_helpers.GenerateRandomString(66),
-				Hash1:      test_helpers.GenerateRandomString(66),
-				Hash2:      test_helpers.GenerateRandomString(66),
-				Hash3:      test_helpers.GenerateRandomString(67),
+				BlockHash:  simapp.GenerateRandomString(64),
+				ParentHash: simapp.GenerateRandomString(66),
+				Hash1:      simapp.GenerateRandomString(66),
+				Hash2:      simapp.GenerateRandomString(66),
+				Hash3:      simapp.GenerateRandomString(67),
 				Height:     1,
 			},
 			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit"),
@@ -272,7 +272,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "wrkchain not registered",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[0].String(),
-				BlockHash:  test_helpers.GenerateRandomString(24),
+				BlockHash:  simapp.GenerateRandomString(24),
 				WrkchainId: 2,
 				Height:     1,
 			},
@@ -282,7 +282,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "not wrkchain owner",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[1].String(),
-				BlockHash:  test_helpers.GenerateRandomString(24),
+				BlockHash:  simapp.GenerateRandomString(24),
 				WrkchainId: 1,
 				Height:     1,
 			},
@@ -292,7 +292,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "successful",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[0].String(),
-				BlockHash:  test_helpers.GenerateRandomString(24),
+				BlockHash:  simapp.GenerateRandomString(24),
 				WrkchainId: 1,
 				Height:     1,
 			},
@@ -302,7 +302,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 			name: "height too low",
 			msg: &types.MsgRecordWrkChainBlock{
 				Owner:      testAddrs[0].String(),
-				BlockHash:  test_helpers.GenerateRandomString(24),
+				BlockHash:  simapp.GenerateRandomString(24),
 				WrkchainId: 1,
 				Height:     1,
 			},
@@ -323,15 +323,15 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 }
 
 func TestValidMsgPurchaseWrkChainStateStorage(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(1)
 
 	h := wrkchain.NewHandler(app.WrkchainKeeper)
 
 	wc := types.WrkChain{
-		Moniker: test_helpers.GenerateRandomString(24),
+		Moniker: simapp.GenerateRandomString(24),
 		Name:    "new wrkchain",
 		Owner:   testAddrs[0].String(),
 		Genesis: "genesis",
@@ -354,15 +354,15 @@ func TestValidMsgPurchaseWrkChainStateStorage(t *testing.T) {
 }
 
 func TestInvalidMsgPurchaseWrkChainStateStorage(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := test_helpers.GenerateRandomTestAccounts(2)
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	testAddrs := simapp.GenerateRandomTestAccounts(2)
 
 	h := wrkchain.NewHandler(app.WrkchainKeeper)
 
 	wc := types.WrkChain{
-		Moniker: test_helpers.GenerateRandomString(24),
+		Moniker: simapp.GenerateRandomString(24),
 		Name:    "new wrkchain",
 		Owner:   testAddrs[0].String(),
 		Genesis: "genesis",
@@ -418,10 +418,10 @@ func TestInvalidMsgPurchaseWrkChainStateStorage(t *testing.T) {
 			name: "exceeds max storage",
 			msg: &types.MsgPurchaseWrkChainStateStorage{
 				Owner:      testAddrs[0].String(),
-				Number:     test_helpers.TestMaxStorage,
+				Number:     simapp.TestMaxStorage,
 				WrkchainId: 1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", test_helpers.TestDefaultStorage+test_helpers.TestMaxStorage, test_helpers.TestMaxStorage)),
+			expectedError: sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", simapp.TestDefaultStorage+simapp.TestMaxStorage, simapp.TestMaxStorage)),
 		},
 		{
 			name: "successful",

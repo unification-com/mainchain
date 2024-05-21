@@ -10,6 +10,7 @@ import "mainchain/enterprise/v1/enterprise.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
 
+// Query defines the gRPC querier service.
 service Query {
   // Params queries the parameters of x/enterprise module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
@@ -67,7 +68,7 @@ service Query {
   // SupplyOf should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
   // with locked eFUND removed from total for nund
   rpc SupplyOfOverwrite(QuerySupplyOfRequest) returns (QuerySupplyOfResponse) {
-    option (google.api.http).get = "/cosmos/bank/v1beta1/supply/{denom}";
+    option (google.api.http).get = "/cosmos/bank/v1beta1/supply/by_denom";
   }
 
   // Whitelist queries whitelisted addresses authorised to raise new purchase orders

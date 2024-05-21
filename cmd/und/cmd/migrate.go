@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,8 +15,6 @@ import (
 	v046 "github.com/cosmos/cosmos-sdk/x/genutil/migrations/v046"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/cobra"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 const flagGenesisTime = "genesis-time"
@@ -49,7 +49,7 @@ $ %s migrate /path/to/genesis.json --chain-id=FUND-MainNet-3 --genesis-time=2022
 
 			// Run 0.44 -> 0.46 for Cosmos modules
 			newGenState := v046.Migrate(initialState, clientCtx)
-			
+
 			// no changes to FUND modules
 
 			genDoc.AppState, err = json.Marshal(newGenState)

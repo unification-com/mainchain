@@ -2,17 +2,16 @@ package simulation
 
 import (
 	"errors"
-	"math/rand"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	simparams "github.com/unification-com/mainchain/app/params"
 	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
+	"math/rand"
 )
 
 const (
@@ -24,6 +23,13 @@ const (
 	DefaultMsgRecordWrkChainBlock          = 30
 	DefaultMsgPurchaseWrkChainStateStorage = 5
 )
+
+//func WeightedOperations(
+//	appParams simtypes.AppParams, cdc codec.JSONCodec,
+//	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
+//) simulation.WeightedOperations {
+//	return nil
+//}
 
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
@@ -100,14 +106,14 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 
 		msg := types.NewMsgRegisterWrkChain(moniker, genesisHash, name, baseType, account.GetAddress())
 
-		txGen := simparams.MakeTestEncodingConfig().TxConfig
+		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -179,14 +185,14 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 
 		msg := types.NewMsgRecordWrkChainBlock(wrkChain.WrkchainId, height, hash, ph, h1, h2, h3, account.GetAddress())
 
-		txGen := simparams.MakeTestEncodingConfig().TxConfig
+		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -257,14 +263,14 @@ func SimulateMsgPurchaseWrkChainStateStorage(k keeper.Keeper, bk types.BankKeepe
 
 		msg := types.NewMsgPurchaseWrkChainStateStorage(wrkchain.WrkchainId, randNumToPurchase, account.GetAddress())
 
-		txGen := simparams.MakeTestEncodingConfig().TxConfig
+		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},

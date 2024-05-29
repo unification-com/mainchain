@@ -6,6 +6,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "amino/amino.proto";
 import "mainchain/stream/v1/params.proto";
 import "mainchain/stream/v1/stream.proto";
 
@@ -28,11 +29,36 @@ service Query {
     option (google.api.http).get = "/mainchain/stream/v1/streams/all";
   }
 
-  // mainchain/stream/v1/streams/receiver/{receiver_addr}
-  // mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}
-  // mainchain/stream/v1/streams/sender/{sender_addr}
-  // mainchain/stream/v1/streams/stream/{id}
-  // mainchain/stream/v1/streams/stream/{id}/current_flow
+  // StreamById queries a stream by the given stream id
+  rpc StreamById(QueryStreamByIdRequest) returns (QueryStreamByIdResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/stream/{stream_id}";
+  }
+
+  // StreamByIdCurrentFlow queries a stream by the given stream id and returns the current flow data
+  rpc StreamByIdCurrentFlow(QueryStreamByIdCurrentFlowRequest) returns (QueryStreamByIdCurrentFlowResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/stream/{stream_id}/current_flow";
+  }
+
+  // AllStreamsForReceiver queries all Streams for a given receiver address
+  rpc AllStreamsForReceiver(QueryAllStreamsForReceiverRequest) returns (QueryAllStreamsForReceiverResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/receiver/{receiver_addr}";
+  }
+
+  // StreamByReceiverSender queries a stream for a given receiver and sender pair
+  rpc StreamByReceiverSender(QueryStreamByReceiverSenderRequest) returns (QueryStreamByReceiverSenderResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}";
+  }
+
+  // StreamReceiverSenderCurrentFlow queries a stream by the given receiver/sender pair and returns the current flow data
+  rpc StreamReceiverSenderCurrentFlow(QueryStreamReceiverSenderCurrentFlowRequest) returns (QueryStreamReceiverSenderCurrentFlowResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}/current_flow";
+  }
+
+  // AllStreamsForSender queries all Streams for a given sender address
+  rpc AllStreamsForSender(QueryAllStreamsForSenderRequest) returns (QueryAllStreamsForSenderResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/sender/{sender_addr}";
+  }
+
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -82,4 +108,96 @@ message QueryStreamsResponse {
   repeated Stream streams = 1 [(gogoproto.nullable) = false];
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse                pagination = 2;
+}
+
+// QueryStreamByIdRequest is the request type for the Query/StreamById RPC method
+message QueryStreamByIdRequest {
+  // stream_id is id of the stream being claimed
+  uint64 stream_id = 1;
+}
+
+// QueryStreamByIdResponse is the response type for the Query/StreamById RPC method
+message QueryStreamByIdResponse {
+  // stream is the Stream
+  Stream stream = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}
+
+// QueryStreamByIdCurrentFlowRequest is the request type for the Query/StreamByIdCurrentFlow RPC method
+message QueryStreamByIdCurrentFlowRequest {
+  // stream_id is id of the stream being claimed
+  uint64 stream_id = 1;
+}
+
+// QueryStreamByIdCurrentFlowResponse is the response type for the Query/StreamByIdCurrentFlow RPC method
+message QueryStreamByIdCurrentFlowResponse {
+  // configured_flow_rate is the flow rate configured in the stream
+  int64 configured_flow_rate = 1;
+  // current_flow_rate is the actual flow rate. This will be zero if the depositZeroTime has passed, or deposit is zero
+  int64 current_flow_rate = 2;
+}
+
+// QueryAllStreamsForReceiverRequest is the request type for the Query/AllStreamsForReceiver RPC method
+message QueryAllStreamsForReceiverRequest {
+  // receiver_addr is the receiver wallet address being queried
+  string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // pagination is the pagination parameters for the request
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryAllStreamsForReceiverResponse is the response type for the Query/AllStreamsForReceiver RPC method
+message QueryAllStreamsForReceiverResponse {
+  // receiver_addr is the receiver wallet address being queried
+  string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // streams is the list of all streams
+  repeated Stream streams = 2 [(gogoproto.nullable) = false];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+}
+
+// QueryStreamByReceiverSenderRequest is the request type for the Query/StreamByReceiverSender RPC method
+message QueryStreamByReceiverSenderRequest {
+  // receiver_addr is the receiver wallet address being queried
+  string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender_addr is the sender wallet address being queried
+  string sender_addr = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// QueryStreamByReceiverSenderResponse is the response type for the Query/StreamByReceiverSender RPC method
+message QueryStreamByReceiverSenderResponse {
+  // stream is the Stream
+  Stream stream = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}
+
+// QueryStreamReceiverSenderCurrentFlowRequest is the request type for the Query/StreamReceiverSenderCurrentFlow RPC method
+message QueryStreamReceiverSenderCurrentFlowRequest {
+  // receiver_addr is the receiver wallet address being queried
+  string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender_addr is the sender wallet address being queried
+  string sender_addr = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// QueryStreamReceiverSenderCurrentFlowResponse is the response type for the Query/StreamReceiverSenderCurrentFlow RPC method
+message QueryStreamReceiverSenderCurrentFlowResponse {
+  // configured_flow_rate is the flow rate configured in the stream
+  int64 configured_flow_rate = 1;
+  // current_flow_rate is the actual flow rate. This will be zero if the depositZeroTime has passed, or deposit is zero
+  int64 current_flow_rate = 2;
+}
+
+// QueryAllStreamsForSenderRequest is the request type for the Query/AllStreamsForSender RPC method
+message QueryAllStreamsForSenderRequest {
+  // sender_addr is the receiver wallet address being queried
+  string sender_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // pagination is the pagination parameters for the request
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryAllStreamsForSenderResponse is the response type for the Query/AllStreamsForSender RPC method
+message QueryAllStreamsForSenderResponse {
+  // sender_addr is the receiver wallet address being queried
+  string sender_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // streams is the list of all streams
+  repeated Stream streams = 2 [(gogoproto.nullable) = false];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }

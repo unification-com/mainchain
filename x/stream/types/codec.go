@@ -12,18 +12,27 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	legacy.RegisterAminoMsg(cdc, &MsgCreateStream{}, "mainchain/x/stream/MsgCreateStream")
 	cdc.RegisterConcrete(&Stream{}, "stream/Stream", nil)
 	cdc.RegisterConcrete(&TotalDeposits{}, "stream/TotalDeposits", nil)
 	cdc.RegisterConcrete(&StreamIdLookup{}, "stream/StreamIdLookup", nil)
 	cdc.RegisterConcrete(&Params{}, "stream/Params", nil)
 	cdc.RegisterConcrete(&GenesisState{}, "stream/GenesisState", nil)
+
+	legacy.RegisterAminoMsg(cdc, &MsgCreateStream{}, "mainchain/x/stream/MsgCreateStream")
+	legacy.RegisterAminoMsg(cdc, &MsgClaimStream{}, "mainchain/x/stream/MsgClaimStream")
+	legacy.RegisterAminoMsg(cdc, &MsgTopUpDeposit{}, "mainchain/x/stream/MsgTopUpDeposit")
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateFlowRate{}, "mainchain/x/stream/MsgUpdateFlowRate")
+	legacy.RegisterAminoMsg(cdc, &MsgCancelStream{}, "mainchain/x/stream/MsgCancelStream")
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/stream/MsgUpdateParams")
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateStream{},
+		&MsgClaimStream{},
+		&MsgTopUpDeposit{},
+		&MsgUpdateFlowRate{},
+		&MsgCancelStream{},
 		&MsgUpdateParams{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

@@ -18,7 +18,7 @@ var (
 	_ sdk.Msg = &MsgClaimStream{}
 	_ sdk.Msg = &MsgTopUpDeposit{}
 	_ sdk.Msg = &MsgUpdateFlowRate{}
-	_ sdk.Msg = &MsgCreateStream{}
+	_ sdk.Msg = &MsgCancelStream{}
 	_ sdk.Msg = &MsgUpdateParams{}
 )
 

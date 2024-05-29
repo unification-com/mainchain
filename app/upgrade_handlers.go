@@ -109,6 +109,7 @@ func (app *App) registerUpgradeHandlers() {
 				consensustypes.ModuleName,
 				crisistypes.ModuleName,
 				grouptypes.ModuleName,
+				streamtypes.ModuleName,
 			},
 		}
 

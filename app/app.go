@@ -471,7 +471,7 @@ func NewApp(
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 		enterprise.NewAppModule(appCodec, app.EnterpriseKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(enttypes.ModuleName)),
 		beacon.NewAppModule(appCodec, app.BeaconKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(beacontypes.ModuleName)),
-		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(beacontypes.ModuleName)),
+		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(wrkchaintypes.ModuleName)),
 		transferModule,
 	)
 

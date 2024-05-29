@@ -222,10 +222,10 @@ type App struct {
 	GroupKeeper           groupkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 
-	EnterpriseKeeper   entkeeper.Keeper
-	BeaconKeeper       beaconkeeper.Keeper
-	WrkchainKeeper     wrkchainkeeper.Keeper
-	SubscriptionKeeper streamkeeper.Keeper
+	EnterpriseKeeper entkeeper.Keeper
+	BeaconKeeper     beaconkeeper.Keeper
+	WrkchainKeeper   wrkchainkeeper.Keeper
+	StreamKeeper     streamkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -443,7 +443,7 @@ func NewApp(
 
 	app.WrkchainKeeper = wrkchainkeeper.NewKeeper(keys[wrkchaintypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	app.SubscriptionKeeper = streamkeeper.NewKeeper(keys[streamtypes.StoreKey], app.BankKeeper, app.AccountKeeper, appCodec, authtypes.FeeCollectorName, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	app.StreamKeeper = streamkeeper.NewKeeper(keys[streamtypes.StoreKey], app.BankKeeper, app.AccountKeeper, appCodec, authtypes.FeeCollectorName, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	/****  Module Options ****/
 
@@ -480,7 +480,7 @@ func NewApp(
 		enterprise.NewAppModule(appCodec, app.EnterpriseKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(enttypes.ModuleName)),
 		beacon.NewAppModule(appCodec, app.BeaconKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(beacontypes.ModuleName)),
 		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(wrkchaintypes.ModuleName)),
-		stream.NewAppModule(appCodec, app.SubscriptionKeeper, app.AccountKeeper, app.BankKeeper),
+		stream.NewAppModule(appCodec, app.StreamKeeper, app.AccountKeeper, app.BankKeeper),
 		transferModule,
 	)
 

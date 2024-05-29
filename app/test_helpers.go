@@ -14,6 +14,7 @@ import (
 	undtypes "github.com/unification-com/mainchain/types"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
+	streamtypes "github.com/unification-com/mainchain/x/stream/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 	"math/rand"
 	"testing"
@@ -195,6 +196,10 @@ func SetKeeperTestParamsAndDefaultValues(app *App, ctx sdk.Context) {
 	_ = app.EnterpriseKeeper.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(TestDenomination, 0))
 	_ = app.EnterpriseKeeper.SetTotalSpentEFUND(ctx, sdk.NewInt64Coin(TestDenomination, 0))
 	app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, 1)
+
+	app.StreamKeeper.SetHighestStreamId(ctx, 1)
+	// set to 0%. Individual unit tests will set specific %
+	app.StreamKeeper.SetParams(ctx, streamtypes.Params{ValidatorFee: sdk.NewDecFromInt(sdk.NewIntFromUint64(0))})
 }
 
 func GenerateRandomStringWithCharset(length int, charset string) string {

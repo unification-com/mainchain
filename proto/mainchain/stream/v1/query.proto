@@ -1,0 +1,85 @@
+syntax = "proto3";
+package mainchain.stream.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "mainchain/stream/v1/params.proto";
+import "mainchain/stream/v1/stream.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/stream/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/params";
+  }
+
+  // CalculateFlowRate can be used to calculate a flow rate (coins per second) to be used when creating/updating a stream
+  rpc CalculateFlowRate(QueryCalculateFlowRateRequest) returns (QueryCalculateFlowRateResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/calculate_flow_Rate";
+  }
+
+  // Streams queries all Streams.
+  rpc Streams(QueryStreamsRequest) returns (QueryStreamsResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/all";
+  }
+
+  // mainchain/stream/v1/streams/receiver/{receiver_addr}
+  // mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}
+  // mainchain/stream/v1/streams/sender/{sender_addr}
+  // mainchain/stream/v1/streams/stream/{id}
+  // mainchain/stream/v1/streams/stream/{id}/current_flow
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryCalculateFlowRateRequest is the request type for the Query/CalculateFlowRate RPC method
+message QueryCalculateFlowRateRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+  // coin is the coin to be used in the calculation, e.g. 10000000000nund
+  string coin = 1;
+  // period is the enumerated value of a period to be used in the calculation, e.g. month = 6
+  StreamPeriod period = 2;
+  // duration is the number of periods to be used in the calculation, e.g. 1 = 1 month
+  uint64 duration = 3;
+}
+
+// QueryCalculateFlowRateResponse is the response type for the Query/CalculateFlowRate RPC method
+message QueryCalculateFlowRateResponse {
+
+  // coin is the coin used in the calculation
+  cosmos.base.v1beta1.Coin coin = 1 [ (gogoproto.nullable) = false ];
+  // period is the enumerated value of a period used in the calculation, e.g. month = 6
+  StreamPeriod period = 2;
+  // duration is the number of periods used in the calculation, e.g. 1 = 1 month
+  uint64 duration = 3;
+  // seconds is the calculated number of seconds for the stream (period * duration)
+  uint64 seconds = 4;
+  // flow_rate is the calculated rate of coins per second, in the lowest denomination - e.g. nund
+  int64 flow_rate = 5;
+}
+
+// QueryStreamsRequest is the request type for the Query/Streams RPC method
+message QueryStreamsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryStreamsResponse is the response type for the Query/Streams RPC method
+message QueryStreamsResponse {
+  // streams is the list of all streams
+  repeated Stream streams = 1 [(gogoproto.nullable) = false];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse                pagination = 2;
+}

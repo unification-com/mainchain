@@ -1,0 +1,93 @@
+syntax = "proto3";
+package mainchain.stream.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "amino/amino.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/stream/types";
+
+// StreamPeriod enumerates the valid periods for calculating flow rates
+enum StreamPeriod {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // STREAM_PERIOD_UNSPECIFIED defines unspecified
+  STREAM_PERIOD_UNSPECIFIED = 0 [ (gogoproto.enumvalue_customname) = "StreamPeriodUnspecified" ];
+  // STREAM_PERIOD_SECOND defines second
+  STREAM_PERIOD_SECOND = 1 [ (gogoproto.enumvalue_customname) = "StreamPeriodSecond" ];
+  // STREAM_PERIOD_MINUTE defines minute
+  STREAM_PERIOD_MINUTE = 2 [ (gogoproto.enumvalue_customname) = "StreamPeriodMinute" ];
+  // STREAM_PERIOD_HOUR defines hour
+  STREAM_PERIOD_HOUR = 3 [ (gogoproto.enumvalue_customname) = "StreamPeriodHour" ];
+  // STREAM_PERIOD_DAY defines day
+  STREAM_PERIOD_DAY = 4 [ (gogoproto.enumvalue_customname) = "StreamPeriodDay" ];
+  // STREAM_PERIOD_WEEK defines week
+  STREAM_PERIOD_WEEK = 5 [ (gogoproto.enumvalue_customname) = "StreamPeriodWeek" ];
+  // STREAM_PERIOD_MONTH defines month
+  STREAM_PERIOD_MONTH = 6 [ (gogoproto.enumvalue_customname) = "StreamPeriodMonth" ];
+  // STREAM_PERIOD_YEAR defines year
+  STREAM_PERIOD_YEAR = 7 [ (gogoproto.enumvalue_customname) = "StreamPeriodYear" ];
+}
+
+// Stream holds data about a stream
+message Stream {
+  // stream_id is an auto generated integer id of the stream
+  uint64 stream_id = 1;
+  // sender is the wallet that will send the stream
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // receiver is the wallet that will receive the stream
+  string receiver = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // deposit tracks the total amount the user has deposited to cover the stream, including any updates to the stream
+  cosmos.base.v1beta1.Coin deposit = 4 [ (gogoproto.nullable) = false ];
+  // flow_rate is the current rate of nund per second
+  int64 flow_rate = 5 ;
+  // create_time is the timestamp a stream was first created
+  google.protobuf.Timestamp create_time = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"create_time\""
+  ];
+  // last_updated_time is the timestamp the stream was last updated - flow_rate, deposit etc.
+  google.protobuf.Timestamp last_updated_time = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"last_updated_time\""
+  ];
+  // last_outflow_time is the timestamp of the last claim. Allows for a start point to calculate the next claim
+  google.protobuf.Timestamp last_outflow_time = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"last_outflow_time\""
+  ];
+  // deposit_zero_time is the timestamp for when the current deposited amount will run out
+  google.protobuf.Timestamp deposit_zero_time = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"deposit_zero_time\""
+  ];
+  // total_streamed tracks the total amount streamed. Calculated when a stream withdraw/update/cancel occurs
+  cosmos.base.v1beta1.Coin total_streamed = 10 [ (gogoproto.nullable) = false ];
+  // cancellable is whether a stream can be cancelled. Default is true, but will be false for example id eFUND is used
+  bool cancellable = 11;
+}
+
+// TotalDeposits tracks the current total deposits in the module account
+message TotalDeposits {
+  // total is to track the total deposited coins in the module
+  repeated cosmos.base.v1beta1.Coin total = 1 [
+    (gogoproto.nullable)     = false,
+    (amino.dont_omitempty)   = true,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// StreamIdLookup is a quick lookup table for stream id -> stream pair
+message StreamIdLookup {
+  // sender is the wallet that will send the stream
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // receiver is the wallet that will receive the stream
+  string receiver = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}

@@ -384,6 +384,16 @@
       "redelegations": [],
       "exported": false
     },
+    "stream": {
+      "params": {
+        "base_validator_bonus": "0.010000000000000000"
+      },
+      "starting_stream_id": "1",
+      "total_deposits": {
+        "total": []
+      },
+      "streams": []
+    },
     "transfer": {
       "port_id": "transfer",
       "denom_traces": [],

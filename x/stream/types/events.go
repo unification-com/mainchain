@@ -15,7 +15,7 @@ const (
 	AttributeKeyStreamDepositDuration     = "deposit_duration"
 	AttributeKeyStreamDepositZeroTime     = "deposit_zero_time"
 	AttributeKeyStreamClaimAmountReceived = "amount_received"
-	AttributeKeyStreamClaimValidatorBonus = "validator_bonus"
+	AttributeKeyStreamClaimValidatorFee   = "validator_fee"
 	AttributeKeyStreamClaimTotal          = "claim_total"
 	AttributeKeyOldFlowRate               = "old_flow_rate"
 	AttributeKeyNewFlowRate               = "new_flow_rate"

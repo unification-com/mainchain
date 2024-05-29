@@ -96,20 +96,20 @@ func CalculateAmountToClaim(
 	return amountToClaim, remainingDepositValue
 }
 
-func CalculateValidatorBonus(valBonus sdk.Dec, amountToClaim sdk.Coin) (sdk.Coin, sdk.Coin) {
-	var valBonusCoin sdk.Coin
+func CalculateValidatorFee(valFee sdk.Dec, amountToClaim sdk.Coin) (sdk.Coin, sdk.Coin) {
+	var valFeeCoin sdk.Coin
 	var finalClaimCoin sdk.Coin
 
-	if valBonus.GT(sdk.NewDecFromInt(sdk.NewIntFromUint64(0))) {
+	if valFee.GT(sdk.NewDecFromInt(sdk.NewIntFromUint64(0))) {
 		decCoin := sdk.NewDecCoinFromCoin(amountToClaim)
-		valBonusAmount := decCoin.Amount.Mul(valBonus).TruncateInt64()
-		valBonusCoin = sdk.NewCoin(amountToClaim.Denom, sdk.NewIntFromUint64(uint64(valBonusAmount)))
+		valFeeAmount := decCoin.Amount.Mul(valFee).TruncateInt64()
+		valFeeCoin = sdk.NewCoin(amountToClaim.Denom, sdk.NewIntFromUint64(uint64(valFeeAmount)))
 		// ToDo - use SafeSub
-		finalClaimCoin = amountToClaim.Sub(valBonusCoin)
+		finalClaimCoin = amountToClaim.Sub(valFeeCoin)
 	} else {
-		valBonusCoin = sdk.NewCoin(amountToClaim.Denom, sdk.NewIntFromUint64(0))
+		valFeeCoin = sdk.NewCoin(amountToClaim.Denom, sdk.NewIntFromUint64(0))
 		finalClaimCoin = amountToClaim
 	}
 
-	return finalClaimCoin, valBonusCoin
+	return finalClaimCoin, valFeeCoin
 }

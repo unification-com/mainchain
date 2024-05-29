@@ -130,11 +130,11 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	totalDeposits.Total = newTotalDeposits
 	k.SetTotalDeposits(ctx, totalDeposits)
 
-	// 5. calculate validator bonus and deduct from claim amount
-	finalClaimCoin, valBonusCoin := types.CalculateValidatorBonus(params.BaseValidatorBonus, amountToClaim)
+	// 5. calculate validator fee and deduct from claim amount
+	finalClaimCoin, valFeeCoin := types.CalculateValidatorFee(params.ValidatorFee, amountToClaim)
 
-	if valBonusCoin.Amount.GT(sdk.NewIntFromUint64(0)) {
-		err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, sdk.NewCoins(valBonusCoin))
+	if valFeeCoin.Amount.GT(sdk.NewIntFromUint64(0)) {
+		err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, sdk.NewCoins(valFeeCoin))
 
 		if err != nil {
 			return sdk.Coin{}, sdk.Coin{}, err
@@ -165,11 +165,11 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, stream.Receiver),
 			sdk.NewAttribute(types.AttributeKeyStreamClaimTotal, amountToClaim.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamClaimAmountReceived, finalClaimCoin.String()),
-			sdk.NewAttribute(types.AttributeKeyStreamClaimValidatorBonus, valBonusCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamClaimValidatorFee, valFeeCoin.String()),
 		),
 	)
 
-	return finalClaimCoin, valBonusCoin, nil
+	return finalClaimCoin, valFeeCoin, nil
 }
 
 func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, deposit sdk.Coin) (bool, error) {

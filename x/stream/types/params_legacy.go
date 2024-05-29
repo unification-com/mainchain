@@ -3,7 +3,7 @@ package types
 import paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 var (
-	KeyBaseValidatorBonus = []byte("KeyBaseValidatorBonus")
+	KeyValidatorFee = []byte("KeyValidatorFee")
 )
 
 // ParamKeyTable the param key table for launch module
@@ -15,6 +15,6 @@ func ParamKeyTable() paramtypes.KeyTable {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyBaseValidatorBonus, &p.BaseValidatorBonus, validateBaseValidatorBonus),
+		paramtypes.NewParamSetPair(KeyValidatorFee, &p.ValidatorFee, validateBaseValidatorFee),
 	}
 }

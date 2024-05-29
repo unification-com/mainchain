@@ -111,15 +111,15 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 		return nil, accErr
 	}
 
-	finalClaimCoin, valBonusCoin, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+	finalClaimCoin, valFeeCoin, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &types.MsgClaimStreamResponse{
-		TotalClaimed:   finalClaimCoin,
-		ValidatorBonus: valBonusCoin,
+		TotalClaimed: finalClaimCoin,
+		ValidatorFee: valFeeCoin,
 	}, nil
 }
 

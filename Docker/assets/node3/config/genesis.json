@@ -386,7 +386,7 @@
     },
     "stream": {
       "params": {
-        "base_validator_bonus": "0.010000000000000000"
+        "validator_fee": "0.010000000000000000"
       },
       "starting_stream_id": "1",
       "total_deposits": {

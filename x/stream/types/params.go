@@ -10,26 +10,26 @@ import (
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 
-// DefaultMinCommissionRate is set to 0%
-var DefaultBaseValidatorBonus = "0.01"
+// DefaultValidatorFee is set to 0%
+var DefaultValidatorFee = "0.01"
 
 // NewParams creates a new Params instance
-func NewParams(baseValidatorBonus sdk.Dec) Params {
+func NewParams(validatorFee sdk.Dec) Params {
 	return Params{
-		BaseValidatorBonus: baseValidatorBonus,
+		ValidatorFee: validatorFee,
 	}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	defaultValidatorBonus, _ := sdk.NewDecFromStr(DefaultBaseValidatorBonus)
-	return NewParams(defaultValidatorBonus)
+	defaultValidatorFee, _ := sdk.NewDecFromStr(DefaultValidatorFee)
+	return NewParams(defaultValidatorFee)
 }
 
 // Validate validates the set of params
 func (p Params) Validate() error {
 
-	if err := validateBaseValidatorBonus(p.BaseValidatorBonus); err != nil {
+	if err := validateBaseValidatorFee(p.ValidatorFee); err != nil {
 		return err
 	}
 
@@ -42,17 +42,17 @@ func (p Params) String() string {
 	return string(out)
 }
 
-func validateBaseValidatorBonus(i interface{}) error {
+func validateBaseValidatorFee(i interface{}) error {
 	v, ok := i.(sdk.Dec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	if v.IsNegative() {
-		return fmt.Errorf("base validator bonus cannot be negative: %s", v)
+		return fmt.Errorf("base validator fee cannot be negative: %s", v)
 	}
 	if v.GT(math.LegacyOneDec()) {
-		return fmt.Errorf("base validator bonus cannot be greater than 100%%: %s", v)
+		return fmt.Errorf("base validator fee cannot be greater than 100%%: %s", v)
 	}
 
 	return nil

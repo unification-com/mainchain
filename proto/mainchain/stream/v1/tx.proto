@@ -74,8 +74,8 @@ message MsgClaimStream {
 message MsgClaimStreamResponse {
   // total_claimed is the total amount claimed
   cosmos.base.v1beta1.Coin total_claimed = 1 [ (gogoproto.nullable) = false ];
-  // validator_bonus is the amount sent to validators
-  cosmos.base.v1beta1.Coin validator_bonus = 2 [ (gogoproto.nullable) = false ];
+  // validator_fee is the amount sent to validators
+  cosmos.base.v1beta1.Coin validator_fee = 2 [ (gogoproto.nullable) = false ];
 }
 
 // MsgTopUpDeposit tops up deposits in an existing stream

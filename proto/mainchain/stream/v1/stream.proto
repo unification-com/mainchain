@@ -74,16 +74,6 @@ message Stream {
   bool cancellable = 11;
 }
 
-// TotalDeposits tracks the current total deposits in the module account
-message TotalDeposits {
-  // total is to track the total deposited coins in the module
-  repeated cosmos.base.v1beta1.Coin total = 1 [
-    (gogoproto.nullable)     = false,
-    (amino.dont_omitempty)   = true,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-}
-
 // StreamIdLookup is a quick lookup table for stream id -> stream pair
 message StreamIdLookup {
   // sender is the wallet that will send the stream

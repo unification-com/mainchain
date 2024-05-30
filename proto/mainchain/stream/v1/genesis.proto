@@ -11,6 +11,5 @@ option go_package = "github.com/unification-com/mainchain/x/stream/types";
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   uint64 starting_stream_id = 2;
-  TotalDeposits total_deposits = 3 [(gogoproto.nullable) = false];
-  repeated Stream streams = 4 [(gogoproto.nullable) = false];
+  repeated Stream streams = 3 [(gogoproto.nullable) = false];
 }

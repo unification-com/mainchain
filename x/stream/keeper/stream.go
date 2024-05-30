@@ -29,21 +29,10 @@ func (k Keeper) SetHighestStreamId(ctx sdk.Context, StreamId uint64) {
 }
 
 // GetTotalDeposits gets the total deposits
-func (k Keeper) GetTotalDeposits(ctx sdk.Context) (types.TotalDeposits, bool) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.TotalDepositsKey)
-	if bz == nil {
-		return types.TotalDeposits{}, false
-	}
-	var totalDeposits types.TotalDeposits
-	k.cdc.MustUnmarshal(bz, &totalDeposits)
+func (k Keeper) GetTotalDeposits(ctx sdk.Context) ([]sdk.Coin, bool) {
+	moduleAcc := k.GetStreamModuleAccount(ctx)
+	totalDeposits := k.bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
 	return totalDeposits, true
-}
-
-// SetTotalDeposits sets the total deposits
-func (k Keeper) SetTotalDeposits(ctx sdk.Context, totalDeposits types.TotalDeposits) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.TotalDepositsKey, k.cdc.MustMarshal(&totalDeposits))
 }
 
 // SetStream Sets the stream
@@ -104,12 +93,6 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		return sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "stream does not exist")
 	}
 
-	totalDeposits, ok := k.GetTotalDeposits(ctx)
-
-	if !ok {
-		return sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "total deposits does not exist")
-	}
-
 	// 1. check current stream deposit > 0
 	if stream.Deposit.IsNil() || stream.Deposit.IsNegative() || stream.Deposit.IsZero() {
 		return sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "stream deposit is zero")
@@ -124,13 +107,7 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		return sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "not enough deposit to claim")
 	}
 
-	// 4. deduct amount from module's total deposits and set in keeper
-	// ToDo - use SafeSub
-	newTotalDeposits := totalDeposits.Total.Sub(amountToClaim)
-	totalDeposits.Total = newTotalDeposits
-	k.SetTotalDeposits(ctx, totalDeposits)
-
-	// 5. calculate validator fee and deduct from claim amount
+	// 4. calculate validator fee and deduct from claim amount
 	finalClaimCoin, valFeeCoin := types.CalculateValidatorFee(params.ValidatorFee, amountToClaim)
 
 	if valFeeCoin.Amount.GT(sdk.NewIntFromUint64(0)) {
@@ -141,14 +118,14 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		}
 	}
 
-	// 6. send modified amount from module account to receiver
+	// 5. send modified amount from module account to receiver
 	err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiverAddr, sdk.NewCoins(finalClaimCoin))
 
 	if err != nil {
 		return sdk.Coin{}, sdk.Coin{}, err
 	}
 
-	// 7. update & save stream
+	// 6. update & save stream
 	stream.Deposit = remainingDepositValue
 	stream.LastOutflowTime = nowTime
 	err = k.SetStream(ctx, receiverAddr, senderAddr, stream)
@@ -203,19 +180,6 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	if err != nil {
 		return false, err
 	}
-
-	// calculate total deposited in module
-	totalDeposits, has := k.GetTotalDeposits(ctx)
-
-	if !has {
-		// first stream, and therefore first deposit
-		totalDeposits.Total = sdk.NewCoins(deposit)
-	} else {
-		// adding to existing deposits
-		totalDeposits.Total = totalDeposits.Total.Add(deposit)
-	}
-
-	k.SetTotalDeposits(ctx, totalDeposits)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -290,12 +254,6 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 		if err != nil {
 			return err
 		}
-
-		totalDeposits, _ := k.GetTotalDeposits(ctx)
-		// ToDo - use SafeSub
-		totalDeposits.Total = totalDeposits.Total.Sub(refundCoin)
-
-		k.SetTotalDeposits(ctx, totalDeposits)
 	}
 
 	// set all to zero etc.

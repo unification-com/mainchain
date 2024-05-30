@@ -26,7 +26,6 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params:           types.DefaultParams(),
 				StartingStreamId: 1,
-				TotalDeposits:    types.TotalDeposits{},
 				Streams:          []types.Stream{},
 			},
 			valid: true,
@@ -38,7 +37,6 @@ func TestGenesisState_Validate(t *testing.T) {
 					ValidatorFee: invalidFee,
 				},
 				StartingStreamId: 1,
-				TotalDeposits:    types.TotalDeposits{},
 				Streams:          []types.Stream{},
 			},
 			valid: false,

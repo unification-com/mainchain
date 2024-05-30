@@ -24,11 +24,8 @@ var (
 	// ParamsKey is the prefix for the params store
 	ParamsKey = []byte{0x01}
 
-	// TotalDepositsKey is the prefix for the total deposits store
-	TotalDepositsKey = []byte{0x02}
-
 	// HighestStreamIdKey key used to store the current highest Stream ID
-	HighestStreamIdKey = []byte{0x03}
+	HighestStreamIdKey = []byte{0x02}
 
 	// StreamKeyPrefix prefix for the Stream store
 	StreamKeyPrefix = []byte{0x11}

@@ -11,13 +11,13 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, bankKeeper types.BankKeeper, accountKeeper types.AccountKeeper, genState types.GenesisState) {
 
 	moduleAcc := k.GetStreamModuleAccount(ctx)
+	moduleHoldings := sdk.Coins{}
 	if moduleAcc == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
-	
+
 	k.SetParams(ctx, genState.Params)
 	k.SetHighestStreamId(ctx, genState.StartingStreamId)
-	k.SetTotalDeposits(ctx, genState.TotalDeposits)
 
 	for _, stream := range genState.Streams {
 		s := types.Stream{
@@ -55,14 +55,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, bankKeeper types.BankKeeper, 
 			Receiver: stream.Receiver,
 		}
 
-		err = k.SetUuidLookup(ctx, stream.StreamId, idl)
+		err = k.SetIdLookup(ctx, stream.StreamId, idl)
+
+		moduleHoldings = moduleHoldings.Add(stream.Deposit)
 
 		if err != nil {
 			panic(err)
 		}
 	}
-
-	moduleHoldings := genState.TotalDeposits.Total
 
 	balances := bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
 	if balances.IsZero() {

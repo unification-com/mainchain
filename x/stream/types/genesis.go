@@ -8,7 +8,6 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		Params:           DefaultParams(),
 		StartingStreamId: 1,
-		TotalDeposits:    TotalDeposits{},
 		Streams:          []Stream{},
 	}
 }

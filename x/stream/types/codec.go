@@ -13,7 +13,6 @@ import (
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&Stream{}, "stream/Stream", nil)
-	cdc.RegisterConcrete(&TotalDeposits{}, "stream/TotalDeposits", nil)
 	cdc.RegisterConcrete(&StreamIdLookup{}, "stream/StreamIdLookup", nil)
 	cdc.RegisterConcrete(&Params{}, "stream/Params", nil)
 	cdc.RegisterConcrete(&GenesisState{}, "stream/GenesisState", nil)

@@ -48,11 +48,15 @@ func validateBaseValidatorFee(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
+	if v.IsNil() {
+		return fmt.Errorf("base validator fee cannot be nil")
+	}
+
 	if v.IsNegative() {
 		return fmt.Errorf("base validator fee cannot be negative: %s", v)
 	}
 	if v.GT(math.LegacyOneDec()) {
-		return fmt.Errorf("base validator fee cannot be greater than 100%%: %s", v)
+		return fmt.Errorf("base validator fee cannot be greater than 100%% (1.00). Sent %s", v)
 	}
 
 	return nil

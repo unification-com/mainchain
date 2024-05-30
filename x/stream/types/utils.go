@@ -39,15 +39,15 @@ func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint6
 	case StreamPeriodMinute:
 		baseDuration = 60
 	case StreamPeriodHour:
-		baseDuration = 60 * 60
+		baseDuration = 3600
 	case StreamPeriodDay:
-		baseDuration = 24 * 60 * 60
+		baseDuration = 86400
 	case StreamPeriodWeek:
-		baseDuration = 7 * 24 * 60 * 60
+		baseDuration = 604800
 	case StreamPeriodMonth:
-		baseDuration = (365 / 12) * 24 * 60 * 60
+		baseDuration = 2628000 // (365 / 12) * 24 * 60 * 60 = 30.416666667 * 24 * 60 * 60
 	case StreamPeriodYear:
-		baseDuration = 365 * 24 * 60 * 60
+		baseDuration = 31536000
 	}
 
 	totalDuration = baseDuration * duration
@@ -58,15 +58,23 @@ func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint6
 
 	flowRate := decCoin.Amount.QuoTruncateMut(decDuration)
 
+	// note: decimal values are rounded down, e.g. 8.9 to just 8.
 	return totalDuration, flowRate, flowRate.TruncateInt64()
 }
 
 func CalculateDuration(deposit sdk.Coin, flowRate int64) int64 {
-	// calculate duration in seconds
-	decFlowRate := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(flowRate)))
-	decDeposit := sdk.NewDecCoinFromCoin(deposit)
-	decDuration := decDeposit.Amount.QuoTruncateMut(decFlowRate)
-	return decDuration.TruncateInt64()
+	// no point if the deposit value is zero - e.g. if re-calculating from a new flow rate
+	// of an existing stream
+	if deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
+		// calculate duration in seconds
+		decFlowRate := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(flowRate)))
+		decDeposit := sdk.NewDecCoinFromCoin(deposit)
+		decDuration := decDeposit.Amount.QuoTruncateMut(decFlowRate)
+		// note: decimal values are rounded down, e.g. 2628008.9 to just 2628008.
+		return decDuration.TruncateInt64()
+	}
+
+	return 0
 }
 
 func CalculateAmountToClaim(
@@ -79,7 +87,7 @@ func CalculateAmountToClaim(
 	var amountToClaim sdk.Coin
 	var remainingDepositValue sdk.Coin
 
-	if nowTime.After(depositZeroTime) {
+	if nowTime.After(depositZeroTime) || nowTime.Equal(depositZeroTime) {
 		// now > deposit_zero_time, use all remaining deposit
 		amountToClaim = deposit
 		remainingDepositValue = sdk.NewCoin(deposit.Denom, sdk.NewInt(0))
@@ -89,8 +97,13 @@ func CalculateAmountToClaim(
 		secondsSinceLast := int64(timeSinceLast.Seconds())
 		numCoins := secondsSinceLast * flowRate
 		amountToClaim = sdk.NewCoin(deposit.Denom, sdk.NewIntFromUint64(uint64(numCoins)))
-		// ToDo - use SafeSub
-		remainingDepositValue = deposit.Sub(amountToClaim)
+		if deposit.Amount.GT(amountToClaim.Amount) {
+			remainingDepositValue = deposit.Sub(amountToClaim)
+		} else {
+			// just in case
+			amountToClaim = deposit
+			remainingDepositValue = sdk.NewCoin(deposit.Denom, sdk.NewInt(0))
+		}
 	}
 
 	return amountToClaim, remainingDepositValue
@@ -104,7 +117,6 @@ func CalculateValidatorFee(valFee sdk.Dec, amountToClaim sdk.Coin) (sdk.Coin, sd
 		decCoin := sdk.NewDecCoinFromCoin(amountToClaim)
 		valFeeAmount := decCoin.Amount.Mul(valFee).TruncateInt64()
 		valFeeCoin = sdk.NewCoin(amountToClaim.Denom, sdk.NewIntFromUint64(uint64(valFeeAmount)))
-		// ToDo - use SafeSub
 		finalClaimCoin = amountToClaim.Sub(valFeeCoin)
 	} else {
 		valFeeCoin = sdk.NewCoin(amountToClaim.Denom, sdk.NewIntFromUint64(0))

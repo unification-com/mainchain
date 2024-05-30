@@ -119,16 +119,18 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	}
 
 	// 5. send modified amount from module account to receiver
-	err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiverAddr, sdk.NewCoins(finalClaimCoin))
+	if finalClaimCoin.Amount.GT(sdk.NewIntFromUint64(0)) {
+		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiverAddr, sdk.NewCoins(finalClaimCoin))
 
-	if err != nil {
-		return sdk.Coin{}, sdk.Coin{}, err
+		if err != nil {
+			return sdk.Coin{}, sdk.Coin{}, err
+		}
 	}
 
 	// 6. update & save stream
 	stream.Deposit = remainingDepositValue
 	stream.LastOutflowTime = nowTime
-	err = k.SetStream(ctx, receiverAddr, senderAddr, stream)
+	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
 
 	if err != nil {
 		return sdk.Coin{}, sdk.Coin{}, err

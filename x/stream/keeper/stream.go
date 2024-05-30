@@ -73,14 +73,14 @@ func (k Keeper) GetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddre
 	return stream, true
 }
 
-// SetUuidLookup Sets the uuid lookup
-func (k Keeper) SetUuidLookup(ctx sdk.Context, streamId uint64, idLookup types.StreamIdLookup) error {
+// SetIdLookup Sets the id lookup
+func (k Keeper) SetIdLookup(ctx sdk.Context, streamId uint64, idLookup types.StreamIdLookup) error {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.GetStreamIdLookupKey(streamId), k.cdc.MustMarshal(&idLookup))
 	return nil
 }
 
-// GetIdLookup Gets the uuid lookup
+// GetIdLookup Gets the id lookup
 func (k Keeper) GetIdLookup(ctx sdk.Context, streamId uint64) (types.StreamIdLookup, bool) {
 	store := ctx.KVStore(k.storeKey)
 
@@ -180,31 +180,21 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 		return false, sdkerrors.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
 	}
 
-	duration := types.CalculateDuration(deposit, stream.FlowRate)
-
-	// calculate if stream has "expired"
-	var depositZeroTime time.Time
 	nowTime := ctx.BlockTime()
+	// get updated deposit amount and re-calculate duration and deposit time to zero
+	newDeposit := stream.Deposit.Add(deposit)
+	duration := types.CalculateDuration(newDeposit, stream.FlowRate)
+	depositZeroTime := nowTime.Add(time.Second * time.Duration(duration))
 
-	if stream.DepositZeroTime.Before(nowTime) {
-		// stream has "expired" - the deposit end time is in the past.
-		// Reset
-		depositZeroTime = nowTime.Add(time.Second * time.Duration(duration))
-	} else {
-		// stream still "valid". Just extend the current deposit zero time
-		depositZeroTime = stream.DepositZeroTime.Add(time.Second * time.Duration(duration))
-	}
-
-	// Send from user acc to module acc
-	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, senderAddr, types.ModuleName, sdk.NewCoins(stream.Deposit))
+	// Send deposit from user acc to module acc
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, senderAddr, types.ModuleName, sdk.NewCoins(deposit))
 
 	if err != nil {
 		return false, err
 	}
 
 	// set and save new stream data
-	newDeposit := stream.Deposit
-	stream.Deposit = newDeposit.Add(deposit)
+	stream.Deposit = newDeposit
 	stream.DepositZeroTime = depositZeroTime
 	stream.LastUpdatedTime = nowTime
 
@@ -218,9 +208,11 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	totalDeposits, has := k.GetTotalDeposits(ctx)
 
 	if !has {
-		totalDeposits.Total = sdk.NewCoins(stream.Deposit)
+		// first stream, and therefore first deposit
+		totalDeposits.Total = sdk.NewCoins(deposit)
 	} else {
-		totalDeposits.Total = totalDeposits.Total.Add(stream.Deposit)
+		// adding to existing deposits
+		totalDeposits.Total = totalDeposits.Total.Add(deposit)
 	}
 
 	k.SetTotalDeposits(ctx, totalDeposits)
@@ -300,6 +292,7 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 		}
 
 		totalDeposits, _ := k.GetTotalDeposits(ctx)
+		// ToDo - use SafeSub
 		totalDeposits.Total = totalDeposits.Total.Sub(refundCoin)
 
 		k.SetTotalDeposits(ctx, totalDeposits)
@@ -335,7 +328,7 @@ func (k Keeper) CreateIdLookup(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 		Receiver: receiverAddr.String(),
 	}
 
-	err := k.SetUuidLookup(ctx, streamId, idLookup)
+	err := k.SetIdLookup(ctx, streamId, idLookup)
 
 	if err != nil {
 		return err

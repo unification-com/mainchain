@@ -28,7 +28,7 @@ func (k Keeper) SetHighestStreamId(ctx sdk.Context, StreamId uint64) {
 	store.Set(types.HighestStreamIdKey, StreamIdbz)
 }
 
-// GetTotalDeposits gets the total deposits
+// GetTotalDeposits gets the total deposits - just a wrapper for getting the module account's balances from the bank
 func (k Keeper) GetTotalDeposits(ctx sdk.Context) ([]sdk.Coin, bool) {
 	moduleAcc := k.GetStreamModuleAccount(ctx)
 	totalDeposits := k.bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
@@ -189,7 +189,7 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
 			sdk.NewAttribute(types.AttributeKeyStreamDepositAmount, deposit.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamDepositDuration, strconv.FormatInt(duration, 10)),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositZeroTime, strconv.FormatInt(depositZeroTime.Unix(), 10)),
+			sdk.NewAttribute(types.AttributeKeyStreamDepositZeroTime, depositZeroTime.String()),
 		),
 	)
 
@@ -234,7 +234,7 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 			sdk.NewAttribute(types.AttributeKeyOldFlowRate, strconv.FormatInt(oldFlowRate, 10)),
 			sdk.NewAttribute(types.AttributeKeyNewFlowRate, strconv.FormatInt(newFlowRate, 10)),
 			sdk.NewAttribute(types.AttributeKeyStreamDepositDuration, strconv.FormatInt(duration, 10)),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositZeroTime, strconv.FormatInt(depositZeroTime.Unix(), 10)),
+			sdk.NewAttribute(types.AttributeKeyStreamDepositZeroTime, depositZeroTime.String()),
 		),
 	)
 
@@ -297,8 +297,9 @@ func (k Keeper) CreateIdLookup(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	return nil
 }
 
-// CreateNewStream creates a new "empty" stream for a sender/receiver pair
-// Deposit and Deposit Zero Time are handled by the AddDeposit function
+// CreateNewStream creates a new "empty" stream for a sender/receiver pair.
+// Deposit and Deposit Zero Time are handled by the AddDeposit function.
+// The value passed in the deposit var is only used to determine the denomination of the deposit.
 func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, deposit sdk.Coin, flowRate int64) (types.Stream, error) {
 
 	streamId, err := k.GetHighestStreamId(ctx)
@@ -318,7 +319,7 @@ func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		CreateTime:      nowTime,
 		LastUpdatedTime: nowTime,
 		LastOutflowTime: nowTime,
-		DepositZeroTime: time.Unix(0, 0), // set to past, so deposit zero time correctly calculated in AddDeposit
+		DepositZeroTime: time.Unix(0, 0).UTC(), // set to past, so deposit zero time correctly calculated in AddDeposit
 		TotalStreamed:   sdk.NewCoin(deposit.Denom, sdk.NewInt(0)),
 		Cancellable:     true, // default to true for now. Eventually, using eFUND will set to false
 	}

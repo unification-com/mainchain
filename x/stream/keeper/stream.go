@@ -85,17 +85,17 @@ func (k Keeper) GetIdLookup(ctx sdk.Context, streamId uint64) (types.StreamIdLoo
 	return idLookup, true
 }
 
-func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) (sdk.Coin, sdk.Coin, error) {
+func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) (sdk.Coin, sdk.Coin, sdk.Coin, sdk.Coin, error) {
 	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
 	params := k.GetParams(ctx)
 
 	if !ok {
-		return sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "stream does not exist")
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "stream does not exist")
 	}
 
 	// 1. check current stream deposit > 0
 	if stream.Deposit.IsNil() || stream.Deposit.IsNegative() || stream.Deposit.IsZero() {
-		return sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "stream deposit is zero")
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "stream deposit is zero")
 	}
 
 	// 2. calculate amount to claim
@@ -104,7 +104,7 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 
 	// 3. sanity check: amount <= deposit
 	if stream.Deposit.IsLT(amountToClaim) {
-		return sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "not enough deposit to claim")
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "not enough deposit to claim")
 	}
 
 	// 4. calculate validator fee and deduct from claim amount
@@ -114,7 +114,7 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, sdk.NewCoins(valFeeCoin))
 
 		if err != nil {
-			return sdk.Coin{}, sdk.Coin{}, err
+			return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, err
 		}
 	}
 
@@ -123,17 +123,18 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiverAddr, sdk.NewCoins(finalClaimCoin))
 
 		if err != nil {
-			return sdk.Coin{}, sdk.Coin{}, err
+			return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, err
 		}
 	}
 
 	// 6. update & save stream
 	stream.Deposit = remainingDepositValue
 	stream.LastOutflowTime = nowTime
+	stream.TotalStreamed = stream.TotalStreamed.Add(amountToClaim)
 	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
 
 	if err != nil {
-		return sdk.Coin{}, sdk.Coin{}, err
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, err
 	}
 
 	ctx.EventManager().EmitEvent(
@@ -145,13 +146,14 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 			sdk.NewAttribute(types.AttributeKeyStreamClaimTotal, amountToClaim.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamClaimAmountReceived, finalClaimCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamClaimValidatorFee, valFeeCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyRemainingDeposit, remainingDepositValue.String()),
 		),
 	)
 
-	return finalClaimCoin, valFeeCoin, nil
+	return finalClaimCoin, valFeeCoin, amountToClaim, remainingDepositValue, nil
 }
 
-func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, deposit sdk.Coin) (bool, error) {
+func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, topUpDeposit sdk.Coin) (bool, error) {
 
 	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
 
@@ -160,19 +162,43 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	}
 
 	nowTime := ctx.BlockTime()
-	// get updated deposit amount and re-calculate duration and deposit time to zero
-	newDeposit := stream.Deposit.Add(deposit)
-	duration := types.CalculateDuration(newDeposit, stream.FlowRate)
-	depositZeroTime := nowTime.Add(time.Second * time.Duration(duration))
+	// calculate duration and deposit time to zero extension
+	durationExtension := types.CalculateDuration(topUpDeposit, stream.FlowRate)
+	// should be added to the current deposit zero time if the stream has not expired, or from
+	// "now" if it has.
+	var depositZeroTime time.Time
 
-	// Send deposit from user acc to module acc
-	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, senderAddr, types.ModuleName, sdk.NewCoins(deposit))
+	if stream.DepositZeroTime.Before(nowTime) || stream.DepositZeroTime.Equal(nowTime) {
+		// In the case of expired, ClaimFromStream is called first to "reset" deposit to zero and forward
+		// remaining payment to the receiver wallet, effectively creating a new stream
+		if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
+			// only if stream has deposit
+			_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+			if err != nil {
+				return false, err
+			}
+			// refresh stream data, since deposits and total streamed may have changed
+			// after claim stream call
+			stream, _ = k.GetStream(ctx, receiverAddr, senderAddr)
+		}
+
+		// stream expired or new. Calculate from now
+		depositZeroTime = nowTime.Add(time.Second * time.Duration(durationExtension))
+	} else {
+		// stream not expired. Add to current deposit zero time
+		depositZeroTime = stream.DepositZeroTime.Add(time.Second * time.Duration(durationExtension))
+	}
+
+	// Send topUpDeposit from user acc to module acc
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, senderAddr, types.ModuleName, sdk.NewCoins(topUpDeposit))
 
 	if err != nil {
 		return false, err
 	}
 
 	// set and save new stream data
+	// add topUpDeposit to current stream deposit
+	newDeposit := stream.Deposit.Add(topUpDeposit) // may have been refreshed above for expired streams
 	stream.Deposit = newDeposit
 	stream.DepositZeroTime = depositZeroTime
 	stream.LastUpdatedTime = nowTime
@@ -187,8 +213,8 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 		sdk.NewEvent(
 			types.EventTypeDepositToStream,
 			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositAmount, deposit.String()),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositDuration, strconv.FormatInt(duration, 10)),
+			sdk.NewAttribute(types.AttributeKeyStreamDepositAmount, topUpDeposit.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamDepositDuration, strconv.FormatInt(durationExtension, 10)),
 			sdk.NewAttribute(types.AttributeKeyStreamDepositZeroTime, depositZeroTime.String()),
 		),
 	)
@@ -206,12 +232,28 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	// for event emission
 	oldFlowRate := stream.FlowRate
 
+	// default to now, and 0 duration. If there is no remaining deposit, then
+	// updating the flow won't have any effect on the deposit zero time, since there
+	// are no outstanding payments in the stream
 	nowTime := ctx.BlockTime()
 	depositZeroTime := nowTime
 	duration := int64(0)
 
+	// Check if the stream still has deposit value.
 	if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
-		// still has deposit. Calculate new deposit zero time based on new flow rate
+		// still has deposit. Claim unpaid deposits with the old flow rate first
+		_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+		if err != nil {
+			return err
+		}
+
+		// refresh stream data
+		stream, _ = k.GetStream(ctx, receiverAddr, senderAddr)
+
+		// Calculate new duration & deposit zero time based on new flow rate & remaining deposit.
+		// Calculation is from "now", since the Claim function has been called
+		// above. We're effectively creating a "new" stream, based on existing deposit value
+		// and the new flow rate
 		duration = types.CalculateDuration(stream.Deposit, newFlowRate)
 		depositZeroTime = nowTime.Add(time.Second * time.Duration(duration))
 	}
@@ -247,6 +289,16 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 
 	if !ok {
 		return sdkerrors.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
+	}
+
+	// claim any outstanding flow
+	if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
+		_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+		if err != nil {
+			return err
+		}
+		// refresh stream data
+		stream, _ = k.GetStream(ctx, receiverAddr, senderAddr)
 	}
 
 	refundCoin := stream.Deposit

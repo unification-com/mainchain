@@ -111,15 +111,17 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 		return nil, accErr
 	}
 
-	finalClaimCoin, valFeeCoin, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+	finalClaimCoin, valFeeCoin, totalClaimValue, remainingDeposit, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &types.MsgClaimStreamResponse{
-		TotalClaimed: finalClaimCoin,
-		ValidatorFee: valFeeCoin,
+		TotalClaimed:     totalClaimValue,
+		StreamPayment:    finalClaimCoin,
+		ValidatorFee:     valFeeCoin,
+		RemainingDeposit: remainingDeposit,
 	}, nil
 }
 
@@ -151,22 +153,10 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 		return nil, accErr
 	}
 
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+	_, ok = k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
-	}
-
-	// check if stream has "expired"
-	nowTime := ctx.BlockTime()
-	if stream.DepositZeroTime.Before(nowTime) {
-		// stream has "expired". Claim any unclaimed first if deposit > 0
-		if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
-			_, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
-			if err != nil {
-				return nil, err
-			}
-		}
 	}
 
 	// Add the requested deposit
@@ -209,26 +199,10 @@ func (k msgServer) UpdateFlowRate(goCtx context.Context, msg *types.MsgUpdateFlo
 		return nil, accErr
 	}
 
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+	_, ok = k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
-	}
-
-	if !stream.Cancellable {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not cancellable")
-	}
-
-	// check if stream has "expired"
-	nowTime := ctx.BlockTime()
-	if stream.DepositZeroTime.Before(nowTime) {
-		// stream has "expired". Claim any unclaimed first if deposit > 0
-		if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
-			_, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
-			if err != nil {
-				return nil, err
-			}
-		}
 	}
 
 	// update the flow rate
@@ -264,18 +238,10 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 		return nil, accErr
 	}
 
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+	_, ok = k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
-	}
-
-	// claim any outstanding flow
-	if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
-		_, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	// cancel stream

@@ -48,7 +48,7 @@ func NewKeeper(
 	}
 }
 
-// GetAuthority returns the x/mint module's authority.
+// GetAuthority returns the x/stream module's authority.
 func (k Keeper) GetAuthority() string {
 	return k.authority
 }

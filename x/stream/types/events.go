@@ -19,4 +19,5 @@ const (
 	AttributeKeyStreamClaimTotal          = "claim_total"
 	AttributeKeyOldFlowRate               = "old_flow_rate"
 	AttributeKeyNewFlowRate               = "new_flow_rate"
+	AttributeKeyRemainingDeposit          = "remaining_deposit"
 )

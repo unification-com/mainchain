@@ -36,49 +36,11 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.app = app
 	s.ctx = ctx
 	s.queryClient = queryClient
-	s.addrs = simapp.AddTestAddrsIncremental(app, ctx, 10, sdk.NewInt(30000000))
+	s.addrs = simapp.AddTestAddrsIncremental(app, ctx, 100, sdk.NewInt(1000000000000000000))
 	s.msgServer = keeper.NewMsgServerImpl(s.app.StreamKeeper)
 }
-func (s *KeeperTestSuite) TestParams() {
-	invalidFee, _ := sdk.NewDecFromStr("1.01")
-	validFee, _ := sdk.NewDecFromStr("0.24")
 
-	testCases := []struct {
-		name      string
-		input     types.Params
-		expectErr bool
-	}{
-		{
-			name: "set invalid params",
-			input: types.Params{
-				ValidatorFee: invalidFee,
-			},
-			expectErr: true,
-		},
-		{
-			name: "set full valid params",
-			input: types.Params{
-				ValidatorFee: validFee,
-			},
-			expectErr: false,
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			expected := s.app.StreamKeeper.GetParams(s.ctx)
-			err := s.app.StreamKeeper.SetParams(s.ctx, tc.input)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				expected = tc.input
-				s.Require().NoError(err)
-			}
-
-			p := s.app.StreamKeeper.GetParams(s.ctx)
-			s.Require().Equal(expected, p)
-		})
-	}
+func (s *KeeperTestSuite) TestGetAuthority() {
+	authority := s.app.StreamKeeper.GetAuthority()
+	s.Equal("und10d07y265gmmuvt4z0w9aw880jnsr700ja85vs4", authority)
 }

@@ -84,8 +84,8 @@ func (k msgServer) CreateStream(goCtx context.Context, msg *types.MsgCreateStrea
 
 }
 
-// ClaimStream claims payment from a stream
-func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream) (*types.MsgClaimStreamResponse, error) {
+// ClaimStreamById claims payment from a stream using the stream ID as input
+func (k msgServer) ClaimStreamById(goCtx context.Context, msg *types.MsgClaimStreamById) (*types.MsgClaimStreamByIdResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	receiverAddr, accErr := sdk.AccAddressFromBech32(msg.Receiver)
 	if accErr != nil {
@@ -117,8 +117,45 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 		return nil, err
 	}
 
-	return &types.MsgClaimStreamResponse{
+	return &types.MsgClaimStreamByIdResponse{
 		StreamId:         msg.StreamId,
+		TotalClaimed:     totalClaimValue,
+		StreamPayment:    finalClaimCoin,
+		ValidatorFee:     valFeeCoin,
+		RemainingDeposit: remainingDeposit,
+	}, nil
+}
+
+// ClaimStream claims from a stream using sender and receiver as inputs
+func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream) (*types.MsgClaimStreamResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	senderAddr, accErr := sdk.AccAddressFromBech32(msg.Sender)
+	if accErr != nil {
+		return nil, accErr
+	}
+	receiverAddr, accErr := sdk.AccAddressFromBech32(msg.Receiver)
+	if accErr != nil {
+		return nil, accErr
+	}
+
+	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+
+	if !ok {
+		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+	}
+
+	if stream.Receiver != msg.Receiver {
+		return nil, sdkerrors.Wrap(types.ErrInvalidData, "you are not the receiver")
+	}
+
+	finalClaimCoin, valFeeCoin, totalClaimValue, remainingDeposit, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MsgClaimStreamResponse{
+		StreamId:         stream.StreamId,
 		TotalClaimed:     totalClaimValue,
 		StreamPayment:    finalClaimCoin,
 		ValidatorFee:     valFeeCoin,

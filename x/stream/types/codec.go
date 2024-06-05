@@ -18,6 +18,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&GenesisState{}, "stream/GenesisState", nil)
 
 	legacy.RegisterAminoMsg(cdc, &MsgCreateStream{}, "mainchain/x/stream/MsgCreateStream")
+	legacy.RegisterAminoMsg(cdc, &MsgClaimStreamById{}, "mainchain/x/stream/MsgClaimStreamById")
 	legacy.RegisterAminoMsg(cdc, &MsgClaimStream{}, "mainchain/x/stream/MsgClaimStream")
 	legacy.RegisterAminoMsg(cdc, &MsgTopUpDeposit{}, "mainchain/x/stream/MsgTopUpDeposit")
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateFlowRate{}, "mainchain/x/stream/MsgUpdateFlowRate")
@@ -28,6 +29,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateStream{},
+		&MsgClaimStreamById{},
 		&MsgClaimStream{},
 		&MsgTopUpDeposit{},
 		&MsgUpdateFlowRate{},

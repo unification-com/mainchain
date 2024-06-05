@@ -15,6 +15,7 @@ const (
 
 var (
 	_ sdk.Msg = &MsgCreateStream{}
+	_ sdk.Msg = &MsgClaimStreamById{}
 	_ sdk.Msg = &MsgClaimStream{}
 	_ sdk.Msg = &MsgTopUpDeposit{}
 	_ sdk.Msg = &MsgUpdateFlowRate{}
@@ -86,15 +87,61 @@ func (msg MsgCreateStream) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{sender}
 }
 
-// --- Claim Stream Msg ---
+// --- Claim Stream By ID Msg ---
+
+// NewMsgClaimStreamById is a constructor function for MsgClaimStream
+func NewMsgClaimStreamById(
+	streamId uint64,
+	receiver sdk.AccAddress) *MsgClaimStreamById {
+	return &MsgClaimStreamById{
+		Receiver: receiver.String(),
+		StreamId: streamId,
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgClaimStreamById) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgClaimStreamById) Type() string { return ClaimStreamAction }
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgClaimStreamById) ValidateBasic() error {
+	_, accErr := sdk.AccAddressFromBech32(msg.Receiver)
+	if accErr != nil {
+		return accErr
+	}
+
+	if msg.StreamId < 1 {
+		return sdkerrors.Wrap(ErrInvalidData, "stream ID must be > zero")
+	}
+
+	return nil
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgClaimStreamById) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgClaimStreamById) GetSigners() []sdk.AccAddress {
+	receiver, err := sdk.AccAddressFromBech32(msg.Receiver)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{receiver}
+}
+
+// --- Claim Stream By sender & receiver Msg ---
 
 // NewMsgClaimStream is a constructor function for MsgClaimStream
 func NewMsgClaimStream(
-	streamId uint64,
+	sender sdk.AccAddress,
 	receiver sdk.AccAddress) *MsgClaimStream {
 	return &MsgClaimStream{
+		Sender:   sender.String(),
 		Receiver: receiver.String(),
-		StreamId: streamId,
 	}
 }
 
@@ -111,8 +158,9 @@ func (msg MsgClaimStream) ValidateBasic() error {
 		return accErr
 	}
 
-	if msg.StreamId < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "stream ID must be > zero")
+	_, accErr = sdk.AccAddressFromBech32(msg.Sender)
+	if accErr != nil {
+		return accErr
 	}
 
 	return nil

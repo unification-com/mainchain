@@ -62,6 +62,51 @@ func TestMsgCreateStream_ValidateBasic(t *testing.T) {
 	}
 }
 
+//	MsgClaimStreamById{}
+
+func TestMsgClaimStreamById_Route(t *testing.T) {
+	msg := types.MsgClaimStreamById{}
+	require.Equal(t, types.ModuleName, msg.Route())
+}
+
+func TestMsgClaimStreamById_Type(t *testing.T) {
+	msg := types.MsgClaimStreamById{}
+	require.Equal(t, types.ClaimStreamAction, msg.Type())
+}
+
+func TestMsgClaimStreamById_GetSigners(t *testing.T) {
+	privK2 := ed25519.GenPrivKey()
+	pubKey2 := privK2.PubKey()
+	receiverAddr := sdk.AccAddress(pubKey2.Address())
+	msg := types.MsgClaimStreamById{Receiver: receiverAddr.String()}
+	require.True(t, msg.GetSigners()[0].Equals(receiverAddr))
+}
+
+func TestMsgClaimStreamById_ValidateBasic(t *testing.T) {
+	tests := []struct {
+		streamId   uint64
+		receiver   sdk.AccAddress
+		expectPass bool
+	}{
+		{1, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{0, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{1, sdk.AccAddress{}, false},
+	}
+
+	for i, tc := range tests {
+		msg := types.NewMsgClaimStreamById(
+			tc.streamId,
+			tc.receiver,
+		)
+
+		if tc.expectPass {
+			require.NoError(t, msg.ValidateBasic(), "test: %v", i)
+		} else {
+			require.Error(t, msg.ValidateBasic(), "test: %v", i)
+		}
+	}
+}
+
 //	MsgClaimStream{}
 
 func TestMsgClaimStream_Route(t *testing.T) {
@@ -84,18 +129,18 @@ func TestMsgClaimStream_GetSigners(t *testing.T) {
 
 func TestMsgClaimStream_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		streamId   uint64
+		sender     sdk.AccAddress
 		receiver   sdk.AccAddress
 		expectPass bool
 	}{
-		{1, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{0, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{1, sdk.AccAddress{}, false},
+		{sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
 	}
 
 	for i, tc := range tests {
 		msg := types.NewMsgClaimStream(
-			tc.streamId,
+			tc.sender,
 			tc.receiver,
 		)
 
@@ -282,7 +327,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 				},
 			},
 			true,
-			"base validator fee cannot be negative:",
+			"validator fee cannot be negative:",
 		},
 		{
 			"validator fee > 100%",
@@ -293,7 +338,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 				},
 			},
 			true,
-			"base validator fee cannot be greater than 100% (1.00). Sent",
+			"validator fee cannot be greater than 100% (1.00). Sent",
 		},
 		{
 			"nil validator fee",
@@ -304,7 +349,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 				},
 			},
 			true,
-			"base validator fee cannot be nil",
+			"validator fee cannot be nil",
 		},
 		{
 			"Invalid authority",

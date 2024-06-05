@@ -252,6 +252,121 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 	}
 }
 
+func (s *KeeperTestSuite) TestMsgServerClaimStreamById() {
+	testCases := []struct {
+		name      string
+		create    *types.MsgCreateStream
+		claim     *types.MsgClaimStreamById
+		expResult *types.MsgClaimStreamByIdResponse
+		expectErr bool
+		expErrMsg string
+	}{
+		{
+			name: "valid claim",
+			create: &types.MsgCreateStream{
+				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
+				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				FlowRate: 1,
+			},
+			claim: &types.MsgClaimStreamById{
+				StreamId: 1,
+				Receiver: s.addrs[1].String(),
+			},
+			expResult: &types.MsgClaimStreamByIdResponse{
+				StreamId:         1,
+				TotalClaimed:     sdk.NewInt64Coin("stake", 1000),
+				StreamPayment:    sdk.NewInt64Coin("stake", 990),
+				ValidatorFee:     sdk.NewInt64Coin("stake", 10), // default fee is 1%
+				RemainingDeposit: sdk.NewInt64Coin("stake", 0),
+			},
+			expectErr: false,
+			expErrMsg: "",
+		},
+		{
+			name:   "invalid claim - bad receiver address",
+			create: nil,
+			claim: &types.MsgClaimStreamById{
+				StreamId: 1,
+				Receiver: "rubbish",
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "decoding bech32 failed",
+		},
+		{
+			name:   "invalid claim - empty receiver address",
+			create: nil,
+			claim: &types.MsgClaimStreamById{
+				StreamId: 1,
+				Receiver: "",
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "empty address string is not allowed",
+		},
+		{
+			name:   "invalid claim - streamId zero",
+			create: nil,
+			claim: &types.MsgClaimStreamById{
+				StreamId: 0,
+				Receiver: s.addrs[1].String(),
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "stream id must be > zero",
+		},
+		{
+			name:   "invalid claim - streamId does not exist",
+			create: nil,
+			claim: &types.MsgClaimStreamById{
+				StreamId: 999,
+				Receiver: s.addrs[1].String(),
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "stream id does not exist",
+		},
+		{
+			name:   "invalid claim - not receiver claiming",
+			create: nil,
+			claim: &types.MsgClaimStreamById{
+				StreamId: 1, // created earlier
+				Receiver: s.addrs[9].String(),
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "you are not the receiver",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			tCtx := s.ctx
+			nowTime := time.Unix(time.Now().Unix(), 0).UTC()
+
+			if tc.create != nil {
+				createTime := time.Unix(nowTime.Unix()-1000, 0).UTC()
+				tCtx = tCtx.WithBlockTime(createTime)
+				_, _ = s.msgServer.CreateStream(tCtx, tc.create)
+			}
+
+			tCtx = tCtx.WithBlockTime(nowTime)
+
+			res, err := s.msgServer.ClaimStreamById(tCtx, tc.claim)
+
+			if tc.expectErr {
+				s.Require().Error(err)
+				s.Require().ErrorContains(err, tc.expErrMsg)
+				s.Require().Nil(res)
+			} else {
+				s.Require().NoError(err)
+				s.Require().Equal(tc.expResult, res)
+			}
+		})
+	}
+}
+
 func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 	testCases := []struct {
 		name      string
@@ -270,7 +385,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 				FlowRate: 1,
 			},
 			claim: &types.MsgClaimStream{
-				StreamId: 1,
+				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
 			},
 			expResult: &types.MsgClaimStreamResponse{
@@ -287,7 +402,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			name:   "invalid claim - bad receiver address",
 			create: nil,
 			claim: &types.MsgClaimStream{
-				StreamId: 1,
+				Sender:   s.addrs[0].String(),
 				Receiver: "rubbish",
 			},
 			expResult: nil,
@@ -298,7 +413,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			name:   "invalid claim - empty receiver address",
 			create: nil,
 			claim: &types.MsgClaimStream{
-				StreamId: 1,
+				Sender:   s.addrs[0].String(),
 				Receiver: "",
 			},
 			expResult: nil,
@@ -306,37 +421,37 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			expErrMsg: "empty address string is not allowed",
 		},
 		{
-			name:   "invalid claim - streamId zero",
+			name:   "invalid claim - bad sender address",
 			create: nil,
 			claim: &types.MsgClaimStream{
-				StreamId: 0,
+				Sender:   "rubbish",
 				Receiver: s.addrs[1].String(),
 			},
 			expResult: nil,
 			expectErr: true,
-			expErrMsg: "stream id must be > zero",
+			expErrMsg: "decoding bech32 failed",
 		},
 		{
-			name:   "invalid claim - streamId does not exist",
+			name:   "invalid claim - empty sender address",
 			create: nil,
 			claim: &types.MsgClaimStream{
-				StreamId: 999,
+				Sender:   "",
 				Receiver: s.addrs[1].String(),
 			},
 			expResult: nil,
 			expectErr: true,
-			expErrMsg: "stream id does not exist",
+			expErrMsg: "empty address string is not allowed",
 		},
 		{
-			name:   "invalid claim - not receiver claiming",
+			name:   "invalid claim - stream does not exist",
 			create: nil,
 			claim: &types.MsgClaimStream{
-				StreamId: 1, // created earlier
+				Sender:   s.addrs[8].String(), // created earlier
 				Receiver: s.addrs[9].String(),
 			},
 			expResult: nil,
 			expectErr: true,
-			expErrMsg: "you are not the receiver",
+			expErrMsg: "stream not found",
 		},
 	}
 

@@ -29,10 +29,10 @@ func (k Keeper) SetHighestStreamId(ctx sdk.Context, StreamId uint64) {
 }
 
 // GetTotalDeposits gets the total deposits - just a wrapper for getting the module account's balances from the bank
-func (k Keeper) GetTotalDeposits(ctx sdk.Context) ([]sdk.Coin, bool) {
+func (k Keeper) GetTotalDeposits(ctx sdk.Context) sdk.Coins {
 	moduleAcc := k.GetStreamModuleAccount(ctx)
 	totalDeposits := k.bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
-	return totalDeposits, true
+	return totalDeposits
 }
 
 // SetStream Sets the stream
@@ -100,18 +100,18 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 
 	// 2. calculate amount to claim
 	nowTime := ctx.BlockTime()
-	amountToClaim, remainingDepositValue := types.CalculateAmountToClaim(nowTime, stream.DepositZeroTime, stream.LastOutflowTime, stream.Deposit, stream.FlowRate)
+	claimTotal, remainingDeposit := types.CalculateAmountToClaim(nowTime, stream.DepositZeroTime, stream.LastOutflowTime, stream.Deposit, stream.FlowRate)
 
 	// 3. sanity check: amount <= deposit
-	if stream.Deposit.IsLT(amountToClaim) {
+	if stream.Deposit.IsLT(claimTotal) {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "not enough deposit to claim")
 	}
 
 	// 4. calculate validator fee and deduct from claim amount
-	finalClaimCoin, valFeeCoin := types.CalculateValidatorFee(params.ValidatorFee, amountToClaim)
+	receiverAmount, valFee := types.CalculateValidatorFee(params.ValidatorFee, claimTotal)
 
-	if valFeeCoin.Amount.GT(sdk.NewIntFromUint64(0)) {
-		err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, sdk.NewCoins(valFeeCoin))
+	if valFee.Amount.GT(sdk.NewIntFromUint64(0)) {
+		err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, sdk.NewCoins(valFee))
 
 		if err != nil {
 			return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, err
@@ -119,8 +119,8 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	}
 
 	// 5. send modified amount from module account to receiver
-	if finalClaimCoin.Amount.GT(sdk.NewIntFromUint64(0)) {
-		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiverAddr, sdk.NewCoins(finalClaimCoin))
+	if receiverAmount.Amount.GT(sdk.NewIntFromUint64(0)) {
+		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiverAddr, sdk.NewCoins(receiverAmount))
 
 		if err != nil {
 			return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, err
@@ -128,9 +128,9 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	}
 
 	// 6. update & save stream
-	stream.Deposit = remainingDepositValue
+	stream.Deposit = remainingDeposit
 	stream.LastOutflowTime = nowTime
-	stream.TotalStreamed = stream.TotalStreamed.Add(amountToClaim)
+	stream.TotalStreamed = stream.TotalStreamed.Add(claimTotal)
 	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
 
 	if err != nil {
@@ -143,14 +143,14 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
 			sdk.NewAttribute(types.AttributeKeyStreamSender, stream.Sender),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, stream.Receiver),
-			sdk.NewAttribute(types.AttributeKeyStreamClaimTotal, amountToClaim.String()),
-			sdk.NewAttribute(types.AttributeKeyStreamClaimAmountReceived, finalClaimCoin.String()),
-			sdk.NewAttribute(types.AttributeKeyStreamClaimValidatorFee, valFeeCoin.String()),
-			sdk.NewAttribute(types.AttributeKeyRemainingDeposit, remainingDepositValue.String()),
+			sdk.NewAttribute(types.AttributeKeyClaimTotal, claimTotal.String()),
+			sdk.NewAttribute(types.AttributeKeyClaimAmountReceived, receiverAmount.String()),
+			sdk.NewAttribute(types.AttributeKeyClaimValidatorFee, valFee.String()),
+			sdk.NewAttribute(types.AttributeKeyRemainingDeposit, remainingDeposit.String()),
 		),
 	)
 
-	return finalClaimCoin, valFeeCoin, amountToClaim, remainingDepositValue, nil
+	return receiverAmount, valFee, claimTotal, remainingDeposit, nil
 }
 
 func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, topUpDeposit sdk.Coin) (bool, error) {
@@ -213,9 +213,10 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 		sdk.NewEvent(
 			types.EventTypeDepositToStream,
 			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositAmount, topUpDeposit.String()),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositDuration, strconv.FormatInt(durationExtension, 10)),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositZeroTime, depositZeroTime.String()),
+			sdk.NewAttribute(types.AttributeKeyAmountDeposited, topUpDeposit.String()),
+			sdk.NewAttribute(types.AttributeKeyDepositDuration, strconv.FormatInt(durationExtension, 10)),
+			sdk.NewAttribute(types.AttributeKeyDepositZeroTime, depositZeroTime.String()),
+			sdk.NewAttribute(types.AttributeKeyRemainingDeposit, newDeposit.String()),
 		),
 	)
 
@@ -275,8 +276,9 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOldFlowRate, strconv.FormatInt(oldFlowRate, 10)),
 			sdk.NewAttribute(types.AttributeKeyNewFlowRate, strconv.FormatInt(newFlowRate, 10)),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositDuration, strconv.FormatInt(duration, 10)),
-			sdk.NewAttribute(types.AttributeKeyStreamDepositZeroTime, depositZeroTime.String()),
+			sdk.NewAttribute(types.AttributeKeyDepositDuration, strconv.FormatInt(duration, 10)),
+			sdk.NewAttribute(types.AttributeKeyDepositZeroTime, depositZeroTime.String()),
+			sdk.NewAttribute(types.AttributeKeyRemainingDeposit, stream.Deposit.String()),
 		),
 	)
 
@@ -327,6 +329,10 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 		sdk.NewEvent(
 			types.EventTypeStreamCancelled,
 			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
+			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyRefundAmount, refundCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyRemainingDeposit, stream.Deposit.String()),
 		),
 	)
 
@@ -353,6 +359,10 @@ func (k Keeper) CreateIdLookup(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 // Deposit and Deposit Zero Time are handled by the AddDeposit function.
 // The value passed in the deposit var is only used to determine the denomination of the deposit.
 func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, deposit sdk.Coin, flowRate int64) (types.Stream, error) {
+
+	if k.IsStream(ctx, receiverAddr, senderAddr) {
+		return types.Stream{}, sdkerrors.Wrap(types.ErrStreamExists, "stream exists")
+	}
 
 	streamId, err := k.GetHighestStreamId(ctx)
 
@@ -390,7 +400,7 @@ func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(streamId, 10)),
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
-			sdk.NewAttribute(types.AttributeKeyStreamFlowRate, strconv.FormatInt(flowRate, 10)),
+			sdk.NewAttribute(types.AttributeKeyFlowRate, strconv.FormatInt(flowRate, 10)),
 		),
 	)
 

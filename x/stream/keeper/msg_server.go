@@ -118,6 +118,7 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 	}
 
 	return &types.MsgClaimStreamResponse{
+		StreamId:         msg.StreamId,
 		TotalClaimed:     totalClaimValue,
 		StreamPayment:    finalClaimCoin,
 		ValidatorFee:     valFeeCoin,
@@ -153,9 +154,7 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 		return nil, accErr
 	}
 
-	_, ok = k.GetStream(ctx, receiverAddr, senderAddr)
-
-	if !ok {
+	if !k.IsStream(ctx, receiverAddr, senderAddr) {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
@@ -166,8 +165,15 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 		return nil, err
 	}
 
-	// ToDo - fill this with some apposite data
-	return &types.MsgTopUpDepositResponse{}, nil
+	// get updated stream data
+	stream, _ := k.GetStream(ctx, receiverAddr, senderAddr)
+
+	return &types.MsgTopUpDepositResponse{
+		StreamId:        msg.StreamId,
+		DepositAmount:   msg.Deposit,
+		CurrentDeposit:  stream.Deposit,
+		DepositZeroTime: stream.DepositZeroTime,
+	}, nil
 
 }
 
@@ -199,9 +205,7 @@ func (k msgServer) UpdateFlowRate(goCtx context.Context, msg *types.MsgUpdateFlo
 		return nil, accErr
 	}
 
-	_, ok = k.GetStream(ctx, receiverAddr, senderAddr)
-
-	if !ok {
+	if !k.IsStream(ctx, receiverAddr, senderAddr) {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
@@ -212,7 +216,10 @@ func (k msgServer) UpdateFlowRate(goCtx context.Context, msg *types.MsgUpdateFlo
 		return nil, err
 	}
 
-	return &types.MsgUpdateFlowRateResponse{}, nil
+	return &types.MsgUpdateFlowRateResponse{
+		StreamId: msg.StreamId,
+		FlowRate: msg.FlowRate,
+	}, nil
 }
 
 func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStream) (*types.MsgCancelStreamResponse, error) {
@@ -251,7 +258,9 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 		return nil, err
 	}
 
-	return &types.MsgCancelStreamResponse{}, nil
+	return &types.MsgCancelStreamResponse{
+		StreamId: msg.StreamId,
+	}, nil
 }
 
 func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {

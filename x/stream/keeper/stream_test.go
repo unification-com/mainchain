@@ -11,19 +11,19 @@ func (s *KeeperTestSuite) TestSetGetHighestStreamId() {
 	// should be 1 by default
 	highestId, err := s.app.StreamKeeper.GetHighestStreamId(s.ctx)
 	s.Require().NoError(err)
-	s.Equal(uint64(1), highestId)
+	s.Require().Equal(uint64(1), highestId)
 
 	// should set and get
 	expHighestId := uint64(24)
 	s.app.StreamKeeper.SetHighestStreamId(s.ctx, expHighestId)
 	highestId, err = s.app.StreamKeeper.GetHighestStreamId(s.ctx)
 	s.Require().NoError(err)
-	s.Equal(expHighestId, highestId)
+	s.Require().Equal(expHighestId, highestId)
 }
 
 func (s *KeeperTestSuite) TestIsStream() {
 	ok := s.app.StreamKeeper.IsStream(s.ctx, s.addrs[1], s.addrs[0])
-	s.False(ok)
+	s.Require().False(ok)
 
 	nowTime := s.ctx.BlockTime()
 
@@ -45,13 +45,13 @@ func (s *KeeperTestSuite) TestIsStream() {
 	s.Require().NoError(err)
 
 	ok = s.app.StreamKeeper.IsStream(s.ctx, s.addrs[1], s.addrs[0])
-	s.True(ok)
+	s.Require().True(ok)
 }
 
 func (s *KeeperTestSuite) TestSetGetStream() {
 
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
-	s.False(ok)
+	s.Require().False(ok)
 	s.Require().Equal(types.Stream{}, stream)
 
 	nowTime := s.ctx.BlockTime()
@@ -75,7 +75,7 @@ func (s *KeeperTestSuite) TestSetGetStream() {
 
 	stream, ok = s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
 
-	s.True(ok)
+	s.Require().True(ok)
 	s.Require().Equal(expStream.StreamId, stream.StreamId)
 	s.Require().Equal(expStream.Sender, stream.Sender)
 	s.Require().Equal(expStream.Receiver, stream.Receiver)
@@ -92,8 +92,8 @@ func (s *KeeperTestSuite) TestSetGetStream() {
 func (s *KeeperTestSuite) TestSetGetIdLookup() {
 	// default empty, doesn't exist
 	lookup, ok := s.app.StreamKeeper.GetIdLookup(s.ctx, 24)
-	s.False(ok)
-	s.Equal(types.StreamIdLookup{}, lookup)
+	s.Require().False(ok)
+	s.Require().Equal(types.StreamIdLookup{}, lookup)
 
 	// set
 	expIdLookup := types.StreamIdLookup{
@@ -102,18 +102,18 @@ func (s *KeeperTestSuite) TestSetGetIdLookup() {
 	}
 
 	err := s.app.StreamKeeper.SetIdLookup(s.ctx, 24, expIdLookup)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	// get
 	lookup, ok = s.app.StreamKeeper.GetIdLookup(s.ctx, 24)
-	s.True(ok)
-	s.Equal(expIdLookup, lookup)
+	s.Require().True(ok)
+	s.Require().Equal(expIdLookup, lookup)
 }
 
 func (s *KeeperTestSuite) TestSetGetIdLookupFromStream() {
 	lookup, ok := s.app.StreamKeeper.GetIdLookup(s.ctx, 24)
-	s.False(ok)
-	s.Equal(types.StreamIdLookup{}, lookup)
+	s.Require().False(ok)
+	s.Require().Equal(types.StreamIdLookup{}, lookup)
 
 	// set stream
 	nowTime := s.ctx.BlockTime()
@@ -142,12 +142,12 @@ func (s *KeeperTestSuite) TestSetGetIdLookupFromStream() {
 	}
 
 	err = s.app.StreamKeeper.SetIdLookup(s.ctx, 1, expIdLookup)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	// get lookup
 	lookup, ok = s.app.StreamKeeper.GetIdLookup(s.ctx, 1)
-	s.True(ok)
-	s.Equal(expIdLookup, lookup)
+	s.Require().True(ok)
+	s.Require().Equal(expIdLookup, lookup)
 
 	sender, _ := sdk.AccAddressFromBech32(lookup.Sender)
 	receiver, _ := sdk.AccAddressFromBech32(lookup.Receiver)
@@ -155,7 +155,7 @@ func (s *KeeperTestSuite) TestSetGetIdLookupFromStream() {
 	// get stream
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, receiver, sender)
 
-	s.True(ok)
+	s.Require().True(ok)
 	s.Require().Equal(expStream.StreamId, stream.StreamId)
 	s.Require().Equal(expStream.Sender, stream.Sender)
 	s.Require().Equal(expStream.Receiver, stream.Receiver)
@@ -188,7 +188,7 @@ func (s *KeeperTestSuite) TestCreateNewStream_BasicSuccess() {
 
 	stream, err := s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), 100)
 
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	s.Require().Equal(expStream.StreamId, stream.StreamId)
 	s.Require().Equal(expStream.Sender, stream.Sender)
@@ -209,33 +209,33 @@ func (s *KeeperTestSuite) TestCreateNewStream_BasicSuccess() {
 		if ev.Type == types.EventTypeCreateStreamAction {
 			hasCreateStreamEvent = true
 			attrStreamId, ok := ev.GetAttribute(types.AttributeKeyStreamId)
-			s.True(ok)
-			s.Equal(types.AttributeKeyStreamId, attrStreamId.Key)
-			s.Equal("1", attrStreamId.Value)
+			s.Require().True(ok)
+			s.Require().Equal(types.AttributeKeyStreamId, attrStreamId.Key)
+			s.Require().Equal("1", attrStreamId.Value)
 
 			attrSender, ok := ev.GetAttribute(types.AttributeKeyStreamSender)
-			s.True(ok)
-			s.Equal(types.AttributeKeyStreamSender, attrSender.Key)
-			s.Equal(expStream.Sender, attrSender.Value)
+			s.Require().True(ok)
+			s.Require().Equal(types.AttributeKeyStreamSender, attrSender.Key)
+			s.Require().Equal(expStream.Sender, attrSender.Value)
 
 			attrReceiver, ok := ev.GetAttribute(types.AttributeKeyStreamReceiver)
-			s.True(ok)
-			s.Equal(types.AttributeKeyStreamReceiver, attrReceiver.Key)
-			s.Equal(expStream.Receiver, attrReceiver.Value)
+			s.Require().True(ok)
+			s.Require().Equal(types.AttributeKeyStreamReceiver, attrReceiver.Key)
+			s.Require().Equal(expStream.Receiver, attrReceiver.Value)
 
-			attrFlowRate, ok := ev.GetAttribute(types.AttributeKeyStreamFlowRate)
-			s.True(ok)
-			s.Equal(types.AttributeKeyStreamFlowRate, attrFlowRate.Key)
-			s.Equal("100", attrFlowRate.Value)
+			attrFlowRate, ok := ev.GetAttribute(types.AttributeKeyFlowRate)
+			s.Require().True(ok)
+			s.Require().Equal(types.AttributeKeyFlowRate, attrFlowRate.Key)
+			s.Require().Equal("100", attrFlowRate.Value)
 		}
 	}
 
 	// should emit create_stream event
-	s.True(hasCreateStreamEvent)
+	s.Require().True(hasCreateStreamEvent)
 
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
 
-	s.True(ok)
+	s.Require().True(ok)
 	s.Require().Equal(expStream.StreamId, stream.StreamId)
 	s.Require().Equal(expStream.Sender, stream.Sender)
 	s.Require().Equal(expStream.Receiver, stream.Receiver)
@@ -247,6 +247,30 @@ func (s *KeeperTestSuite) TestCreateNewStream_BasicSuccess() {
 	s.Require().Equal(expStream.DepositZeroTime, stream.DepositZeroTime)
 	s.Require().Equal(expStream.TotalStreamed, stream.TotalStreamed)
 	s.Require().Equal(expStream.Cancellable, stream.Cancellable)
+}
+
+func (s *KeeperTestSuite) TestCreateNewStream_IdIncrements() {
+	for i := uint64(1); i < 100; i++ {
+		stream, err := s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[i-1], s.addrs[i], sdk.NewInt64Coin("stake", 1000), 1)
+		s.Require().NoError(err)
+		s.Require().Equal(i, stream.StreamId)
+
+		str, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[i-1], s.addrs[i])
+		s.Require().True(ok)
+		s.Require().Equal(i, str.StreamId)
+
+		nextId, err := s.app.StreamKeeper.GetHighestStreamId(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(i+1, nextId)
+	}
+}
+
+func (s *KeeperTestSuite) TestCreateNewStream_Fail_Stream_Exists() {
+	_, err := s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), 100)
+	s.Require().NoError(err)
+
+	_, err = s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), 100)
+	s.Require().ErrorContains(err, "stream exists")
 }
 
 func (s *KeeperTestSuite) TestCreateIdLookup() {
@@ -277,12 +301,12 @@ func (s *KeeperTestSuite) TestCreateIdLookup() {
 	}
 
 	err = s.app.StreamKeeper.CreateIdLookup(s.ctx, s.addrs[1], s.addrs[0], 1)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	// get lookup
 	lookup, ok := s.app.StreamKeeper.GetIdLookup(s.ctx, 1)
-	s.True(ok)
-	s.Equal(expIdLookup, lookup)
+	s.Require().True(ok)
+	s.Require().Equal(expIdLookup, lookup)
 
 	sender, _ := sdk.AccAddressFromBech32(lookup.Sender)
 	receiver, _ := sdk.AccAddressFromBech32(lookup.Receiver)
@@ -290,7 +314,7 @@ func (s *KeeperTestSuite) TestCreateIdLookup() {
 	// get stream
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, receiver, sender)
 
-	s.True(ok)
+	s.Require().True(ok)
 	s.Require().Equal(expStream.StreamId, stream.StreamId)
 	s.Require().Equal(expStream.Sender, stream.Sender)
 	s.Require().Equal(expStream.Receiver, stream.Receiver)
@@ -328,8 +352,8 @@ func (s *KeeperTestSuite) TestAddDeposit_Basic_Success() {
 
 	// Add Deposit to stream
 	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)))
-	s.True(ok)
-	s.NoError(err)
+	s.Require().True(ok)
+	s.Require().NoError(err)
 
 	// check events ar emitted
 	events := s.ctx.EventManager().Events()
@@ -339,44 +363,49 @@ func (s *KeeperTestSuite) TestAddDeposit_Basic_Success() {
 		if ev.Type == types.EventTypeDepositToStream {
 			hasEvent = true
 			attrStreamId, evOk := ev.GetAttribute(types.AttributeKeyStreamId)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamId, attrStreamId.Key)
-			s.Equal("1", attrStreamId.Value)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyStreamId, attrStreamId.Key)
+			s.Require().Equal("1", attrStreamId.Value)
 
-			attrDepositAmount, evOk := ev.GetAttribute(types.AttributeKeyStreamDepositAmount)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamDepositAmount, attrDepositAmount.Key)
-			s.Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)).String(), attrDepositAmount.Value)
+			attrDepositAmount, evOk := ev.GetAttribute(types.AttributeKeyAmountDeposited)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyAmountDeposited, attrDepositAmount.Key)
+			s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)).String(), attrDepositAmount.Value)
 
-			attrDepositDuration, evOk := ev.GetAttribute(types.AttributeKeyStreamDepositDuration)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamDepositDuration, attrDepositDuration.Key)
-			s.Equal("1000", attrDepositDuration.Value)
+			attrDepositDuration, evOk := ev.GetAttribute(types.AttributeKeyDepositDuration)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyDepositDuration, attrDepositDuration.Key)
+			s.Require().Equal("1000", attrDepositDuration.Value)
 
-			attrDepositZeroTime, evOk := ev.GetAttribute(types.AttributeKeyStreamDepositZeroTime)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamDepositZeroTime, attrDepositZeroTime.Key)
-			s.Equal(nowTime.Add(time.Second*1000).String(), attrDepositZeroTime.Value)
+			attrDepositZeroTime, evOk := ev.GetAttribute(types.AttributeKeyDepositZeroTime)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyDepositZeroTime, attrDepositZeroTime.Key)
+			s.Require().Equal(nowTime.Add(time.Second*1000).String(), attrDepositZeroTime.Value)
+
+			attrRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
+			s.Require().Equal("1000stake", attrRemainingDeposit.Value)
 		}
 	}
 
 	// should emit stream_deposit event
-	s.True(hasEvent)
+	s.Require().True(hasEvent)
 
 	// get stream from keeper
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
 	// should now be 1000stake
-	s.Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), stream.Deposit)
+	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), stream.Deposit)
 	// Deposit of 1000, flow rate of 100/s, should have deposit zero time of now + 10s
-	s.Equal(nowTime.Add(time.Second*1000), stream.DepositZeroTime)
-	s.Equal(nowTime, stream.LastUpdatedTime)
+	s.Require().Equal(nowTime.Add(time.Second*1000), stream.DepositZeroTime)
+	s.Require().Equal(nowTime, stream.LastUpdatedTime)
 }
 
 func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingNotExpired() {
 	tCtx := s.ctx
 
-	blockTime := time.Now()
-	tCtx = tCtx.WithBlockTime(blockTime)
+	blockTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(1)
 	nowTime := tCtx.BlockTime()
 
 	testCases := []struct {
@@ -455,10 +484,10 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingNotExpired() {
 		recAddr, _ := sdk.AccAddressFromBech32(tc.stream.Receiver)
 		// deposit zero time is in the future, so just use SetStream instead of create & add deposit combo
 		err := s.app.StreamKeeper.SetStream(tCtx, recAddr, sendAddr, tc.stream)
-		s.NoError(err, "SetStream NoError test name %s", tc.name)
+		s.Require().NoError(err, "SetStream NoError test name %s", tc.name)
 		ok, err := s.app.StreamKeeper.AddDeposit(tCtx, recAddr, sendAddr, tc.deposit)
-		s.True(ok, "AddDeposit True test name %s", tc.name)
-		s.NoError(err, "AddDeposit NoError test name %s", tc.name)
+		s.Require().True(ok, "AddDeposit True test name %s", tc.name)
+		s.Require().NoError(err, "AddDeposit NoError test name %s", tc.name)
 
 		// events should NOT contain claim_stream
 		events := tCtx.EventManager().Events()
@@ -468,23 +497,23 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingNotExpired() {
 				hasEvent = true
 			}
 		}
-		s.False(hasEvent)
+		s.Require().False(hasEvent)
 
 		stream, ok := s.app.StreamKeeper.GetStream(tCtx, recAddr, sendAddr)
-		s.True(ok, "GetStream True test name %s", tc.name)
-		s.Equal(tc.expDeposit, stream.Deposit, "GetStream Deposit Equal test name %s", tc.name)
-		s.Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
+		s.Require().True(ok, "GetStream True test name %s", tc.name)
+		s.Require().Equal(tc.expDeposit, stream.Deposit, "GetStream Deposit Equal test name %s", tc.name)
+		s.Require().Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
 
 		duration := stream.DepositZeroTime.Unix() - stream.LastOutflowTime.Unix()
-		s.Equal(tc.expDiff, duration, "duration test name %s", tc.name)
+		s.Require().Equal(tc.expDiff, duration, "duration test name %s", tc.name)
 	}
 }
 
 func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingExpired() {
 	tCtx := s.ctx
 
-	blockTime := time.Now()
-	tCtx = tCtx.WithBlockTime(blockTime)
+	blockTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(1)
 	nowTime := tCtx.BlockTime()
 
 	testCases := []struct {
@@ -588,19 +617,19 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingExpired() {
 
 		// create
 		_, err := s.app.StreamKeeper.CreateNewStream(tCtx, recAddr, sendAddr, tc.initialDeposit, tc.stream.FlowRate)
-		s.NoError(err, "CreateNewStream NoError test name %s", tc.name)
+		s.Require().NoError(err, "CreateNewStream NoError test name %s", tc.name)
 
 		// add initial deposit
 		if tc.initialDeposit.Amount.GT(sdk.NewIntFromUint64(0)) {
 			ok, err := s.app.StreamKeeper.AddDeposit(tCtx, recAddr, sendAddr, tc.initialDeposit)
-			s.True(ok)
-			s.NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
+			s.Require().True(ok)
+			s.Require().NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
 		}
 
 		// check stream
 		stream, ok := s.app.StreamKeeper.GetStream(tCtx, recAddr, sendAddr)
-		s.True(ok)
-		s.Equal(tc.initialDeposit, stream.Deposit)
+		s.Require().True(ok)
+		s.Require().Equal(tc.initialDeposit, stream.Deposit)
 
 		// set times etc.
 		stream.CreateTime = tc.stream.CreateTime
@@ -608,12 +637,12 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingExpired() {
 		stream.LastOutflowTime = tc.stream.LastOutflowTime
 		stream.DepositZeroTime = tc.stream.DepositZeroTime
 		err = s.app.StreamKeeper.SetStream(tCtx, recAddr, sendAddr, stream)
-		s.NoError(err, "SetStream NoError test name %s", tc.name)
+		s.Require().NoError(err, "SetStream NoError test name %s", tc.name)
 
 		// top up with new deposit
 		ok, err = s.app.StreamKeeper.AddDeposit(tCtx, recAddr, sendAddr, tc.newDeposit)
-		s.True(ok, "AddDeposit True test name %s", tc.name)
-		s.NoError(err, "AddDeposit NoError test name %s", tc.name)
+		s.Require().True(ok, "AddDeposit True test name %s", tc.name)
+		s.Require().NoError(err, "AddDeposit NoError test name %s", tc.name)
 
 		// check events do contain claim_stream if expTotalStreamed > 0
 		events := tCtx.EventManager().Events()
@@ -624,20 +653,20 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingExpired() {
 			}
 		}
 		if tc.expTotalStreamed.IsPositive() {
-			s.True(hasEvent)
+			s.Require().True(hasEvent)
 		} else {
-			s.False(hasEvent)
+			s.Require().False(hasEvent)
 		}
 
 		// final check
 		stream, ok = s.app.StreamKeeper.GetStream(tCtx, recAddr, sendAddr)
-		s.True(ok, "GetStream True test name %s", tc.name)
-		s.Equal(tc.expDeposit, stream.Deposit, "GetStream Deposit Equal test name %s", tc.name)
-		s.Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
-		s.Equal(tc.expTotalStreamed, stream.TotalStreamed, "GetStream TotalStreamed Equal test name %s", tc.name)
-		s.Equal(nowTime, stream.LastUpdatedTime, "GetStream TotalStreamed Equal test name %s", tc.name)
+		s.Require().True(ok, "GetStream True test name %s", tc.name)
+		s.Require().Equal(tc.expDeposit, stream.Deposit, "GetStream Deposit Equal test name %s", tc.name)
+		s.Require().Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
+		s.Require().Equal(tc.expTotalStreamed, stream.TotalStreamed, "GetStream TotalStreamed Equal test name %s", tc.name)
+		s.Require().Equal(nowTime, stream.LastUpdatedTime, "GetStream TotalStreamed Equal test name %s", tc.name)
 		if tc.expTotalStreamed.IsPositive() {
-			s.Equal(nowTime, stream.LastOutflowTime, "GetStream TotalStreamed Equal test name %s", tc.name)
+			s.Require().Equal(nowTime, stream.LastOutflowTime, "GetStream TotalStreamed Equal test name %s", tc.name)
 		}
 
 	}
@@ -763,33 +792,33 @@ func (s *KeeperTestSuite) TestAddDeposit_Scenarios() {
 		nowTime := time.Unix(time.Now().Unix(), 0).UTC()
 		// set create time to past
 		blockTimeCreate := time.Unix(nowTime.Unix()-tc.createTimeOffset, 0).UTC()
-		tCtx = tCtx.WithBlockTime(blockTimeCreate)
+		tCtx = tCtx.WithBlockTime(blockTimeCreate).WithBlockHeight(1)
 
 		// create
 		_, err := s.app.StreamKeeper.CreateNewStream(tCtx, tc.receiver, tc.sender, tc.initialDeposit, tc.flowRate)
 
-		s.NoError(err, "CreateNewStream NoError test name %s", tc.name)
+		s.Require().NoError(err, "CreateNewStream NoError test name %s", tc.name)
 
 		// add initial deposit
 		ok, err := s.app.StreamKeeper.AddDeposit(tCtx, tc.receiver, tc.sender, tc.initialDeposit)
-		s.True(ok, "initialDeposit ok NoError test name %s", tc.name)
-		s.NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
+		s.Require().True(ok, "initialDeposit ok NoError test name %s", tc.name)
+		s.Require().NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
 
 		// check stream
 		stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
 		// should be in the future from the creation time
 		expInitialDepZeroTime := time.Unix(blockTimeCreate.Unix()+tc.expInitialDepZeroTime, 0).UTC()
-		s.True(ok, "GetStream ok NoError test name %s", tc.name)
-		s.Equal(tc.initialDeposit, stream.Deposit, "tc.initialDeposit Equal stream.Deposit test name %s", tc.name)
-		s.Equal(expInitialDepZeroTime, stream.DepositZeroTime, "expInitialDepZeroTimeEqual stream.DepositZeroTime test name %s", tc.name)
+		s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
+		s.Require().Equal(tc.initialDeposit, stream.Deposit, "tc.initialDeposit Equal stream.Deposit test name %s", tc.name)
+		s.Require().Equal(expInitialDepZeroTime, stream.DepositZeroTime, "expInitialDepZeroTimeEqual stream.DepositZeroTime test name %s", tc.name)
 
 		// set block time to now
-		tCtx = tCtx.WithBlockTime(nowTime)
+		tCtx = tCtx.WithBlockTime(nowTime).WithBlockHeight(2)
 
 		// add new deposit
 		ok, err = s.app.StreamKeeper.AddDeposit(tCtx, tc.receiver, tc.sender, tc.newDeposit)
-		s.True(ok, "newDeposit AddDeposit ok test name %s", tc.name)
-		s.NoError(err, "newDeposit AddDeposit NoError test name %s", tc.name)
+		s.Require().True(ok, "newDeposit AddDeposit ok test name %s", tc.name)
+		s.Require().NoError(err, "newDeposit AddDeposit NoError test name %s", tc.name)
 
 		events := tCtx.EventManager().Events()
 		hasEvent := false
@@ -804,7 +833,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Scenarios() {
 		}
 
 		if tc.expClaim.Amount.IsPositive() {
-			s.True(hasEvent)
+			s.Require().True(hasEvent)
 			for _, ev := range events {
 				if ev.Type == types.EventTypeClaimStreamAction {
 					attrStreamId, _ := ev.GetAttribute(types.AttributeKeyStreamId)
@@ -812,39 +841,39 @@ func (s *KeeperTestSuite) TestAddDeposit_Scenarios() {
 						// skip events not for this stream
 						continue
 					}
-					attrClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyStreamClaimTotal)
-					s.True(evOk)
-					s.Equal(types.AttributeKeyStreamClaimTotal, attrClaimTotal.Key)
-					s.Equal(tc.expClaim.String(), attrClaimTotal.Value, "AttributeKeyStreamClaimTotal test name %s", tc.name)
+					attrClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyClaimTotal)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyClaimTotal, attrClaimTotal.Key)
+					s.Require().Equal(tc.expClaim.String(), attrClaimTotal.Value, "AttributeKeyClaimTotal test name %s", tc.name)
 
 					attrRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
-					s.True(evOk)
-					s.Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
-					s.Equal(tc.expRemainDeposit.String(), attrRemainingDeposit.Value, "AttributeKeyRemainingDeposit test name %s", tc.name)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
+					s.Require().Equal(tc.expRemainDeposit.String(), attrRemainingDeposit.Value, "AttributeKeyRemainingDeposit test name %s", tc.name)
 				}
 			}
 		} else {
-			s.False(hasEvent)
+			s.Require().False(hasEvent)
 		}
 
 		// check results
 		expDepZeroTime := time.Unix(nowTime.Unix()+tc.expNewDepZeroTime, 0).UTC()
 		stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
-		s.True(ok, "GetStream ok NoError test name %s", tc.name)
-		s.Equal(tc.expNewDeposit, stream.Deposit, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
-		s.Equal(expDepZeroTime, stream.DepositZeroTime, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
+		s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
+		s.Require().Equal(tc.expNewDeposit, stream.Deposit, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
+		s.Require().Equal(expDepZeroTime, stream.DepositZeroTime, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
 	}
 }
 
 func (s *KeeperTestSuite) TestAddDeposit_Fail_StreamNotExist() {
 	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)))
-	s.False(ok)
-	s.ErrorContains(err, "stream does not exist")
+	s.Require().False(ok)
+	s.Require().ErrorContains(err, "stream does not exist")
 
 	// double check
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
-	s.False(ok)
-	s.Equal(types.Stream{}, stream)
+	s.Require().False(ok)
+	s.Require().Equal(types.Stream{}, stream)
 }
 
 func (s *KeeperTestSuite) TestAddDeposit_Fail_InsufficientBalance() {
@@ -871,8 +900,8 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_InsufficientBalance() {
 
 	// deposit more than sender's balance
 	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000000000000000001)))
-	s.False(ok)
-	s.ErrorContains(err, "insufficient funds")
+	s.Require().False(ok)
+	s.Require().ErrorContains(err, "insufficient funds")
 
 }
 
@@ -880,8 +909,8 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success() {
 	// set stream
 	tCtx := s.ctx
 
-	blockTime := time.Now()
-	tCtx = tCtx.WithBlockTime(blockTime)
+	blockTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(1)
 	nowTime := tCtx.BlockTime()
 	deposit := sdk.NewCoin("stake", sdk.NewIntFromUint64(2400))
 
@@ -891,12 +920,12 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success() {
 
 	// add deposit
 	ok, err := s.app.StreamKeeper.AddDeposit(tCtx, s.addrs[1], s.addrs[0], deposit)
-	s.True(ok)
+	s.Require().True(ok)
 	s.Require().NoError(err)
 
 	// Set new flow rate
 	err = s.app.StreamKeeper.SetNewFlowRate(tCtx, s.addrs[1], s.addrs[0], 24)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	// check events ar emitted
 	events := tCtx.EventManager().Events()
@@ -906,49 +935,54 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success() {
 		if ev.Type == types.EventTypeUpdateFlowRate {
 			hasEvent = true
 			attrStreamId, evOk := ev.GetAttribute(types.AttributeKeyStreamId)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamId, attrStreamId.Key)
-			s.Equal("1", attrStreamId.Value)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyStreamId, attrStreamId.Key)
+			s.Require().Equal("1", attrStreamId.Value)
 
 			attrOldFlowRate, evOk := ev.GetAttribute(types.AttributeKeyOldFlowRate)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyOldFlowRate, attrOldFlowRate.Key)
-			s.Equal("1", attrOldFlowRate.Value)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyOldFlowRate, attrOldFlowRate.Key)
+			s.Require().Equal("1", attrOldFlowRate.Value)
 
 			attrNewFlowRate, evOk := ev.GetAttribute(types.AttributeKeyNewFlowRate)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyNewFlowRate, attrNewFlowRate.Key)
-			s.Equal("24", attrNewFlowRate.Value)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyNewFlowRate, attrNewFlowRate.Key)
+			s.Require().Equal("24", attrNewFlowRate.Value)
 
-			attrStreamDepositDuration, evOk := ev.GetAttribute(types.AttributeKeyStreamDepositDuration)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamDepositDuration, attrStreamDepositDuration.Key)
-			s.Equal("100", attrStreamDepositDuration.Value)
+			attrStreamDepositDuration, evOk := ev.GetAttribute(types.AttributeKeyDepositDuration)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyDepositDuration, attrStreamDepositDuration.Key)
+			s.Require().Equal("100", attrStreamDepositDuration.Value)
 
-			attrStreamDepositZeroTime, evOk := ev.GetAttribute(types.AttributeKeyStreamDepositZeroTime)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamDepositZeroTime, attrStreamDepositZeroTime.Key)
-			s.Equal(nowTime.Add(time.Second*100).String(), attrStreamDepositZeroTime.Value)
+			attrStreamDepositZeroTime, evOk := ev.GetAttribute(types.AttributeKeyDepositZeroTime)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyDepositZeroTime, attrStreamDepositZeroTime.Key)
+			s.Require().Equal(nowTime.Add(time.Second*100).String(), attrStreamDepositZeroTime.Value)
+
+			attrRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
+			s.Require().Equal("2400stake", attrRemainingDeposit.Value)
 		}
 	}
 
 	// should emit stream_deposit event
-	s.True(hasEvent)
+	s.Require().True(hasEvent)
 
 	// get stream from keeper
 	stream, ok := s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0])
-	s.True(ok)
+	s.Require().True(ok)
 	// should now be 1000stake
-	s.Equal(int64(24), stream.FlowRate)
-	s.Equal(nowTime.Add(time.Second*100), stream.DepositZeroTime)
-	s.Equal(nowTime, stream.LastUpdatedTime)
+	s.Require().Equal(int64(24), stream.FlowRate)
+	s.Require().Equal(nowTime.Add(time.Second*100), stream.DepositZeroTime)
+	s.Require().Equal(nowTime, stream.LastUpdatedTime)
 }
 
 func (s *KeeperTestSuite) TestSetNewFlowRate_Success_ExistingNotExpired() {
 	tCtx := s.ctx
 
-	blockTime := time.Now()
-	tCtx = tCtx.WithBlockTime(blockTime)
+	blockTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(1)
 	nowTime := tCtx.BlockTime()
 
 	testCases := []struct {
@@ -1053,14 +1087,14 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success_ExistingNotExpired() {
 		sendAddr, _ := sdk.AccAddressFromBech32(tc.stream.Sender)
 		recAddr, _ := sdk.AccAddressFromBech32(tc.stream.Receiver)
 		err := s.app.StreamKeeper.SetStream(tCtx, recAddr, sendAddr, tc.stream)
-		s.NoError(err, "SetStream NoError test name %s", tc.name)
+		s.Require().NoError(err, "SetStream NoError test name %s", tc.name)
 		err = s.app.StreamKeeper.SetNewFlowRate(tCtx, recAddr, sendAddr, tc.newFlowRate)
-		s.NoError(err, "AddDeposit NoError test name %s", tc.name)
+		s.Require().NoError(err, "AddDeposit NoError test name %s", tc.name)
 
 		stream, ok := s.app.StreamKeeper.GetStream(tCtx, recAddr, sendAddr)
-		s.True(ok, "GetStream True test name %s", tc.name)
-		s.Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
-		s.Equal(tc.newFlowRate, stream.FlowRate, "GetStream FlowRate Equal test name %s", tc.name)
+		s.Require().True(ok, "GetStream True test name %s", tc.name)
+		s.Require().Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
+		s.Require().Equal(tc.newFlowRate, stream.FlowRate, "GetStream FlowRate Equal test name %s", tc.name)
 	}
 }
 
@@ -1207,8 +1241,8 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 		},
 		{
 			name:                  "complex expired, has deposit, decrease flow rate",
-			sender:                s.addrs[16],
-			receiver:              s.addrs[17],
+			sender:                s.addrs[18],
+			receiver:              s.addrs[19],
 			startFlowRate:         69875,
 			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(249761587512)),
 			newFlowRate:           32563,
@@ -1226,35 +1260,35 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 		nowTime := time.Unix(time.Now().Unix(), 0).UTC()
 		// set create time to past
 		blockTimeCreate := time.Unix(nowTime.Unix()-tc.createTimeOffset, 0).UTC()
-		tCtx = tCtx.WithBlockTime(blockTimeCreate)
+		tCtx = tCtx.WithBlockTime(blockTimeCreate).WithBlockHeight(1)
 
 		// create
 		_, err := s.app.StreamKeeper.CreateNewStream(tCtx, tc.receiver, tc.sender, tc.initialDeposit, tc.startFlowRate)
 
-		s.NoError(err, "CreateNewStream NoError test name %s", tc.name)
+		s.Require().NoError(err, "CreateNewStream NoError test name %s", tc.name)
 
 		// add initial deposit
 		if tc.initialDeposit.IsPositive() {
 			ok, err := s.app.StreamKeeper.AddDeposit(tCtx, tc.receiver, tc.sender, tc.initialDeposit)
-			s.True(ok, "initialDeposit ok NoError test name %s", tc.name)
-			s.NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
+			s.Require().True(ok, "initialDeposit ok NoError test name %s", tc.name)
+			s.Require().NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
 		}
 
 		// check stream
 		stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
 		// should be in the future from the creation time
 		expInitialDepZeroTime := time.Unix(blockTimeCreate.Unix()+tc.expInitialDepZeroTime, 0).UTC()
-		s.True(ok, "GetStream ok NoError test name %s", tc.name)
-		s.Equal(tc.initialDeposit, stream.Deposit, "tc.initialDeposit Equal stream.Deposit test name %s", tc.name)
+		s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
+		s.Require().Equal(tc.initialDeposit, stream.Deposit, "tc.initialDeposit Equal stream.Deposit test name %s", tc.name)
 		if tc.initialDeposit.IsPositive() {
-			s.Equal(expInitialDepZeroTime, stream.DepositZeroTime, "expInitialDepZeroTimeEqual stream.DepositZeroTime test name %s", tc.name)
+			s.Require().Equal(expInitialDepZeroTime, stream.DepositZeroTime, "expInitialDepZeroTimeEqual stream.DepositZeroTime test name %s", tc.name)
 		}
 		// set block time to now
-		tCtx = tCtx.WithBlockTime(nowTime)
+		tCtx = tCtx.WithBlockTime(nowTime).WithBlockHeight(2)
 
 		// set new flow rate
 		err = s.app.StreamKeeper.SetNewFlowRate(tCtx, tc.receiver, tc.sender, tc.newFlowRate)
-		s.NoError(err, "newDeposit AddDeposit NoError test name %s", tc.name)
+		s.Require().NoError(err, "newFlowRate SetNewFlowRate NoError test name %s", tc.name)
 
 		events := tCtx.EventManager().Events()
 		hasEvent := false
@@ -1269,7 +1303,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 		}
 
 		if tc.expClaim.Amount.IsPositive() {
-			s.True(hasEvent)
+			s.Require().True(hasEvent)
 			for _, ev := range events {
 				if ev.Type == types.EventTypeClaimStreamAction {
 					attrStreamId, _ := ev.GetAttribute(types.AttributeKeyStreamId)
@@ -1277,46 +1311,46 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 						// skip events not for this stream
 						continue
 					}
-					attrClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyStreamClaimTotal)
-					s.True(evOk)
-					s.Equal(types.AttributeKeyStreamClaimTotal, attrClaimTotal.Key)
-					s.Equal(tc.expClaim.String(), attrClaimTotal.Value, "AttributeKeyStreamClaimTotal test name %s", tc.name)
+					attrClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyClaimTotal)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyClaimTotal, attrClaimTotal.Key)
+					s.Require().Equal(tc.expClaim.String(), attrClaimTotal.Value, "AttributeKeyClaimTotal test name %s", tc.name)
 
 					attrRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
-					s.True(evOk)
-					s.Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
-					s.Equal(tc.expRemainDeposit.String(), attrRemainingDeposit.Value, "AttributeKeyRemainingDeposit test name %s", tc.name)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
+					s.Require().Equal(tc.expRemainDeposit.String(), attrRemainingDeposit.Value, "AttributeKeyRemainingDeposit test name %s", tc.name)
 				}
 			}
 		} else {
-			s.False(hasEvent)
+			s.Require().False(hasEvent)
 		}
 
 		// check results
 		expDepZeroTime := time.Unix(nowTime.Unix()+tc.expNewDepZeroTime, 0).UTC()
 		stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
-		s.True(ok, "GetStream ok NoError test name %s", tc.name)
-		s.Equal(tc.newFlowRate, stream.FlowRate, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
-		s.Equal(expDepZeroTime, stream.DepositZeroTime, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
+		s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
+		s.Require().Equal(tc.newFlowRate, stream.FlowRate, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
+		s.Require().Equal(expDepZeroTime, stream.DepositZeroTime, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
 	}
 }
 
 func (s *KeeperTestSuite) TestSetNewFlowRate_Fail() {
 	err := s.app.StreamKeeper.SetNewFlowRate(s.ctx, s.addrs[1], s.addrs[0], 24)
-	s.ErrorContains(err, "stream does not exist")
+	s.Require().ErrorContains(err, "stream does not exist")
 
 	// double check
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
-	s.False(ok)
-	s.Equal(types.Stream{}, stream)
+	s.Require().False(ok)
+	s.Require().Equal(types.Stream{}, stream)
 }
 
 func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 	// set stream
 	tCtx := s.ctx
 
-	blockTime := time.Now()
-	tCtx = tCtx.WithBlockTime(blockTime)
+	blockTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(1)
 	nowTime := tCtx.BlockTime()
 
 	// set validator fee
@@ -1330,20 +1364,20 @@ func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 	s.Require().NoError(err)
 	// add deposit
 	ok, err := s.app.StreamKeeper.AddDeposit(tCtx, s.addrs[1], s.addrs[0], deposit)
-	s.True(ok)
+	s.Require().True(ok)
 	s.Require().NoError(err)
 
 	// time travel
-	future := time.Unix(nowTime.Unix()+501, 0).UTC()
-	tCtx = tCtx.WithBlockTime(future)
+	future := time.Unix(nowTime.Unix()+500, 0).UTC()
+	tCtx = tCtx.WithBlockTime(future).WithBlockHeight(2)
 
 	// claim
 	amntClaimed, valFeeSent, totalClaim, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[1], s.addrs[0])
 	s.Require().NoError(err)
-	s.Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(495)), amntClaimed, "amntClaimed")
-	s.Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(5)), valFeeSent, "valFeeSent")
-	s.Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), totalClaim, "totalClaim")
-	s.Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), remainingDeposit, "remainingDeposit")
+	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(495)), amntClaimed, "amntClaimed")
+	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(5)), valFeeSent, "valFeeSent")
+	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), totalClaim, "totalClaim")
+	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), remainingDeposit, "remainingDeposit")
 
 	// check event emission
 	events := tCtx.EventManager().Events()
@@ -1353,67 +1387,265 @@ func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 		if ev.Type == types.EventTypeClaimStreamAction {
 			hasEvent = true
 			attrStreamId, evOk := ev.GetAttribute(types.AttributeKeyStreamId)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamId, attrStreamId.Key)
-			s.Equal("1", attrStreamId.Value)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyStreamId, attrStreamId.Key)
+			s.Require().Equal("1", attrStreamId.Value)
 
 			attrSender, ok := ev.GetAttribute(types.AttributeKeyStreamSender)
-			s.True(ok)
-			s.Equal(types.AttributeKeyStreamSender, attrSender.Key)
-			s.Equal(s.addrs[0].String(), attrSender.Value)
+			s.Require().True(ok)
+			s.Require().Equal(types.AttributeKeyStreamSender, attrSender.Key)
+			s.Require().Equal(s.addrs[0].String(), attrSender.Value)
 
 			attrReceiver, ok := ev.GetAttribute(types.AttributeKeyStreamReceiver)
-			s.True(ok)
-			s.Equal(types.AttributeKeyStreamReceiver, attrReceiver.Key)
-			s.Equal(s.addrs[1].String(), attrReceiver.Value)
+			s.Require().True(ok)
+			s.Require().Equal(types.AttributeKeyStreamReceiver, attrReceiver.Key)
+			s.Require().Equal(s.addrs[1].String(), attrReceiver.Value)
 
-			attrStreamClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyStreamClaimTotal)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamClaimTotal, attrStreamClaimTotal.Key)
-			s.Equal("500stake", attrStreamClaimTotal.Value)
+			attrStreamClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyClaimTotal)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyClaimTotal, attrStreamClaimTotal.Key)
+			s.Require().Equal("500stake", attrStreamClaimTotal.Value)
 
-			attrStreamClaimAmountReceived, evOk := ev.GetAttribute(types.AttributeKeyStreamClaimAmountReceived)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamClaimAmountReceived, attrStreamClaimAmountReceived.Key)
-			s.Equal("495stake", attrStreamClaimAmountReceived.Value)
+			attrStreamClaimAmountReceived, evOk := ev.GetAttribute(types.AttributeKeyClaimAmountReceived)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyClaimAmountReceived, attrStreamClaimAmountReceived.Key)
+			s.Require().Equal("495stake", attrStreamClaimAmountReceived.Value)
 
-			attrStreamClaimValidatorFee, evOk := ev.GetAttribute(types.AttributeKeyStreamClaimValidatorFee)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyStreamClaimValidatorFee, attrStreamClaimValidatorFee.Key)
-			s.Equal("5stake", attrStreamClaimValidatorFee.Value)
+			attrStreamClaimValidatorFee, evOk := ev.GetAttribute(types.AttributeKeyClaimValidatorFee)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyClaimValidatorFee, attrStreamClaimValidatorFee.Key)
+			s.Require().Equal("5stake", attrStreamClaimValidatorFee.Value)
 
 			attrStreamRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
-			s.True(evOk)
-			s.Equal(types.AttributeKeyRemainingDeposit, attrStreamRemainingDeposit.Key)
-			s.Equal("500stake", attrStreamRemainingDeposit.Value)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyRemainingDeposit, attrStreamRemainingDeposit.Key)
+			s.Require().Equal("500stake", attrStreamRemainingDeposit.Value)
 		}
 	}
 
 	// should emit stream_deposit event
-	s.True(hasEvent)
+	s.Require().True(hasEvent)
 
 	// check stream in keeper
 	stream, ok := s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0])
-	s.True(ok)
-	s.Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), stream.Deposit, "stream.Deposit")
+	s.Require().True(ok)
+	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), stream.Deposit, "stream.Deposit")
 }
 
 func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
-	// Todo
+	testCases := []struct {
+		name              string
+		sender            sdk.AccAddress
+		receiver          sdk.AccAddress
+		flowRate          int64
+		deposit           sdk.Coin
+		valFee            string
+		createTimeOffset  int64 // seconds in past from "now"
+		expTotalClaim     sdk.Coin
+		expReceiverAmount sdk.Coin
+		expRemainDeposit  sdk.Coin
+		expValFee         sdk.Coin
+	}{
+		{
+			name:              "simple, not expired, no val fee",
+			sender:            s.addrs[0],
+			receiver:          s.addrs[1],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			valFee:            "0.0",
+			createTimeOffset:  500,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+		},
+		{
+			name:              "simple, expired, no val fee",
+			sender:            s.addrs[2],
+			receiver:          s.addrs[3],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			valFee:            "0.0",
+			createTimeOffset:  9999,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+		},
+		{
+			name:              "simple, not expired, 5% val fee",
+			sender:            s.addrs[4],
+			receiver:          s.addrs[5],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			valFee:            "0.05",
+			createTimeOffset:  500,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(475)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(25)),
+		},
+		{
+			name:              "simple, expired, 5% val fee",
+			sender:            s.addrs[6],
+			receiver:          s.addrs[7],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			valFee:            "0.05",
+			createTimeOffset:  9999,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(950)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(50)),
+		},
+		{
+			name:              "not expired, no val fee",
+			sender:            s.addrs[8],
+			receiver:          s.addrs[9],
+			flowRate:          54769,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(198770009867)),
+			valFee:            "0.0",
+			createTimeOffset:  2628000,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(143932932000)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(143932932000)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(54837077867)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+		},
+		{
+			name:              "not expired, 3% val fee",
+			sender:            s.addrs[10],
+			receiver:          s.addrs[11],
+			flowRate:          69249,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(275585190123)),
+			valFee:            "0.03",
+			createTimeOffset:  1739523,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(120460228227)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(116846421381)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(155124961896)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(3613806846)),
+		},
+		{
+			name:              "expired, 9% val fee",
+			sender:            s.addrs[12],
+			receiver:          s.addrs[13],
+			flowRate:          73269,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(313563770856)),
+			valFee:            "0.09",
+			createTimeOffset:  5000000,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(313563770856)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(285343031479)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(28220739377)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tCtx := s.ctx
+		nowTime := time.Unix(time.Now().Unix(), 0).UTC()
+		// set create time to past
+		blockTimeCreate := time.Unix(nowTime.Unix()-tc.createTimeOffset, 0).UTC()
+		tCtx = tCtx.WithBlockTime(blockTimeCreate).WithBlockHeight(1)
+
+		// set params
+		newParams := types.Params{
+			ValidatorFee: sdk.MustNewDecFromStr(tc.valFee),
+		}
+
+		err := s.app.StreamKeeper.SetParams(tCtx, newParams)
+		s.Require().NoError(err, "SetParams NoError test name %s", tc.name)
+
+		// create
+		_, err = s.app.StreamKeeper.CreateNewStream(tCtx, tc.receiver, tc.sender, tc.deposit, tc.flowRate)
+
+		s.Require().NoError(err, "CreateNewStream NoError test name %s", tc.name)
+
+		// add initial deposit
+		if tc.deposit.IsPositive() {
+			ok, err := s.app.StreamKeeper.AddDeposit(tCtx, tc.receiver, tc.sender, tc.deposit)
+			s.Require().True(ok, "initialDeposit ok NoError test name %s", tc.name)
+			s.Require().NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
+		}
+
+		// check stream
+		stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+		s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
+
+		// set block time to now
+		tCtx = tCtx.WithBlockTime(nowTime).WithBlockHeight(2)
+
+		// claim
+		receiverAmount, valFee, claimTotal, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, tc.receiver, tc.sender)
+		s.Require().NoError(err, "ClaimFromStream NoError test name %s", tc.name)
+		s.Require().Equal(tc.expReceiverAmount, receiverAmount, "ClaimFromStream receiverAmount test name %s", tc.name)
+		s.Require().Equal(tc.expValFee, valFee, "ClaimFromStream valFee test name %s", tc.name)
+		s.Require().Equal(tc.expTotalClaim, claimTotal, "ClaimFromStream totalClaim test name %s", tc.name)
+		s.Require().Equal(tc.expRemainDeposit, remainingDeposit, "ClaimFromStream remainingDeposit test name %s", tc.name)
+
+		events := tCtx.EventManager().Events()
+		hasEvent := false
+		for _, ev := range events {
+			if ev.Type == types.EventTypeClaimStreamAction {
+				attrStreamId, _ := ev.GetAttribute(types.AttributeKeyStreamId)
+				// only for this stream
+				if strconv.Itoa(int(stream.StreamId)) == attrStreamId.Value {
+					hasEvent = true
+				}
+			}
+		}
+
+		if tc.expReceiverAmount.Amount.IsPositive() {
+			s.Require().True(hasEvent)
+			for _, ev := range events {
+				if ev.Type == types.EventTypeClaimStreamAction {
+					attrStreamId, _ := ev.GetAttribute(types.AttributeKeyStreamId)
+					if strconv.Itoa(int(stream.StreamId)) != attrStreamId.Value {
+						// skip events not for this stream
+						continue
+					}
+					attrClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyClaimTotal)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyClaimTotal, attrClaimTotal.Key)
+					s.Require().Equal(tc.expTotalClaim.String(), attrClaimTotal.Value, "AttributeKeyClaimTotal test name %s", tc.name)
+
+					attrRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
+					s.Require().Equal(tc.expRemainDeposit.String(), attrRemainingDeposit.Value, "AttributeKeyRemainingDeposit test name %s", tc.name)
+
+					attrClaimAmountReceived, evOk := ev.GetAttribute(types.AttributeKeyClaimAmountReceived)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyClaimAmountReceived, attrClaimAmountReceived.Key)
+					s.Require().Equal(tc.expReceiverAmount.String(), attrClaimAmountReceived.Value, "AttributeKeyClaimAmountReceived test name %s", tc.name)
+
+					attrClaimValidatorFee, evOk := ev.GetAttribute(types.AttributeKeyClaimValidatorFee)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyClaimValidatorFee, attrClaimValidatorFee.Key)
+					s.Require().Equal(tc.expValFee.String(), attrClaimValidatorFee.Value, "AttributeKeyClaimValidatorFee test name %s", tc.name)
+				}
+			}
+		} else {
+			s.Require().False(hasEvent)
+		}
+
+		// check results
+		stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+		s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
+		s.Require().Equal(tc.expRemainDeposit, stream.Deposit, "tc.expRemainDeposit Equal stream.Deposit test name %s", tc.name)
+	}
 }
 
 func (s *KeeperTestSuite) TestClaimFromStream_Fail_NotExist() {
 	c, v, t, d, err := s.app.StreamKeeper.ClaimFromStream(s.ctx, s.addrs[1], s.addrs[0])
-	s.ErrorContains(err, "stream does not exist")
-	s.Equal(sdk.Coin{}, c)
-	s.Equal(sdk.Coin{}, v)
-	s.Equal(sdk.Coin{}, t)
-	s.Equal(sdk.Coin{}, d)
+	s.Require().ErrorContains(err, "stream does not exist")
+	s.Require().Equal(sdk.Coin{}, c)
+	s.Require().Equal(sdk.Coin{}, v)
+	s.Require().Equal(sdk.Coin{}, t)
+	s.Require().Equal(sdk.Coin{}, d)
 
 	// double check
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
-	s.False(ok)
-	s.Equal(types.Stream{}, stream)
+	s.Require().False(ok)
+	s.Require().Equal(types.Stream{}, stream)
 }
 
 func (s *KeeperTestSuite) TestClaimFromStream_Fail_NoDeposit() {
@@ -1445,15 +1677,406 @@ func (s *KeeperTestSuite) TestClaimFromStream_Fail_NoDeposit() {
 		sendAddr, _ := sdk.AccAddressFromBech32(tc.stream.Sender)
 		recAddr, _ := sdk.AccAddressFromBech32(tc.stream.Receiver)
 		err := s.app.StreamKeeper.SetStream(s.ctx, recAddr, sendAddr, tc.stream)
-		s.NoError(err, "SetStream NoError test name %s", tc.name)
+		s.Require().NoError(err, "SetStream NoError test name %s", tc.name)
 		c, v, t, d, err := s.app.StreamKeeper.ClaimFromStream(s.ctx, recAddr, sendAddr)
-		s.ErrorContains(err, "stream deposit is zero")
-		s.Equal(sdk.Coin{}, c)
-		s.Equal(sdk.Coin{}, v)
-		s.Equal(sdk.Coin{}, t)
-		s.Equal(sdk.Coin{}, d)
+		s.Require().ErrorContains(err, "stream deposit is zero")
+		s.Require().Equal(sdk.Coin{}, c)
+		s.Require().Equal(sdk.Coin{}, v)
+		s.Require().Equal(sdk.Coin{}, t)
+		s.Require().Equal(sdk.Coin{}, d)
 	}
 }
 
-// Todo - CancelStreamBySenderReceiver
-// Todo - GetTotalDeposits
+func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Success() {
+	tCtx := s.ctx
+
+	blockTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(1)
+	nowTime := tCtx.BlockTime()
+
+	// set validator fee
+	valFee, err := sdk.NewDecFromStr("0.01")
+	s.app.StreamKeeper.SetParams(tCtx, types.Params{ValidatorFee: valFee})
+
+	deposit := sdk.NewCoin("stake", sdk.NewIntFromUint64(1000))
+
+	// create stream
+	_, err = s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[1], s.addrs[0], deposit, 1)
+	s.Require().NoError(err)
+	// add deposit
+	ok, err := s.app.StreamKeeper.AddDeposit(tCtx, s.addrs[1], s.addrs[0], deposit)
+	s.Require().True(ok)
+	s.Require().NoError(err)
+
+	// time travel
+	future := time.Unix(nowTime.Unix()+500, 0).UTC()
+	tCtx = tCtx.WithBlockTime(future).WithBlockHeight(2)
+
+	// claim
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, s.addrs[1], s.addrs[0])
+	s.Require().NoError(err)
+
+	// check event emission
+	events := tCtx.EventManager().Events()
+
+	hasCancelEvent := false
+	hasClaimEvent := false
+
+	for _, ev := range events {
+		if ev.Type == types.EventTypeClaimStreamAction {
+			hasClaimEvent = true
+			attrClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyClaimTotal)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyClaimTotal, attrClaimTotal.Key)
+			s.Require().Equal("500stake", attrClaimTotal.Value)
+
+			attrRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
+			// claim event occurs before cancel, so still has 500
+			s.Require().Equal("500stake", attrRemainingDeposit.Value)
+
+			attrClaimAmountReceived, evOk := ev.GetAttribute(types.AttributeKeyClaimAmountReceived)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyClaimAmountReceived, attrClaimAmountReceived.Key)
+			s.Require().Equal("495stake", attrClaimAmountReceived.Value)
+
+			attrClaimValidatorFee, evOk := ev.GetAttribute(types.AttributeKeyClaimValidatorFee)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyClaimValidatorFee, attrClaimValidatorFee.Key)
+			s.Require().Equal("5stake", attrClaimValidatorFee.Value)
+		}
+
+		if ev.Type == types.EventTypeStreamCancelled {
+			hasCancelEvent = true
+			attrStreamId, evOk := ev.GetAttribute(types.AttributeKeyStreamId)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyStreamId, attrStreamId.Key)
+			s.Require().Equal("1", attrStreamId.Value)
+
+			attrSender, ok := ev.GetAttribute(types.AttributeKeyStreamSender)
+			s.Require().True(ok)
+			s.Require().Equal(types.AttributeKeyStreamSender, attrSender.Key)
+			s.Require().Equal(s.addrs[0].String(), attrSender.Value)
+
+			attrReceiver, ok := ev.GetAttribute(types.AttributeKeyStreamReceiver)
+			s.Require().True(ok)
+			s.Require().Equal(types.AttributeKeyStreamReceiver, attrReceiver.Key)
+			s.Require().Equal(s.addrs[1].String(), attrReceiver.Value)
+
+			attrRefundAmount, evOk := ev.GetAttribute(types.AttributeKeyRefundAmount)
+			s.Require().True(evOk)
+			s.Require().Equal(types.AttributeKeyRefundAmount, attrRefundAmount.Key)
+			s.Require().Equal("500stake", attrRefundAmount.Value)
+		}
+	}
+
+	// should emit stream_deposit and claim events
+	s.Require().True(hasCancelEvent)
+	s.Require().True(hasClaimEvent)
+
+	// check stream in keeper
+	stream, ok := s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0])
+	s.Require().True(ok)
+	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(0)), stream.Deposit, "stream.Deposit")
+}
+
+func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
+	testCases := []struct {
+		name              string
+		sender            sdk.AccAddress
+		receiver          sdk.AccAddress
+		flowRate          int64
+		deposit           sdk.Coin
+		valFee            string
+		cancelTimeOffset  int64    // seconds from "now"
+		expTotalClaim     sdk.Coin // after cancel
+		expReceiverAmount sdk.Coin // after cancel
+		expRemainDeposit  sdk.Coin // after cancel - claim event only
+		expValFee         sdk.Coin // after cancel
+		expRefundAmount   sdk.Coin // after cancel
+	}{
+		{
+			name:              "has expired, has deposit, no val fee",
+			sender:            s.addrs[0],
+			receiver:          s.addrs[1],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			valFee:            "0.0",
+			cancelTimeOffset:  1001,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+		},
+		{
+			name:              "not expired, has deposit, no val fee",
+			sender:            s.addrs[2],
+			receiver:          s.addrs[3],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			valFee:            "0.0",
+			cancelTimeOffset:  500,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), // claim before cancel, so will have remaining deposit
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+		},
+		{
+			name:              "has expired, no deposit left, no val fee",
+			sender:            s.addrs[4],
+			receiver:          s.addrs[5],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			valFee:            "0.0",
+			cancelTimeOffset:  1001,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+		},
+		{
+			name:              "has expired, has deposit, 3% val fee",
+			sender:            s.addrs[6],
+			receiver:          s.addrs[7],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			valFee:            "0.03",
+			cancelTimeOffset:  1001,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(970)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(30)),
+			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+		},
+		{
+			name:              "not expired, has deposit, 3% val fee",
+			sender:            s.addrs[8],
+			receiver:          s.addrs[9],
+			flowRate:          1,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			valFee:            "0.03",
+			cancelTimeOffset:  500,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(485)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(15)),
+			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+		},
+		{
+			name:              "not expired, has deposit, 4% val fee",
+			sender:            s.addrs[10],
+			receiver:          s.addrs[11],
+			flowRate:          2342343,
+			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(6155677404000)),
+			valFee:            "0.04",
+			cancelTimeOffset:  1814421,
+			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(4249996328403)),
+			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(4079996475267)),
+			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(1905681075597)),
+			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(169999853136)),
+			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(1905681075597)),
+		},
+	}
+
+	for _, tc := range testCases {
+		tCtx := s.ctx
+		nowTime := time.Unix(time.Now().Unix(), 0).UTC()
+		// set create time to past
+		blockTimeCreate := nowTime
+		blockNum := int64(1)
+		tCtx = tCtx.WithBlockTime(blockTimeCreate).WithBlockHeight(blockNum)
+		blockNum += 1
+
+		// set params
+		newParams := types.Params{
+			ValidatorFee: sdk.MustNewDecFromStr(tc.valFee),
+		}
+
+		err := s.app.StreamKeeper.SetParams(tCtx, newParams)
+		s.Require().NoError(err, "SetParams NoError test name %s", tc.name)
+
+		// create
+		_, err = s.app.StreamKeeper.CreateNewStream(tCtx, tc.receiver, tc.sender, tc.deposit, tc.flowRate)
+
+		s.Require().NoError(err, "CreateNewStream NoError test name %s", tc.name)
+
+		// add initial deposit
+		if tc.deposit.IsPositive() {
+			ok, err := s.app.StreamKeeper.AddDeposit(tCtx, tc.receiver, tc.sender, tc.deposit)
+			s.Require().True(ok, "initialDeposit ok NoError test name %s", tc.name)
+			s.Require().NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
+		}
+
+		// check stream
+		stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+		s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
+
+		cancelTime := time.Unix(nowTime.Unix()+tc.cancelTimeOffset, 0).UTC()
+		tCtx = tCtx.WithBlockTime(cancelTime).WithBlockHeight(blockNum)
+
+		// cancel
+		err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, tc.receiver, tc.sender)
+		s.Require().NoError(err)
+
+		events := tCtx.EventManager().Events()
+		hasClaimEvent := false
+		hasCancelEvent := false
+		for _, ev := range events {
+			if ev.Type == types.EventTypeClaimStreamAction {
+				attrStreamId, _ := ev.GetAttribute(types.AttributeKeyStreamId)
+				// only for this stream
+				if strconv.Itoa(int(stream.StreamId)) == attrStreamId.Value {
+					hasClaimEvent = true
+				}
+			}
+			if ev.Type == types.EventTypeStreamCancelled {
+				attrStreamId, _ := ev.GetAttribute(types.AttributeKeyStreamId)
+				// only for this stream
+				if strconv.Itoa(int(stream.StreamId)) == attrStreamId.Value {
+					hasCancelEvent = true
+				}
+			}
+		}
+
+		if tc.expReceiverAmount.Amount.IsPositive() {
+			s.Require().True(hasClaimEvent)
+			for _, ev := range events {
+				if ev.Type == types.EventTypeClaimStreamAction {
+					attrStreamId, _ := ev.GetAttribute(types.AttributeKeyStreamId)
+					if strconv.Itoa(int(stream.StreamId)) != attrStreamId.Value {
+						// skip events not for this stream
+						continue
+					}
+
+					attrClaimTotal, evOk := ev.GetAttribute(types.AttributeKeyClaimTotal)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyClaimTotal, attrClaimTotal.Key)
+					s.Require().Equal(tc.expTotalClaim.String(), attrClaimTotal.Value, "AttributeKeyClaimTotal test name %s", tc.name)
+
+					attrRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
+					s.Require().Equal(tc.expRemainDeposit.String(), attrRemainingDeposit.Value, "AttributeKeyRemainingDeposit test name %s", tc.name)
+
+					attrClaimAmountReceived, evOk := ev.GetAttribute(types.AttributeKeyClaimAmountReceived)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyClaimAmountReceived, attrClaimAmountReceived.Key)
+					s.Require().Equal(tc.expReceiverAmount.String(), attrClaimAmountReceived.Value, "AttributeKeyClaimAmountReceived test name %s", tc.name)
+
+					attrClaimValidatorFee, evOk := ev.GetAttribute(types.AttributeKeyClaimValidatorFee)
+					s.Require().True(evOk)
+					s.Require().Equal(types.AttributeKeyClaimValidatorFee, attrClaimValidatorFee.Key)
+					s.Require().Equal(tc.expValFee.String(), attrClaimValidatorFee.Value, "AttributeKeyClaimValidatorFee test name %s", tc.name)
+				}
+			}
+		} else {
+			s.Require().False(hasClaimEvent)
+		}
+
+		for _, ev := range events {
+			if ev.Type == types.EventTypeStreamCancelled {
+				attrStreamId, evOk := ev.GetAttribute(types.AttributeKeyStreamId)
+				if strconv.Itoa(int(stream.StreamId)) != attrStreamId.Value {
+					continue
+				}
+				s.Require().True(evOk)
+				s.Require().Equal(types.AttributeKeyStreamId, attrStreamId.Key)
+				s.Require().Equal(strconv.Itoa(int(stream.StreamId)), attrStreamId.Value)
+
+				attrSender, evOk := ev.GetAttribute(types.AttributeKeyStreamSender)
+				s.Require().True(evOk)
+				s.Require().Equal(types.AttributeKeyStreamSender, attrSender.Key)
+				s.Require().Equal(tc.sender.String(), attrSender.Value)
+
+				attrReceiver, evOk := ev.GetAttribute(types.AttributeKeyStreamReceiver)
+				s.Require().True(evOk)
+				s.Require().Equal(types.AttributeKeyStreamReceiver, attrReceiver.Key)
+				s.Require().Equal(tc.receiver.String(), attrReceiver.Value)
+
+				attrRefundAmount, evOk := ev.GetAttribute(types.AttributeKeyRefundAmount)
+				s.Require().True(evOk)
+				s.Require().Equal(types.AttributeKeyRefundAmount, attrRefundAmount.Key)
+				s.Require().Equal(tc.expRefundAmount.String(), attrRefundAmount.Value)
+
+				attrRemainingDeposit, evOk := ev.GetAttribute(types.AttributeKeyRemainingDeposit)
+				s.Require().True(evOk)
+				s.Require().Equal(types.AttributeKeyRemainingDeposit, attrRemainingDeposit.Key)
+				s.Require().Equal("0stake", attrRemainingDeposit.Value)
+			}
+		}
+
+		s.Require().True(hasCancelEvent)
+
+		// check results
+		stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+		s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
+		// should be nothing left in the stream
+		s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(0)), stream.Deposit, "0stake Equal stream.Deposit test name %s", tc.name)
+		s.Require().Equal(tCtx.BlockTime(), stream.DepositZeroTime, "stream.DepositZeroTime is now test name %s", tc.name)
+		s.Require().Equal(int64(0), stream.FlowRate, "stream.FlowRate is zero test name %s", tc.name)
+		s.Require().Equal(tCtx.BlockTime(), stream.LastUpdatedTime, "stream.LastUpdatedTime is now test name %s", tc.name)
+	}
+}
+
+func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Fail_NotExist() {
+	err := s.app.StreamKeeper.CancelStreamBySenderReceiver(s.ctx, s.addrs[1], s.addrs[0])
+	s.Require().ErrorContains(err, "stream does not exist")
+
+	// double check
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	s.Require().False(ok)
+	s.Require().Equal(types.Stream{}, stream)
+}
+
+func (s *KeeperTestSuite) TestGetTotalDeposits() {
+
+	tCtx := s.ctx
+	nowTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(nowTime).WithBlockHeight(1)
+
+	// create and deposit
+	for i := int64(1); i <= 10; i++ {
+		deposit := sdk.NewInt64Coin("stake", 1000*i)
+		_, err := s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[i-1], s.addrs[i], deposit, i)
+		s.Require().NoError(err)
+		ok, err := s.app.StreamKeeper.AddDeposit(tCtx, s.addrs[i-1], s.addrs[i], deposit)
+		s.Require().NoError(err)
+		s.Require().True(ok)
+	}
+
+	expectedDeposits := sdk.NewCoins(sdk.NewInt64Coin("stake", 55000))
+	currentDeposits := s.app.StreamKeeper.GetTotalDeposits(tCtx)
+	s.Require().Equal(expectedDeposits, currentDeposits)
+
+	// move 500 seconds
+	blockTime := time.Unix(nowTime.Unix()+500, 0).UTC()
+	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(2)
+
+	// claim - not expired
+	for i := int64(1); i <= 10; i++ {
+		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[i-1], s.addrs[i])
+		s.Require().NoError(err)
+	}
+
+	expectedDeposits = sdk.NewCoins(sdk.NewInt64Coin("stake", 27500))
+	currentDeposits = s.app.StreamKeeper.GetTotalDeposits(tCtx)
+	s.Require().Equal(expectedDeposits, currentDeposits)
+
+	// move 1001 seconds
+	blockTime = time.Unix(nowTime.Unix()+1001, 0).UTC()
+	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(3)
+
+	// claim - expired
+	for i := int64(1); i <= 10; i++ {
+		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[i-1], s.addrs[i])
+		s.Require().NoError(err)
+	}
+
+	expectedDeposits = sdk.NewCoins(sdk.NewInt64Coin("stake", 0))
+	currentDeposits = s.app.StreamKeeper.GetTotalDeposits(tCtx)
+	s.Require().Equal(expectedDeposits, currentDeposits)
+}

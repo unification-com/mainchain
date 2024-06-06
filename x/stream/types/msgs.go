@@ -15,7 +15,6 @@ const (
 
 var (
 	_ sdk.Msg = &MsgCreateStream{}
-	_ sdk.Msg = &MsgClaimStreamById{}
 	_ sdk.Msg = &MsgClaimStream{}
 	_ sdk.Msg = &MsgTopUpDeposit{}
 	_ sdk.Msg = &MsgUpdateFlowRate{}
@@ -64,6 +63,10 @@ func (msg MsgCreateStream) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrInvalidData, "flow rate must be > zero")
 	}
 
+	if msg.Sender == msg.Receiver {
+		return sdkerrors.Wrap(ErrInvalidData, "receiver cannot be same as sender")
+	}
+
 	duration := CalculateDuration(msg.Deposit, msg.FlowRate)
 
 	if duration < 60 {
@@ -85,52 +88,6 @@ func (msg MsgCreateStream) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{sender}
-}
-
-// --- Claim Stream By ID Msg ---
-
-// NewMsgClaimStreamById is a constructor function for MsgClaimStream
-func NewMsgClaimStreamById(
-	streamId uint64,
-	receiver sdk.AccAddress) *MsgClaimStreamById {
-	return &MsgClaimStreamById{
-		Receiver: receiver.String(),
-		StreamId: streamId,
-	}
-}
-
-// Route should return the name of the module
-func (msg MsgClaimStreamById) Route() string { return RouterKey }
-
-// Type should return the action
-func (msg MsgClaimStreamById) Type() string { return ClaimStreamAction }
-
-// ValidateBasic runs stateless checks on the message
-func (msg MsgClaimStreamById) ValidateBasic() error {
-	_, accErr := sdk.AccAddressFromBech32(msg.Receiver)
-	if accErr != nil {
-		return accErr
-	}
-
-	if msg.StreamId < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "stream ID must be > zero")
-	}
-
-	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgClaimStreamById) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgClaimStreamById) GetSigners() []sdk.AccAddress {
-	receiver, err := sdk.AccAddressFromBech32(msg.Receiver)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{receiver}
 }
 
 // --- Claim Stream By sender & receiver Msg ---
@@ -184,11 +141,11 @@ func (msg MsgClaimStream) GetSigners() []sdk.AccAddress {
 
 // NewMsgTopUpDeposit is a constructor function for MsgTopUpDeposit
 func NewMsgTopUpDeposit(
-	streamId uint64,
+	receiver, sender sdk.AccAddress,
 	deposit sdk.Coin,
-	sender sdk.AccAddress) *MsgTopUpDeposit {
+) *MsgTopUpDeposit {
 	return &MsgTopUpDeposit{
-		StreamId: streamId,
+		Receiver: receiver.String(),
 		Sender:   sender.String(),
 		Deposit:  deposit,
 	}
@@ -207,12 +164,13 @@ func (msg MsgTopUpDeposit) ValidateBasic() error {
 		return accErr
 	}
 
-	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
-		return sdkerrors.Wrap(ErrInvalidData, "deposit must be > zero")
+	_, accErr = sdk.AccAddressFromBech32(msg.Receiver)
+	if accErr != nil {
+		return accErr
 	}
 
-	if msg.StreamId < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "stream ID must be > zero")
+	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
+		return sdkerrors.Wrap(ErrInvalidData, "deposit must be > zero")
 	}
 
 	return nil
@@ -236,11 +194,11 @@ func (msg MsgTopUpDeposit) GetSigners() []sdk.AccAddress {
 
 // NewMsgUpdateFlowRate is a constructor function for MsgUpdateFlowRate
 func NewMsgUpdateFlowRate(
-	streamId uint64,
+	receiver, sender sdk.AccAddress,
 	flowRate int64,
-	sender sdk.AccAddress) *MsgUpdateFlowRate {
+) *MsgUpdateFlowRate {
 	return &MsgUpdateFlowRate{
-		StreamId: streamId,
+		Receiver: receiver.String(),
 		Sender:   sender.String(),
 		FlowRate: flowRate,
 	}
@@ -259,8 +217,9 @@ func (msg MsgUpdateFlowRate) ValidateBasic() error {
 		return accErr
 	}
 
-	if msg.StreamId < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "stream ID must be > zero")
+	_, accErr = sdk.AccAddressFromBech32(msg.Receiver)
+	if accErr != nil {
+		return accErr
 	}
 
 	if msg.FlowRate < 1 {
@@ -288,10 +247,10 @@ func (msg MsgUpdateFlowRate) GetSigners() []sdk.AccAddress {
 
 // NewMsgCancelStream is a constructor function for MsgCancelStream
 func NewMsgCancelStream(
-	streamId uint64,
+	reciever,
 	sender sdk.AccAddress) *MsgCancelStream {
 	return &MsgCancelStream{
-		StreamId: streamId,
+		Receiver: reciever.String(),
 		Sender:   sender.String(),
 	}
 }
@@ -309,8 +268,9 @@ func (msg MsgCancelStream) ValidateBasic() error {
 		return accErr
 	}
 
-	if msg.StreamId < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "stream ID must be > zero")
+	_, accErr = sdk.AccAddressFromBech32(msg.Receiver)
+	if accErr != nil {
+		return accErr
 	}
 
 	return nil

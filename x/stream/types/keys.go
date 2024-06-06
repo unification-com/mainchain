@@ -1,9 +1,9 @@
 package types
 
 import (
-	"encoding/binary"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
+	"github.com/cosmos/cosmos-sdk/types/kv"
 )
 
 const (
@@ -24,14 +24,8 @@ var (
 	// ParamsKey is the prefix for the params store
 	ParamsKey = []byte{0x01}
 
-	// HighestStreamIdKey key used to store the current highest Stream ID
-	HighestStreamIdKey = []byte{0x02}
-
 	// StreamKeyPrefix prefix for the Stream store
 	StreamKeyPrefix = []byte{0x11}
-
-	// StreamIdLookupKeyPrefix prefix for the StreamIdLookup store
-	StreamIdLookupKeyPrefix = []byte{0x21}
 )
 
 func KeyPrefix(p string) []byte {
@@ -48,21 +42,18 @@ func GetStreamsByReceiverKey(receiverAddr sdk.AccAddress) []byte {
 	return append(StreamKeyPrefix, address.MustLengthPrefix(receiverAddr)...)
 }
 
-// GetStreamIdBytes returns the byte representation of the streamId
-// used for getting the highest Stream ID from the database
-func GetStreamIdBytes(streamId uint64) (streamIdBz []byte) {
-	streamIdBz = make([]byte, 8)
-	binary.BigEndian.PutUint64(streamIdBz, streamId)
-	return
-}
+// AddressesFromStreamKey returns a receiver and sender address from a stream prefix
+// store key.
+func AddressesFromStreamKey(key []byte) (sdk.AccAddress, sdk.AccAddress) {
+	// key is of format:
+	// 0x11<receiverAddressLen (1 Byte)><receiverAddress_Bytes><senderAddressLen (1 Byte)><senderAddress_Bytes>
 
-// GetStreamIdFromBytes returns BeaconID in uint64 format from a byte array
-// used for getting the highest Beacon ID from the database
-func GetStreamIdFromBytes(bz []byte) (streamId uint64) {
-	return binary.BigEndian.Uint64(bz)
-}
+	receiverAddrLen, receiverAddrLenEndIndex := sdk.ParseLengthPrefixedBytes(key, 1, 1) // ignore key[0] since it is a prefix key
+	receiverAddr, receiverAddrEndIndex := sdk.ParseLengthPrefixedBytes(key, receiverAddrLenEndIndex+1, int(receiverAddrLen[0]))
 
-// GetStreamIdLookupKey gets a specific stream lookup pair from the given stream ID
-func GetStreamIdLookupKey(streamId uint64) []byte {
-	return append(StreamIdLookupKeyPrefix, GetStreamIdBytes(streamId)...)
+	senderAddrLen, senderAddrLenEndIndex := sdk.ParseLengthPrefixedBytes(key, receiverAddrEndIndex+1, 1)
+	senderAddr, senderAddrEndIndex := sdk.ParseLengthPrefixedBytes(key, senderAddrLenEndIndex+1, int(senderAddrLen[0]))
+
+	kv.AssertKeyAtLeastLength(key, senderAddrEndIndex+1)
+	return receiverAddr, senderAddr
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -37,8 +36,6 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		CmdQueryParams(),
 		GetCmdCalculateFlowRate(),
 		GetCmdGetAllStreams(),
-		GetCmdGetStreamById(),
-		GetCmdGetStreamByIdCurrentFlow(),
 		GetCmdGetAllStreamsByReceiver(),
 		GetCmdGetStreamByReceiverSender(),
 		GetCmdGetStreamByReceiverSenderCurrentFlow(),
@@ -148,94 +145,6 @@ $ %s query stream streams
 	return cmd
 }
 
-func GetCmdGetStreamById() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "stream_id",
-		Short: "Query a stream by ID",
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query a stream by ID
-
-Example:
-$ %s query stream stream_id 1
-`,
-				version.AppName,
-			),
-		),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-
-			streamId, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			params := &types.QueryStreamByIdRequest{
-				StreamId: streamId,
-			}
-
-			res, err := queryClient.StreamById(context.Background(), params)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-func GetCmdGetStreamByIdCurrentFlow() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "stream_id_flow",
-		Short: "Query a stream's current flow data by ID",
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query a stream's current flow data by ID
-
-Example:
-$ %s query stream stream_id_flow 1
-`,
-				version.AppName,
-			),
-		),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-
-			streamId, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			params := &types.QueryStreamByIdCurrentFlowRequest{
-				StreamId: streamId,
-			}
-
-			res, err := queryClient.StreamByIdCurrentFlow(context.Background(), params)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
 // GetCmdGetAllStreamsByReceiver queries a list of all streams for given receiver
 func GetCmdGetAllStreamsByReceiver() *cobra.Command {
 	cmd := &cobra.Command{
@@ -288,13 +197,13 @@ $ %s query stream receiver_streams [receiver_address]
 
 func GetCmdGetStreamByReceiverSender() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "stream_receiver_sender",
+		Use:   "stream",
 		Short: "Query a stream by Receiver/Sender pair",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query a stream by Receiver/Sender pair
 
 Example:
-$ %s query stream stream_receiver_sender [receiver_addr] [sender_addr]
+$ %s query stream stream [receiver_addr] [sender_addr]
 `,
 				version.AppName,
 			),

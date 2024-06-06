@@ -197,7 +197,6 @@ func SetKeeperTestParamsAndDefaultValues(app *App, ctx sdk.Context) {
 	_ = app.EnterpriseKeeper.SetTotalSpentEFUND(ctx, sdk.NewInt64Coin(TestDenomination, 0))
 	app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, 1)
 
-	app.StreamKeeper.SetHighestStreamId(ctx, 1)
 	// set to 0%. Individual unit tests will set specific %
 	app.StreamKeeper.SetParams(ctx, streamtypes.Params{ValidatorFee: sdk.NewDecFromInt(sdk.NewIntFromUint64(0))})
 }

@@ -29,16 +29,6 @@ service Query {
     option (google.api.http).get = "/mainchain/stream/v1/streams/all";
   }
 
-  // StreamById queries a stream by the given stream id
-  rpc StreamById(QueryStreamByIdRequest) returns (QueryStreamByIdResponse) {
-    option (google.api.http).get = "/mainchain/stream/v1/streams/stream/{stream_id}";
-  }
-
-  // StreamByIdCurrentFlow queries a stream by the given stream id and returns the current flow data
-  rpc StreamByIdCurrentFlow(QueryStreamByIdCurrentFlowRequest) returns (QueryStreamByIdCurrentFlowResponse) {
-    option (google.api.http).get = "/mainchain/stream/v1/streams/stream/{stream_id}/current_flow";
-  }
-
   // AllStreamsForReceiver queries all Streams for a given receiver address
   rpc AllStreamsForReceiver(QueryAllStreamsForReceiverRequest) returns (QueryAllStreamsForReceiverResponse) {
     option (google.api.http).get = "/mainchain/stream/v1/streams/receiver/{receiver_addr}";
@@ -108,32 +98,6 @@ message QueryStreamsResponse {
   repeated Stream streams = 1 [(gogoproto.nullable) = false];
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse                pagination = 2;
-}
-
-// QueryStreamByIdRequest is the request type for the Query/StreamById RPC method
-message QueryStreamByIdRequest {
-  // stream_id is id of the stream being claimed
-  uint64 stream_id = 1;
-}
-
-// QueryStreamByIdResponse is the response type for the Query/StreamById RPC method
-message QueryStreamByIdResponse {
-  // stream is the Stream
-  Stream stream = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
-}
-
-// QueryStreamByIdCurrentFlowRequest is the request type for the Query/StreamByIdCurrentFlow RPC method
-message QueryStreamByIdCurrentFlowRequest {
-  // stream_id is id of the stream being claimed
-  uint64 stream_id = 1;
-}
-
-// QueryStreamByIdCurrentFlowResponse is the response type for the Query/StreamByIdCurrentFlow RPC method
-message QueryStreamByIdCurrentFlowResponse {
-  // configured_flow_rate is the flow rate configured in the stream
-  int64 configured_flow_rate = 1;
-  // current_flow_rate is the actual flow rate. This will be zero if the depositZeroTime has passed, or deposit is zero
-  int64 current_flow_rate = 2;
 }
 
 // QueryAllStreamsForReceiverRequest is the request type for the Query/AllStreamsForReceiver RPC method

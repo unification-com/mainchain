@@ -7,7 +7,6 @@ const (
 	EventTypeUpdateFlowRate     = "update_flow_rate"
 	EventTypeStreamCancelled    = "cancel_stream"
 
-	AttributeKeyStreamId            = "stream_id"
 	AttributeKeyStreamSender        = "sender"
 	AttributeKeyStreamReceiver      = "receiver"
 	AttributeKeyFlowRate            = "flow_rate"

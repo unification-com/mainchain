@@ -1,19 +1,27 @@
 package types_test
 
 import (
-	"bytes"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/unification-com/mainchain/x/stream/types"
 	"testing"
 )
 
-func TestGetStreamIdLookupKey(t *testing.T) {
-	sId := uint64(246973)
-	key := types.GetStreamIdLookupKey(sId)
-	require.True(t, len(key[1:]) == 8)
-	require.True(t, bytes.Equal(key[:1], types.StreamIdLookupKeyPrefix))
-	bBz := key[1:]
-	bFromBz := types.GetStreamIdFromBytes(bBz)
-	require.True(t, bFromBz == sId)
-	require.True(t, bytes.Equal(bBz, types.GetStreamIdBytes(sId)))
+func TestAddressFromStreamsStore(t *testing.T) {
+	receiverAddr, err := sdk.AccAddressFromBech32("cosmos1n88uc38xhjgxzw9nwre4ep2c8ga4fjxcar6mn7")
+	require.NoError(t, err)
+	receiverAddrLen := len(receiverAddr)
+	require.Equal(t, 20, receiverAddrLen)
+
+	senderAddr, err := sdk.AccAddressFromBech32("cosmos139f7kncmglres2nf3h4hc4tade85ekfr8sulz5")
+	require.NoError(t, err)
+	senderAddrLen := len(senderAddr)
+	require.Equal(t, 20, senderAddrLen)
+
+	key := types.GetStreamKey(receiverAddr, senderAddr)
+
+	r, s := types.AddressesFromStreamKey(key)
+
+	require.Equal(t, receiverAddr, r)
+	require.Equal(t, senderAddr, s)
 }

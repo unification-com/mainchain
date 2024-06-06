@@ -65,14 +65,18 @@ func (q Keeper) AllStreamsForSender(c context.Context, req *types.QueryAllStream
 
 	streamsStore := prefix.NewStore(store, types.StreamKeyPrefix)
 
+	senderAddr, err := sdk.AccAddressFromBech32(req.SenderAddr)
+
 	pageRes, err := query.FilteredPaginate(streamsStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
 		var s types.Stream
+
+		_, sender := types.AddressesFromStreamKey(key)
 
 		if err := q.cdc.Unmarshal(value, &s); err != nil {
 			return false, status.Error(codes.Internal, err.Error())
 		}
 
-		if req.SenderAddr == s.Sender {
+		if sender.Equals(senderAddr) {
 			if accumulate {
 				streams = append(streams, s)
 			}
@@ -116,92 +120,6 @@ func (q Keeper) StreamByReceiverSender(c context.Context, req *types.QueryStream
 	}
 
 	return &types.QueryStreamByReceiverSenderResponse{Stream: stream}, nil
-}
-
-func (q Keeper) StreamById(c context.Context, req *types.QueryStreamByIdRequest) (*types.QueryStreamByIdResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-
-	if req.StreamId == 0 {
-		return nil, status.Error(codes.InvalidArgument, "stream id can not be 0")
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-
-	streamLookup, ok := q.GetIdLookup(ctx, req.StreamId)
-
-	if !ok {
-		return nil, status.Errorf(codes.NotFound, "stream %d doesn't exist", req.StreamId)
-	}
-
-	receiverAddr, err := sdk.AccAddressFromBech32(streamLookup.Receiver)
-	if err != nil {
-		return nil, err
-	}
-
-	senderAddr, err := sdk.AccAddressFromBech32(streamLookup.Sender)
-	if err != nil {
-		return nil, err
-	}
-
-	stream, ok := q.GetStream(ctx, receiverAddr, senderAddr)
-
-	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
-	}
-
-	return &types.QueryStreamByIdResponse{Stream: stream}, nil
-}
-
-func (q Keeper) StreamByIdCurrentFlow(c context.Context, req *types.QueryStreamByIdCurrentFlowRequest) (*types.QueryStreamByIdCurrentFlowResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
-	}
-
-	if req.StreamId == 0 {
-		return nil, status.Error(codes.InvalidArgument, "stream id can not be 0")
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-
-	streamLookup, ok := q.GetIdLookup(ctx, req.StreamId)
-
-	if !ok {
-		return nil, status.Errorf(codes.NotFound, "stream %d doesn't exist", req.StreamId)
-	}
-
-	receiverAddr, err := sdk.AccAddressFromBech32(streamLookup.Receiver)
-	if err != nil {
-		return nil, err
-	}
-
-	senderAddr, err := sdk.AccAddressFromBech32(streamLookup.Sender)
-	if err != nil {
-		return nil, err
-	}
-
-	stream, ok := q.GetStream(ctx, receiverAddr, senderAddr)
-
-	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
-	}
-
-	nowTime := ctx.BlockTime()
-	currentFlow := stream.FlowRate
-
-	if stream.DepositZeroTime.Before(nowTime) {
-		currentFlow = 0
-	}
-
-	if stream.Deposit.IsNil() || stream.Deposit.IsZero() || stream.Deposit.IsNegative() {
-		currentFlow = 0
-	}
-
-	return &types.QueryStreamByIdCurrentFlowResponse{
-		ConfiguredFlowRate: stream.FlowRate,
-		CurrentFlowRate:    currentFlow,
-	}, nil
 }
 
 func (q Keeper) StreamReceiverSenderCurrentFlow(c context.Context, req *types.QueryStreamReceiverSenderCurrentFlowRequest) (*types.QueryStreamReceiverSenderCurrentFlowResponse, error) {

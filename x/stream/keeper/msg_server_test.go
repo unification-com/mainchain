@@ -97,7 +97,10 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 				FlowRate: 1,
 			},
 			expResult: &types.MsgCreateStreamResponse{
-				StreamId: 1,
+				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
+				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				FlowRate: 1,
 			},
 			expectErr: false,
 			expErrMsg: "",
@@ -176,6 +179,18 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			expErrMsg: "not allowed to receive funds",
 		},
 		{
+			name: "invalid - receiver address same as sender address",
+			request: &types.MsgCreateStream{
+				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[0].String(), // module account with no banking permissions
+				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				FlowRate: 1,
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "sender and receiver cannot be same address",
+		},
+		{
 			name: "invalid - nil deposit",
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[2].String(),
@@ -252,121 +267,6 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 	}
 }
 
-func (s *KeeperTestSuite) TestMsgServerClaimStreamById() {
-	testCases := []struct {
-		name      string
-		create    *types.MsgCreateStream
-		claim     *types.MsgClaimStreamById
-		expResult *types.MsgClaimStreamByIdResponse
-		expectErr bool
-		expErrMsg string
-	}{
-		{
-			name: "valid claim",
-			create: &types.MsgCreateStream{
-				Sender:   s.addrs[0].String(),
-				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
-				FlowRate: 1,
-			},
-			claim: &types.MsgClaimStreamById{
-				StreamId: 1,
-				Receiver: s.addrs[1].String(),
-			},
-			expResult: &types.MsgClaimStreamByIdResponse{
-				StreamId:         1,
-				TotalClaimed:     sdk.NewInt64Coin("stake", 1000),
-				StreamPayment:    sdk.NewInt64Coin("stake", 990),
-				ValidatorFee:     sdk.NewInt64Coin("stake", 10), // default fee is 1%
-				RemainingDeposit: sdk.NewInt64Coin("stake", 0),
-			},
-			expectErr: false,
-			expErrMsg: "",
-		},
-		{
-			name:   "invalid claim - bad receiver address",
-			create: nil,
-			claim: &types.MsgClaimStreamById{
-				StreamId: 1,
-				Receiver: "rubbish",
-			},
-			expResult: nil,
-			expectErr: true,
-			expErrMsg: "decoding bech32 failed",
-		},
-		{
-			name:   "invalid claim - empty receiver address",
-			create: nil,
-			claim: &types.MsgClaimStreamById{
-				StreamId: 1,
-				Receiver: "",
-			},
-			expResult: nil,
-			expectErr: true,
-			expErrMsg: "empty address string is not allowed",
-		},
-		{
-			name:   "invalid claim - streamId zero",
-			create: nil,
-			claim: &types.MsgClaimStreamById{
-				StreamId: 0,
-				Receiver: s.addrs[1].String(),
-			},
-			expResult: nil,
-			expectErr: true,
-			expErrMsg: "stream id must be > zero",
-		},
-		{
-			name:   "invalid claim - streamId does not exist",
-			create: nil,
-			claim: &types.MsgClaimStreamById{
-				StreamId: 999,
-				Receiver: s.addrs[1].String(),
-			},
-			expResult: nil,
-			expectErr: true,
-			expErrMsg: "stream id does not exist",
-		},
-		{
-			name:   "invalid claim - not receiver claiming",
-			create: nil,
-			claim: &types.MsgClaimStreamById{
-				StreamId: 1, // created earlier
-				Receiver: s.addrs[9].String(),
-			},
-			expResult: nil,
-			expectErr: true,
-			expErrMsg: "you are not the receiver",
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			tCtx := s.ctx
-			nowTime := time.Unix(time.Now().Unix(), 0).UTC()
-
-			if tc.create != nil {
-				createTime := time.Unix(nowTime.Unix()-1000, 0).UTC()
-				tCtx = tCtx.WithBlockTime(createTime)
-				_, _ = s.msgServer.CreateStream(tCtx, tc.create)
-			}
-
-			tCtx = tCtx.WithBlockTime(nowTime)
-
-			res, err := s.msgServer.ClaimStreamById(tCtx, tc.claim)
-
-			if tc.expectErr {
-				s.Require().Error(err)
-				s.Require().ErrorContains(err, tc.expErrMsg)
-				s.Require().Nil(res)
-			} else {
-				s.Require().NoError(err)
-				s.Require().Equal(tc.expResult, res)
-			}
-		})
-	}
-}
-
 func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 	testCases := []struct {
 		name      string
@@ -389,7 +289,6 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 				Receiver: s.addrs[1].String(),
 			},
 			expResult: &types.MsgClaimStreamResponse{
-				StreamId:         1,
 				TotalClaimed:     sdk.NewInt64Coin("stake", 1000),
 				StreamPayment:    sdk.NewInt64Coin("stake", 990),
 				ValidatorFee:     sdk.NewInt64Coin("stake", 10), // default fee is 1%
@@ -503,12 +402,11 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 				FlowRate: 1,
 			},
 			topup: &types.MsgTopUpDeposit{
-				StreamId: 1,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
 				Deposit:  sdk.NewInt64Coin("stake", 1000),
 			},
 			expResult: &types.MsgTopUpDepositResponse{
-				StreamId:        1,
 				DepositAmount:   sdk.NewInt64Coin("stake", 1000),
 				CurrentDeposit:  sdk.NewInt64Coin("stake", 2000),
 				DepositZeroTime: time.Unix(nowTime.Unix()+1500, 0).UTC(),
@@ -520,8 +418,8 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			name:   "invalid topup - bad sender address",
 			create: nil,
 			topup: &types.MsgTopUpDeposit{
-				StreamId: 1,
 				Sender:   "rubbish",
+				Receiver: s.addrs[1].String(),
 				Deposit:  sdk.NewInt64Coin("stake", 1000),
 			},
 			expResult: nil,
@@ -532,8 +430,32 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			name:   "invalid topup - empty sender address",
 			create: nil,
 			topup: &types.MsgTopUpDeposit{
-				StreamId: 1,
 				Sender:   "",
+				Receiver: s.addrs[1].String(),
+				Deposit:  sdk.NewInt64Coin("stake", 1000),
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "empty address string is not allowed",
+		},
+		{
+			name:   "invalid topup - bad receiver address",
+			create: nil,
+			topup: &types.MsgTopUpDeposit{
+				Sender:   s.addrs[0].String(),
+				Receiver: "rubbish",
+				Deposit:  sdk.NewInt64Coin("stake", 1000),
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "decoding bech32 failed",
+		},
+		{
+			name:   "invalid topup - empty receiver address",
+			create: nil,
+			topup: &types.MsgTopUpDeposit{
+				Sender:   s.addrs[1].String(),
+				Receiver: "",
 				Deposit:  sdk.NewInt64Coin("stake", 1000),
 			},
 			expResult: nil,
@@ -544,8 +466,8 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			name:   "invalid topup - zero deposit",
 			create: nil,
 			topup: &types.MsgTopUpDeposit{
-				StreamId: 1,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
 				Deposit:  sdk.NewInt64Coin("stake", 0),
 			},
 			expResult: nil,
@@ -556,8 +478,8 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			name:   "invalid topup - nil deposit",
 			create: nil,
 			topup: &types.MsgTopUpDeposit{
-				StreamId: 1,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
 				Deposit:  sdk.Coin{},
 			},
 			expResult: nil,
@@ -568,25 +490,13 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			name:   "invalid topup - stream not exist",
 			create: nil,
 			topup: &types.MsgTopUpDeposit{
-				StreamId: 99,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[9].String(),
 				Deposit:  sdk.NewInt64Coin("stake", 1000),
 			},
 			expResult: nil,
 			expectErr: true,
-			expErrMsg: "lookup for stream id not found",
-		},
-		{
-			name:   "invalid topup - not the sender",
-			create: nil,
-			topup: &types.MsgTopUpDeposit{
-				StreamId: 1,
-				Sender:   s.addrs[9].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
-			},
-			expResult: nil,
-			expectErr: true,
-			expErrMsg: "you are not the sender",
+			expErrMsg: "stream not found",
 		},
 	}
 
@@ -636,12 +546,11 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				FlowRate: 1,
 			},
 			flowRate: &types.MsgUpdateFlowRate{
-				StreamId: 1,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
 				FlowRate: 2,
 			},
 			expResult: &types.MsgUpdateFlowRateResponse{
-				StreamId: 1,
 				FlowRate: 2,
 			},
 			expectErr: false,
@@ -651,8 +560,8 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 			name:   "invalid flow rate - bad sender address",
 			create: nil,
 			flowRate: &types.MsgUpdateFlowRate{
-				StreamId: 1,
 				Sender:   "rubbish",
+				Receiver: s.addrs[1].String(),
 				FlowRate: 2,
 			},
 			expResult: nil,
@@ -663,8 +572,32 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 			name:   "invalid flow rate - empty sender address",
 			create: nil,
 			flowRate: &types.MsgUpdateFlowRate{
-				StreamId: 1,
 				Sender:   "",
+				Receiver: s.addrs[1].String(),
+				FlowRate: 2,
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "empty address string is not allowed",
+		},
+		{
+			name:   "invalid flow rate - bad receiver address",
+			create: nil,
+			flowRate: &types.MsgUpdateFlowRate{
+				Sender:   s.addrs[1].String(),
+				Receiver: "rubbish",
+				FlowRate: 2,
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "decoding bech32 failed",
+		},
+		{
+			name:   "invalid flow rate - empty receiver address",
+			create: nil,
+			flowRate: &types.MsgUpdateFlowRate{
+				Sender:   s.addrs[1].String(),
+				Receiver: "",
 				FlowRate: 2,
 			},
 			expResult: nil,
@@ -675,8 +608,8 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 			name:   "invalid flow rate - zero flow rate",
 			create: nil,
 			flowRate: &types.MsgUpdateFlowRate{
-				StreamId: 1,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
 				FlowRate: 0,
 			},
 			expResult: nil,
@@ -687,8 +620,8 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 			name:   "invalid flow rate - negative flow rate",
 			create: nil,
 			flowRate: &types.MsgUpdateFlowRate{
-				StreamId: 1,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
 				FlowRate: -1,
 			},
 			expResult: nil,
@@ -699,25 +632,13 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 			name:   "invalid flow rate - stream not exist",
 			create: nil,
 			flowRate: &types.MsgUpdateFlowRate{
-				StreamId: 99,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[9].String(),
 				FlowRate: 2,
 			},
 			expResult: nil,
 			expectErr: true,
-			expErrMsg: "lookup for stream id not found",
-		},
-		{
-			name:   "invalid flow rate - not the sender",
-			create: nil,
-			flowRate: &types.MsgUpdateFlowRate{
-				StreamId: 1,
-				Sender:   s.addrs[9].String(),
-				FlowRate: 2,
-			},
-			expResult: nil,
-			expectErr: true,
-			expErrMsg: "you are not the sender",
+			expErrMsg: "stream not found",
 		},
 	}
 
@@ -767,12 +688,10 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 				FlowRate: 1,
 			},
 			cancel: &types.MsgCancelStream{
-				StreamId: 1,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[1].String(),
 			},
-			expResult: &types.MsgCancelStreamResponse{
-				StreamId: 1,
-			},
+			expResult: &types.MsgCancelStreamResponse{},
 			expectErr: false,
 			expErrMsg: "",
 		},
@@ -780,8 +699,8 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			name:   "invalid cancel - bad sender address",
 			create: nil,
 			cancel: &types.MsgCancelStream{
-				StreamId: 1,
 				Sender:   "rubbish",
+				Receiver: s.addrs[1].String(),
 			},
 			expResult: nil,
 			expectErr: true,
@@ -791,8 +710,30 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			name:   "invalid cancel - empty sender address",
 			create: nil,
 			cancel: &types.MsgCancelStream{
-				StreamId: 1,
 				Sender:   "",
+				Receiver: s.addrs[1].String(),
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "empty address string is not allowed",
+		},
+		{
+			name:   "invalid cancel - bad receiver address",
+			create: nil,
+			cancel: &types.MsgCancelStream{
+				Sender:   s.addrs[0].String(),
+				Receiver: "rubbish",
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "decoding bech32 failed",
+		},
+		{
+			name:   "invalid cancel - empty receiver address",
+			create: nil,
+			cancel: &types.MsgCancelStream{
+				Sender:   s.addrs[0].String(),
+				Receiver: "",
 			},
 			expResult: nil,
 			expectErr: true,
@@ -802,23 +743,12 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			name:   "invalid cancel - stream not exist",
 			create: nil,
 			cancel: &types.MsgCancelStream{
-				StreamId: 99,
 				Sender:   s.addrs[0].String(),
+				Receiver: s.addrs[9].String(),
 			},
 			expResult: nil,
 			expectErr: true,
-			expErrMsg: "lookup for stream id not found",
-		},
-		{
-			name:   "invalid cancel - not the sender",
-			create: nil,
-			cancel: &types.MsgCancelStream{
-				StreamId: 1,
-				Sender:   s.addrs[9].String(),
-			},
-			expResult: nil,
-			expectErr: true,
-			expErrMsg: "you are not the sender",
+			expErrMsg: "stream not found",
 		},
 	}
 

@@ -31,6 +31,8 @@ func TestMsgCreateStream_GetSigners(t *testing.T) {
 }
 
 func TestMsgCreateStream_ValidateBasic(t *testing.T) {
+	s := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
+	r := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
 	tests := []struct {
 		deposit    sdk.Coin
 		flowRate   int64
@@ -38,12 +40,13 @@ func TestMsgCreateStream_ValidateBasic(t *testing.T) {
 		sender     sdk.AccAddress
 		expectPass bool
 	}{
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(0)), 100, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 0, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), 100, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, s, true},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(0)), 100, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 0, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, sdk.AccAddress{}, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, sdk.AccAddress{}, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), 100, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, r, false},
 	}
 
 	for i, tc := range tests {
@@ -52,51 +55,6 @@ func TestMsgCreateStream_ValidateBasic(t *testing.T) {
 			tc.flowRate,
 			tc.receiver,
 			tc.sender,
-		)
-
-		if tc.expectPass {
-			require.NoError(t, msg.ValidateBasic(), "test: %v", i)
-		} else {
-			require.Error(t, msg.ValidateBasic(), "test: %v", i)
-		}
-	}
-}
-
-//	MsgClaimStreamById{}
-
-func TestMsgClaimStreamById_Route(t *testing.T) {
-	msg := types.MsgClaimStreamById{}
-	require.Equal(t, types.ModuleName, msg.Route())
-}
-
-func TestMsgClaimStreamById_Type(t *testing.T) {
-	msg := types.MsgClaimStreamById{}
-	require.Equal(t, types.ClaimStreamAction, msg.Type())
-}
-
-func TestMsgClaimStreamById_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	receiverAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgClaimStreamById{Receiver: receiverAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(receiverAddr))
-}
-
-func TestMsgClaimStreamById_ValidateBasic(t *testing.T) {
-	tests := []struct {
-		streamId   uint64
-		receiver   sdk.AccAddress
-		expectPass bool
-	}{
-		{1, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{0, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{1, sdk.AccAddress{}, false},
-	}
-
-	for i, tc := range tests {
-		msg := types.NewMsgClaimStreamById(
-			tc.streamId,
-			tc.receiver,
 		)
 
 		if tc.expectPass {
@@ -174,22 +132,22 @@ func TestMsgTopUpDeposit_GetSigners(t *testing.T) {
 
 func TestMsgTopUpDeposit_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		streamId   uint64
 		deposit    sdk.Coin
 		sender     sdk.AccAddress
+		receiver   sdk.AccAddress
 		expectPass bool
 	}{
-		{1, sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{0, sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{1, sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(0)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{1, sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress{}, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(0)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
 	}
 
 	for i, tc := range tests {
 		msg := types.NewMsgTopUpDeposit(
-			tc.streamId,
-			tc.deposit,
+			tc.receiver,
 			tc.sender,
+			tc.deposit,
 		)
 
 		if tc.expectPass {
@@ -222,22 +180,22 @@ func TestMsgUpdateFlowRate_GetSigners(t *testing.T) {
 
 func TestMsgUpdateFlowRate_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		streamId   uint64
 		flowRate   int64
 		sender     sdk.AccAddress
+		receiver   sdk.AccAddress
 		expectPass bool
 	}{
-		{1, 100, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{0, 100, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{1, 0, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{1, 100, sdk.AccAddress{}, false},
+		{1, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{1, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
+		{1, sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{0, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
 	}
 
 	for i, tc := range tests {
 		msg := types.NewMsgUpdateFlowRate(
-			tc.streamId,
-			tc.flowRate,
+			tc.receiver,
 			tc.sender,
+			tc.flowRate,
 		)
 
 		if tc.expectPass {
@@ -270,18 +228,18 @@ func TestMsgMsgCancelStream_GetSigners(t *testing.T) {
 
 func TestMsgCancelStream_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		streamId   uint64
+		receiver   sdk.AccAddress
 		sender     sdk.AccAddress
 		expectPass bool
 	}{
-		{1, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{0, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{1, sdk.AccAddress{}, false},
+		{sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
 	}
 
 	for i, tc := range tests {
 		msg := types.NewMsgCancelStream(
-			tc.streamId,
+			tc.receiver,
 			tc.sender,
 		)
 

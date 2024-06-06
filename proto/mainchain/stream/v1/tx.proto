@@ -17,9 +17,6 @@ service Msg {
   // CreateStream defines a method to create a new stream
   rpc CreateStream(MsgCreateStream) returns (MsgCreateStreamResponse);
 
-  // ClaimStreamById defines a method for a receiver to claim from a stream using the stream ID
-  rpc ClaimStreamById(MsgClaimStreamById) returns (MsgClaimStreamByIdResponse);
-
   // ClaimStream defines a method for a receiver to claim from a stream using the sender and receiver
   rpc ClaimStream(MsgClaimStream) returns (MsgClaimStreamResponse);
 
@@ -52,40 +49,19 @@ message MsgCreateStream {
   // deposit is the amount being sent to deposit for the stream
   cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
   // flow_rate is the rate of nund per second
-  int64 flow_rate = 5;
+  int64 flow_rate = 4;
 }
 
 // MsgCreateStreamResponse is the response for MsgCreateStream
 message MsgCreateStreamResponse {
-  // stream_id is a generated ID, used for tracking event emissions, queries etc.
-  uint64 stream_id = 1;
-}
-
-// MsgClaimStream claims pending payments in a stream using the stream id
-message MsgClaimStreamById {
-  option (cosmos.msg.v1.signer) = "receiver";
-
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
-
-  // stream_id is id of the stream being claimed
-  uint64 stream_id = 1;
-  // receiver is the wallet making the claim
-  string receiver = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-}
-
-// MsgClaimStreamResponse is the response for MsgClaimStream
-message MsgClaimStreamByIdResponse {
-  // stream_id is id of the stream being claimed
-  uint64 stream_id = 1;
-  // total_claimed is the total value of the claim
-  cosmos.base.v1beta1.Coin total_claimed = 2 [ (gogoproto.nullable) = false ];
-  // stream_payment is the amount received by the receiver wallet
-  cosmos.base.v1beta1.Coin stream_payment = 3 [ (gogoproto.nullable) = false ];
-  // validator_fee is the amount sent to validators
-  cosmos.base.v1beta1.Coin validator_fee = 4 [ (gogoproto.nullable) = false ];
-  // remaining_deposit is the amount of deposit remaining in the stream
-  cosmos.base.v1beta1.Coin remaining_deposit = 5 [ (gogoproto.nullable) = false ];
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender is the address of the stream creator, sending the stream
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // deposit is the amount being sent to deposit for the stream
+  cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
+  // flow_rate is the rate of nund per second
+  int64 flow_rate = 4;
 }
 
 // MsgClaimStream claims pending payments form a stream using the sender and receiver addresses
@@ -102,8 +78,6 @@ message MsgClaimStream {
 }
 
 message MsgClaimStreamResponse {
-  // stream_id is id of the stream being claimed
-  uint64 stream_id = 1;
   // total_claimed is the total value of the claim
   cosmos.base.v1beta1.Coin total_claimed = 2 [ (gogoproto.nullable) = false ];
   // stream_payment is the amount received by the receiver wallet
@@ -121,8 +95,8 @@ message MsgTopUpDeposit {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  // stream_id is id of the stream being deposited to
-  uint64 stream_id = 1;
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // sender is the wallet making the deposit
   string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // deposit is the amount being sent to deposit for the stream
@@ -131,8 +105,6 @@ message MsgTopUpDeposit {
 
 // MsgTopUpDepositResponse is the response for MsgTopUpDeposit
 message MsgTopUpDepositResponse {
-  // stream_id is id of the stream being deposited to
-  uint64 stream_id = 1;
   // deposit_amount is the amount deposited
   cosmos.base.v1beta1.Coin deposit_amount = 2 [ (gogoproto.nullable) = false ];
   // current_deposit is the total current deposit in the stream
@@ -152,8 +124,8 @@ message MsgUpdateFlowRate{
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  // stream_id is id of the stream being updated
-  uint64 stream_id = 1;
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // sender is the wallet making the update
   string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // flow_rate is the rate of nund per second
@@ -162,8 +134,6 @@ message MsgUpdateFlowRate{
 
 // MsgUpdateFlowRateResponse is the response for MsgUpdateFlowRate
 message MsgUpdateFlowRateResponse {
-  // stream_id is id of the stream being updated
-  uint64 stream_id = 1;
   // flow_rate is the rate of nund per second
   int64 flow_rate = 2;
 }
@@ -175,17 +145,14 @@ message MsgCancelStream {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  // stream_id is id of the stream being cancelled
-  uint64 stream_id = 1;
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // sender is the wallet cancelling
   string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 // MsgCancelStreamResponse
-message MsgCancelStreamResponse {
-  // stream_id is id of the stream being cancelled
-  uint64 stream_id = 1;
-}
+message MsgCancelStreamResponse {}
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
 //

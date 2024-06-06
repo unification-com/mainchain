@@ -38,6 +38,11 @@ func (k msgServer) CreateStream(goCtx context.Context, msg *types.MsgCreateStrea
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.Receiver)
 	}
 
+	// ToDo - add to unit tests
+	if msg.Sender == msg.Receiver {
+		return nil, sdkerrors.Wrap(types.ErrInvalidData, "sender and receiver cannot be same address")
+	}
+
 	if k.IsStream(ctx, receiverAddr, senderAddr) {
 		return nil, sdkerrors.Wrap(types.ErrStreamExists, "use update stream msg to modify existing stream")
 	}
@@ -57,14 +62,7 @@ func (k msgServer) CreateStream(goCtx context.Context, msg *types.MsgCreateStrea
 	}
 
 	// create the "empty" stream
-	stream, err := k.CreateNewStream(ctx, receiverAddr, senderAddr, msg.Deposit, msg.FlowRate)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// create lookup entry
-	err = k.CreateIdLookup(ctx, receiverAddr, senderAddr, stream.StreamId)
+	_, err := k.CreateNewStream(ctx, receiverAddr, senderAddr, msg.Deposit, msg.FlowRate)
 
 	if err != nil {
 		return nil, err
@@ -79,51 +77,12 @@ func (k msgServer) CreateStream(goCtx context.Context, msg *types.MsgCreateStrea
 	defer telemetry.IncrCounter(1, types.ModuleName, types.EventTypeCreateStreamAction)
 
 	return &types.MsgCreateStreamResponse{
-		StreamId: stream.StreamId,
+		Receiver: msg.Receiver,
+		Sender:   msg.Sender,
+		Deposit:  msg.Deposit,
+		FlowRate: msg.FlowRate,
 	}, nil
 
-}
-
-// ClaimStreamById claims payment from a stream using the stream ID as input
-func (k msgServer) ClaimStreamById(goCtx context.Context, msg *types.MsgClaimStreamById) (*types.MsgClaimStreamByIdResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	receiverAddr, accErr := sdk.AccAddressFromBech32(msg.Receiver)
-	if accErr != nil {
-		return nil, accErr
-	}
-
-	if msg.StreamId <= 0 {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream id must be > zero")
-	}
-
-	streamLookup, exists := k.GetIdLookup(ctx, msg.StreamId)
-
-	if !exists {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream id does not exist")
-	}
-
-	if streamLookup.Receiver != msg.Receiver {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "you are not the receiver")
-	}
-
-	senderAddr, accErr := sdk.AccAddressFromBech32(streamLookup.Sender)
-	if accErr != nil {
-		return nil, accErr
-	}
-
-	finalClaimCoin, valFeeCoin, totalClaimValue, remainingDeposit, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.MsgClaimStreamByIdResponse{
-		StreamId:         msg.StreamId,
-		TotalClaimed:     totalClaimValue,
-		StreamPayment:    finalClaimCoin,
-		ValidatorFee:     valFeeCoin,
-		RemainingDeposit: remainingDeposit,
-	}, nil
 }
 
 // ClaimStream claims from a stream using sender and receiver as inputs
@@ -138,14 +97,10 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 		return nil, accErr
 	}
 
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+	ok := k.IsStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
-	}
-
-	if stream.Receiver != msg.Receiver {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "you are not the receiver")
 	}
 
 	finalClaimCoin, valFeeCoin, totalClaimValue, remainingDeposit, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
@@ -155,7 +110,6 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 	}
 
 	return &types.MsgClaimStreamResponse{
-		StreamId:         stream.StreamId,
 		TotalClaimed:     totalClaimValue,
 		StreamPayment:    finalClaimCoin,
 		ValidatorFee:     valFeeCoin,
@@ -172,23 +126,13 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 		return nil, accErr
 	}
 
-	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "deposit must be > zero")
-	}
-
-	streamLookup, ok := k.GetIdLookup(ctx, msg.StreamId)
-
-	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "lookup for stream id not found")
-	}
-
-	if msg.Sender != streamLookup.Sender {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "you are not the sender")
-	}
-
-	receiverAddr, accErr := sdk.AccAddressFromBech32(streamLookup.Receiver)
+	receiverAddr, accErr := sdk.AccAddressFromBech32(msg.Receiver)
 	if accErr != nil {
 		return nil, accErr
+	}
+
+	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
+		return nil, sdkerrors.Wrap(types.ErrInvalidData, "deposit must be > zero")
 	}
 
 	if !k.IsStream(ctx, receiverAddr, senderAddr) {
@@ -206,7 +150,6 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 	stream, _ := k.GetStream(ctx, receiverAddr, senderAddr)
 
 	return &types.MsgTopUpDepositResponse{
-		StreamId:        msg.StreamId,
 		DepositAmount:   msg.Deposit,
 		CurrentDeposit:  stream.Deposit,
 		DepositZeroTime: stream.DepositZeroTime,
@@ -223,23 +166,13 @@ func (k msgServer) UpdateFlowRate(goCtx context.Context, msg *types.MsgUpdateFlo
 		return nil, accErr
 	}
 
-	if msg.FlowRate <= 0 {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "flow rate must be > zero")
-	}
-
-	streamLookup, ok := k.GetIdLookup(ctx, msg.StreamId)
-
-	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "lookup for stream id not found")
-	}
-
-	if msg.Sender != streamLookup.Sender {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "you are not the sender")
-	}
-
-	receiverAddr, accErr := sdk.AccAddressFromBech32(streamLookup.Receiver)
+	receiverAddr, accErr := sdk.AccAddressFromBech32(msg.Receiver)
 	if accErr != nil {
 		return nil, accErr
+	}
+
+	if msg.FlowRate <= 0 {
+		return nil, sdkerrors.Wrap(types.ErrInvalidData, "flow rate must be > zero")
 	}
 
 	if !k.IsStream(ctx, receiverAddr, senderAddr) {
@@ -254,7 +187,6 @@ func (k msgServer) UpdateFlowRate(goCtx context.Context, msg *types.MsgUpdateFlo
 	}
 
 	return &types.MsgUpdateFlowRateResponse{
-		StreamId: msg.StreamId,
 		FlowRate: msg.FlowRate,
 	}, nil
 }
@@ -267,22 +199,12 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 		return nil, accErr
 	}
 
-	streamLookup, ok := k.GetIdLookup(ctx, msg.StreamId)
-
-	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "lookup for stream id not found")
-	}
-
-	if msg.Sender != streamLookup.Sender {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "you are not the sender")
-	}
-
-	receiverAddr, accErr := sdk.AccAddressFromBech32(streamLookup.Receiver)
+	receiverAddr, accErr := sdk.AccAddressFromBech32(msg.Receiver)
 	if accErr != nil {
 		return nil, accErr
 	}
 
-	_, ok = k.GetStream(ctx, receiverAddr, senderAddr)
+	ok := k.IsStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
@@ -295,9 +217,7 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 		return nil, err
 	}
 
-	return &types.MsgCancelStreamResponse{
-		StreamId: msg.StreamId,
-	}, nil
+	return &types.MsgCancelStreamResponse{}, nil
 }
 
 func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {

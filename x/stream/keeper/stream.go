@@ -8,26 +8,6 @@ import (
 	"time"
 )
 
-// GetHighestStreamId gets the highest BEACON ID
-func (k Keeper) GetHighestStreamId(ctx sdk.Context) (StreamId uint64, err error) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.HighestStreamIdKey)
-	if bz == nil {
-		return 1, nil
-	}
-	// convert from bytes to uint64
-	StreamId = types.GetStreamIdFromBytes(bz)
-	return StreamId, nil
-}
-
-// SetHighestStreamId sets the new highest BEACON ID to the store
-func (k Keeper) SetHighestStreamId(ctx sdk.Context, StreamId uint64) {
-	store := ctx.KVStore(k.storeKey)
-	// convert from uint64 to bytes for storage
-	StreamIdbz := types.GetStreamIdBytes(StreamId)
-	store.Set(types.HighestStreamIdKey, StreamIdbz)
-}
-
 // GetTotalDeposits gets the total deposits - just a wrapper for getting the module account's balances from the bank
 func (k Keeper) GetTotalDeposits(ctx sdk.Context) sdk.Coins {
 	moduleAcc := k.GetStreamModuleAccount(ctx)
@@ -62,27 +42,28 @@ func (k Keeper) GetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddre
 	return stream, true
 }
 
-// SetIdLookup Sets the id lookup
-func (k Keeper) SetIdLookup(ctx sdk.Context, streamId uint64, idLookup types.StreamIdLookup) error {
+// IterateAllStreams iterates over all the Streams of all accounts
+// that are provided to a callback. If true is returned from the
+// callback, iteration is halted.
+func (k Keeper) IterateAllStreams(ctx sdk.Context, cb func(sdk.AccAddress, sdk.AccAddress, types.Stream) bool) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.GetStreamIdLookupKey(streamId), k.cdc.MustMarshal(&idLookup))
-	return nil
-}
+	iterator := sdk.KVStorePrefixIterator(store, types.StreamKeyPrefix)
+	defer iterator.Close()
 
-// GetIdLookup Gets the id lookup
-func (k Keeper) GetIdLookup(ctx sdk.Context, streamId uint64) (types.StreamIdLookup, bool) {
-	store := ctx.KVStore(k.storeKey)
+	for ; iterator.Valid(); iterator.Next() {
+		receiverAddr, senderAddr := types.AddressesFromStreamKey(iterator.Key())
 
-	bz := store.Get(types.GetStreamIdLookupKey(streamId))
+		var stream types.Stream
+		err := k.cdc.Unmarshal(iterator.Value(), &stream)
 
-	if bz == nil {
-		// return a new empty stream lookup struct
-		return types.StreamIdLookup{}, false
+		if err != nil {
+			panic(err)
+		}
+
+		if cb(receiverAddr, senderAddr, stream) {
+			break
+		}
 	}
-
-	var idLookup types.StreamIdLookup
-	k.cdc.MustUnmarshal(bz, &idLookup)
-	return idLookup, true
 }
 
 func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) (sdk.Coin, sdk.Coin, sdk.Coin, sdk.Coin, error) {
@@ -140,9 +121,8 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeClaimStreamAction,
-			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
-			sdk.NewAttribute(types.AttributeKeyStreamSender, stream.Sender),
-			sdk.NewAttribute(types.AttributeKeyStreamReceiver, stream.Receiver),
+			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyClaimTotal, claimTotal.String()),
 			sdk.NewAttribute(types.AttributeKeyClaimAmountReceived, receiverAmount.String()),
 			sdk.NewAttribute(types.AttributeKeyClaimValidatorFee, valFee.String()),
@@ -212,7 +192,8 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeDepositToStream,
-			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
+			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyAmountDeposited, topUpDeposit.String()),
 			sdk.NewAttribute(types.AttributeKeyDepositDuration, strconv.FormatInt(durationExtension, 10)),
 			sdk.NewAttribute(types.AttributeKeyDepositZeroTime, depositZeroTime.String()),
@@ -273,7 +254,8 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeUpdateFlowRate,
-			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
+			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyOldFlowRate, strconv.FormatInt(oldFlowRate, 10)),
 			sdk.NewAttribute(types.AttributeKeyNewFlowRate, strconv.FormatInt(newFlowRate, 10)),
 			sdk.NewAttribute(types.AttributeKeyDepositDuration, strconv.FormatInt(duration, 10)),
@@ -328,29 +310,12 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeStreamCancelled,
-			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(stream.StreamId, 10)),
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyRefundAmount, refundCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyRemainingDeposit, stream.Deposit.String()),
 		),
 	)
-
-	return nil
-}
-
-func (k Keeper) CreateIdLookup(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, streamId uint64) error {
-
-	idLookup := types.StreamIdLookup{
-		Sender:   senderAddr.String(),
-		Receiver: receiverAddr.String(),
-	}
-
-	err := k.SetIdLookup(ctx, streamId, idLookup)
-
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
@@ -364,18 +329,9 @@ func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		return types.Stream{}, sdkerrors.Wrap(types.ErrStreamExists, "stream exists")
 	}
 
-	streamId, err := k.GetHighestStreamId(ctx)
-
-	if err != nil {
-		return types.Stream{}, err
-	}
-
 	nowTime := ctx.BlockTime()
 
 	stream := types.Stream{
-		StreamId:        streamId,
-		Sender:          senderAddr.String(),
-		Receiver:        receiverAddr.String(),
 		Deposit:         sdk.NewCoin(deposit.Denom, sdk.NewInt(0)), // set to zero for correct calculation in AddDeposit
 		FlowRate:        flowRate,
 		CreateTime:      nowTime,
@@ -386,18 +342,15 @@ func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		Cancellable:     true, // default to true for now. Eventually, using eFUND will set to false
 	}
 
-	err = k.SetStream(ctx, receiverAddr, senderAddr, stream)
+	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
 
 	if err != nil {
 		return types.Stream{}, err
 	}
 
-	k.SetHighestStreamId(ctx, streamId+1)
-
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeCreateStreamAction,
-			sdk.NewAttribute(types.AttributeKeyStreamId, strconv.FormatUint(streamId, 10)),
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyFlowRate, strconv.FormatInt(flowRate, 10)),

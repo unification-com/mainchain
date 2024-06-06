@@ -17,22 +17,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, bankKeeper types.BankKeeper, 
 	}
 
 	k.SetParams(ctx, genState.Params)
-	k.SetHighestStreamId(ctx, genState.StartingStreamId)
 
 	for _, stream := range genState.Streams {
-		s := types.Stream{
-			StreamId:        stream.StreamId,
-			Sender:          stream.Sender,
-			Receiver:        stream.Receiver,
-			Deposit:         stream.Deposit,
-			FlowRate:        stream.FlowRate,
-			CreateTime:      stream.CreateTime,
-			LastUpdatedTime: stream.LastUpdatedTime,
-			LastOutflowTime: stream.LastOutflowTime,
-			DepositZeroTime: stream.DepositZeroTime,
-			TotalStreamed:   stream.TotalStreamed,
-			Cancellable:     stream.Cancellable,
-		}
 
 		senderAddr, err := sdk.AccAddressFromBech32(stream.Sender)
 		if err != nil {
@@ -44,24 +30,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, bankKeeper types.BankKeeper, 
 			panic(err)
 		}
 
-		err = k.SetStream(ctx, receiverAddr, senderAddr, s)
+		err = k.SetStream(ctx, receiverAddr, senderAddr, stream.Stream)
 
 		if err != nil {
 			panic(err)
 		}
 
-		idl := types.StreamIdLookup{
-			Sender:   stream.Sender,
-			Receiver: stream.Receiver,
-		}
-
-		err = k.SetIdLookup(ctx, stream.StreamId, idl)
-
-		moduleHoldings = moduleHoldings.Add(stream.Deposit)
-
-		if err != nil {
-			panic(err)
-		}
+		moduleHoldings = moduleHoldings.Add(stream.Stream.Deposit)
 	}
 
 	balances := bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
@@ -70,7 +45,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, bankKeeper types.BankKeeper, 
 	}
 
 	if !balances.IsEqual(moduleHoldings) {
-		panic(fmt.Sprintf("enterprise module balance does not match the module holdings: %s <-> %s", balances, moduleHoldings))
+		panic(fmt.Sprintf("stream module acc balance does not match the module holdings: %s != %s", balances, moduleHoldings))
 	}
 }
 

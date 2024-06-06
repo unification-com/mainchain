@@ -1907,7 +1907,7 @@ func (s *KeeperTestSuite) TestIterateAllStreams() {
 		streams[s.addrs[i-1].String()][s.addrs[i].String()] = stream
 	}
 
-	s.app.StreamKeeper.IterateAllStreams(tCtx, func(receiverAddr, senderAddr sdk.AccAddress, stream types.Stream) (stop bool) {
+	s.app.StreamKeeper.IterateAllStreams(tCtx, func(receiverAddr, senderAddr sdk.AccAddress, stream types.Stream) bool {
 
 		expectedStream, exists := streams[receiverAddr.String()][senderAddr.String()]
 		s.Require().True(exists)

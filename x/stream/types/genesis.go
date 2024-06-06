@@ -11,6 +11,13 @@ func DefaultGenesis() *GenesisState {
 	}
 }
 
+func NewGenesisState(streams []StreamExport, params Params) *GenesisState {
+	return &GenesisState{
+		Params:  params,
+		Streams: streams,
+	}
+}
+
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {

@@ -1,14 +1,13 @@
-package stream
+package keeper
 
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain/x/stream/keeper"
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, bankKeeper types.BankKeeper, accountKeeper types.AccountKeeper, genState types.GenesisState) {
+func (k Keeper) InitGenesis(ctx sdk.Context, genState *types.GenesisState) {
 
 	moduleAcc := k.GetStreamModuleAccount(ctx)
 	moduleHoldings := sdk.Coins{}
@@ -39,9 +38,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, bankKeeper types.BankKeeper, 
 		moduleHoldings = moduleHoldings.Add(stream.Stream.Deposit)
 	}
 
-	balances := bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
+	balances := k.bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
 	if balances.IsZero() {
-		accountKeeper.SetModuleAccount(ctx, moduleAcc)
+		k.accKeeper.SetModuleAccount(ctx, moduleAcc)
 	}
 
 	if !balances.IsEqual(moduleHoldings) {
@@ -50,11 +49,20 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, bankKeeper types.BankKeeper, 
 }
 
 // ExportGenesis returns the module's exported genesis
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
-	genesis.Params = k.GetParams(ctx)
+func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
+	params := k.GetParams(ctx)
+	var streams []types.StreamExport
 
-	// ToDo
+	k.IterateAllStreams(ctx, func(receiverAddr, senderAddr sdk.AccAddress, stream types.Stream) bool {
+		streams = append(streams,
+			types.StreamExport{
+				Receiver: receiverAddr.String(),
+				Sender:   senderAddr.String(),
+				Stream:   stream,
+			},
+		)
+		return false
+	})
 
-	return genesis
+	return types.NewGenesisState(streams, params)
 }

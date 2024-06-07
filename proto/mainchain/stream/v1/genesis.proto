@@ -14,7 +14,7 @@ message GenesisState {
   repeated StreamExport streams = 2 [(gogoproto.nullable) = false];
 }
 
-// StreamExport holds genesis export data for a beacon, including submitted timestamps
+// StreamExport holds genesis export data for a stream
 message StreamExport {
   // receiver is the wallet that will receive stream payments
   string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];

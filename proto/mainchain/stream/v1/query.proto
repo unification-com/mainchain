@@ -51,6 +51,16 @@ service Query {
 
 }
 
+// StreamResult contains data about a stream
+message StreamResult {
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender is the wallet making the update
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // stream is the stream data
+  Stream stream = 3;
+}
+
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
@@ -95,7 +105,7 @@ message QueryStreamsRequest {
 // QueryStreamsResponse is the response type for the Query/Streams RPC method
 message QueryStreamsResponse {
   // streams is the list of all streams
-  repeated Stream streams = 1 [(gogoproto.nullable) = false];
+  repeated StreamResult streams = 1;
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse                pagination = 2;
 }
@@ -113,7 +123,7 @@ message QueryAllStreamsForReceiverResponse {
   // receiver_addr is the receiver wallet address being queried
   string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // streams is the list of all streams
-  repeated Stream streams = 2 [(gogoproto.nullable) = false];
+  repeated StreamResult streams = 2;
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
@@ -128,8 +138,8 @@ message QueryStreamByReceiverSenderRequest {
 
 // QueryStreamByReceiverSenderResponse is the response type for the Query/StreamByReceiverSender RPC method
 message QueryStreamByReceiverSenderResponse {
-  // stream is the Stream
-  Stream stream = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // stream is the StreamResult
+  StreamResult stream = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
 // QueryStreamReceiverSenderCurrentFlowRequest is the request type for the Query/StreamReceiverSenderCurrentFlow RPC method
@@ -161,7 +171,7 @@ message QueryAllStreamsForSenderResponse {
   // sender_addr is the receiver wallet address being queried
   string sender_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // streams is the list of all streams
-  repeated Stream streams = 2 [(gogoproto.nullable) = false];
+  repeated StreamResult streams = 2;
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }

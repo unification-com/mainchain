@@ -77,7 +77,7 @@ func (m *GenesisState) GetStreams() []StreamExport {
 	return nil
 }
 
-// StreamExport holds genesis export data for a beacon, including submitted timestamps
+// StreamExport holds genesis export data for a stream
 type StreamExport struct {
 	// receiver is the wallet that will receive stream payments
 	Receiver string `protobuf:"bytes,1,opt,name=receiver,proto3" json:"receiver,omitempty"`

@@ -16,27 +16,21 @@ func (q Keeper) Streams(c context.Context, req *types.QueryStreamsRequest) (*typ
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var streams []types.Stream
-
 	ctx := sdk.UnwrapSDKContext(c)
 
-	store := ctx.KVStore(q.storeKey)
+	store := prefix.NewStore(ctx.KVStore(q.storeKey), types.StreamKeyPrefix)
 
-	streamsStore := prefix.NewStore(store, types.StreamKeyPrefix)
+	streams, pageRes, err := query.GenericFilteredPaginate(q.cdc, store, req.Pagination, func(key []byte, stream *types.Stream) (*types.StreamResult, error) {
 
-	pageRes, err := query.FilteredPaginate(streamsStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
-		var s types.Stream
+		// need to prefix the StreamKeyPrefix 0x11 to the returned key as AddressesFromStreamKey expects it
+		receiverAddr, senderAddr := types.AddressesFromStreamKey(append(types.StreamKeyPrefix, key...))
 
-		if err := q.cdc.Unmarshal(value, &s); err != nil {
-			return false, status.Error(codes.Internal, err.Error())
-		}
-
-		if accumulate {
-			streams = append(streams, s)
-		}
-
-		return true, nil
-	})
+		return &types.StreamResult{
+			Receiver: receiverAddr.String(),
+			Sender:   senderAddr.String(),
+			Stream:   stream,
+		}, nil
+	}, func() *types.Stream { return &types.Stream{} })
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -52,40 +46,31 @@ func (q Keeper) AllStreamsForSender(c context.Context, req *types.QueryAllStream
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	_, err := sdk.AccAddressFromBech32(req.SenderAddr)
+	senderAddr, err := sdk.AccAddressFromBech32(req.SenderAddr)
 	if err != nil {
 		return nil, err
 	}
 
-	var streams []types.Stream
-
 	ctx := sdk.UnwrapSDKContext(c)
 
-	store := ctx.KVStore(q.storeKey)
+	store := prefix.NewStore(ctx.KVStore(q.storeKey), types.StreamKeyPrefix)
 
-	streamsStore := prefix.NewStore(store, types.StreamKeyPrefix)
+	streams, pageRes, err := query.GenericFilteredPaginate(q.cdc, store, req.Pagination, func(key []byte, stream *types.Stream) (*types.StreamResult, error) {
 
-	senderAddr, err := sdk.AccAddressFromBech32(req.SenderAddr)
+		// need to prefix the StreamKeyPrefix 0x11 to the returned key as AddressesFromStreamKey expects it
+		receiverAddr, s := types.AddressesFromStreamKey(append(types.StreamKeyPrefix, key...))
 
-	pageRes, err := query.FilteredPaginate(streamsStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
-		var s types.Stream
-
-		_, sender := types.AddressesFromStreamKey(key)
-
-		if err := q.cdc.Unmarshal(value, &s); err != nil {
-			return false, status.Error(codes.Internal, err.Error())
+		// filter by sender address
+		if !s.Equals(senderAddr) {
+			return nil, nil
 		}
 
-		if sender.Equals(senderAddr) {
-			if accumulate {
-				streams = append(streams, s)
-			}
-
-			return true, nil
-		}
-
-		return false, nil
-	})
+		return &types.StreamResult{
+			Receiver: receiverAddr.String(),
+			Sender:   senderAddr.String(),
+			Stream:   stream,
+		}, nil
+	}, func() *types.Stream { return &types.Stream{} })
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -119,7 +104,13 @@ func (q Keeper) StreamByReceiverSender(c context.Context, req *types.QueryStream
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
-	return &types.QueryStreamByReceiverSenderResponse{Stream: stream}, nil
+	return &types.QueryStreamByReceiverSenderResponse{
+		Stream: types.StreamResult{
+			Receiver: req.ReceiverAddr,
+			Sender:   req.SenderAddr,
+			Stream:   &stream,
+		},
+	}, nil
 }
 
 func (q Keeper) StreamReceiverSenderCurrentFlow(c context.Context, req *types.QueryStreamReceiverSenderCurrentFlowRequest) (*types.QueryStreamReceiverSenderCurrentFlowResponse, error) {
@@ -172,27 +163,19 @@ func (q Keeper) AllStreamsForReceiver(c context.Context, req *types.QueryAllStre
 		return nil, err
 	}
 
-	var streams []types.Stream
-
 	ctx := sdk.UnwrapSDKContext(c)
 
-	store := ctx.KVStore(q.storeKey)
+	store := prefix.NewStore(ctx.KVStore(q.storeKey), types.GetStreamsByReceiverKey(receiverAddr))
 
-	streamsStore := prefix.NewStore(store, types.GetStreamsByReceiverKey(receiverAddr))
+	streams, pageRes, err := query.GenericFilteredPaginate(q.cdc, store, req.Pagination, func(key []byte, stream *types.Stream) (*types.StreamResult, error) {
+		senderAddr := types.FirstAddressFromStreamStoreKey(key)
 
-	pageRes, err := query.FilteredPaginate(streamsStore, req.Pagination, func(key []byte, value []byte, accumulate bool) (bool, error) {
-		var s types.Stream
-
-		if err := q.cdc.Unmarshal(value, &s); err != nil {
-			return false, status.Error(codes.Internal, err.Error())
-		}
-
-		if accumulate {
-			streams = append(streams, s)
-		}
-
-		return true, nil
-	})
+		return &types.StreamResult{
+			Receiver: receiverAddr.String(),
+			Sender:   senderAddr.String(),
+			Stream:   stream,
+		}, nil
+	}, func() *types.Stream { return &types.Stream{} })
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())

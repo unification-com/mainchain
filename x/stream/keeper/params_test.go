@@ -42,8 +42,6 @@ func (s *KeeperTestSuite) TestParams() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-
 		s.Run(tc.name, func() {
 			expected := s.app.StreamKeeper.GetParams(s.ctx)
 			err := s.app.StreamKeeper.SetParams(s.ctx, tc.input)

@@ -5,7 +5,7 @@ import (
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 
-// GetParams returns the total set of Beacon parameters.
+// GetParams returns the total set of x/stream parameters.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 
 	store := ctx.KVStore(k.storeKey)
@@ -19,7 +19,7 @@ func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	return params
 }
 
-// SetParams sets the total set of Beacon parameters.
+// SetParams sets the total set of x/stream parameters.
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) error {
 	if err := params.Validate(); err != nil {
 		return err

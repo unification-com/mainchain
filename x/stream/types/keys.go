@@ -57,3 +57,9 @@ func AddressesFromStreamKey(key []byte) (sdk.AccAddress, sdk.AccAddress) {
 	kv.AssertKeyAtLeastLength(key, senderAddrEndIndex+1)
 	return receiverAddr, senderAddr
 }
+
+// FirstAddressFromStreamStoreKey parses the first address only
+func FirstAddressFromStreamStoreKey(key []byte) sdk.AccAddress {
+	addrLen := key[0]
+	return sdk.AccAddress(key[1 : 1+addrLen])
+}

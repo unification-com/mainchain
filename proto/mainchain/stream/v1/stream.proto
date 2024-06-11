@@ -37,32 +37,18 @@ message Stream {
   cosmos.base.v1beta1.Coin deposit = 1 [ (gogoproto.nullable) = false ];
   // flow_rate is the current rate of nund per second
   int64 flow_rate = 2 ;
-  // create_time is the timestamp a stream was first created
-  google.protobuf.Timestamp create_time = 3 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true,
-    (gogoproto.moretags) = "yaml:\"create_time\""
-  ];
-  // last_updated_time is the timestamp the stream was last updated - flow_rate, deposit etc.
-  google.protobuf.Timestamp last_updated_time = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true,
-    (gogoproto.moretags) = "yaml:\"last_updated_time\""
-  ];
   // last_outflow_time is the timestamp of the last claim. Allows for a start point to calculate the next claim
-  google.protobuf.Timestamp last_outflow_time = 5 [
+  google.protobuf.Timestamp last_outflow_time = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"last_outflow_time\""
   ];
   // deposit_zero_time is the timestamp for when the current deposited amount will run out
-  google.protobuf.Timestamp deposit_zero_time = 6 [
+  google.protobuf.Timestamp deposit_zero_time = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"deposit_zero_time\""
   ];
-  // total_streamed tracks the total amount streamed. Calculated when a stream withdraw/update/cancel occurs
-  cosmos.base.v1beta1.Coin total_streamed = 7 [ (gogoproto.nullable) = false ];
   // cancellable is whether a stream can be cancelled. Default is true, but will be false for example id eFUND is used
-  bool cancellable = 8;
+  bool cancellable = 5;
 }

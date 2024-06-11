@@ -44,7 +44,8 @@ func (k Keeper) GetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddre
 
 // IterateAllStreams iterates over all the Streams of all accounts
 // that are provided to a callback. If true is returned from the
-// callback, iteration is halted.
+// callback, iteration is halted. Potentially expensive, and only intended
+// for use during genesis export etc.
 func (k Keeper) IterateAllStreams(ctx sdk.Context, cb func(sdk.AccAddress, sdk.AccAddress, types.Stream) bool) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.StreamKeyPrefix)
@@ -83,7 +84,12 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	nowTime := ctx.BlockTime()
 	claimTotal, remainingDeposit := types.CalculateAmountToClaim(nowTime, stream.DepositZeroTime, stream.LastOutflowTime, stream.Deposit, stream.FlowRate)
 
-	// 3. sanity check: amount <= deposit
+	// 3.1 sanity check 1: claimTotal is not negative or nil
+	if claimTotal.IsNil() || claimTotal.IsNegative() {
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "claim must cannot be nil or negative")
+	}
+
+	// 3.2 sanity check 2: claimTotal <= deposit
 	if stream.Deposit.IsLT(claimTotal) {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "not enough deposit to claim")
 	}
@@ -111,7 +117,6 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	// 6. update & save stream
 	stream.Deposit = remainingDeposit
 	stream.LastOutflowTime = nowTime
-	stream.TotalStreamed = stream.TotalStreamed.Add(claimTotal)
 	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
 
 	if err != nil {
@@ -181,7 +186,6 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	newDeposit := stream.Deposit.Add(topUpDeposit) // may have been refreshed above for expired streams
 	stream.Deposit = newDeposit
 	stream.DepositZeroTime = depositZeroTime
-	stream.LastUpdatedTime = nowTime
 
 	err = k.SetStream(ctx, receiverAddr, senderAddr, stream)
 
@@ -243,7 +247,6 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	// save new stream data
 	stream.FlowRate = newFlowRate
 	stream.DepositZeroTime = depositZeroTime
-	stream.LastUpdatedTime = nowTime
 
 	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
 
@@ -295,11 +298,11 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 	}
 
 	// set all to zero etc.
+	// ToDo - delete instead of set to zero
 	nowTime := ctx.BlockTime()
 	stream.Deposit = sdk.NewCoin(refundCoin.Denom, sdk.NewInt(0))
 	stream.FlowRate = 0
 	stream.DepositZeroTime = nowTime
-	stream.LastUpdatedTime = nowTime
 
 	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
 
@@ -334,12 +337,9 @@ func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	stream := types.Stream{
 		Deposit:         sdk.NewCoin(deposit.Denom, sdk.NewInt(0)), // set to zero for correct calculation in AddDeposit
 		FlowRate:        flowRate,
-		CreateTime:      nowTime,
-		LastUpdatedTime: nowTime,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(), // set to past, so deposit zero time correctly calculated in AddDeposit
-		TotalStreamed:   sdk.NewCoin(deposit.Denom, sdk.NewInt(0)),
-		Cancellable:     true, // default to true for now. Eventually, using eFUND will set to false
+		Cancellable:     true,                  // default to true for now. Eventually, using eFUND will set to false
 	}
 
 	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)

@@ -32,7 +32,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "valid genesis state and params",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: sdk.MustNewDecFromStr("0.01"),
+					ValidatorFee: sdk.NewDecWithPrec(1, 2),
 				},
 				Streams: []types.StreamExport{
 					{
@@ -41,11 +41,8 @@ func TestGenesisState_Validate(t *testing.T) {
 						Stream: types.Stream{
 							Deposit:         sdk.NewCoin("nund", sdk.NewIntFromUint64(100000000)),
 							FlowRate:        123,
-							CreateTime:      time.Now(),
-							LastUpdatedTime: time.Now(),
 							LastOutflowTime: time.Now(),
 							DepositZeroTime: time.Now(),
-							TotalStreamed:   sdk.NewCoin("nund", sdk.NewIntFromUint64(1234)),
 							Cancellable:     true,
 						},
 					},
@@ -55,11 +52,8 @@ func TestGenesisState_Validate(t *testing.T) {
 						Stream: types.Stream{
 							Deposit:         sdk.NewCoin("nund", sdk.NewIntFromUint64(200000000)),
 							FlowRate:        321,
-							CreateTime:      time.Now(),
-							LastUpdatedTime: time.Now(),
 							LastOutflowTime: time.Now(),
 							DepositZeroTime: time.Now(),
-							TotalStreamed:   sdk.NewCoin("nund", sdk.NewIntFromUint64(4321)),
 							Cancellable:     false,
 						},
 					},
@@ -81,7 +75,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid: genesis state fee > 100%",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: sdk.MustNewDecFromStr("1.01"),
+					ValidatorFee: sdk.NewDecWithPrec(101, 2),
 				},
 				Streams: []types.StreamExport{},
 			},
@@ -91,7 +85,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid: genesis state fee < 0%",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: sdk.MustNewDecFromStr("-0.01"),
+					ValidatorFee: sdk.NewDecWithPrec(-1, 2),
 				},
 				Streams: []types.StreamExport{},
 			},

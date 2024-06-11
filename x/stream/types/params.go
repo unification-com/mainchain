@@ -11,7 +11,7 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 // DefaultValidatorFee is set to 0%
-var DefaultValidatorFee = "0.01"
+var DefaultValidatorFee = sdk.NewDecWithPrec(1, 2)
 
 // NewParams creates a new Params instance
 func NewParams(validatorFee sdk.Dec) Params {
@@ -22,8 +22,7 @@ func NewParams(validatorFee sdk.Dec) Params {
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	defaultValidatorFee, _ := sdk.NewDecFromStr(DefaultValidatorFee)
-	return NewParams(defaultValidatorFee)
+	return NewParams(DefaultValidatorFee)
 }
 
 // Validate validates the set of params
@@ -55,6 +54,7 @@ func validateBaseValidatorFee(i interface{}) error {
 	if v.IsNegative() {
 		return fmt.Errorf("validator fee cannot be negative: %s", v)
 	}
+
 	if v.GT(math.LegacyOneDec()) {
 		return fmt.Errorf("validator fee cannot be greater than 100%% (1.00). Sent %s", v)
 	}

@@ -14,21 +14,21 @@ func (s *KeeperTestSuite) TestParams() {
 		{
 			name: "set full valid params",
 			input: types.Params{
-				ValidatorFee: sdk.MustNewDecFromStr("0.24"),
+				ValidatorFee: sdk.NewDecWithPrec(24, 2),
 			},
 			expectErr: false,
 		},
 		{
 			name: "set invalid params > 100%",
 			input: types.Params{
-				ValidatorFee: sdk.MustNewDecFromStr("1.01"),
+				ValidatorFee: sdk.NewDecWithPrec(101, 2),
 			},
 			expectErr: true,
 		},
 		{
 			name: "set invalid params negative value",
 			input: types.Params{
-				ValidatorFee: sdk.MustNewDecFromStr("-0.01"),
+				ValidatorFee: sdk.NewDecWithPrec(-1, 2),
 			},
 			expectErr: true,
 		},

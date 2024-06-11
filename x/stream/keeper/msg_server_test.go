@@ -18,7 +18,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.MustNewDecFromStr("0.24"),
+					ValidatorFee: sdk.NewDecWithPrec(24, 2),
 				},
 			},
 			expectErr: false,
@@ -37,7 +37,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.MustNewDecFromStr("1.01"),
+					ValidatorFee: sdk.NewDecWithPrec(101, 2),
 				},
 			},
 			expectErr: true,
@@ -48,7 +48,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.MustNewDecFromStr("-1.01"),
+					ValidatorFee: sdk.NewDecWithPrec(-1, 2),
 				},
 			},
 			expectErr: true,

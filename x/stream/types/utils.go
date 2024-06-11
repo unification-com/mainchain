@@ -52,6 +52,10 @@ func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint6
 
 	totalDuration = baseDuration * duration
 
+	if coin.IsNil() || coin.IsNegative() || coin.IsZero() || totalDuration == 0 {
+		return totalDuration, sdk.NewDecWithPrec(0, 0), 0
+	}
+
 	// flow rate calculation from deposit and duration
 	decCoin := sdk.NewDecCoinFromCoin(coin)
 	decDuration := sdk.NewDecFromInt(sdk.NewIntFromUint64(totalDuration))
@@ -63,6 +67,10 @@ func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint6
 }
 
 func CalculateDuration(deposit sdk.Coin, flowRate int64) int64 {
+	// no point if flowRate is <= 0
+	if flowRate <= 0 {
+		return 0
+	}
 	// no point if the deposit value is zero - e.g. if re-calculating from a new flow rate
 	// of an existing stream
 	if deposit.Amount.GT(sdk.NewIntFromUint64(0)) {

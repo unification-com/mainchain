@@ -60,6 +60,9 @@ func TestCalculateFlowRateForCoin(t *testing.T) {
 		{"7", sdk.NewInt64Coin("testdenom", 46000000000), types.StreamPeriodMonth, 1, 2628000, 17503},
 		{"8", sdk.NewInt64Coin("testdenom", 459000000000), types.StreamPeriodMonth, 1, 2628000, 174657},
 		{"9", sdk.NewInt64Coin("testdenom", 4584000000000), types.StreamPeriodMonth, 1, 2628000, 1744292},
+		{"10", sdk.NewInt64Coin("testdenom", 0), types.StreamPeriodMonth, 1, 2628000, 0},
+		{"11", sdk.NewInt64Coin("testdenom", 2332323424), types.StreamPeriodMonth, 0, 0, 0},
+		{"11", sdk.NewInt64Coin("testdenom", 0), types.StreamPeriodMonth, 0, 0, 0},
 	}
 
 	for _, tc := range testCases {
@@ -88,6 +91,8 @@ func TestCalculateDuration(t *testing.T) {
 		{"8", sdk.NewInt64Coin("testdenom", 459000000000), 174657, 2628008},
 		{"9", sdk.NewInt64Coin("testdenom", 4584000000000), 1744292, 2628000},
 		{"10", sdk.NewInt64Coin("testdenom", 0), 123456789, 0},
+		{"11", sdk.NewInt64Coin("testdenom", 24233454353), 0, 0},
+		{"11", sdk.NewInt64Coin("testdenom", 0), 0, 0},
 	}
 
 	for _, tc := range testCases {
@@ -203,13 +208,13 @@ func TestCalculateAmountToClaim(t *testing.T) {
 
 func TestCalculateValidatorFee(t *testing.T) {
 
-	zeroPerc, _ := sdk.NewDecFromStr("0.0")
-	onePerc, _ := sdk.NewDecFromStr("0.01")
-	fivePerc, _ := sdk.NewDecFromStr("0.05")
-	tenPerc, _ := sdk.NewDecFromStr("0.1")
-	twentyFourPerc, _ := sdk.NewDecFromStr("0.24")
-	ninetyNinePerc, _ := sdk.NewDecFromStr("0.99")
-	hundredPerc, _ := sdk.NewDecFromStr("1.0")
+	zeroPerc := sdk.NewDecWithPrec(0, 2)
+	onePerc := sdk.NewDecWithPrec(1, 2)
+	fivePerc := sdk.NewDecWithPrec(5, 2)
+	tenPerc := sdk.NewDecWithPrec(10, 2)
+	twentyFourPerc := sdk.NewDecWithPrec(24, 2)
+	ninetyNinePerc := sdk.NewDecWithPrec(99, 2)
+	hundredPerc := sdk.NewDecWithPrec(100, 2)
 
 	testCases := []struct {
 		name                   string
@@ -280,6 +285,20 @@ func TestCalculateValidatorFee(t *testing.T) {
 			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(912742861395)),
 			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(693684574661)),
 			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(219058286734)),
+		},
+		{
+			"10",
+			twentyFourPerc,
+			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+		},
+		{
+			"11",
+			zeroPerc,
+			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
 		},
 	}
 

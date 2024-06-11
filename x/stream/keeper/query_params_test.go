@@ -6,8 +6,8 @@ import (
 )
 
 func (s *KeeperTestSuite) TestParamsQuery() {
-	defaultFee, _ := sdk.NewDecFromStr("0.01")
-	newFee, _ := sdk.NewDecFromStr("0.24")
+	defaultFee := sdk.NewDecWithPrec(1, 2)
+	newFee := sdk.NewDecWithPrec(24, 2)
 
 	req1 := &types.QueryParamsRequest{}
 	expRes1 := &types.QueryParamsResponse{Params: types.DefaultParams()}

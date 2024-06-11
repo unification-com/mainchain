@@ -281,7 +281,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: sdk.MustNewDecFromStr("-0.01"),
+					ValidatorFee: sdk.NewDecWithPrec(-1, 2),
 				},
 			},
 			true,
@@ -292,7 +292,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: sdk.MustNewDecFromStr("1.01"),
+					ValidatorFee: sdk.NewDecWithPrec(101, 2),
 				},
 			},
 			true,

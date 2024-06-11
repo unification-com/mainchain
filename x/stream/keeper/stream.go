@@ -42,6 +42,14 @@ func (k Keeper) GetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddre
 	return stream, true
 }
 
+func (k Keeper) DeleteStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) {
+	if !k.IsStream(ctx, receiverAddr, senderAddr) {
+		return
+	}
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetStreamKey(receiverAddr, senderAddr))
+}
+
 // IterateAllStreams iterates over all the Streams of all accounts
 // that are provided to a callback. If true is returned from the
 // callback, iteration is halted. Potentially expensive, and only intended
@@ -297,18 +305,8 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 		}
 	}
 
-	// set all to zero etc.
-	// ToDo - delete instead of set to zero
-	nowTime := ctx.BlockTime()
-	stream.Deposit = sdk.NewCoin(refundCoin.Denom, sdk.NewInt(0))
-	stream.FlowRate = 0
-	stream.DepositZeroTime = nowTime
-
-	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
-
-	if err != nil {
-		return err
-	}
+	// Delete from store
+	k.DeleteStream(ctx, receiverAddr, senderAddr)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -316,7 +314,6 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyRefundAmount, refundCoin.String()),
-			sdk.NewAttribute(types.AttributeKeyRemainingDeposit, stream.Deposit.String()),
 		),
 	)
 

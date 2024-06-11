@@ -238,3 +238,15 @@ func RandInBetween(min, max int) int {
 func AddTestAddrs(app *App, ctx sdk.Context, accNum int, accAmt sdk.Int) []sdk.AccAddress {
 	return addTestAddrs(app, ctx, accNum, accAmt, createRandomAccounts)
 }
+
+func AddTestAddrsWithExtraNonBondCoin(app *App, ctx sdk.Context, accNum int, accAmt sdk.Int, extraCoin sdk.Coin) []sdk.AccAddress {
+	testAddrs := createRandomAccounts(accNum)
+
+	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt), extraCoin)
+
+	for _, addr := range testAddrs {
+		initAccountWithCoins(app, ctx, addr, initCoins)
+	}
+
+	return testAddrs
+}

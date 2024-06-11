@@ -65,3 +65,8 @@ func (k Keeper) Cdc() codec.BinaryCodec {
 func (k Keeper) GetStreamModuleAccount(ctx sdk.Context) authtypes.ModuleAccountI {
 	return k.accKeeper.GetModuleAccount(ctx, types.ModuleName)
 }
+
+// GetStreamModuleAccountBalances returns the stream ModuleAccount's balances from the bank keeper
+func (k Keeper) GetStreamModuleAccountBalances(ctx sdk.Context) sdk.Coins {
+	return k.bankKeeper.GetAllBalances(ctx, k.GetStreamModuleAccount(ctx).GetAddress())
+}

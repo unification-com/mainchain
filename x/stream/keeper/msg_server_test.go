@@ -415,6 +415,23 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			expErrMsg: "",
 		},
 		{
+			name: "invalid topup - denom mistmatch",
+			create: &types.MsgCreateStream{
+				Sender:   s.addrs[2].String(),
+				Receiver: s.addrs[3].String(),
+				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				FlowRate: 1,
+			},
+			topup: &types.MsgTopUpDeposit{
+				Sender:   s.addrs[2].String(),
+				Receiver: s.addrs[3].String(),
+				Deposit:  sdk.NewInt64Coin("notstake", 1000),
+			},
+			expResult: nil,
+			expectErr: true,
+			expErrMsg: "top up denom does not match stream denom",
+		},
+		{
 			name:   "invalid topup - bad sender address",
 			create: nil,
 			topup: &types.MsgTopUpDeposit{
@@ -775,4 +792,33 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			}
 		})
 	}
+}
+
+func (s *KeeperTestSuite) TestMsgServerCancelStream_Fail_NotCancellable() {
+
+	nowTime := time.Unix(time.Now().Unix(), 0).UTC()
+	expStream := types.Stream{
+		Deposit:         sdk.NewInt64Coin("stake", 1000),
+		FlowRate:        1,
+		LastOutflowTime: nowTime,
+		DepositZeroTime: time.Unix(0, 0).UTC(),
+		Cancellable:     false,
+	}
+
+	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], expStream)
+	s.Require().NoError(err)
+
+	cancelMsg := &types.MsgCancelStream{
+		Sender:   s.addrs[0].String(),
+		Receiver: s.addrs[1].String(),
+	}
+
+	resp, err := s.msgServer.CancelStream(s.ctx, cancelMsg)
+	s.Require().Nil(resp)
+	s.Require().ErrorContains(err, "cannot be cancelled")
+
+	// double check
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	s.Require().True(ok)
+	s.Require().Equal(expStream, stream)
 }

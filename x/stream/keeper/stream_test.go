@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	simapp "github.com/unification-com/mainchain/app"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -716,6 +717,32 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_InsufficientBalance() {
 	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000000000000000001)))
 	s.Require().False(ok)
 	s.Require().ErrorContains(err, "insufficient funds")
+
+}
+
+func (s *KeeperTestSuite) TestAddDeposit_Fail_Denom_Mismatch() {
+
+	newAccs := simapp.AddTestAddrsWithExtraNonBondCoin(s.app, s.ctx, 2, sdk.NewIntFromUint64(10000000), sdk.NewInt64Coin("notstake", 1000000))
+
+	// set stream
+	nowTime := s.ctx.BlockTime()
+
+	expStream := types.Stream{
+		Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)), //default to zero when creating a new stream
+		FlowRate:        100,
+		LastOutflowTime: nowTime,
+		DepositZeroTime: time.Unix(0, 0).UTC(),
+		Cancellable:     true,
+	}
+
+	// set stream
+	err := s.app.StreamKeeper.SetStream(s.ctx, newAccs[1], newAccs[0], expStream)
+	s.Require().NoError(err)
+
+	// deposit more than sender's balance
+	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, newAccs[1], newAccs[0], sdk.NewCoin("notstake", sdk.NewIntFromUint64(10000)))
+	s.Require().False(ok)
+	s.Require().ErrorContains(err, "top up denom does not match stream denom")
 
 }
 
@@ -1925,6 +1952,29 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Fail_NotExist() {
 	s.Require().Equal(types.Stream{}, stream)
 }
 
+func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Fail_NotCancellable() {
+
+	nowTime := time.Unix(time.Now().Unix(), 0).UTC()
+	expStream := types.Stream{
+		Deposit:         sdk.NewInt64Coin("stake", 1000),
+		FlowRate:        1,
+		LastOutflowTime: nowTime,
+		DepositZeroTime: time.Unix(0, 0).UTC(),
+		Cancellable:     false,
+	}
+
+	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], expStream)
+	s.Require().NoError(err)
+
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(s.ctx, s.addrs[1], s.addrs[0])
+	s.Require().ErrorContains(err, "cannot be cancelled")
+
+	// double check
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	s.Require().True(ok)
+	s.Require().Equal(expStream, stream)
+}
+
 func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Fail_Cancelled() {
 	tCtx := s.ctx
 
@@ -2029,4 +2079,49 @@ func (s *KeeperTestSuite) TestIterateAllStreams() {
 
 		return false
 	})
+}
+
+func (s *KeeperTestSuite) TestMultipleDenoms() {
+	newAccs := simapp.AddTestAddrsWithExtraNonBondCoin(s.app, s.ctx, 100, sdk.NewIntFromUint64(10000000), sdk.NewInt64Coin("testdenom", 1000000))
+
+	tCtx := s.ctx
+	nowTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(nowTime).WithBlockHeight(1)
+	totalDeposits := sdk.NewCoins()
+
+	for i := 0; i < len(newAccs)-1; i += 1 {
+		sender := newAccs[i]
+		receiver := newAccs[i+1]
+		denom := "stake"
+		if i%3 == 0 {
+			denom = "testdenom"
+		}
+		deposit := sdk.NewInt64Coin(denom, 100000)
+		_, err := s.app.StreamKeeper.CreateNewStream(tCtx, receiver, sender, deposit, 123)
+		s.Require().NoError(err)
+
+		_, err = s.app.StreamKeeper.AddDeposit(tCtx, receiver, sender, deposit)
+		s.Require().NoError(err)
+	}
+
+	claimTime := time.Unix(nowTime.Unix()+500, 0).UTC()
+	tCtx = tCtx.WithBlockTime(claimTime).WithBlockHeight(2)
+
+	for i := 0; i < len(newAccs)-1; i += 1 {
+		sender := newAccs[i]
+		receiver := newAccs[i+1]
+		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, receiver, sender)
+		s.Require().NoError(err)
+	}
+
+	future := time.Unix(nowTime.Unix()+1000, 0).UTC()
+	tCtx = tCtx.WithBlockTime(future).WithBlockHeight(3)
+
+	s.app.StreamKeeper.IterateAllStreams(tCtx, func(receiverAddr, senderAddr sdk.AccAddress, stream types.Stream) bool {
+		totalDeposits = totalDeposits.Add(stream.Deposit)
+		return false
+	})
+
+	mAccTotal := s.app.StreamKeeper.GetStreamModuleAccountBalances(tCtx)
+	s.Require().Equal(totalDeposits, mAccTotal)
 }

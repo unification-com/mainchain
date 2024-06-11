@@ -135,8 +135,14 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "deposit must be > zero")
 	}
 
-	if !k.IsStream(ctx, receiverAddr, senderAddr) {
+	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+
+	if !ok {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+	}
+
+	if msg.Deposit.Denom != stream.Deposit.Denom {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidData, "top up denom does not match stream denom. stream: %s, top up %s", stream.Deposit.Denom, msg.Deposit.Denom)
 	}
 
 	// Add the requested deposit
@@ -147,7 +153,7 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 	}
 
 	// get updated stream data
-	stream, _ := k.GetStream(ctx, receiverAddr, senderAddr)
+	stream, _ = k.GetStream(ctx, receiverAddr, senderAddr)
 
 	return &types.MsgTopUpDepositResponse{
 		DepositAmount:   msg.Deposit,
@@ -204,10 +210,14 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 		return nil, accErr
 	}
 
-	ok := k.IsStream(ctx, receiverAddr, senderAddr)
+	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
 		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+	}
+
+	if !stream.Cancellable {
+		return nil, sdkerrors.Wrap(types.ErrStreamNotCancellable, "cannot be cancelled")
 	}
 
 	// cancel stream

@@ -154,6 +154,10 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 		return false, sdkerrors.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
 	}
 
+	if topUpDeposit.Denom != stream.Deposit.Denom {
+		return false, sdkerrors.Wrapf(types.ErrInvalidData, "top up denom does not match stream denom. stream: %s, top up %s", stream.Deposit.Denom, topUpDeposit.Denom)
+	}
+
 	nowTime := ctx.BlockTime()
 	// calculate duration and deposit time to zero extension
 	durationExtension := types.CalculateDuration(topUpDeposit, stream.FlowRate)
@@ -284,6 +288,10 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 
 	if !ok {
 		return sdkerrors.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
+	}
+
+	if !stream.Cancellable {
+		return sdkerrors.Wrap(types.ErrStreamNotCancellable, "cannot be cancelled")
 	}
 
 	// claim any outstanding flow

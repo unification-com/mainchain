@@ -27,6 +27,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
+	streamtypes "github.com/unification-com/mainchain/x/stream/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 	"os"
 	"runtime/debug"
@@ -235,6 +236,9 @@ func TestAppImportExport(t *testing.T) {
 			enttypes.SpentEFUNDAddressKeyPrefix,
 			enttypes.TotalSpentEFUNDKey,
 			enttypes.TotalLockedUndKey,
+		}},
+		{app.GetKey(streamtypes.StoreKey), newApp.GetKey(streamtypes.StoreKey), [][]byte{
+			streamtypes.StreamKeyPrefix,
 		}},
 		{app.keys[feegrant.StoreKey], newApp.keys[feegrant.StoreKey], [][]byte{feegrant.FeeAllowanceKeyPrefix, feegrant.FeeAllowanceQueueKeyPrefix}},
 		{app.keys[ibctransfertypes.StoreKey], newApp.keys[ibctransfertypes.StoreKey], [][]byte{}},

@@ -36,7 +36,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		GetCmdCalculateFlowRate(),
 		GetCmdGetAllStreams(),
 		GetCmdGetAllStreamsByReceiver(),
-		GetCmdGetStreamByReceiverSender(),
+		GetCmdGetStream(),
 		GetCmdGetStreamByReceiverSenderCurrentFlow(),
 		GetCmdGetAllStreamsBySender(),
 	)
@@ -221,7 +221,7 @@ $ %s query stream receiver_streams [receiver_address]
 	return cmd
 }
 
-func GetCmdGetStreamByReceiverSender() *cobra.Command {
+func GetCmdGetStream() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "stream",
 		Short: "Query a stream by Receiver/Sender pair",
@@ -248,7 +248,7 @@ $ %s query stream stream [receiver_addr] [sender_addr]
 				return err
 			}
 
-			senderAddr, err := sdk.AccAddressFromBech32(args[2])
+			senderAddr, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
@@ -298,7 +298,7 @@ $ %s query stream stream_receiver_sender_flow [receiver_addr] [sender_addr]
 				return err
 			}
 
-			senderAddr, err := sdk.AccAddressFromBech32(args[2])
+			senderAddr, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}

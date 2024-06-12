@@ -100,8 +100,8 @@ func TestMsgClaimStream_ValidateBasic(t *testing.T) {
 
 	for i, tc := range tests {
 		msg := types.NewMsgClaimStream(
-			tc.sender,
 			tc.receiver,
+			tc.sender,
 		)
 
 		if tc.expectPass {

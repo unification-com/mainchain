@@ -113,7 +113,7 @@ $ %s tx %s claim und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy --from t1
 				return err
 			}
 
-			msg := types.NewMsgClaimStream(sender, receiver)
+			msg := types.NewMsgClaimStream(receiver, sender)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

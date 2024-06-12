@@ -94,11 +94,11 @@ func (msg MsgCreateStream) GetSigners() []sdk.AccAddress {
 
 // NewMsgClaimStream is a constructor function for MsgClaimStream
 func NewMsgClaimStream(
-	sender sdk.AccAddress,
-	receiver sdk.AccAddress) *MsgClaimStream {
+	receiver sdk.AccAddress,
+	sender sdk.AccAddress) *MsgClaimStream {
 	return &MsgClaimStream{
-		Sender:   sender.String(),
 		Receiver: receiver.String(),
+		Sender:   sender.String(),
 	}
 }
 

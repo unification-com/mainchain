@@ -228,7 +228,7 @@ func SimulateMsgClaimStream(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 			return simtypes.NoOpMsg(types.ModuleName, types.ClaimStreamAction, "account private key is nil"), nil, nil // skip
 		}
 
-		msg := types.NewMsgClaimStream(sender.Address, receiver.Address)
+		msg := types.NewMsgClaimStream(receiver.Address, sender.Address)
 
 		txCtx := simulation.OperationInput{
 			R:             r,

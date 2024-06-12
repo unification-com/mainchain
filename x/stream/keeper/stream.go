@@ -1,11 +1,13 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/unification-com/mainchain/x/stream/types"
 	"strconv"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 // GetTotalDeposits gets the total deposits - just a wrapper for getting the module account's balances from the bank

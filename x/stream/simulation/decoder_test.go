@@ -2,9 +2,6 @@ package simulation_test
 
 import (
 	"fmt"
-	"github.com/unification-com/mainchain/x/stream"
-	"github.com/unification-com/mainchain/x/stream/simulation"
-	"github.com/unification-com/mainchain/x/stream/types"
 	"testing"
 	"time"
 
@@ -12,6 +9,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/require"
+
+	"github.com/unification-com/mainchain/x/stream"
+	"github.com/unification-com/mainchain/x/stream/simulation"
+	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 func TestDecodeStore(t *testing.T) {

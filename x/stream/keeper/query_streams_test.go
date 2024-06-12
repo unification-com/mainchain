@@ -2,10 +2,12 @@ package keeper_test
 
 import (
 	"fmt"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+
 	"github.com/unification-com/mainchain/x/stream/types"
-	"time"
 )
 
 func (s *KeeperTestSuite) TestQueryStreams() {

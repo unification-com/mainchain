@@ -1,13 +1,15 @@
 package types_test
 
 import (
+	"testing"
+
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
+
 	"github.com/unification-com/mainchain/x/stream/types"
-	"testing"
 )
 
 //	MsgCreateStream{}

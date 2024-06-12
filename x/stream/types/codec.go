@@ -6,9 +6,8 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govcodec "github.com/cosmos/cosmos-sdk/x/gov/codec"
-
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	govcodec "github.com/cosmos/cosmos-sdk/x/gov/codec"
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {

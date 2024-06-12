@@ -2,13 +2,15 @@ package keeper
 
 import (
 	"context"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/unification-com/mainchain/x/stream/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 func (q Keeper) Streams(c context.Context, req *types.QueryStreamsRequest) (*types.QueryStreamsResponse, error) {

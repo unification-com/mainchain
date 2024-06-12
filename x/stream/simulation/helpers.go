@@ -2,6 +2,7 @@ package simulation
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 

@@ -1,11 +1,13 @@
 package types_test
 
 import (
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
+
 	"github.com/unification-com/mainchain/x/stream/types"
-	"testing"
 )
 
 func TestAddressFromStreamsStore(t *testing.T) {

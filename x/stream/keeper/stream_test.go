@@ -1,11 +1,11 @@
 package keeper_test
 
 import (
-	simapp "github.com/unification-com/mainchain/app"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 

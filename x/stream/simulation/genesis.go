@@ -1,13 +1,15 @@
 package simulation
 
 import (
-	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
+	"math/rand"
+
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
 	"github.com/unification-com/mainchain/x/stream/types"
-	"math/rand"
 )
 
 // Simulation parameter constants
@@ -15,7 +17,7 @@ const (
 	ValidatorFee = "validator_fee"
 )
 
-// GenInflationRateChange randomized InflationRateChange
+// GenValidatorFee randomized ValidatorFee
 func GenValidatorFee(r *rand.Rand) math.LegacyDec {
 	// 0 to 50%
 	return sdk.NewDecWithPrec(int64(r.Intn(24)), 2)

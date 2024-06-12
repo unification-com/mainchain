@@ -1,14 +1,16 @@
 package keeper_test
 
 import (
+	"testing"
+
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
+
 	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/stream/keeper"
 	"github.com/unification-com/mainchain/x/stream/types"
-	"testing"
 )
 
 type KeeperTestSuite struct {

@@ -1,10 +1,12 @@
 package types_test
 
 import (
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+
 	"github.com/unification-com/mainchain/x/stream/types"
-	"testing"
 )
 
 func TestParamsValidate(t *testing.T) {

@@ -1,9 +1,11 @@
 package keeper_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain/x/stream/types"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 func (s *KeeperTestSuite) TestMsgServerUpdateParams() {

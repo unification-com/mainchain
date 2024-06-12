@@ -1,6 +1,8 @@
 package simulation
 
 import (
+	"math/rand"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -8,9 +10,9 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/unification-com/mainchain/x/stream/keeper"
 	"github.com/unification-com/mainchain/x/stream/types"
-	"math/rand"
 )
 
 // Simulation operation weights constants
@@ -143,7 +145,8 @@ func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 
 		msg := types.NewMsgCreateStream(deposit, randFowRate, receiver.Address, sender.Address)
 
-		// fees
+		// fees need to be calculated from the remaining spendable coins after deposit is subtracted, so
+		// GenSignedMockTx is used instead of GenAndDeliverTxWithRandFees
 		var fees sdk.Coins
 		var feeErr error
 		remainingCoins, err := spendable.SafeSub(msg.Deposit)

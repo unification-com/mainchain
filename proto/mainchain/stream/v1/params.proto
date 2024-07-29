@@ -1,0 +1,17 @@
+syntax = "proto3";
+package mainchain.stream.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/stream/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  // validator_fee is the chain-wide fee validators will receive from stream payments
+  string validator_fee = 1 [
+    (gogoproto.moretags)   = "yaml:\"validator_fee\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+}

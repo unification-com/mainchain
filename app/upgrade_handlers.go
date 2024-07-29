@@ -21,6 +21,7 @@ import (
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
+	streamtypes "github.com/unification-com/mainchain/x/stream/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
@@ -58,6 +59,8 @@ func (app *App) registerUpgradeHandlers() {
 			keyTable = wrkchaintypes.ParamKeyTable() //nolint:staticcheck
 		case enttypes.ModuleName:
 			keyTable = enttypes.ParamKeyTable() //nolint:staticcheck
+		case streamtypes.ModuleName:
+			keyTable = streamtypes.ParamKeyTable() //nolint:staticcheck
 		}
 
 		if !subspace.HasKeyTable() {
@@ -106,6 +109,7 @@ func (app *App) registerUpgradeHandlers() {
 				consensustypes.ModuleName,
 				crisistypes.ModuleName,
 				grouptypes.ModuleName,
+				streamtypes.ModuleName,
 			},
 		}
 

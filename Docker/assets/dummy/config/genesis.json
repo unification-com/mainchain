@@ -384,6 +384,12 @@
       "redelegations": [],
       "exported": false
     },
+    "stream": {
+      "params": {
+        "validator_fee": "0.010000000000000000"
+      },
+      "streams": []
+    },
     "transfer": {
       "port_id": "transfer",
       "denom_traces": [],

@@ -112,6 +112,9 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise"
 	entkeeper "github.com/unification-com/mainchain/x/enterprise/keeper"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
+	"github.com/unification-com/mainchain/x/stream"
+	streamkeeper "github.com/unification-com/mainchain/x/stream/keeper"
+	streamtypes "github.com/unification-com/mainchain/x/stream/types"
 	"github.com/unification-com/mainchain/x/wrkchain"
 	wrkchainkeeper "github.com/unification-com/mainchain/x/wrkchain/keeper"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
@@ -162,6 +165,7 @@ var (
 		wrkchain.AppModule{},
 		beacon.AppModule{},
 		consensus.AppModuleBasic{},
+		stream.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -173,6 +177,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		enttypes.ModuleName:            {authtypes.Minter, authtypes.Staking},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		streamtypes.ModuleName:         nil,
 	}
 )
 
@@ -220,6 +225,7 @@ type App struct {
 	EnterpriseKeeper entkeeper.Keeper
 	BeaconKeeper     beaconkeeper.Keeper
 	WrkchainKeeper   wrkchainkeeper.Keeper
+	StreamKeeper     streamkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -273,7 +279,7 @@ func NewApp(
 		govtypes.StoreKey, paramstypes.StoreKey, consensusparamtypes.StoreKey, ibcexported.StoreKey,
 		upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, authzkeeper.StoreKey, group.StoreKey,
-		enttypes.StoreKey, beacontypes.StoreKey, wrkchaintypes.StoreKey,
+		enttypes.StoreKey, beacontypes.StoreKey, wrkchaintypes.StoreKey, streamtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -437,6 +443,8 @@ func NewApp(
 
 	app.WrkchainKeeper = wrkchainkeeper.NewKeeper(keys[wrkchaintypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
+	app.StreamKeeper = streamkeeper.NewKeeper(keys[streamtypes.StoreKey], app.BankKeeper, app.AccountKeeper, appCodec, authtypes.FeeCollectorName, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -472,6 +480,7 @@ func NewApp(
 		enterprise.NewAppModule(appCodec, app.EnterpriseKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(enttypes.ModuleName)),
 		beacon.NewAppModule(appCodec, app.BeaconKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(beacontypes.ModuleName)),
 		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(wrkchaintypes.ModuleName)),
+		stream.NewAppModule(appCodec, app.StreamKeeper, app.AccountKeeper, app.BankKeeper),
 		transferModule,
 	)
 
@@ -502,6 +511,7 @@ func NewApp(
 		enttypes.ModuleName,
 		beacontypes.ModuleName,
 		wrkchaintypes.ModuleName,
+		streamtypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -527,6 +537,7 @@ func NewApp(
 		enttypes.ModuleName,
 		beacontypes.ModuleName,
 		wrkchaintypes.ModuleName,
+		streamtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -558,6 +569,7 @@ func NewApp(
 		enttypes.ModuleName,
 		beacontypes.ModuleName,
 		wrkchaintypes.ModuleName,
+		streamtypes.ModuleName,
 	}
 
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
@@ -865,6 +877,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(enttypes.ModuleName)
 	paramsKeeper.Subspace(beacontypes.ModuleName)
 	paramsKeeper.Subspace(wrkchaintypes.ModuleName)
+	paramsKeeper.Subspace(streamtypes.ModuleName)
 
 	return paramsKeeper
 }

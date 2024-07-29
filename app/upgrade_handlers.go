@@ -31,7 +31,7 @@ const UpgradeName = "5-pike"
 // see https://docs.cosmos.network/v0.45/migrations/chain-upgrade-guide-044.html
 func (app *App) registerUpgradeHandlers() {
 
-	// 5-pike updates Cosmos SDK to v0.47.11 andIBV to v7.5.0
+	// 5-pike updates Cosmos SDK to v0.47.x and IBC to v7.5.0
 
 	// Set param key table for params module migration
 	for _, subspace := range app.ParamsKeeper.GetSubspaces() {

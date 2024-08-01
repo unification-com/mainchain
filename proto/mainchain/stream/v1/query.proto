@@ -74,7 +74,8 @@ message QueryParamsResponse {
 message QueryCalculateFlowRateRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
-  // coin is the coin to be used in the calculation, e.g. 10000000000nund
+  // coin is the coin to be used in the calculation, e.g. 10000000000nund. This is the total amount to be paid over
+  // the specified duration
   string coin = 1;
   // period is the enumerated value of a period to be used in the calculation, e.g. month = 6
   StreamPeriod period = 2;

@@ -78,7 +78,7 @@ message QueryCalculateFlowRateRequest {
   string coin = 1;
   // period is the enumerated value of a period to be used in the calculation, e.g. month = 6
   StreamPeriod period = 2;
-  // duration is the number of periods to be used in the calculation, e.g. 1 = 1 month
+  // duration is the number of periods to be used in the calculation, e.g. 2 = 2 months
   uint64 duration = 3;
 }
 
@@ -89,9 +89,9 @@ message QueryCalculateFlowRateResponse {
   cosmos.base.v1beta1.Coin coin = 1 [ (gogoproto.nullable) = false ];
   // period is the enumerated value of a period used in the calculation, e.g. month = 6
   StreamPeriod period = 2;
-  // duration is the number of periods used in the calculation, e.g. 1 = 1 month
+  // duration is the number of periods used in the calculation, e.g. 2 = 2 months
   uint64 duration = 3;
-  // seconds is the calculated number of seconds for the stream (period * duration)
+  // seconds is the calculated number of seconds for the stream (seconds in period * duration)
   uint64 seconds = 4;
   // flow_rate is the calculated rate of coins per second, in the lowest denomination - e.g. nund
   int64 flow_rate = 5;

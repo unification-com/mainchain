@@ -79,6 +79,8 @@ func GetCmdCalculateFlowRate() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Calculate a flow rate given parameters:
 
+Note - duration is the frequency of the payment, e.g. every 2 months
+
 Example:
 $ %s query stream calculate_flow --coin 1000000000nund --period month --duration 1
 `,

@@ -52,6 +52,19 @@
       }
     },
     {
+      "url": "./tmp-swagger-gen/mainchain/stream/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Unification: Payment Streams"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "StreamParams"
+        }
+      }
+    },
+    {
       "url": "./client/docs/cosmos-swagger.yml",
       "tags": {
         "rename": {

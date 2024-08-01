@@ -2201,6 +2201,894 @@ paths:
           type: boolean
       tags:
         - 'Unification: WrkChain'
+  /mainchain/stream/v1/calculate_flow_Rate:
+    get:
+      summary: >-
+        CalculateFlowRate can be used to calculate a flow rate (coins per
+        second) to be used when creating/updating a stream
+      operationId: CalculateFlowRate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              coin:
+                title: coin is the coin used in the calculation
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+              period:
+                title: >-
+                  period is the enumerated value of a period used in the
+                  calculation, e.g. month = 6
+                type: string
+                enum:
+                  - STREAM_PERIOD_UNSPECIFIED
+                  - STREAM_PERIOD_SECOND
+                  - STREAM_PERIOD_MINUTE
+                  - STREAM_PERIOD_HOUR
+                  - STREAM_PERIOD_DAY
+                  - STREAM_PERIOD_WEEK
+                  - STREAM_PERIOD_MONTH
+                  - STREAM_PERIOD_YEAR
+                default: STREAM_PERIOD_UNSPECIFIED
+                description: >-
+                  - STREAM_PERIOD_UNSPECIFIED: STREAM_PERIOD_UNSPECIFIED defines
+                  unspecified
+                   - STREAM_PERIOD_SECOND: STREAM_PERIOD_SECOND defines second
+                   - STREAM_PERIOD_MINUTE: STREAM_PERIOD_MINUTE defines minute
+                   - STREAM_PERIOD_HOUR: STREAM_PERIOD_HOUR defines hour
+                   - STREAM_PERIOD_DAY: STREAM_PERIOD_DAY defines day
+                   - STREAM_PERIOD_WEEK: STREAM_PERIOD_WEEK defines week
+                   - STREAM_PERIOD_MONTH: STREAM_PERIOD_MONTH defines month
+                   - STREAM_PERIOD_YEAR: STREAM_PERIOD_YEAR defines year
+              duration:
+                type: string
+                format: uint64
+                title: >-
+                  duration is the number of periods used in the calculation,
+                  e.g. 2 = 2 months
+              seconds:
+                type: string
+                format: uint64
+                title: >-
+                  seconds is the calculated number of seconds for the stream
+                  (seconds in period * duration)
+              flow_rate:
+                type: string
+                format: int64
+                title: >-
+                  flow_rate is the calculated rate of coins per second, in the
+                  lowest denomination - e.g. nund
+            title: >-
+              QueryCalculateFlowRateResponse is the response type for the
+              Query/CalculateFlowRate RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: coin
+          description: >-
+            coin is the coin to be used in the calculation, e.g.
+            10000000000nund.
+          in: query
+          required: false
+          type: string
+        - name: period
+          description: >-
+            period is the enumerated value of a period to be used in the
+            calculation, e.g. month = 6.
+
+             - STREAM_PERIOD_UNSPECIFIED: STREAM_PERIOD_UNSPECIFIED defines unspecified
+             - STREAM_PERIOD_SECOND: STREAM_PERIOD_SECOND defines second
+             - STREAM_PERIOD_MINUTE: STREAM_PERIOD_MINUTE defines minute
+             - STREAM_PERIOD_HOUR: STREAM_PERIOD_HOUR defines hour
+             - STREAM_PERIOD_DAY: STREAM_PERIOD_DAY defines day
+             - STREAM_PERIOD_WEEK: STREAM_PERIOD_WEEK defines week
+             - STREAM_PERIOD_MONTH: STREAM_PERIOD_MONTH defines month
+             - STREAM_PERIOD_YEAR: STREAM_PERIOD_YEAR defines year
+          in: query
+          required: false
+          type: string
+          enum:
+            - STREAM_PERIOD_UNSPECIFIED
+            - STREAM_PERIOD_SECOND
+            - STREAM_PERIOD_MINUTE
+            - STREAM_PERIOD_HOUR
+            - STREAM_PERIOD_DAY
+            - STREAM_PERIOD_WEEK
+            - STREAM_PERIOD_MONTH
+            - STREAM_PERIOD_YEAR
+          default: STREAM_PERIOD_UNSPECIFIED
+        - name: duration
+          description: >-
+            duration is the number of periods to be used in the calculation,
+            e.g. 2 = 2 months.
+          in: query
+          required: false
+          type: string
+          format: uint64
+      tags:
+        - 'Unification: Payment Streams'
+  /mainchain/stream/v1/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: StreamParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+                properties:
+                  validator_fee:
+                    type: string
+                    title: >-
+                      validator_fee is the chain-wide fee validators will
+                      receive from stream payments. A percentage value from 0 to
+                      1
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - 'Unification: Payment Streams'
+  /mainchain/stream/v1/streams/all:
+    get:
+      summary: Streams queries all Streams.
+      operationId: Streams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              streams:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    receiver:
+                      type: string
+                      title: receiver is the wallet that will receive stream payments
+                    sender:
+                      type: string
+                      title: sender is the wallet making the update
+                    stream:
+                      title: stream is the stream data
+                      type: object
+                      properties:
+                        deposit:
+                          title: >-
+                            deposit tracks the total amount the user has
+                            deposited to cover the stream, including any updates
+                            to the stream
+                          type: object
+                          properties:
+                            denom:
+                              type: string
+                            amount:
+                              type: string
+                          description: >-
+                            Coin defines a token with a denomination and an
+                            amount.
+
+
+                            NOTE: The amount field is an Int which implements
+                            the custom method
+
+                            signatures required by gogoproto.
+                        flow_rate:
+                          type: string
+                          format: int64
+                          title: flow_rate is the current rate of nund per second
+                        last_outflow_time:
+                          type: string
+                          format: date-time
+                          title: >-
+                            last_outflow_time is the timestamp of the last
+                            claim. Allows for a start point to calculate the
+                            next claim
+                        deposit_zero_time:
+                          type: string
+                          format: date-time
+                          title: >-
+                            deposit_zero_time is the timestamp for when the
+                            current deposited amount will run out
+                        cancellable:
+                          type: boolean
+                          title: >-
+                            cancellable is whether a stream can be cancelled.
+                            Default is true, but will be false for example id
+                            eFUND is used
+                  title: StreamResult contains data about a stream
+                title: streams is the list of all streams
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            title: >-
+              QueryStreamsResponse is the response type for the Query/Streams
+              RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - 'Unification: Payment Streams'
+  /mainchain/stream/v1/streams/receiver/{receiver_addr}:
+    get:
+      summary: AllStreamsForReceiver queries all Streams for a given receiver address
+      operationId: AllStreamsForReceiver
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              receiver_addr:
+                type: string
+                title: receiver_addr is the receiver wallet address being queried
+              streams:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    receiver:
+                      type: string
+                      title: receiver is the wallet that will receive stream payments
+                    sender:
+                      type: string
+                      title: sender is the wallet making the update
+                    stream:
+                      title: stream is the stream data
+                      type: object
+                      properties:
+                        deposit:
+                          title: >-
+                            deposit tracks the total amount the user has
+                            deposited to cover the stream, including any updates
+                            to the stream
+                          type: object
+                          properties:
+                            denom:
+                              type: string
+                            amount:
+                              type: string
+                          description: >-
+                            Coin defines a token with a denomination and an
+                            amount.
+
+
+                            NOTE: The amount field is an Int which implements
+                            the custom method
+
+                            signatures required by gogoproto.
+                        flow_rate:
+                          type: string
+                          format: int64
+                          title: flow_rate is the current rate of nund per second
+                        last_outflow_time:
+                          type: string
+                          format: date-time
+                          title: >-
+                            last_outflow_time is the timestamp of the last
+                            claim. Allows for a start point to calculate the
+                            next claim
+                        deposit_zero_time:
+                          type: string
+                          format: date-time
+                          title: >-
+                            deposit_zero_time is the timestamp for when the
+                            current deposited amount will run out
+                        cancellable:
+                          type: boolean
+                          title: >-
+                            cancellable is whether a stream can be cancelled.
+                            Default is true, but will be false for example id
+                            eFUND is used
+                  title: StreamResult contains data about a stream
+                title: streams is the list of all streams
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            title: >-
+              QueryAllStreamsForReceiverResponse is the response type for the
+              Query/AllStreamsForReceiver RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: receiver_addr
+          description: receiver_addr is the receiver wallet address being queried
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - 'Unification: Payment Streams'
+  /mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}:
+    get:
+      summary: >-
+        StreamByReceiverSender queries a stream for a given receiver and sender
+        pair
+      operationId: StreamByReceiverSender
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              stream:
+                type: object
+                properties:
+                  receiver:
+                    type: string
+                    title: receiver is the wallet that will receive stream payments
+                  sender:
+                    type: string
+                    title: sender is the wallet making the update
+                  stream:
+                    title: stream is the stream data
+                    type: object
+                    properties:
+                      deposit:
+                        title: >-
+                          deposit tracks the total amount the user has deposited
+                          to cover the stream, including any updates to the
+                          stream
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          amount:
+                            type: string
+                        description: >-
+                          Coin defines a token with a denomination and an
+                          amount.
+
+
+                          NOTE: The amount field is an Int which implements the
+                          custom method
+
+                          signatures required by gogoproto.
+                      flow_rate:
+                        type: string
+                        format: int64
+                        title: flow_rate is the current rate of nund per second
+                      last_outflow_time:
+                        type: string
+                        format: date-time
+                        title: >-
+                          last_outflow_time is the timestamp of the last claim.
+                          Allows for a start point to calculate the next claim
+                      deposit_zero_time:
+                        type: string
+                        format: date-time
+                        title: >-
+                          deposit_zero_time is the timestamp for when the
+                          current deposited amount will run out
+                      cancellable:
+                        type: boolean
+                        title: >-
+                          cancellable is whether a stream can be cancelled.
+                          Default is true, but will be false for example id
+                          eFUND is used
+                title: StreamResult contains data about a stream
+            title: >-
+              QueryStreamByReceiverSenderResponse is the response type for the
+              Query/StreamByReceiverSender RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: receiver_addr
+          description: receiver_addr is the receiver wallet address being queried
+          in: path
+          required: true
+          type: string
+        - name: sender_addr
+          description: sender_addr is the sender wallet address being queried
+          in: path
+          required: true
+          type: string
+      tags:
+        - 'Unification: Payment Streams'
+  /mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}/current_flow:
+    get:
+      summary: >-
+        StreamReceiverSenderCurrentFlow queries a stream by the given
+        receiver/sender pair and returns the current flow data
+      operationId: StreamReceiverSenderCurrentFlow
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              configured_flow_rate:
+                type: string
+                format: int64
+                title: configured_flow_rate is the flow rate configured in the stream
+              current_flow_rate:
+                type: string
+                format: int64
+                title: >-
+                  current_flow_rate is the actual flow rate. This will be zero
+                  if the depositZeroTime has passed, or deposit is zero
+            title: >-
+              QueryStreamReceiverSenderCurrentFlowResponse is the response type
+              for the Query/StreamReceiverSenderCurrentFlow RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: receiver_addr
+          description: receiver_addr is the receiver wallet address being queried
+          in: path
+          required: true
+          type: string
+        - name: sender_addr
+          description: sender_addr is the sender wallet address being queried
+          in: path
+          required: true
+          type: string
+      tags:
+        - 'Unification: Payment Streams'
+  /mainchain/stream/v1/streams/sender/{sender_addr}:
+    get:
+      summary: AllStreamsForSender queries all Streams for a given sender address
+      operationId: AllStreamsForSender
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              sender_addr:
+                type: string
+                title: sender_addr is the receiver wallet address being queried
+              streams:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    receiver:
+                      type: string
+                      title: receiver is the wallet that will receive stream payments
+                    sender:
+                      type: string
+                      title: sender is the wallet making the update
+                    stream:
+                      title: stream is the stream data
+                      type: object
+                      properties:
+                        deposit:
+                          title: >-
+                            deposit tracks the total amount the user has
+                            deposited to cover the stream, including any updates
+                            to the stream
+                          type: object
+                          properties:
+                            denom:
+                              type: string
+                            amount:
+                              type: string
+                          description: >-
+                            Coin defines a token with a denomination and an
+                            amount.
+
+
+                            NOTE: The amount field is an Int which implements
+                            the custom method
+
+                            signatures required by gogoproto.
+                        flow_rate:
+                          type: string
+                          format: int64
+                          title: flow_rate is the current rate of nund per second
+                        last_outflow_time:
+                          type: string
+                          format: date-time
+                          title: >-
+                            last_outflow_time is the timestamp of the last
+                            claim. Allows for a start point to calculate the
+                            next claim
+                        deposit_zero_time:
+                          type: string
+                          format: date-time
+                          title: >-
+                            deposit_zero_time is the timestamp for when the
+                            current deposited amount will run out
+                        cancellable:
+                          type: boolean
+                          title: >-
+                            cancellable is whether a stream can be cancelled.
+                            Default is true, but will be false for example id
+                            eFUND is used
+                  title: StreamResult contains data about a stream
+                title: streams is the list of all streams
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            title: >-
+              QueryAllStreamsForSenderResponse is the response type for the
+              Query/AllStreamsForSender RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: sender_addr
+          description: sender_addr is the receiver wallet address being queried
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - 'Unification: Payment Streams'
   /cosmos/auth/v1beta1/account_info/{address}:
     get:
       summary: AccountInfo queries account info which is common to all account types.
@@ -48266,6 +49154,527 @@ definitions:
         format: uint64
         title: sub_time is the unix epoch of the wkrchain hash submission
     title: WrkChainBlock holds data about a wrkchain's block hash submission
+  mainchain.stream.v1.Params:
+    type: object
+    properties:
+      validator_fee:
+        type: string
+        title: >-
+          validator_fee is the chain-wide fee validators will receive from
+          stream payments. A percentage value from 0 to 1
+    description: Params defines the parameters for the module.
+  mainchain.stream.v1.QueryAllStreamsForReceiverResponse:
+    type: object
+    properties:
+      receiver_addr:
+        type: string
+        title: receiver_addr is the receiver wallet address being queried
+      streams:
+        type: array
+        items:
+          type: object
+          properties:
+            receiver:
+              type: string
+              title: receiver is the wallet that will receive stream payments
+            sender:
+              type: string
+              title: sender is the wallet making the update
+            stream:
+              title: stream is the stream data
+              type: object
+              properties:
+                deposit:
+                  title: >-
+                    deposit tracks the total amount the user has deposited to
+                    cover the stream, including any updates to the stream
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+                flow_rate:
+                  type: string
+                  format: int64
+                  title: flow_rate is the current rate of nund per second
+                last_outflow_time:
+                  type: string
+                  format: date-time
+                  title: >-
+                    last_outflow_time is the timestamp of the last claim. Allows
+                    for a start point to calculate the next claim
+                deposit_zero_time:
+                  type: string
+                  format: date-time
+                  title: >-
+                    deposit_zero_time is the timestamp for when the current
+                    deposited amount will run out
+                cancellable:
+                  type: boolean
+                  title: >-
+                    cancellable is whether a stream can be cancelled. Default is
+                    true, but will be false for example id eFUND is used
+          title: StreamResult contains data about a stream
+        title: streams is the list of all streams
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    title: >-
+      QueryAllStreamsForReceiverResponse is the response type for the
+      Query/AllStreamsForReceiver RPC method
+  mainchain.stream.v1.QueryAllStreamsForSenderResponse:
+    type: object
+    properties:
+      sender_addr:
+        type: string
+        title: sender_addr is the receiver wallet address being queried
+      streams:
+        type: array
+        items:
+          type: object
+          properties:
+            receiver:
+              type: string
+              title: receiver is the wallet that will receive stream payments
+            sender:
+              type: string
+              title: sender is the wallet making the update
+            stream:
+              title: stream is the stream data
+              type: object
+              properties:
+                deposit:
+                  title: >-
+                    deposit tracks the total amount the user has deposited to
+                    cover the stream, including any updates to the stream
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+                flow_rate:
+                  type: string
+                  format: int64
+                  title: flow_rate is the current rate of nund per second
+                last_outflow_time:
+                  type: string
+                  format: date-time
+                  title: >-
+                    last_outflow_time is the timestamp of the last claim. Allows
+                    for a start point to calculate the next claim
+                deposit_zero_time:
+                  type: string
+                  format: date-time
+                  title: >-
+                    deposit_zero_time is the timestamp for when the current
+                    deposited amount will run out
+                cancellable:
+                  type: boolean
+                  title: >-
+                    cancellable is whether a stream can be cancelled. Default is
+                    true, but will be false for example id eFUND is used
+          title: StreamResult contains data about a stream
+        title: streams is the list of all streams
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    title: >-
+      QueryAllStreamsForSenderResponse is the response type for the
+      Query/AllStreamsForSender RPC method
+  mainchain.stream.v1.QueryCalculateFlowRateResponse:
+    type: object
+    properties:
+      coin:
+        title: coin is the coin used in the calculation
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      period:
+        title: >-
+          period is the enumerated value of a period used in the calculation,
+          e.g. month = 6
+        type: string
+        enum:
+          - STREAM_PERIOD_UNSPECIFIED
+          - STREAM_PERIOD_SECOND
+          - STREAM_PERIOD_MINUTE
+          - STREAM_PERIOD_HOUR
+          - STREAM_PERIOD_DAY
+          - STREAM_PERIOD_WEEK
+          - STREAM_PERIOD_MONTH
+          - STREAM_PERIOD_YEAR
+        default: STREAM_PERIOD_UNSPECIFIED
+        description: >-
+          - STREAM_PERIOD_UNSPECIFIED: STREAM_PERIOD_UNSPECIFIED defines
+          unspecified
+           - STREAM_PERIOD_SECOND: STREAM_PERIOD_SECOND defines second
+           - STREAM_PERIOD_MINUTE: STREAM_PERIOD_MINUTE defines minute
+           - STREAM_PERIOD_HOUR: STREAM_PERIOD_HOUR defines hour
+           - STREAM_PERIOD_DAY: STREAM_PERIOD_DAY defines day
+           - STREAM_PERIOD_WEEK: STREAM_PERIOD_WEEK defines week
+           - STREAM_PERIOD_MONTH: STREAM_PERIOD_MONTH defines month
+           - STREAM_PERIOD_YEAR: STREAM_PERIOD_YEAR defines year
+      duration:
+        type: string
+        format: uint64
+        title: >-
+          duration is the number of periods used in the calculation, e.g. 2 = 2
+          months
+      seconds:
+        type: string
+        format: uint64
+        title: >-
+          seconds is the calculated number of seconds for the stream (seconds in
+          period * duration)
+      flow_rate:
+        type: string
+        format: int64
+        title: >-
+          flow_rate is the calculated rate of coins per second, in the lowest
+          denomination - e.g. nund
+    title: >-
+      QueryCalculateFlowRateResponse is the response type for the
+      Query/CalculateFlowRate RPC method
+  mainchain.stream.v1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+        properties:
+          validator_fee:
+            type: string
+            title: >-
+              validator_fee is the chain-wide fee validators will receive from
+              stream payments. A percentage value from 0 to 1
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  mainchain.stream.v1.QueryStreamByReceiverSenderResponse:
+    type: object
+    properties:
+      stream:
+        type: object
+        properties:
+          receiver:
+            type: string
+            title: receiver is the wallet that will receive stream payments
+          sender:
+            type: string
+            title: sender is the wallet making the update
+          stream:
+            title: stream is the stream data
+            type: object
+            properties:
+              deposit:
+                title: >-
+                  deposit tracks the total amount the user has deposited to
+                  cover the stream, including any updates to the stream
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+              flow_rate:
+                type: string
+                format: int64
+                title: flow_rate is the current rate of nund per second
+              last_outflow_time:
+                type: string
+                format: date-time
+                title: >-
+                  last_outflow_time is the timestamp of the last claim. Allows
+                  for a start point to calculate the next claim
+              deposit_zero_time:
+                type: string
+                format: date-time
+                title: >-
+                  deposit_zero_time is the timestamp for when the current
+                  deposited amount will run out
+              cancellable:
+                type: boolean
+                title: >-
+                  cancellable is whether a stream can be cancelled. Default is
+                  true, but will be false for example id eFUND is used
+        title: StreamResult contains data about a stream
+    title: >-
+      QueryStreamByReceiverSenderResponse is the response type for the
+      Query/StreamByReceiverSender RPC method
+  mainchain.stream.v1.QueryStreamReceiverSenderCurrentFlowResponse:
+    type: object
+    properties:
+      configured_flow_rate:
+        type: string
+        format: int64
+        title: configured_flow_rate is the flow rate configured in the stream
+      current_flow_rate:
+        type: string
+        format: int64
+        title: >-
+          current_flow_rate is the actual flow rate. This will be zero if the
+          depositZeroTime has passed, or deposit is zero
+    title: >-
+      QueryStreamReceiverSenderCurrentFlowResponse is the response type for the
+      Query/StreamReceiverSenderCurrentFlow RPC method
+  mainchain.stream.v1.QueryStreamsResponse:
+    type: object
+    properties:
+      streams:
+        type: array
+        items:
+          type: object
+          properties:
+            receiver:
+              type: string
+              title: receiver is the wallet that will receive stream payments
+            sender:
+              type: string
+              title: sender is the wallet making the update
+            stream:
+              title: stream is the stream data
+              type: object
+              properties:
+                deposit:
+                  title: >-
+                    deposit tracks the total amount the user has deposited to
+                    cover the stream, including any updates to the stream
+                  type: object
+                  properties:
+                    denom:
+                      type: string
+                    amount:
+                      type: string
+                  description: >-
+                    Coin defines a token with a denomination and an amount.
+
+
+                    NOTE: The amount field is an Int which implements the custom
+                    method
+
+                    signatures required by gogoproto.
+                flow_rate:
+                  type: string
+                  format: int64
+                  title: flow_rate is the current rate of nund per second
+                last_outflow_time:
+                  type: string
+                  format: date-time
+                  title: >-
+                    last_outflow_time is the timestamp of the last claim. Allows
+                    for a start point to calculate the next claim
+                deposit_zero_time:
+                  type: string
+                  format: date-time
+                  title: >-
+                    deposit_zero_time is the timestamp for when the current
+                    deposited amount will run out
+                cancellable:
+                  type: boolean
+                  title: >-
+                    cancellable is whether a stream can be cancelled. Default is
+                    true, but will be false for example id eFUND is used
+          title: StreamResult contains data about a stream
+        title: streams is the list of all streams
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    title: QueryStreamsResponse is the response type for the Query/Streams RPC method
+  mainchain.stream.v1.Stream:
+    type: object
+    properties:
+      deposit:
+        title: >-
+          deposit tracks the total amount the user has deposited to cover the
+          stream, including any updates to the stream
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+      flow_rate:
+        type: string
+        format: int64
+        title: flow_rate is the current rate of nund per second
+      last_outflow_time:
+        type: string
+        format: date-time
+        title: >-
+          last_outflow_time is the timestamp of the last claim. Allows for a
+          start point to calculate the next claim
+      deposit_zero_time:
+        type: string
+        format: date-time
+        title: >-
+          deposit_zero_time is the timestamp for when the current deposited
+          amount will run out
+      cancellable:
+        type: boolean
+        title: >-
+          cancellable is whether a stream can be cancelled. Default is true, but
+          will be false for example id eFUND is used
+    title: Stream holds data about a stream
+  mainchain.stream.v1.StreamPeriod:
+    type: string
+    enum:
+      - STREAM_PERIOD_UNSPECIFIED
+      - STREAM_PERIOD_SECOND
+      - STREAM_PERIOD_MINUTE
+      - STREAM_PERIOD_HOUR
+      - STREAM_PERIOD_DAY
+      - STREAM_PERIOD_WEEK
+      - STREAM_PERIOD_MONTH
+      - STREAM_PERIOD_YEAR
+    default: STREAM_PERIOD_UNSPECIFIED
+    description: |-
+      - STREAM_PERIOD_UNSPECIFIED: STREAM_PERIOD_UNSPECIFIED defines unspecified
+       - STREAM_PERIOD_SECOND: STREAM_PERIOD_SECOND defines second
+       - STREAM_PERIOD_MINUTE: STREAM_PERIOD_MINUTE defines minute
+       - STREAM_PERIOD_HOUR: STREAM_PERIOD_HOUR defines hour
+       - STREAM_PERIOD_DAY: STREAM_PERIOD_DAY defines day
+       - STREAM_PERIOD_WEEK: STREAM_PERIOD_WEEK defines week
+       - STREAM_PERIOD_MONTH: STREAM_PERIOD_MONTH defines month
+       - STREAM_PERIOD_YEAR: STREAM_PERIOD_YEAR defines year
+    title: StreamPeriod enumerates the valid periods for calculating flow rates
+  mainchain.stream.v1.StreamResult:
+    type: object
+    properties:
+      receiver:
+        type: string
+        title: receiver is the wallet that will receive stream payments
+      sender:
+        type: string
+        title: sender is the wallet making the update
+      stream:
+        title: stream is the stream data
+        type: object
+        properties:
+          deposit:
+            title: >-
+              deposit tracks the total amount the user has deposited to cover
+              the stream, including any updates to the stream
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
+          flow_rate:
+            type: string
+            format: int64
+            title: flow_rate is the current rate of nund per second
+          last_outflow_time:
+            type: string
+            format: date-time
+            title: >-
+              last_outflow_time is the timestamp of the last claim. Allows for a
+              start point to calculate the next claim
+          deposit_zero_time:
+            type: string
+            format: date-time
+            title: >-
+              deposit_zero_time is the timestamp for when the current deposited
+              amount will run out
+          cancellable:
+            type: boolean
+            title: >-
+              cancellable is whether a stream can be cancelled. Default is true,
+              but will be false for example id eFUND is used
+    title: StreamResult contains data about a stream
   cosmos.auth.v1beta1.AddressBytesToStringResponse:
     type: object
     properties:

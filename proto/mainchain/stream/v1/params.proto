@@ -8,7 +8,7 @@ option go_package = "github.com/unification-com/mainchain/x/stream/types";
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  // validator_fee is the chain-wide fee validators will receive from stream payments
+  // validator_fee is the chain-wide fee validators will receive from stream payments. A percentage value from 0 to 1
   string validator_fee = 1 [
     (gogoproto.moretags)   = "yaml:\"validator_fee\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",

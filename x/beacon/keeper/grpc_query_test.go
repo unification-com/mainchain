@@ -4,13 +4,13 @@ import (
 	gocontext "context"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/beacon/types"
 	"time"
 )
 
-func (suite *KeeperTestSuite) TestGRPCQueryParams() {
-	app, ctx, queryClient := suite.app, suite.ctx, suite.queryClient
+func (s *KeeperTestSuite) TestGRPCQueryParams() {
+	app, ctx, queryClient := s.app, s.ctx, s.queryClient
 
 	testParams := types.Params{
 		FeeRegister:         240,
@@ -24,12 +24,12 @@ func (suite *KeeperTestSuite) TestGRPCQueryParams() {
 	app.BeaconKeeper.SetParams(ctx, testParams)
 	paramsResp, err := queryClient.Params(gocontext.Background(), &types.QueryParamsRequest{})
 
-	suite.NoError(err)
-	suite.Equal(testParams, paramsResp.Params)
+	s.NoError(err)
+	s.Equal(testParams, paramsResp.Params)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryBeacon() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryBeacon() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var (
 		req       *types.QueryBeaconRequest
@@ -75,10 +75,10 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeacon() {
 				expectedB.Name = "name"
 
 				bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
-				suite.Require().NoError(err)
-				suite.Require().Equal(uint64(1), bID)
+				s.Require().NoError(err)
+				s.Require().Equal(uint64(1), bID)
 				dbBeacon, found := app.BeaconKeeper.GetBeacon(ctx, uint64(1))
-				suite.Require().True(found)
+				s.Require().True(found)
 
 				expBeacon = dbBeacon
 			},
@@ -87,24 +87,24 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeacon() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			beaconRes, err := queryClient.Beacon(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
-				suite.Require().Equal(&expBeacon, beaconRes.Beacon)
+				s.Require().NoError(err)
+				s.Require().Equal(&expBeacon, beaconRes.Beacon)
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(beaconRes)
+				s.Require().Error(err)
+				s.Require().Nil(beaconRes)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	testBeacons := []types.Beacon{}
 
@@ -133,12 +133,12 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
 					expectedB := types.Beacon{}
 					expectedB.Owner = addrs[0].String()
 					expectedB.LastTimestampId = 0
-					expectedB.Moniker = test_helpers.GenerateRandomString(12)
-					expectedB.Name = test_helpers.GenerateRandomString(24)
+					expectedB.Moniker = simapp.GenerateRandomString(12)
+					expectedB.Name = simapp.GenerateRandomString(24)
 					expectedB.RegTime = uint64(ctx.BlockTime().Unix())
 
 					bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
-					suite.Require().NoError(err)
+					s.Require().NoError(err)
 					expectedB.BeaconId = bID
 					testBeacons = append(testBeacons, expectedB)
 				}
@@ -208,28 +208,28 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			beacons, err := queryClient.BeaconsFiltered(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
+				s.Require().NoError(err)
 
-				suite.Require().Len(beacons.GetBeacons(), len(expRes.GetBeacons()))
+				s.Require().Len(beacons.GetBeacons(), len(expRes.GetBeacons()))
 				for i := 0; i < len(beacons.GetBeacons()); i++ {
-					suite.Require().Equal(beacons.GetBeacons()[i].String(), expRes.GetBeacons()[i].String())
+					s.Require().Equal(beacons.GetBeacons()[i].String(), expRes.GetBeacons()[i].String())
 				}
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(beacons)
+				s.Require().Error(err)
+				s.Require().Nil(beacons)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var (
 		req    *types.QueryBeaconTimestampRequest
@@ -274,17 +274,17 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 				expectedB.Name = "name"
 
 				bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
-				suite.Require().NoError(err)
-				suite.Require().Equal(uint64(1), bID)
+				s.Require().NoError(err)
+				s.Require().Equal(uint64(1), bID)
 
 				expectedTs := types.BeaconTimestamp{
-					Hash:        test_helpers.GenerateRandomString(32),
+					Hash:        simapp.GenerateRandomString(32),
 					SubmitTime:  uint64(time.Now().Unix()),
 					TimestampId: 1,
 				}
 
 				err = app.BeaconKeeper.SetBeaconTimestamp(ctx, bID, expectedTs)
-				suite.Require().NoError(err)
+				s.Require().NoError(err)
 
 				expRes = types.QueryBeaconTimestampResponse{
 					Timestamp: &expectedTs,
@@ -298,24 +298,24 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			timestampRes, err := queryClient.BeaconTimestamp(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
-				suite.Require().Equal(&expRes, timestampRes)
+				s.Require().NoError(err)
+				s.Require().Equal(&expRes, timestampRes)
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(timestampRes)
+				s.Require().Error(err)
+				s.Require().Nil(timestampRes)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryBeaconStorage() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryBeaconStorage() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var (
 		req    *types.QueryBeaconStorageRequest
@@ -353,11 +353,11 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconStorage() {
 				expectedB.Name = "name"
 
 				bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
-				suite.Require().NoError(err)
-				suite.Require().Equal(uint64(1), bID)
+				s.Require().NoError(err)
+				s.Require().Equal(uint64(1), bID)
 
 				_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, "somehash", uint64(time.Now().Unix()))
-				suite.Require().NoError(err)
+				s.Require().NoError(err)
 
 				expRes = types.QueryBeaconStorageResponse{
 					BeaconId:       bID,
@@ -374,17 +374,17 @@ func (suite *KeeperTestSuite) TestGRPCQueryBeaconStorage() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			timestampRes, err := queryClient.BeaconStorage(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
-				suite.Require().Equal(&expRes, timestampRes)
+				s.Require().NoError(err)
+				s.Require().Equal(&expRes, timestampRes)
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(timestampRes)
+				s.Require().Error(err)
+				s.Require().Nil(timestampRes)
 			}
 		})
 	}

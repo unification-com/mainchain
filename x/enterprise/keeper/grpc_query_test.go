@@ -5,17 +5,17 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	"time"
 )
 
-func (suite *KeeperTestSuite) TestGRPCQueryParams() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryParams() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	testParams := types.Params{
 		EntSigners:        addrs[0].String(),
-		Denom:             test_helpers.TestDenomination,
+		Denom:             simapp.TestDenomination,
 		MinAccepts:        1,
 		DecisionTimeLimit: 600,
 	}
@@ -23,12 +23,12 @@ func (suite *KeeperTestSuite) TestGRPCQueryParams() {
 	app.EnterpriseKeeper.SetParams(ctx, testParams)
 	paramsResp, err := queryClient.Params(gocontext.Background(), &types.QueryParamsRequest{})
 
-	suite.NoError(err)
-	suite.Equal(testParams, paramsResp.Params)
+	s.NoError(err)
+	s.Equal(testParams, paramsResp.Params)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrder() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrder() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var (
 		req   *types.QueryEnterpriseUndPurchaseOrderRequest
@@ -78,7 +78,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrder() {
 				expectedPo := types.EnterpriseUndPurchaseOrder{
 					Id:             poId,
 					Purchaser:      addrs[0].String(),
-					Amount:         sdk.NewInt64Coin(test_helpers.TestDenomination, 100),
+					Amount:         sdk.NewInt64Coin(simapp.TestDenomination, 100),
 					Status:         types.StatusRaised,
 					RaiseTime:      uint64(time.Now().Unix()),
 					CompletionTime: 0,
@@ -86,9 +86,9 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrder() {
 				}
 
 				err := app.EnterpriseKeeper.SetPurchaseOrder(ctx, expectedPo)
-				suite.Require().Nil(err)
+				s.Require().Nil(err)
 				dbPo, found := app.EnterpriseKeeper.GetPurchaseOrder(ctx, poId)
-				suite.Require().True(found)
+				s.Require().True(found)
 
 				expPo = dbPo
 			},
@@ -97,24 +97,24 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrder() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			poRes, err := queryClient.EnterpriseUndPurchaseOrder(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
-				suite.Require().Equal(expPo, poRes.PurchaseOrder)
+				s.Require().NoError(err)
+				s.Require().Equal(expPo, poRes.PurchaseOrder)
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(poRes)
+				s.Require().Error(err)
+				s.Require().Nil(poRes)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	testPos := []types.EnterpriseUndPurchaseOrder{}
 
@@ -142,13 +142,13 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
 				for i := 0; i < len(addrs); i++ {
 					newPo := types.EnterpriseUndPurchaseOrder{
 						Purchaser: addrs[i].String(),
-						Amount:    sdk.NewInt64Coin(test_helpers.TestDenomination, int64(i)+1),
+						Amount:    sdk.NewInt64Coin(simapp.TestDenomination, int64(i)+1),
 					}
 
 					poId, err := app.EnterpriseKeeper.RaiseNewPurchaseOrder(ctx, newPo)
-					suite.Require().NoError(err)
+					s.Require().NoError(err)
 					expectedPo, found := app.EnterpriseKeeper.GetPurchaseOrder(ctx, poId)
-					suite.Require().True(found)
+					s.Require().True(found)
 					testPos = append(testPos, expectedPo)
 				}
 
@@ -240,28 +240,28 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrders() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			pos, err := queryClient.EnterpriseUndPurchaseOrders(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
+				s.Require().NoError(err)
 
-				suite.Require().Len(pos.GetPurchaseOrders(), len(expRes.GetPurchaseOrders()))
+				s.Require().Len(pos.GetPurchaseOrders(), len(expRes.GetPurchaseOrders()))
 				for i := 0; i < len(pos.GetPurchaseOrders()); i++ {
-					suite.Require().Equal(pos.GetPurchaseOrders()[i].String(), expRes.GetPurchaseOrders()[i].String())
+					s.Require().Equal(pos.GetPurchaseOrders()[i].String(), expRes.GetPurchaseOrders()[i].String())
 				}
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(pos)
+				s.Require().Error(err)
+				s.Require().Nil(pos)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryLockedUndByAddress() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryLockedUndByAddress() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var (
 		req    *types.QueryLockedUndByAddressRequest
@@ -298,11 +298,11 @@ func (suite *KeeperTestSuite) TestGRPCQueryLockedUndByAddress() {
 
 				l := types.LockedUnd{
 					Owner:  addrs[0].String(),
-					Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, 1000),
+					Amount: sdk.NewInt64Coin(simapp.TestDenomination, 1000),
 				}
 
 				err := app.EnterpriseKeeper.SetLockedUndForAccount(ctx, l)
-				suite.Require().NoError(err)
+				s.Require().NoError(err)
 				expRes = types.QueryLockedUndByAddressResponse{
 					Amount: l.Amount,
 				}
@@ -312,50 +312,50 @@ func (suite *KeeperTestSuite) TestGRPCQueryLockedUndByAddress() {
 	}
 
 	for _, testCase := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
+		s.Run(fmt.Sprintf("Case %s", testCase.msg), func() {
 			testCase.malleate()
 
 			lRes, err := queryClient.LockedUndByAddress(gocontext.Background(), req)
 
 			if testCase.expPass {
-				suite.Require().NoError(err)
-				suite.Require().Equal(&expRes, lRes)
+				s.Require().NoError(err)
+				s.Require().Equal(&expRes, lRes)
 			} else {
-				suite.Require().Error(err)
-				suite.Require().Nil(lRes)
+				s.Require().Error(err)
+				s.Require().Nil(lRes)
 			}
 		})
 	}
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryTotalLocked() {
-	app, ctx, queryClient := suite.app, suite.ctx, suite.queryClient
+func (s *KeeperTestSuite) TestGRPCQueryTotalLocked() {
+	app, ctx, queryClient := s.app, s.ctx, s.queryClient
 
 	req := &types.QueryTotalLockedRequest{}
-	locked := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
+	locked := sdk.NewInt64Coin(simapp.TestDenomination, 1000)
 	expectedRes := &types.QueryTotalLockedResponse{
 		Amount: locked,
 	}
 
 	err := app.EnterpriseKeeper.SetTotalLockedUnd(ctx, locked)
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
 	lRes, err := queryClient.TotalLocked(gocontext.Background(), req)
 
-	suite.Require().NoError(err)
-	suite.Require().Equal(expectedRes, lRes)
+	s.Require().NoError(err)
+	s.Require().Equal(expectedRes, lRes)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryTotalUnlocked() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryTotalUnlocked() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
-	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
-	toUnock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
+	toLock := sdk.NewInt64Coin(simapp.TestDenomination, 1000)
+	toUnock := sdk.NewInt64Coin(simapp.TestDenomination, 100)
 	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
 	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnock})
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
 	req := &types.QueryTotalUnlockedRequest{}
 
@@ -367,33 +367,33 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalUnlocked() {
 
 	lRes, err := queryClient.TotalUnlocked(gocontext.Background(), req)
 
-	suite.Require().NoError(err)
-	suite.Require().Equal(expectedRes, lRes)
+	s.Require().NoError(err)
+	s.Require().Equal(expectedRes, lRes)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseSupply() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryEnterpriseSupply() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
-	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
-	toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
+	toLock := sdk.NewInt64Coin(simapp.TestDenomination, 1000)
+	toUnlock := sdk.NewInt64Coin(simapp.TestDenomination, 100)
 
-	baseSupply := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
+	baseSupply := app.BankKeeper.GetSupply(ctx, simapp.TestDenomination)
 	locked := toLock.Sub(toUnlock)
 	unlocked := baseSupply.Add(toUnlock)
 	total := baseSupply.Add(toLock)
 
 	expectedTotalSupply := types.UndSupply{
-		Denom:  test_helpers.TestDenomination,
+		Denom:  simapp.TestDenomination,
 		Locked: locked.Amount.Uint64(),
 		Amount: unlocked.Amount.Uint64(),
 		Total:  total.Amount.Uint64(),
 	}
 
 	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
 	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
 	req := &types.QueryEnterpriseSupplyRequest{}
 
@@ -403,17 +403,17 @@ func (suite *KeeperTestSuite) TestGRPCQueryEnterpriseSupply() {
 
 	lRes, err := queryClient.EnterpriseSupply(gocontext.Background(), req)
 
-	suite.Require().NoError(err)
-	suite.Require().Equal(expectedRes, lRes)
+	s.Require().NoError(err)
+	s.Require().Equal(expectedRes, lRes)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryTotalSupply() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
-	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
-	toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
+	toLock := sdk.NewInt64Coin(simapp.TestDenomination, 1000)
+	toUnlock := sdk.NewInt64Coin(simapp.TestDenomination, 100)
 
-	baseSupply := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
+	baseSupply := app.BankKeeper.GetSupply(ctx, simapp.TestDenomination)
 	expectedTotalSupply := baseSupply.Add(toUnlock)
 
 	expectedResponse := &types.QueryTotalSupplyResponse{
@@ -423,26 +423,26 @@ func (suite *KeeperTestSuite) TestGRPCQueryTotalSupply() {
 	}
 
 	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
 	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
 	req := &types.QueryTotalSupplyRequest{}
 
 	lRes, err := queryClient.TotalSupply(gocontext.Background(), req)
 
-	suite.Require().NoError(err)
-	suite.Require().Equal(expectedResponse.Supply, lRes.Supply)
+	s.Require().NoError(err)
+	s.Require().Equal(expectedResponse.Supply, lRes.Supply)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQuerySupplyOf() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQuerySupplyOf() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
-	toLock := sdk.NewInt64Coin(test_helpers.TestDenomination, 1000)
-	toUnlock := sdk.NewInt64Coin(test_helpers.TestDenomination, 100)
+	toLock := sdk.NewInt64Coin(simapp.TestDenomination, 1000)
+	toUnlock := sdk.NewInt64Coin(simapp.TestDenomination, 100)
 
-	baseSupply := app.BankKeeper.GetSupply(ctx, test_helpers.TestDenomination)
+	baseSupply := app.BankKeeper.GetSupply(ctx, simapp.TestDenomination)
 	expectedTotalSupply := baseSupply.Add(toUnlock)
 
 	expectedResponse := &types.QuerySupplyOfResponse{
@@ -450,70 +450,70 @@ func (suite *KeeperTestSuite) TestGRPCQuerySupplyOf() {
 	}
 
 	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
 	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
-	suite.Require().NoError(err)
+	s.Require().NoError(err)
 
-	req := &types.QuerySupplyOfRequest{Denom: test_helpers.TestDenomination}
+	req := &types.QuerySupplyOfRequest{Denom: simapp.TestDenomination}
 
 	lRes, err := queryClient.SupplyOf(gocontext.Background(), req)
 
-	suite.Require().NoError(err)
-	suite.Require().Equal(expectedResponse, lRes)
+	s.Require().NoError(err)
+	s.Require().Equal(expectedResponse, lRes)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryWhitelist() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestGRPCQueryWhitelist() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	var whitelistedAddrs []string
 
 	for _, addr := range addrs {
 		err := app.EnterpriseKeeper.AddAddressToWhitelist(ctx, addr)
-		suite.Require().NoError(err)
+		s.Require().NoError(err)
 		whitelistedAddrs = append(whitelistedAddrs, addr.String())
 	}
 
 	req := &types.QueryWhitelistRequest{}
 	res, err := queryClient.Whitelist(gocontext.Background(), req)
-	suite.Require().NoError(err)
-	suite.Require().Equal(whitelistedAddrs, res.Addresses)
+	s.Require().NoError(err)
+	s.Require().Equal(whitelistedAddrs, res.Addresses)
 }
 
-func (suite *KeeperTestSuite) TestGRPCQueryWhitelisted() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
-	notListed := test_helpers.GenerateRandomTestAccounts(10)
+func (s *KeeperTestSuite) TestGRPCQueryWhitelisted() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
+	notListed := simapp.GenerateRandomTestAccounts(10)
 
 	for _, addr := range addrs {
 		err := app.EnterpriseKeeper.AddAddressToWhitelist(ctx, addr)
-		suite.Require().NoError(err)
+		s.Require().NoError(err)
 	}
 
 	for _, addr := range addrs {
 		req := &types.QueryWhitelistedRequest{Address: addr.String()}
 		res, err := queryClient.Whitelisted(gocontext.Background(), req)
-		suite.Require().NoError(err)
-		suite.Require().True(res.Whitelisted)
-		suite.Require().Equal(addr.String(), res.Address)
+		s.Require().NoError(err)
+		s.Require().True(res.Whitelisted)
+		s.Require().Equal(addr.String(), res.Address)
 	}
 
 	for _, addr := range notListed {
 		req := &types.QueryWhitelistedRequest{Address: addr.String()}
 		res, err := queryClient.Whitelisted(gocontext.Background(), req)
-		suite.Require().NoError(err)
-		suite.Require().False(res.Whitelisted)
-		suite.Require().Equal(addr.String(), res.Address)
+		s.Require().NoError(err)
+		s.Require().False(res.Whitelisted)
+		s.Require().Equal(addr.String(), res.Address)
 	}
 }
 
-func (suite *KeeperTestSuite) TestTotalSpentEFUND() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestTotalSpentEFUND() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	poAmount := uint64(12345)
 	totalUnlocked := uint64(0)
 	toUnlock := uint64(123)
-	poAmountCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(poAmount))
-	toUnlockCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(toUnlock))
+	poAmountCoin := sdk.NewInt64Coin(simapp.TestDenomination, int64(poAmount))
+	toUnlockCoin := sdk.NewInt64Coin(simapp.TestDenomination, int64(toUnlock))
 
 	for i := 0; i < len(addrs); i++ {
 		newPo := types.EnterpriseUndPurchaseOrder{
@@ -522,60 +522,60 @@ func (suite *KeeperTestSuite) TestTotalSpentEFUND() {
 		}
 
 		poId, err := app.EnterpriseKeeper.RaiseNewPurchaseOrder(ctx, newPo)
-		suite.Require().NoError(err)
+		s.Require().NoError(err)
 		expectedPo, _ := app.EnterpriseKeeper.GetPurchaseOrder(ctx, poId)
 		expectedPo.Status = types.StatusCompleted
 		_ = app.EnterpriseKeeper.SetPurchaseOrder(ctx, expectedPo)
 
 		err = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[i], poAmountCoin)
-		suite.Require().NoError(err)
+		s.Require().NoError(err)
 
 		err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
-		suite.Require().NoError(err)
+		s.Require().NoError(err)
 
 		totalUnlocked += toUnlock
 	}
 
-	expectedResp := &types.QueryTotalSpentEFUNDResponse{Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, int64(totalUnlocked))}
+	expectedResp := &types.QueryTotalSpentEFUNDResponse{Amount: sdk.NewInt64Coin(simapp.TestDenomination, int64(totalUnlocked))}
 
 	req := &types.QueryTotalSpentEFUNDRequest{}
 	res, err := queryClient.TotalSpentEFUND(gocontext.Background(), req)
-	suite.Require().NoError(err)
-	suite.Require().Equal(expectedResp, res)
+	s.Require().NoError(err)
+	s.Require().Equal(expectedResp, res)
 }
 
-func (suite *KeeperTestSuite) TestSpentEFUNDByAddress() {
-	app, ctx, queryClient, addrs := suite.app, suite.ctx, suite.queryClient, suite.addrs
+func (s *KeeperTestSuite) TestSpentEFUNDByAddress() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
 	for i := 0; i < len(addrs); i++ {
 		poAmount := uint64(i+1) * 10
 		toUnlock := uint64(i + 1)
-		poAmountCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(poAmount))
-		toUnlockCoin := sdk.NewInt64Coin(test_helpers.TestDenomination, int64(toUnlock))
+		poAmountCoin := sdk.NewInt64Coin(simapp.TestDenomination, int64(poAmount))
+		toUnlockCoin := sdk.NewInt64Coin(simapp.TestDenomination, int64(toUnlock))
 		newPo := types.EnterpriseUndPurchaseOrder{
 			Purchaser: addrs[i].String(),
 			Amount:    poAmountCoin,
 		}
 
 		poId, err := app.EnterpriseKeeper.RaiseNewPurchaseOrder(ctx, newPo)
-		suite.Require().NoError(err)
+		s.Require().NoError(err)
 		expectedPo, _ := app.EnterpriseKeeper.GetPurchaseOrder(ctx, poId)
 		expectedPo.Status = types.StatusCompleted
 		_ = app.EnterpriseKeeper.SetPurchaseOrder(ctx, expectedPo)
 
 		err = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[i], poAmountCoin)
-		suite.Require().NoError(err)
+		s.Require().NoError(err)
 
 		err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
-		suite.Require().NoError(err)
+		s.Require().NoError(err)
 
-		expectedResp := &types.QuerySpentEFUNDByAddressResponse{Amount: sdk.NewInt64Coin(test_helpers.TestDenomination, int64(toUnlock))}
+		expectedResp := &types.QuerySpentEFUNDByAddressResponse{Amount: sdk.NewInt64Coin(simapp.TestDenomination, int64(toUnlock))}
 
 		req := &types.QuerySpentEFUNDByAddressRequest{
 			Address: addrs[i].String(),
 		}
 		res, err := queryClient.SpentEFUNDByAddress(gocontext.Background(), req)
-		suite.Require().NoError(err)
-		suite.Require().Equal(expectedResp.Amount.String(), res.Amount.String())
+		s.Require().NoError(err)
+		s.Require().Equal(expectedResp.Amount.String(), res.Amount.String())
 	}
 }

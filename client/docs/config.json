@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Unification - gRPC & REST Gateway docs",
+    "title": "Unification - gRPC Gateway docs",
     "description": "A REST interface for Unification Mainchain state queries",
     "version": "1.0.0"
   },
@@ -10,7 +10,7 @@
       "url": "./tmp-swagger-gen/mainchain/enterprise/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Unification: Enterprise"
+          "Query": "Enterprise"
         }
       },
       "operationIds": {
@@ -29,7 +29,7 @@
       "url": "./tmp-swagger-gen/mainchain/beacon/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Unification: BEACON"
+          "Query": "BEACON"
         }
       },
       "operationIds": {
@@ -42,7 +42,7 @@
       "url": "./tmp-swagger-gen/mainchain/wrkchain/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Unification: WrkChain"
+          "Query": "WrkChain"
         }
       },
       "operationIds": {
@@ -52,44 +52,272 @@
       }
     },
     {
-      "url": "./client/docs/cosmos-swagger.yml",
+      "url": "./tmp-swagger-gen/mainchain/stream/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "Cosmos",
-          "Gaia REST": "FUND REST"
+          "Query": "Payment Streams"
         }
       },
-      "dereference": {
-        "circular": "ignore"
-      },
-      "paths": {
-        "exclude": [
-          "^/cosmos/mint/.*",
-          "/minting/.*",
-          "^/cosmos/nft/.*"
-        ]
+      "operationIds": {
+        "rename": {
+          "Params": "StreamParams"
+        }
       }
     },
     {
-      "url": "./client/docs/ibc-swagger.yml",
-      "operationIds": {
-        "rename": {
-          "UpgradedConsensusState": "IBC-UpgradedConsensusState"
-        }
-      },
+      "url": "./tmp-swagger-gen/cosmos/auth/v1beta1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "IBC"
+          "Query": "Auth"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "AuthParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/authz/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Authz"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "AuthzParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/bank/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Bank"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "BankParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/base/tendermint/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Base"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "BaseParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/distribution/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Distribution"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "DistributionParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/evidence/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Evidence"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "EvidenceParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/feegrant/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Fee Grant"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "FeegrantParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/gov/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Gov"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "GovParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/gov/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Gov"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "GovV1Params",
+          "Proposal": "GovV1Proposal",
+          "Proposals": "GovV1Proposal",
+          "Vote": "GovV1Vote",
+          "Votes": "GovV1Votes",
+          "Deposit": "GovV1Deposit",
+          "Deposits": "GovV1Deposit",
+          "TallyResult": "GovV1TallyResult"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/group/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Group"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "GroupParams",
+          "Proposal": "GroupProposal",
+          "TallyResult": "GroupTallyResult"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/params/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Params"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "Params"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/slashing/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Slashing"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "SlashingParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/staking/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Staking"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "StakingParams",
+          "DelegatorValidators": "StakingDelegatorValidators"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/tx/v1beta1/service.swagger.json",
+      "tags": {
+        "rename": {
+          "Service": "Tx"
         }
       },
       "dereference": {
         "circular": "ignore"
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/upgrade/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Upgrade"
+        }
       },
-      "paths": {
-        "exclude": [
-          "^/ibc/apps/interchain_accounts/.*",
-          "^/ibc/apps/fee/.*"
-        ]
+      "operationIds": {
+        "rename": {
+          "Params": "UpgradeParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/core/channel/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "IBC Channel"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "IBCChannelParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/core/client/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "IBC Client"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "IBCClientParams",
+          "UpgradedConsensusState": "IBCUpgradedConsensusState"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/core/connection/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "IBC Connection"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "IBCConnectionParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/applications/transfer/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "IBC Transfer"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "IBCTransferParams"
+        }
       }
     }
   ]

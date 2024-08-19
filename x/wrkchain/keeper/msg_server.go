@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -51,13 +52,6 @@ func (k msgServer) RegisterWrkChain(goCtx context.Context, msg *types.MsgRegiste
 	}
 
 	defer telemetry.IncrCounter(1, types.ModuleName, types.RegisterAction)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -127,13 +121,6 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypeRecordWrkChainBlock,
 			sdk.NewAttribute(types.AttributeKeyWrkChainId, strconv.FormatUint(msg.WrkchainId, 10)),
 			sdk.NewAttribute(types.AttributeKeyBlockHeight, strconv.FormatUint(msg.Height, 10)),
@@ -199,13 +186,6 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypePurchaseStorage,
 			sdk.NewAttribute(types.AttributeKeyWrkChainId, strconv.FormatUint(msg.WrkchainId, 10)),
 			sdk.NewAttribute(types.AttributeKeyWrkChainStorageNumPurchased, strconv.FormatUint(msg.Number, 10)),
@@ -220,4 +200,17 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 		NumCanPurchase:  numCanPurchase,
 	}, nil
 
+}
+
+func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	if k.authority != req.Authority {
+		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.SetParams(ctx, req.Params); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUpdateParamsResponse{}, nil
 }

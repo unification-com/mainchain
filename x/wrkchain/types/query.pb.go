@@ -9,8 +9,8 @@ import (
 	_ "github.com/cosmos/cosmos-proto"
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -644,6 +644,7 @@ type QueryClient interface {
 	WrkChainBlock(ctx context.Context, in *QueryWrkChainBlockRequest, opts ...grpc.CallOption) (*QueryWrkChainBlockResponse, error)
 	// WrkChainsFiltered queries all wrkchain metadata for given search parameters
 	WrkChainsFiltered(ctx context.Context, in *QueryWrkChainsFilteredRequest, opts ...grpc.CallOption) (*QueryWrkChainsFilteredResponse, error)
+	// WrkChainStorage queries wrkchain storage for for given wrkchain ID
 	WrkChainStorage(ctx context.Context, in *QueryWrkChainStorageRequest, opts ...grpc.CallOption) (*QueryWrkChainStorageResponse, error)
 }
 
@@ -710,6 +711,7 @@ type QueryServer interface {
 	WrkChainBlock(context.Context, *QueryWrkChainBlockRequest) (*QueryWrkChainBlockResponse, error)
 	// WrkChainsFiltered queries all wrkchain metadata for given search parameters
 	WrkChainsFiltered(context.Context, *QueryWrkChainsFilteredRequest) (*QueryWrkChainsFilteredResponse, error)
+	// WrkChainStorage queries wrkchain storage for for given wrkchain ID
 	WrkChainStorage(context.Context, *QueryWrkChainStorageRequest) (*QueryWrkChainStorageResponse, error)
 }
 

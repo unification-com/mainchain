@@ -4,6 +4,8 @@ package mainchain.beacon.v1;
 import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
+import "amino/amino.proto";
+import "mainchain/beacon/v1/beacon.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
@@ -20,6 +22,11 @@ service Msg {
   // PurchaseBeaconStateStorage defines the method to purchase more state storage
   rpc PurchaseBeaconStateStorage(MsgPurchaseBeaconStateStorage)
       returns (MsgPurchaseBeaconStateStorageResponse);
+
+  // UpdateParams defines an operation for updating the x/beacon module
+  // parameters.
+  // Since: cosmos-sdk 0.47
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 
 }
 
@@ -69,6 +76,7 @@ message MsgRecordBeaconTimestampResponse {
   uint64 timestamp_id = 2;
 }
 
+// MsgPurchaseBeaconStateStorage represents a message to purchase more beacon storage
 message MsgPurchaseBeaconStateStorage {
   option (cosmos.msg.v1.signer) = "owner";
 
@@ -85,6 +93,7 @@ message MsgPurchaseBeaconStateStorage {
   string owner = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
+// MsgPurchaseBeaconStateStorageResponse defines the Msg/PurchaseBeaconStateStorage response type.
 message MsgPurchaseBeaconStateStorageResponse {
   // beacon_id is the id of the beacon the storage is being purchased for
   uint64 beacon_id = 1;
@@ -93,3 +102,24 @@ message MsgPurchaseBeaconStateStorageResponse {
   // num_can_purchase is the number of remaining slots available for purchase
   uint64 num_can_purchase = 3;
 }
+
+// MsgUpdateParams is the Msg/UpdateParams request type.
+//
+// Since: cosmos-sdk 0.47
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name)           = "mainchain/x/beacon/MsgUpdateParams";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // params defines the x/beacon parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+};
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+//
+// Since: cosmos-sdk 0.47
+message MsgUpdateParamsResponse {};

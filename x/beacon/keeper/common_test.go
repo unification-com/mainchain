@@ -2,9 +2,9 @@ package keeper_test
 
 import (
 	"encoding/hex"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/unification-com/mainchain/x/beacon/types"
 	"math/rand"
 	"time"
@@ -44,8 +44,7 @@ func BeaconEqual(wcA types.Beacon, wcB types.Beacon) bool {
 	return wcA == wcB
 }
 
-//
-//// ParamsEqual checks params are equal
+// // ParamsEqual checks params are equal
 func ParamsEqual(paramsA, paramsB types.Params) bool {
 	return paramsA == paramsB
 }

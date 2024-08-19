@@ -46,6 +46,8 @@ var (
 	// SpentEFUNDAddressKeyPrefix prefix for address keys - used to store a tally of used eFUND for an account
 	SpentEFUNDAddressKeyPrefix = []byte{0x06}
 
+	ParamsKey = []byte{0x07}
+
 	TotalSpentEFUNDKey = []byte{0x98}
 	TotalLockedUndKey  = []byte{0x99}
 )

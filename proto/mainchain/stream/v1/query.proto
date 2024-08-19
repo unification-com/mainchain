@@ -1,0 +1,178 @@
+syntax = "proto3";
+package mainchain.stream.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "amino/amino.proto";
+import "mainchain/stream/v1/params.proto";
+import "mainchain/stream/v1/stream.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/stream/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/params";
+  }
+
+  // CalculateFlowRate can be used to calculate a flow rate (coins per second) to be used when creating/updating a stream
+  rpc CalculateFlowRate(QueryCalculateFlowRateRequest) returns (QueryCalculateFlowRateResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/calculate_flow_Rate";
+  }
+
+  // Streams queries all Streams.
+  rpc Streams(QueryStreamsRequest) returns (QueryStreamsResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/all";
+  }
+
+  // AllStreamsForReceiver queries all Streams for a given receiver address
+  rpc AllStreamsForReceiver(QueryAllStreamsForReceiverRequest) returns (QueryAllStreamsForReceiverResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/receiver/{receiver_addr}";
+  }
+
+  // StreamByReceiverSender queries a stream for a given receiver and sender pair
+  rpc StreamByReceiverSender(QueryStreamByReceiverSenderRequest) returns (QueryStreamByReceiverSenderResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}";
+  }
+
+  // StreamReceiverSenderCurrentFlow queries a stream by the given receiver/sender pair and returns the current flow data
+  rpc StreamReceiverSenderCurrentFlow(QueryStreamReceiverSenderCurrentFlowRequest) returns (QueryStreamReceiverSenderCurrentFlowResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}/current_flow";
+  }
+
+  // AllStreamsForSender queries all Streams for a given sender address
+  rpc AllStreamsForSender(QueryAllStreamsForSenderRequest) returns (QueryAllStreamsForSenderResponse) {
+    option (google.api.http).get = "/mainchain/stream/v1/streams/sender/{sender_addr}";
+  }
+
+}
+
+// StreamResult contains data about a stream
+message StreamResult {
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender is the wallet making the update
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // stream is the stream data
+  Stream stream = 3;
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryCalculateFlowRateRequest is the request type for the Query/CalculateFlowRate RPC method
+message QueryCalculateFlowRateRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+  // coin is the coin to be used in the calculation, e.g. 10000000000nund. This is the total amount to be paid over
+  // the specified duration
+  string coin = 1;
+  // period is the enumerated value of a period to be used in the calculation, e.g. month = 6
+  StreamPeriod period = 2;
+  // duration is the number of periods to be used in the calculation, e.g. 2 = 2 months
+  uint64 duration = 3;
+}
+
+// QueryCalculateFlowRateResponse is the response type for the Query/CalculateFlowRate RPC method
+message QueryCalculateFlowRateResponse {
+
+  // coin is the coin used in the calculation
+  cosmos.base.v1beta1.Coin coin = 1 [ (gogoproto.nullable) = false ];
+  // period is the enumerated value of a period used in the calculation, e.g. month = 6
+  StreamPeriod period = 2;
+  // duration is the number of periods used in the calculation, e.g. 2 = 2 months
+  uint64 duration = 3;
+  // seconds is the calculated number of seconds for the stream (seconds in period * duration)
+  uint64 seconds = 4;
+  // flow_rate is the calculated rate of coins per second, in the lowest denomination - e.g. nund
+  int64 flow_rate = 5;
+}
+
+// QueryStreamsRequest is the request type for the Query/Streams RPC method
+message QueryStreamsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryStreamsResponse is the response type for the Query/Streams RPC method
+message QueryStreamsResponse {
+  // streams is the list of all streams
+  repeated StreamResult streams = 1;
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse                pagination = 2;
+}
+
+// QueryAllStreamsForReceiverRequest is the request type for the Query/AllStreamsForReceiver RPC method
+message QueryAllStreamsForReceiverRequest {
+  // receiver_addr is the receiver wallet address being queried
+  string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // pagination is the pagination parameters for the request
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryAllStreamsForReceiverResponse is the response type for the Query/AllStreamsForReceiver RPC method
+message QueryAllStreamsForReceiverResponse {
+  // receiver_addr is the receiver wallet address being queried
+  string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // streams is the list of all streams
+  repeated StreamResult streams = 2;
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+}
+
+// QueryStreamByReceiverSenderRequest is the request type for the Query/StreamByReceiverSender RPC method
+message QueryStreamByReceiverSenderRequest {
+  // receiver_addr is the receiver wallet address being queried
+  string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender_addr is the sender wallet address being queried
+  string sender_addr = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// QueryStreamByReceiverSenderResponse is the response type for the Query/StreamByReceiverSender RPC method
+message QueryStreamByReceiverSenderResponse {
+  // stream is the StreamResult
+  StreamResult stream = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+}
+
+// QueryStreamReceiverSenderCurrentFlowRequest is the request type for the Query/StreamReceiverSenderCurrentFlow RPC method
+message QueryStreamReceiverSenderCurrentFlowRequest {
+  // receiver_addr is the receiver wallet address being queried
+  string receiver_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender_addr is the sender wallet address being queried
+  string sender_addr = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// QueryStreamReceiverSenderCurrentFlowResponse is the response type for the Query/StreamReceiverSenderCurrentFlow RPC method
+message QueryStreamReceiverSenderCurrentFlowResponse {
+  // configured_flow_rate is the flow rate configured in the stream
+  int64 configured_flow_rate = 1;
+  // current_flow_rate is the actual flow rate. This will be zero if the depositZeroTime has passed, or deposit is zero
+  int64 current_flow_rate = 2;
+}
+
+// QueryAllStreamsForSenderRequest is the request type for the Query/AllStreamsForSender RPC method
+message QueryAllStreamsForSenderRequest {
+  // sender_addr is the receiver wallet address being queried
+  string sender_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // pagination is the pagination parameters for the request
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryAllStreamsForSenderResponse is the response type for the Query/AllStreamsForSender RPC method
+message QueryAllStreamsForSenderResponse {
+  // sender_addr is the receiver wallet address being queried
+  string sender_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // streams is the list of all streams
+  repeated StreamResult streams = 2;
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+}

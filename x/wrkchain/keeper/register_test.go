@@ -1,9 +1,9 @@
 package keeper_test
 
 import (
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 	"testing"
 	"time"
@@ -12,7 +12,7 @@ import (
 // Tests for Highest WRKChain ID
 
 func TestSetGetHighestWRKChainID(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	for i := uint64(1); i <= 1000; i++ {
@@ -24,7 +24,7 @@ func TestSetGetHighestWRKChainID(t *testing.T) {
 }
 
 //func TestSetGetHighestBeaconIDNotSet(t *testing.T) {
-//	app := test_helpers.Setup(t, true)
+//	app := simapp.Setup(t, true)
 //	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
 //
 //	_, err := app.WrkchainKeeper.GetHighestWrkChainID(ctx)
@@ -34,18 +34,18 @@ func TestSetGetHighestWRKChainID(t *testing.T) {
 // Tests for Get/Set WRKChains
 
 func TestSetGetWrkChain(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	testAddrs := simapp.GenerateRandomTestAccounts(10)
 
 	wcID := uint64(1)
 	for _, addr := range testAddrs {
 
 		wc := types.WrkChain{
 			WrkchainId: wcID,
-			Moniker:    test_helpers.GenerateRandomString(12),
-			Name:       test_helpers.GenerateRandomString(20),
-			Genesis:    test_helpers.GenerateRandomString(32),
+			Moniker:    simapp.GenerateRandomString(12),
+			Name:       simapp.GenerateRandomString(20),
+			Genesis:    simapp.GenerateRandomString(32),
 			Type:       "tendemrint",
 			RegTime:    uint64(time.Now().Unix()),
 			Owner:      addr.String(),
@@ -79,16 +79,16 @@ func TestSetGetWrkChain(t *testing.T) {
 // Tests for Registering a new WRKChain
 
 func TestRegisterWrkChain(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	testAddrs := simapp.GenerateRandomTestAccounts(10)
 
 	i, _ := app.WrkchainKeeper.GetHighestWrkChainID(ctx)
 
 	for _, addr := range testAddrs {
-		name := test_helpers.GenerateRandomString(128)
-		moniker := test_helpers.GenerateRandomString(64)
-		genesisHash := test_helpers.GenerateRandomString(66)
+		name := simapp.GenerateRandomString(128)
+		moniker := simapp.GenerateRandomString(64)
+		genesisHash := simapp.GenerateRandomString(66)
 
 		expectedWc := types.WrkChain{}
 		expectedWc.Owner = addr.String()
@@ -126,14 +126,14 @@ func TestRegisterWrkChain(t *testing.T) {
 }
 
 func TestHighestWrkChainIdAfterRegister(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	testAddrs := simapp.GenerateRandomTestAccounts(10)
 
 	for i := uint64(1); i < 1000; i++ {
-		name := test_helpers.GenerateRandomString(20)
-		moniker := test_helpers.GenerateRandomString(12)
-		genesisHash := test_helpers.GenerateRandomString(32)
+		name := simapp.GenerateRandomString(20)
+		moniker := simapp.GenerateRandomString(12)
+		genesisHash := simapp.GenerateRandomString(32)
 		owner := testAddrs[1]
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", owner)
@@ -146,14 +146,14 @@ func TestHighestWrkChainIdAfterRegister(t *testing.T) {
 }
 
 func TestWrkChainIsRegisteredAfterRegister(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	testAddrs := simapp.GenerateRandomTestAccounts(10)
 
 	for i := uint64(1); i < 1000; i++ {
-		name := test_helpers.GenerateRandomString(20)
-		moniker := test_helpers.GenerateRandomString(12)
-		genesisHash := test_helpers.GenerateRandomString(32)
+		name := simapp.GenerateRandomString(20)
+		moniker := simapp.GenerateRandomString(12)
+		genesisHash := simapp.GenerateRandomString(32)
 		owner := testAddrs[1]
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", owner)
@@ -165,16 +165,16 @@ func TestWrkChainIsRegisteredAfterRegister(t *testing.T) {
 }
 
 func TestGetWrkChainFilter(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	testAddrs := simapp.GenerateRandomTestAccounts(10)
 	numToReg := 100
 	lastMoniker := ""
 
 	for i := 0; i < numToReg; i++ {
-		name := test_helpers.GenerateRandomString(20)
-		moniker := test_helpers.GenerateRandomString(12)
-		genesisHash := test_helpers.GenerateRandomString(32)
+		name := simapp.GenerateRandomString(20)
+		moniker := simapp.GenerateRandomString(12)
+		genesisHash := simapp.GenerateRandomString(32)
 		owner := testAddrs[1]
 
 		_, _ = app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", owner)

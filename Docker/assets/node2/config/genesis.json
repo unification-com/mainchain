@@ -1,6 +1,7 @@
 {
   "app_hash": "",
   "app_state": {
+    "07-tendermint": null,
     "auth": {
       "accounts": [
         {
@@ -233,6 +234,7 @@
       "index": "1",
       "owners": []
     },
+    "consensus": null,
     "crisis": {
       "constant_fee": {
         "denom": "nund",
@@ -299,22 +301,25 @@
       "deposits": [],
       "votes": [],
       "proposals": [],
-      "deposit_params": {
+      "deposit_params": null,
+      "voting_params": null,
+      "tally_params": null,
+      "params": {
         "min_deposit": [
           {
             "denom": "nund",
-            "amount": "10000000000"
+            "amount": "10000000"
           }
         ],
-        "max_deposit_period": "300s"
-      },
-      "voting_params": {
-        "voting_period": "300s"
-      },
-      "tally_params": {
+        "max_deposit_period": "300s",
+        "voting_period": "300s",
         "quorum": "0.334000000000000000",
         "threshold": "0.500000000000000000",
-        "veto_threshold": "0.334000000000000000"
+        "veto_threshold": "0.334000000000000000",
+        "min_initial_deposit_ratio": "0.000000000000000000",
+        "burn_vote_quorum": false,
+        "burn_proposal_deposit_prevote": false,
+        "burn_vote_veto": true
       }
     },
     "ibc": {
@@ -379,13 +384,20 @@
       "redelegations": [],
       "exported": false
     },
+    "stream": {
+      "params": {
+        "validator_fee": "0.010000000000000000"
+      },
+      "streams": []
+    },
     "transfer": {
       "port_id": "transfer",
       "denom_traces": [],
       "params": {
         "send_enabled": true,
         "receive_enabled": true
-      }
+      },
+      "total_escrowed": []
     },
     "upgrade": {},
     "vesting": {},

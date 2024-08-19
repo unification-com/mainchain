@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"strconv"
 	"time"
 
@@ -60,13 +61,6 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypeRegisterBeacon,
 			sdk.NewAttribute(types.AttributeKeyBeaconId, strconv.FormatUint(beaconID, 10)),
 			sdk.NewAttribute(types.AttributeKeyBeaconMoniker, msg.Moniker),
@@ -114,13 +108,6 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 	}
 
 	defer telemetry.IncrCounter(1, types.ModuleName, types.RecordAction)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -186,13 +173,6 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypePurchaseStorage,
 			sdk.NewAttribute(types.AttributeKeyBeaconId, strconv.FormatUint(msg.BeaconId, 10)),
 			sdk.NewAttribute(types.AttributeKeyBeaconStorageNumPurchased, strconv.FormatUint(msg.Number, 10)),
@@ -207,4 +187,17 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 		NumCanPurchase:  numCanPurchase,
 	}, nil
 
+}
+
+func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	if k.authority != req.Authority {
+		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.SetParams(ctx, req.Params); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUpdateParamsResponse{}, nil
 }

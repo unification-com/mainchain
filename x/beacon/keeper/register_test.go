@@ -1,18 +1,19 @@
 package keeper_test
 
 import (
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	simapp "github.com/unification-com/mainchain/app"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/unification-com/mainchain/app/test_helpers"
+
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
 // Tests for Highest BEACON ID
 
 func TestSetGetHighestBeaconID(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	for i := uint64(1); i <= 1000; i++ {
@@ -26,15 +27,15 @@ func TestSetGetHighestBeaconID(t *testing.T) {
 // Tests for Get/Set BEACONs
 
 func TestSetGetBeacon(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	testAddrs := simapp.GenerateRandomTestAccounts(10)
 
 	bID := uint64(1)
 	for _, addr := range testAddrs {
 
-		moniker := test_helpers.GenerateRandomString(12)
-		name := test_helpers.GenerateRandomString(20)
+		moniker := simapp.GenerateRandomString(12)
+		name := simapp.GenerateRandomString(20)
 
 		b := types.Beacon{}
 		b.Owner = addr.String()
@@ -73,15 +74,15 @@ func TestSetGetBeacon(t *testing.T) {
 // Tests for Registering a new BEACON
 
 func TestRegisterBeacon(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(10)
+	testAddrs := simapp.GenerateRandomTestAccounts(10)
 
 	i, _ := app.BeaconKeeper.GetHighestBeaconID(ctx)
 
 	for _, addr := range testAddrs {
-		name := test_helpers.GenerateRandomString(128)
-		moniker := test_helpers.GenerateRandomString(64)
+		name := simapp.GenerateRandomString(128)
+		moniker := simapp.GenerateRandomString(64)
 
 		expectedB := types.Beacon{}
 		expectedB.Owner = addr.String()
@@ -115,13 +116,13 @@ func TestRegisterBeacon(t *testing.T) {
 }
 
 func TestHighestBeaconIdAfterRegister(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+	testAddrs := simapp.GenerateRandomTestAccounts(1)
 
 	for i := uint64(1); i < 1000; i++ {
-		name := test_helpers.GenerateRandomString(20)
-		moniker := test_helpers.GenerateRandomString(12)
+		name := simapp.GenerateRandomString(20)
+		moniker := simapp.GenerateRandomString(12)
 		owner := testAddrs[0].String()
 		expectedB := types.Beacon{}
 		expectedB.Owner = owner
@@ -140,13 +141,13 @@ func TestHighestBeaconIdAfterRegister(t *testing.T) {
 }
 
 func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := test_helpers.GenerateRandomTestAccounts(1)
+	testAddrs := simapp.GenerateRandomTestAccounts(1)
 
 	for i := uint64(1); i < 1000; i++ {
-		name := test_helpers.GenerateRandomString(20)
-		moniker := test_helpers.GenerateRandomString(12)
+		name := simapp.GenerateRandomString(20)
+		moniker := simapp.GenerateRandomString(12)
 		owner := testAddrs[0].String()
 
 		expectedB := types.Beacon{}
@@ -169,7 +170,7 @@ func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
 }
 
 func TestGetBeaconFilter(t *testing.T) {
-	app := test_helpers.Setup(t, false)
+	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	numToReg := 100
 	lastMoniker := ""

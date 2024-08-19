@@ -1,15 +1,18 @@
 package ante_test
 
 import (
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	simapp "github.com/unification-com/mainchain/app"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/unification-com/mainchain/app/test_helpers"
 	"github.com/unification-com/mainchain/x/enterprise/ante"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
@@ -30,10 +33,11 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
@@ -67,7 +71,7 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 	msg := wrkchaintypes.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
@@ -75,10 +79,11 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 }
 
 func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
@@ -105,17 +110,18 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 	msg := wrkchaintypes.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx, false)
 	require.NoError(t, err)
 }
 
 func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
@@ -141,7 +147,7 @@ func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
 	msg := wrkchaintypes.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx, false)
 	require.NoError(t, err)

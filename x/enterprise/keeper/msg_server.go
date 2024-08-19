@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -56,12 +57,6 @@ func (k msgServer) UndPurchaseOrder(goCtx context.Context, msg *types.MsgUndPurc
 
 	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseAction)
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeRaisePurchaseOrder,
@@ -127,13 +122,6 @@ func (k msgServer) ProcessUndPurchaseOrder(goCtx context.Context, msg *types.Msg
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypeProcessPurchaseOrderDecision,
 			sdk.NewAttribute(types.AttributeKeyPurchaseOrderID, strconv.FormatUint(msg.PurchaseOrderId, 10)),
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
@@ -175,13 +163,6 @@ func (k msgServer) WhitelistAddress(goCtx context.Context, msg *types.MsgWhiteli
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		),
-	)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
 			types.EventTypeWhitelistAddress,
 			sdk.NewAttribute(types.AttributeWhitelistAddress, msg.Address),
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
@@ -190,4 +171,17 @@ func (k msgServer) WhitelistAddress(goCtx context.Context, msg *types.MsgWhiteli
 	)
 
 	return &types.MsgWhitelistAddressResponse{}, nil
+}
+
+func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	if k.authority != req.Authority {
+		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := k.SetParams(ctx, req.Params); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUpdateParamsResponse{}, nil
 }

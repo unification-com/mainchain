@@ -2,10 +2,12 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	govcodec "github.com/cosmos/cosmos-sdk/x/gov/codec"
 )
 
 // RegisterLegacyAminoCodec registers the necessary x/enterprise interfaces and concrete types
@@ -24,6 +26,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&WhitelistAddresses{}, "enterprise/WhitelistAddresses", nil)
 	cdc.RegisterConcrete(&Params{}, "enterprise/Params", nil)
 	cdc.RegisterConcrete(&GenesisState{}, "enterprise/GenesisState", nil)
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/enterprise/MsgUpdateParams")
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
@@ -31,6 +34,7 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&MsgUndPurchaseOrder{},
 		&MsgProcessUndPurchaseOrder{},
 		&MsgWhitelistAddress{},
+		&MsgUpdateParams{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
@@ -51,5 +55,8 @@ var (
 func init() {
 	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
-	amino.Seal()
+
+	// Register all Amino interfaces and concrete types on the authz  and gov Amino codec so that this can later be
+	// used to properly serialize MsgSubmitProposal instances
+	RegisterLegacyAminoCodec(govcodec.Amino)
 }

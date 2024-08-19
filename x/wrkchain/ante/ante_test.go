@@ -2,17 +2,20 @@ package ante_test
 
 import (
 	"fmt"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/unification-com/mainchain/app/test_helpers"
+	simapp "github.com/unification-com/mainchain/app"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 	"github.com/unification-com/mainchain/x/wrkchain/ante"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 const TestChainID = "und-unit-test-chain"
@@ -30,15 +33,16 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, test_helpers.TestDenomination, 200, 300))
+	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualFeeAmt := wrkParams.FeeRegister
@@ -52,7 +56,7 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, int64(actualFeeAmt)))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", addr)
 
@@ -65,15 +69,16 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, test_helpers.TestDenomination, 200, 300))
+	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -92,7 +97,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err := antehandler(ctx, tx, false)
 
@@ -107,7 +112,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt1))
 
-	tx1, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err1 := antehandler(ctx, tx1, false)
 
@@ -124,7 +129,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
 	fee2 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt2))
 
-	tx2, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err2 := antehandler(ctx, tx2, false)
 
@@ -138,7 +143,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	expectedFees3 := (actualPurchaseAmt * numToPurchase) + actualRegFeeAmt + actualRecFeeAmt
 	multiFees := feeInt + feeInt1 + feeInt2
 	fee3 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, multiFees))
-	tx3, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx3, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err3 := antehandler(ctx, tx3, false)
 
@@ -150,15 +155,16 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, test_helpers.TestDenomination, 200, 300))
+	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -176,7 +182,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err := antehandler(ctx, tx, false)
 
@@ -191,7 +197,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt1))
 
-	tx1, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err1 := antehandler(ctx, tx1, false)
 
@@ -208,7 +214,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
 	fee2 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt2))
 
-	tx2, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err2 := antehandler(ctx, tx2, false)
 
@@ -222,7 +228,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	expectedFees3 := (actualPurchaseAmt * numToPurchase) + actualRegFeeAmt + actualRecFeeAmt
 	multiFees := feeInt + feeInt1 + feeInt2
 	fee3 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, multiFees))
-	tx3, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx3, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err3 := antehandler(ctx, tx3, false)
 
@@ -234,15 +240,16 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, test_helpers.TestDenomination, 200, 300))
+	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -260,7 +267,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err := antehandler(ctx, tx, false)
 
@@ -275,7 +282,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt1))
 
-	tx1, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err1 := antehandler(ctx, tx1, false)
 
@@ -288,7 +295,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
 	fee2 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt2))
 
-	tx2, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err2 := antehandler(ctx, tx2, false)
 
@@ -301,7 +308,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
 	fee3 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, multiFees))
-	tx3, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx3, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err3 := antehandler(ctx, tx3, false)
 
@@ -313,10 +320,11 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
@@ -347,7 +355,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, actualRegFeeAmt, actualFeeDenom)
@@ -364,7 +372,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt1))
 
-	tx1, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, actualRecFeeAmt, actualFeeDenom)
@@ -382,7 +390,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
 	fee2 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt2))
 
-	tx2, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, feeInt2, actualFeeDenom)
@@ -397,7 +405,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
 	fee3 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, multiFees))
-	tx3, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx3, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err3 := antehandler(ctx, tx3, false)
 
@@ -409,10 +417,11 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
@@ -450,7 +459,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, actualRegFeeAmt, actualFeeDenom)
@@ -467,7 +476,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt1))
 
-	tx1, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, actualRecFeeAmt, actualFeeDenom)
@@ -485,7 +494,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
 	fee2 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt2))
 
-	tx2, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, feeInt2, actualFeeDenom)
@@ -500,7 +509,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
 	fee3 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, multiFees))
-	tx3, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx3, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err3 := antehandler(ctx, tx3, false)
 
@@ -512,10 +521,11 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 }
 
 func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
@@ -546,7 +556,7 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx, false)
 	require.NoError(t, err)
@@ -556,7 +566,7 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt1))
 
-	tx1, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx1, false)
 	require.NoError(t, err)
@@ -584,7 +594,7 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
 	fee2 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt2))
 
-	tx2, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx2, false)
 	require.NoError(t, err)
@@ -592,17 +602,18 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
 	fee3 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, multiFees))
-	tx3, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx3, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx3, false)
 	require.NoError(t, err)
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
@@ -638,7 +649,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	msg := types.NewMsgRegisterWrkChain("test", "hash", "Test", "geth", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx, false)
 	require.NoError(t, err)
@@ -648,7 +659,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	msg1 := types.NewMsgRecordWrkChainBlock(1, 1, "test", "test", "", "", "", addr)
 	fee1 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt1))
 
-	tx1, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx1, false)
 	require.NoError(t, err)
@@ -675,7 +686,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	msg2 := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
 	fee2 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt2))
 
-	tx2, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx2, false)
 	require.NoError(t, err)
@@ -683,17 +694,18 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
 	fee3 := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, multiFees))
-	tx3, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx3, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg, msg1, msg2}, fee3, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx3, false)
 	require.NoError(t, err)
 }
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
-	app := test_helpers.Setup(t, true)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	app := simapp.Setup(t, true)
 	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	test_helpers.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := test_helpers.GetAppEncodingConfig()
+	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	encodingConfig := simapp.MakeEncodingConfig()
 	txGen := encodingConfig.TxConfig
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
@@ -703,7 +715,7 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	actualPurchaseAmt := wcParams.FeePurchaseStorage
 	actualFeeDenom := wcParams.Denom
 	startInStateLimit := uint64(100)
-	numToPurchase := test_helpers.TestMaxStorage - startInStateLimit + 1
+	numToPurchase := simapp.TestMaxStorage - startInStateLimit + 1
 	wcId := uint64(1)
 
 	privK := ed25519.GenPrivKey()
@@ -739,12 +751,12 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	msg := types.NewMsgPurchaseWrkChainStateStorage(1, numToPurchase, addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, feeInt))
 
-	tx, _ := test_helpers.GenTx(txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err = antehandler(ctx, tx, false)
 
 	expectedErr := sdkerrors.Wrapf(types.ErrExceedsMaxStorage,
-		"num slots exceeds max for wrkchain %d. Max can purchase: %d. Want in Msgs: %d", wcId, test_helpers.TestMaxStorage-startInStateLimit, numToPurchase)
+		"num slots exceeds max for wrkchain %d. Max can purchase: %d. Want in Msgs: %d", wcId, simapp.TestMaxStorage-startInStateLimit, numToPurchase)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)

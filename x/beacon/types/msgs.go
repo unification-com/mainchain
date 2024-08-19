@@ -13,9 +13,14 @@ const (
 	PurchaseStorageAction = "purchase_beacon_storage"
 )
 
-// --- Register a BEACON Msg ---
+var (
+	_ sdk.Msg = &MsgRegisterBeacon{}
+	_ sdk.Msg = &MsgPurchaseBeaconStateStorage{}
+	_ sdk.Msg = &MsgRecordBeaconTimestamp{}
+	_ sdk.Msg = &MsgUpdateParams{}
+)
 
-var _ sdk.Msg = &MsgRegisterBeacon{}
+// --- Register a BEACON Msg ---
 
 // NewMsgRegisterBeacon is a constructor function for MsgRegisterBeacon
 func NewMsgRegisterBeacon(moniker string, beaconName string, owner sdk.AccAddress) *MsgRegisterBeacon {
@@ -69,8 +74,6 @@ func (msg MsgRegisterBeacon) GetSigners() []sdk.AccAddress {
 }
 
 // --- Record a BEACON timestamp hash Msg ---
-
-var _ sdk.Msg = &MsgRecordBeaconTimestamp{}
 
 // NewMsgRecordBeaconTimestamp is a constructor function for MsgRecordBeaconTimestamp
 func NewMsgRecordBeaconTimestamp(
@@ -131,8 +134,6 @@ func (msg MsgRecordBeaconTimestamp) GetSigners() []sdk.AccAddress {
 
 // --- Purchase state storage Msg ---
 
-var _ sdk.Msg = &MsgPurchaseBeaconStateStorage{}
-
 // NewMsgRecordBeaconTimestamp is a constructor function for MsgRecordBeaconTimestamp
 func NewMsgPurchaseBeaconStateStorage(
 	beaconId uint64,
@@ -180,4 +181,31 @@ func (msg MsgPurchaseBeaconStateStorage) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{owner}
+}
+
+// --- Modify Params Msg Type ---
+
+// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
+// the expected signer needs to sign.
+func (m MsgUpdateParams) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// GetSigners returns the expected signers for a MsgUpdateParams message.
+func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Authority)
+	return []sdk.AccAddress{addr}
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgUpdateParams) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
+		return sdkerrors.Wrap(err, "invalid authority address")
+	}
+
+	if err := m.Params.Validate(); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,0 +1,176 @@
+syntax = "proto3";
+package mainchain.stream.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "amino/amino.proto";
+import "mainchain/stream/v1/params.proto";
+
+option go_package = "github.com/unification-com/mainchain/x/stream/types";
+
+// Msg defines the Msg service.
+service Msg {
+
+  // CreateStream defines a method to create a new stream
+  rpc CreateStream(MsgCreateStream) returns (MsgCreateStreamResponse);
+
+  // ClaimStream defines a method for a receiver to claim from a stream using the sender and receiver
+  rpc ClaimStream(MsgClaimStream) returns (MsgClaimStreamResponse);
+
+  // TopUpDeposit defines a method for senders to top up their streams
+  rpc TopUpDeposit(MsgTopUpDeposit) returns (MsgTopUpDepositResponse);
+
+  // UpdateFlowRate defines a method to update a stream flow rate
+  rpc UpdateFlowRate(MsgUpdateFlowRate) returns (MsgUpdateFlowRateResponse);
+
+  // CancelStream defines a method to cancel a stream
+  rpc CancelStream(MsgCancelStream) returns (MsgCancelStreamResponse);
+
+  // UpdateParams defines an operation for updating the x/stream module
+  // parameters.
+  // Since: cosmos-sdk 0.47
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+}
+
+// MsgCreateStream creates a new stream
+message MsgCreateStream {
+  option (cosmos.msg.v1.signer) = "sender";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender is the address of the stream creator, sending the stream
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // deposit is the amount being sent to deposit for the stream
+  cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
+  // flow_rate is the rate of nund per second
+  int64 flow_rate = 4;
+}
+
+// MsgCreateStreamResponse is the response for MsgCreateStream
+message MsgCreateStreamResponse {
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender is the address of the stream creator, sending the stream
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // deposit is the amount being sent to deposit for the stream
+  cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
+  // flow_rate is the rate of nund per second
+  int64 flow_rate = 4;
+}
+
+// MsgClaimStream claims pending payments form a stream using the sender and receiver addresses
+message MsgClaimStream {
+  option (cosmos.msg.v1.signer) = "receiver";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // sender is sender wallet of the stream being claimed
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // receiver is the wallet making the claim
+  string receiver = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgClaimStreamResponse {
+  // total_claimed is the total value of the claim
+  cosmos.base.v1beta1.Coin total_claimed = 2 [ (gogoproto.nullable) = false ];
+  // stream_payment is the amount received by the receiver wallet
+  cosmos.base.v1beta1.Coin stream_payment = 3 [ (gogoproto.nullable) = false ];
+  // validator_fee is the amount sent to validators
+  cosmos.base.v1beta1.Coin validator_fee = 4 [ (gogoproto.nullable) = false ];
+  // remaining_deposit is the amount of deposit remaining in the stream
+  cosmos.base.v1beta1.Coin remaining_deposit = 5 [ (gogoproto.nullable) = false ];
+}
+
+// MsgTopUpDeposit tops up deposits in an existing stream
+message MsgTopUpDeposit {
+  option (cosmos.msg.v1.signer) = "sender";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender is the wallet making the deposit
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // deposit is the amount being sent to deposit for the stream
+  cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
+}
+
+// MsgTopUpDepositResponse is the response for MsgTopUpDeposit
+message MsgTopUpDepositResponse {
+  // deposit_amount is the amount deposited
+  cosmos.base.v1beta1.Coin deposit_amount = 2 [ (gogoproto.nullable) = false ];
+  // current_deposit is the total current deposit in the stream
+  cosmos.base.v1beta1.Coin current_deposit = 3 [ (gogoproto.nullable) = false ];
+  // deposit_zero_time is the timestamp for when the current deposited amount will run out
+  google.protobuf.Timestamp deposit_zero_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"deposit_zero_time\""
+  ];
+}
+
+// MsgUpdateFlowRate updates a stream's flow rate
+message MsgUpdateFlowRate{
+  option (cosmos.msg.v1.signer) = "sender";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender is the wallet making the update
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // flow_rate is the rate of nund per second
+  int64 flow_rate = 3;
+}
+
+// MsgUpdateFlowRateResponse is the response for MsgUpdateFlowRate
+message MsgUpdateFlowRateResponse {
+  // flow_rate is the rate of nund per second
+  int64 flow_rate = 2;
+}
+
+// MsgCancelStream
+message MsgCancelStream {
+  option (cosmos.msg.v1.signer) = "sender";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // receiver is the wallet that will receive stream payments
+  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // sender is the wallet cancelling
+  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// MsgCancelStreamResponse
+message MsgCancelStreamResponse {}
+
+// MsgUpdateParams is the Msg/UpdateParams request type.
+//
+// Since: cosmos-sdk 0.47
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name)           = "mainchain/x/stream/MsgUpdateParams";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // params defines the x/stream parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+};
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+//
+// Since: cosmos-sdk 0.47
+message MsgUpdateParamsResponse {};

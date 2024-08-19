@@ -194,5 +194,34 @@ using, for example, the following `pprof` commands:
 
 ```bash
 make proto-swagger-gen
-make update-swagger-docs
 ```
+
+### Generating CLI Documentation md files
+
+1. edit `cmd/und/main.go`
+
+```go
+import (
+    ...snip
+    // import the doc module
+    "github.com/spf13/cobra/doc"
+    ...snip
+)
+
+func main() {
+    rootCmd, _ := cmd.NewRootCmd()
+
+    // add this block
+    err := doc.GenMarkdownTree(rootCmd, "/tmp/und_docs")
+
+    if err != nil {
+        fmt.Println(err)
+    }
+    // end
+    ...snip
+}
+```
+
+2. Run `make build`
+3. Run `mkdir -p /tmp/und_docs`
+4. Run `./build/und version` (any command will work)

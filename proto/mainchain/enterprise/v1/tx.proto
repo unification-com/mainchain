@@ -36,6 +36,7 @@ message MsgUndPurchaseOrder {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "enterprise/PurchaseUnd";
 
   // purchaser is the address of the account raising the purchase order
   string purchaser = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -52,6 +53,7 @@ message MsgProcessUndPurchaseOrder {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "enterprise/ProcessUndPurchaseOrder";
 
   // purchase_order_id is the ID of the purchase order being raised
   uint64 purchase_order_id = 1 [ (gogoproto.jsontag) = "id", (gogoproto.moretags) = "yaml:\"id\"" ];
@@ -71,6 +73,7 @@ message MsgWhitelistAddress {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "enterprise/WhitelistAddress";
 
   // address is the address for which the action is being executed
   string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];

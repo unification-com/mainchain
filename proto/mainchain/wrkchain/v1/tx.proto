@@ -35,17 +35,18 @@ message MsgRegisterWrkChain {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "wrkchain/RegisterWrkChain";
 
   // moniker is a short identifier for a wrkchain
-  string moniker = 2;
+  string moniker = 1;
   // name is a long name for a wrkchain
-  string name = 3;
+  string name = 2;
   // genesis_hash is a hash of the genesis block of the wrkchain
-  string genesis_hash = 4 [(gogoproto.jsontag) = "genesis", (gogoproto.moretags) = "yaml:\"genesis\""];
+  string genesis_hash = 3 [(gogoproto.jsontag) = "genesis", (gogoproto.moretags) = "yaml:\"genesis\""];
   // base_type is the type of wrkchain, e.g. geth, cosmos etc.
-  string base_type = 5 [(gogoproto.jsontag) = "type", (gogoproto.moretags) = "yaml:\"type\""];
+  string base_type = 4 [(gogoproto.jsontag) = "type", (gogoproto.moretags) = "yaml:\"type\""];
   // owner is the address of the owner of the wrkchain
-  string owner = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string owner = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 // MsgRegisterWrkChainResponse defines the Msg/RegisterWrkChain response type.
@@ -60,6 +61,7 @@ message MsgRecordWrkChainBlock {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "wrkchain/MsgRecordWrkChainBlock";
 
   // wrkchain_id is the id of the wrkchain the hashes are being submitted for
   uint64 wrkchain_id = 1;
@@ -93,6 +95,7 @@ message MsgPurchaseWrkChainStateStorage {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "wrkchain/PurchaseWrkChainStateStorage";
 
   // wrkchain_id is the id of the wrkchain the storage is being purchased for
   uint64 wrkchain_id = 1;

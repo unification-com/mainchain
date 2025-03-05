@@ -41,6 +41,7 @@ message MsgCreateStream {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "mainchain/x/stream/MsgCreateStream";
 
   // receiver is the wallet that will receive stream payments
   string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -70,6 +71,7 @@ message MsgClaimStream {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "mainchain/x/stream/MsgClaimStream";
 
   // sender is sender wallet of the stream being claimed
   string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -94,6 +96,7 @@ message MsgTopUpDeposit {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "mainchain/x/stream/MsgTopUpDeposit";
 
   // receiver is the wallet that will receive stream payments
   string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -123,6 +126,7 @@ message MsgUpdateFlowRate{
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "mainchain/x/stream/MsgUpdateFlowRate";
 
   // receiver is the wallet that will receive stream payments
   string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -144,6 +148,7 @@ message MsgCancelStream {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
+  option (amino.name) = "mainchain/x/stream/MsgCancelStream";
 
   // receiver is the wallet that will receive stream payments
   string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];

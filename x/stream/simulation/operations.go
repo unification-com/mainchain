@@ -121,6 +121,7 @@ func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 
 		senderAccount := ak.GetAccount(ctx, sender.Address)
 
+		// ToDO - Spendable... no longer implemented in x/bank
 		spendable := bk.SpendableCoin(ctx, senderAccount.GetAddress(), sdk.DefaultBondDenom)
 
 		depositAmnt, err := simtypes.RandPositiveInt(r, spendable.Amount)

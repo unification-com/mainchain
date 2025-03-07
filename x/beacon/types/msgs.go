@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -41,19 +42,19 @@ func (msg MsgRegisterBeacon) Type() string { return RegisterAction }
 func (msg MsgRegisterBeacon) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 
 	if len(msg.Moniker) == 0 || len(msg.Name) == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "moniker and name cannot be empty")
+		return errorsmod.Wrap(ErrMissingData, "moniker and name cannot be empty")
 	}
 
 	if len(msg.Name) > 128 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
 	}
 
 	if len(msg.Moniker) > 64 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
 	}
 
 	return nil
@@ -100,19 +101,19 @@ func (msg MsgRecordBeaconTimestamp) Type() string { return RecordAction }
 func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 	if msg.BeaconId == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
+		return errorsmod.Wrap(ErrMissingData, "id must be greater than zero")
 	}
 	if len(msg.Hash) == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "hash cannot be empty")
+		return errorsmod.Wrap(ErrMissingData, "hash cannot be empty")
 	}
 	if msg.SubmitTime == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "submit time cannot be zero")
+		return errorsmod.Wrap(ErrMissingData, "submit time cannot be zero")
 	}
 	if len(msg.Hash) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "hash too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "hash too big. 66 character limit")
 	}
 
 	return nil
@@ -157,13 +158,13 @@ func (msg MsgPurchaseBeaconStateStorage) Type() string { return PurchaseStorageA
 func (msg MsgPurchaseBeaconStateStorage) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 	if msg.BeaconId == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
+		return errorsmod.Wrap(ErrMissingData, "id must be greater than zero")
 	}
 	if msg.Number == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "number cannot be zero")
+		return errorsmod.Wrap(ErrMissingData, "number cannot be zero")
 	}
 
 	return nil
@@ -200,7 +201,7 @@ func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrap(err, "invalid authority address")
+		return errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if err := m.Params.Validate(); err != nil {

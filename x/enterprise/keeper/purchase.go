@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -14,7 +15,7 @@ func (k Keeper) GetHighestPurchaseOrderID(ctx sdk.Context) (purchaseOrderID uint
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.HighestPurchaseOrderIDKey)
 	if bz == nil {
-		return 0, sdkerrors.Wrap(types.ErrInvalidGenesis, "initial purchase order ID hasn't been set")
+		return 0, errorsmod.Wrap(types.ErrInvalidGenesis, "initial purchase order ID hasn't been set")
 	}
 	// convert from bytes to uint64
 	purchaseOrderID = types.GetPurchaseOrderIDFromBytes(bz)
@@ -249,7 +250,7 @@ func (k Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPur
 // Sets the Purchase Order data
 func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) error {
 	if !types.ValidPurchaseOrderStatus(purchaseOrder.Status) {
-		return sdkerrors.Wrap(types.ErrInvalidStatus, "unable to set purchase order - invalid status")
+		return errorsmod.Wrap(types.ErrInvalidStatus, "unable to set purchase order - invalid status")
 	}
 
 	store := ctx.KVStore(k.storeKey)

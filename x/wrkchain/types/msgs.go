@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -43,26 +44,26 @@ func (msg MsgRegisterWrkChain) Type() string { return RegisterAction }
 func (msg MsgRegisterWrkChain) ValidateBasic() error {
 	ownerAddr, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 
 	if ownerAddr.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner)
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner)
 	}
 	if len(msg.Moniker) == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "Moniker cannot be empty")
+		return errorsmod.Wrap(ErrMissingData, "Moniker cannot be empty")
 	}
 
 	if len(msg.Name) > 128 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
 	}
 
 	if len(msg.Moniker) > 64 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
 	}
 
 	if len(msg.GenesisHash) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "genesis hash too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "genesis hash too big. 66 character limit")
 	}
 
 	return nil
@@ -117,35 +118,35 @@ func (msg MsgRecordWrkChainBlock) Type() string { return RecordAction }
 func (msg MsgRecordWrkChainBlock) ValidateBasic() error {
 	ownerAddr, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 
 	if ownerAddr.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner)
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner)
 	}
 	if msg.WrkchainId == 0 {
-		return sdkerrors.Wrap(ErrInvalidData, "ID must be greater than zero")
+		return errorsmod.Wrap(ErrInvalidData, "ID must be greater than zero")
 	}
 	if len(msg.BlockHash) == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "BlockHash cannot be empty")
+		return errorsmod.Wrap(ErrMissingData, "BlockHash cannot be empty")
 	}
 	if msg.Height == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "Height cannot be zero")
+		return errorsmod.Wrap(ErrMissingData, "Height cannot be zero")
 	}
 	if len(msg.BlockHash) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "block hash too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "block hash too big. 66 character limit")
 	}
 	if len(msg.ParentHash) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "parent hash too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "parent hash too big. 66 character limit")
 	}
 	if len(msg.Hash1) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "hash1 too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "hash1 too big. 66 character limit")
 	}
 	if len(msg.Hash2) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "hash2 too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "hash2 too big. 66 character limit")
 	}
 	if len(msg.Hash3) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "hash3 too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "hash3 too big. 66 character limit")
 	}
 
 	return nil
@@ -190,13 +191,13 @@ func (msg MsgPurchaseWrkChainStateStorage) Type() string { return PurchaseStorag
 func (msg MsgPurchaseWrkChainStateStorage) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 	if msg.WrkchainId == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
+		return errorsmod.Wrap(ErrMissingData, "id must be greater than zero")
 	}
 	if msg.Number == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "number cannot be zero")
+		return errorsmod.Wrap(ErrMissingData, "number cannot be zero")
 	}
 
 	return nil
@@ -233,7 +234,7 @@ func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrap(err, "invalid authority address")
+		return errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if err := m.Params.Validate(); err != nil {

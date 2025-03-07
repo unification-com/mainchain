@@ -1,8 +1,10 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -20,7 +22,7 @@ func (k Keeper) AddressIsWhitelisted(ctx sdk.Context, address sdk.AccAddress) bo
 func (k Keeper) AddAddressToWhitelist(ctx sdk.Context, address sdk.AccAddress) error {
 
 	if address.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
 	}
 
 	store := ctx.KVStore(k.storeKey)
@@ -33,7 +35,7 @@ func (k Keeper) AddAddressToWhitelist(ctx sdk.Context, address sdk.AccAddress) e
 func (k Keeper) RemoveAddressFromWhitelist(ctx sdk.Context, address sdk.AccAddress) error {
 
 	if address.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
 	}
 
 	if k.AddressIsWhitelisted(ctx, address) {
@@ -81,7 +83,7 @@ func (k Keeper) ProcessWhitelistAction(ctx sdk.Context, address sdk.AccAddress, 
 			}
 			logger.Debug("added address to purchase order whitelist", "address", address, "signer", signer)
 		} else {
-			return sdkerrors.Wrapf(types.ErrAlreadyWhitelisted, "%s already whitelisted", address)
+			return errorsmod.Wrapf(types.ErrAlreadyWhitelisted, "%s already whitelisted", address)
 		}
 	}
 	if action == types.WhitelistActionRemove {
@@ -92,7 +94,7 @@ func (k Keeper) ProcessWhitelistAction(ctx sdk.Context, address sdk.AccAddress, 
 			}
 			logger.Debug("removed address from purchase order whitelist", "address", address, "signer", signer)
 		} else {
-			return sdkerrors.Wrapf(types.ErrAddressNotWhitelisted, "%s not whitelisted", address)
+			return errorsmod.Wrapf(types.ErrAddressNotWhitelisted, "%s not whitelisted", address)
 		}
 	}
 

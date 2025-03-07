@@ -3,6 +3,8 @@ package enterprise_test
 import (
 	"errors"
 	"fmt"
+
+	errorsmod "cosmossdk.io/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/enterprise/types"
@@ -84,7 +86,7 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 				Purchaser: testAddrs[0].String(),
 				Amount:    sdk.NewInt64Coin("rubbish", 100),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", simapp.TestDenomination)),
+			expectedError: errorsmod.Wrap(types.ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", simapp.TestDenomination)),
 		},
 		{
 			name: "invalid amount",
@@ -92,7 +94,7 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 				Purchaser: testAddrs[0].String(),
 				Amount:    sdk.NewInt64Coin(simapp.TestDenomination, 0),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrInvalidData, "amount must be > 0"),
+			expectedError: errorsmod.Wrap(types.ErrInvalidData, "amount must be > 0"),
 		},
 		{
 			name: "purchaser not whitelisted",
@@ -100,7 +102,7 @@ func TestInvalidMsgUndPurchaseOrder(t *testing.T) {
 				Purchaser: testAddrs[1].String(),
 				Amount:    sdk.NewInt64Coin(simapp.TestDenomination, 100),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", testAddrs[1].String())),
+			expectedError: errorsmod.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", testAddrs[1].String())),
 		},
 		{
 			name: "successful",
@@ -281,7 +283,7 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 			msg: &types.MsgProcessUndPurchaseOrder{
 				Signer: testAddrs[0].String(),
 			},
-			expectedError: sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order"),
+			expectedError: errorsmod.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order"),
 		},
 		{
 			name: "purchase order does not exist",
@@ -289,7 +291,7 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 				Signer:          entSignerAddr.String(),
 				PurchaseOrderId: 99,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrPurchaseOrderDoesNotExist, "id: 99"),
+			expectedError: errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "id: 99"),
 		},
 		{
 			name: "invalid decision",
@@ -298,7 +300,7 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 				PurchaseOrderId: 1,
 				Decision:        types.StatusNil,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject"),
+			expectedError: errorsmod.Wrap(types.ErrInvalidDecision, "decision should be accept or reject"),
 		},
 		{
 			name: "po current status should only be raised",
@@ -307,7 +309,7 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 				PurchaseOrderId: 2,
 				Decision:        types.StatusAccepted,
 			},
-			expectedError: sdkerrors.Wrapf(types.ErrPurchaseOrderAlreadyProcessed, "id %d already processed: %s", 2, types.StatusCompleted),
+			expectedError: errorsmod.Wrapf(types.ErrPurchaseOrderAlreadyProcessed, "id %d already processed: %s", 2, types.StatusCompleted),
 		},
 		{
 			name: "success - accept",
@@ -335,7 +337,7 @@ func TestInvalidMsgProcessUndPurchaseOrder(t *testing.T) {
 				PurchaseOrderId: 3,
 				Decision:        types.StatusAccepted,
 			},
-			expectedError: sdkerrors.Wrapf(types.ErrSignerAlreadyMadeDecision, "signer %s already decided: %s", entSignerAddr.String(), types.StatusRejected),
+			expectedError: errorsmod.Wrapf(types.ErrSignerAlreadyMadeDecision, "signer %s already decided: %s", entSignerAddr.String(), types.StatusRejected),
 		},
 	}
 
@@ -423,7 +425,7 @@ func TestInvalidMsgWhitelistAddress(t *testing.T) {
 				Signer:  testAddrs[0].String(),
 				Address: testAddrs[0].String(),
 			},
-			expectedError: sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer modifying whitelist"),
+			expectedError: errorsmod.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer modifying whitelist"),
 		},
 		{
 			name: "invalid action",
@@ -432,7 +434,7 @@ func TestInvalidMsgWhitelistAddress(t *testing.T) {
 				Address: testAddrs[0].String(),
 				Action:  99,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrInvalidDecision, "action should be add or remove"),
+			expectedError: errorsmod.Wrap(types.ErrInvalidDecision, "action should be add or remove"),
 		},
 		{
 			name: "cannot remove non-existing address",
@@ -441,7 +443,7 @@ func TestInvalidMsgWhitelistAddress(t *testing.T) {
 				Address: testAddrs[0].String(),
 				Action:  types.WhitelistActionRemove,
 			},
-			expectedError: sdkerrors.Wrapf(types.ErrAddressNotWhitelisted, "%s not whitelisted", testAddrs[0].String()),
+			expectedError: errorsmod.Wrapf(types.ErrAddressNotWhitelisted, "%s not whitelisted", testAddrs[0].String()),
 		},
 		{
 			name: "success",
@@ -459,7 +461,7 @@ func TestInvalidMsgWhitelistAddress(t *testing.T) {
 				Address: testAddrs[0].String(),
 				Action:  types.WhitelistActionAdd,
 			},
-			expectedError: sdkerrors.Wrapf(types.ErrAlreadyWhitelisted, "%s already whitelisted", testAddrs[0].String()),
+			expectedError: errorsmod.Wrapf(types.ErrAlreadyWhitelisted, "%s already whitelisted", testAddrs[0].String()),
 		},
 	}
 

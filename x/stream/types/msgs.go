@@ -1,8 +1,8 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
@@ -56,21 +56,21 @@ func (msg MsgCreateStream) ValidateBasic() error {
 	}
 
 	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
-		return sdkerrors.Wrap(ErrInvalidData, "deposit must be > zero")
+		return errorsmod.Wrap(ErrInvalidData, "deposit must be > zero")
 	}
 
 	if msg.FlowRate < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "flow rate must be > zero")
+		return errorsmod.Wrap(ErrInvalidData, "flow rate must be > zero")
 	}
 
 	if msg.Sender == msg.Receiver {
-		return sdkerrors.Wrap(ErrInvalidData, "receiver cannot be same as sender")
+		return errorsmod.Wrap(ErrInvalidData, "receiver cannot be same as sender")
 	}
 
 	duration := CalculateDuration(msg.Deposit, msg.FlowRate)
 
 	if duration < 60 {
-		return sdkerrors.Wrap(ErrInvalidData, "calculated duration too short. Must be > 1 minute")
+		return errorsmod.Wrap(ErrInvalidData, "calculated duration too short. Must be > 1 minute")
 	}
 
 	return nil
@@ -170,7 +170,7 @@ func (msg MsgTopUpDeposit) ValidateBasic() error {
 	}
 
 	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
-		return sdkerrors.Wrap(ErrInvalidData, "deposit must be > zero")
+		return errorsmod.Wrap(ErrInvalidData, "deposit must be > zero")
 	}
 
 	return nil
@@ -223,7 +223,7 @@ func (msg MsgUpdateFlowRate) ValidateBasic() error {
 	}
 
 	if msg.FlowRate < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "flow rate must be > zero")
+		return errorsmod.Wrap(ErrInvalidData, "flow rate must be > zero")
 	}
 
 	return nil
@@ -307,7 +307,7 @@ func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrap(err, "invalid authority address")
+		return errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if err := m.Params.Validate(); err != nil {

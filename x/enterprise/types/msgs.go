@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -37,17 +38,17 @@ func (msg MsgUndPurchaseOrder) Type() string { return PurchaseAction }
 func (msg MsgUndPurchaseOrder) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Purchaser)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid purchaser address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid purchaser address (%s)", err)
 	}
 
 	if !msg.Amount.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
 	}
 	if msg.Amount.IsZero() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "amount must be greater than zero")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, "amount must be greater than zero")
 	}
 	if msg.Amount.IsNegative() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "amount must be a positive value")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, "amount must be a positive value")
 	}
 	return nil
 }
@@ -90,14 +91,14 @@ func (msg MsgProcessUndPurchaseOrder) ValidateBasic() error {
 
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid signer address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid signer address (%s)", err)
 	}
 
 	if msg.PurchaseOrderId == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "purchase order id must be greater than zero")
+		return errorsmod.Wrap(sdkerrors.ErrUnknownRequest, "purchase order id must be greater than zero")
 	}
 	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
-		return sdkerrors.Wrap(ErrInvalidStatus, "status must be accept or reject")
+		return errorsmod.Wrap(ErrInvalidStatus, "status must be accept or reject")
 	}
 	return nil
 }
@@ -140,14 +141,14 @@ func (msg MsgWhitelistAddress) Type() string { return WhitelistAddressAction }
 func (msg MsgWhitelistAddress) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid signer address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid signer address (%s)", err)
 	}
 	_, err = sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid address (%s)", err)
 	}
 	if !ValidWhitelistAction(msg.Action) {
-		return sdkerrors.Wrap(ErrInvalidWhitelistAction, "action must be add or remove")
+		return errorsmod.Wrap(ErrInvalidWhitelistAction, "action must be add or remove")
 	}
 	return nil
 }
@@ -183,7 +184,7 @@ func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrap(err, "invalid authority address")
+		return errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if err := m.Params.Validate(); err != nil {

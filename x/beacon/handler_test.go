@@ -3,19 +3,18 @@ package beacon_test
 import (
 	"errors"
 	"fmt"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	simapp "github.com/unification-com/mainchain/app"
-	"github.com/unification-com/mainchain/x/beacon/types"
 	"strings"
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	simapp "github.com/unification-com/mainchain/app"
+	"github.com/unification-com/mainchain/x/beacon/types"
+
 	"github.com/unification-com/mainchain/x/beacon"
 	"github.com/unification-com/mainchain/x/beacon/keeper"
 )
@@ -97,7 +96,7 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 				Name:    simapp.GenerateRandomString(129),
 				Owner:   testAddrs[0].String(),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"),
 		},
 		{
 			name: "moniker too big",
@@ -106,7 +105,7 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 				Name:    "name",
 				Owner:   testAddrs[0].String(),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit"),
 		},
 		{
 			name: "zero length moniker",
@@ -115,7 +114,7 @@ func TestInvalidMsgRegisterBeacon(t *testing.T) {
 				Name:    "name",
 				Owner:   testAddrs[0].String(),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker"),
+			expectedError: errorsmod.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker"),
 		},
 		{
 			name: "successful",
@@ -210,7 +209,7 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 				Owner: testAddrs[0].String(),
 				Hash:  simapp.GenerateRandomString(67),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit"),
 		},
 		{
 			name: "beacon not registered",
@@ -219,7 +218,7 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 				Hash:     simapp.GenerateRandomString(24),
 				BeaconId: 2,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet"),
+			expectedError: errorsmod.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet"),
 		},
 		{
 			name: "not beacon owner",
@@ -228,7 +227,7 @@ func TestInvalidMsgRecordBeaconTimestamp(t *testing.T) {
 				Hash:     simapp.GenerateRandomString(24),
 				BeaconId: 1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon"),
+			expectedError: errorsmod.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon"),
 		},
 		{
 			name: "successful",
@@ -323,7 +322,7 @@ func TestInvalidMsgPurchaseBeaconStateStorage(t *testing.T) {
 				Owner:  testAddrs[0].String(),
 				Number: 0,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "cannot purchase zero"),
 		},
 		{
 			name: "beacon not registered",
@@ -332,7 +331,7 @@ func TestInvalidMsgPurchaseBeaconStateStorage(t *testing.T) {
 				Number:   10,
 				BeaconId: 2,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet"),
+			expectedError: errorsmod.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet"),
 		},
 		{
 			name: "not beacon owner",
@@ -341,7 +340,7 @@ func TestInvalidMsgPurchaseBeaconStateStorage(t *testing.T) {
 				Number:   10,
 				BeaconId: 1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon"),
+			expectedError: errorsmod.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon"),
 		},
 		{
 			name: "exceeds max storage",
@@ -350,7 +349,7 @@ func TestInvalidMsgPurchaseBeaconStateStorage(t *testing.T) {
 				Number:   simapp.TestMaxStorage,
 				BeaconId: 1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", simapp.TestDefaultStorage+simapp.TestMaxStorage, simapp.TestMaxStorage)),
+			expectedError: errorsmod.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", simapp.TestDefaultStorage+simapp.TestMaxStorage, simapp.TestMaxStorage)),
 		},
 		{
 			name: "successful",

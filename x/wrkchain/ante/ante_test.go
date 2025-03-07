@@ -2,6 +2,11 @@ package ante_test
 
 import (
 	"fmt"
+	"math/rand"
+	"testing"
+	"time"
+
+	errorsmod "cosmossdk.io/errors"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -9,13 +14,11 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
+
 	simapp "github.com/unification-com/mainchain/app"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 	"github.com/unification-com/mainchain/x/wrkchain/ante"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
-	"math/rand"
-	"testing"
-	"time"
 )
 
 const TestChainID = "und-unit-test-chain"
@@ -58,7 +61,7 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 
 	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", addr)
+	expectedErr := errorsmod.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", addr)
 
 	_, err := antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
@@ -102,7 +105,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr := sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg)
+	expectedErr := errorsmod.Wrap(types.ErrInsufficientWrkChainFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
@@ -117,7 +120,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRecFeeAmt, actualFeeDenom, feeInt1, feeDenom)
-	expectedErr1 := sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg1)
+	expectedErr1 := errorsmod.Wrap(types.ErrInsufficientWrkChainFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1.Error(), err1.Error(), "unexpected type of error: %s", err1)
@@ -134,7 +137,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err2 := antehandler(ctx, tx2, false)
 
 	errMsg2 := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", expectedFees, actualFeeDenom, feeInt2, feeDenom)
-	expectedErr2 := sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg2)
+	expectedErr2 := errorsmod.Wrap(types.ErrInsufficientWrkChainFee, errMsg2)
 
 	require.NotNil(t, err2, "Did not error on invalid tx")
 	require.Equal(t, expectedErr2.Error(), err2.Error(), "unexpected type of error: %s", err2)
@@ -148,7 +151,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err3 := antehandler(ctx, tx3, false)
 
 	errMsg3 := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: 3, expected fees: %d%s, sent fees: %d%s", expectedFees3, actualFeeDenom, multiFees, feeDenom)
-	expectedErr3 := sdkerrors.Wrap(types.ErrInsufficientWrkChainFee, errMsg3)
+	expectedErr3 := errorsmod.Wrap(types.ErrInsufficientWrkChainFee, errMsg3)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
 	require.Equal(t, expectedErr3.Error(), err3.Error(), "unexpected type of error: %s", err3)
@@ -187,7 +190,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("too much fee sent to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr := sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg)
+	expectedErr := errorsmod.Wrap(types.ErrTooMuchWrkChainFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
@@ -202,7 +205,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("too much fee sent to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRecFeeAmt, actualFeeDenom, feeInt1, feeDenom)
-	expectedErr1 := sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg1)
+	expectedErr1 := errorsmod.Wrap(types.ErrTooMuchWrkChainFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1.Error(), err1.Error(), "unexpected type of error: %s", err1)
@@ -219,7 +222,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err2 := antehandler(ctx, tx2, false)
 
 	errMsg2 := fmt.Sprintf("too much fee sent to pay for WrkChain tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", expectedFees, actualFeeDenom, feeInt2, feeDenom)
-	expectedErr2 := sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg2)
+	expectedErr2 := errorsmod.Wrap(types.ErrTooMuchWrkChainFee, errMsg2)
 
 	require.NotNil(t, err2, "Did not error on invalid tx")
 	require.Equal(t, expectedErr2.Error(), err2.Error(), "unexpected type of error: %s", err2)
@@ -233,7 +236,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err3 := antehandler(ctx, tx3, false)
 
 	errMsg3 := fmt.Sprintf("too much fee sent to pay for WrkChain tx. numMsgs in tx: 3, expected fees: %d%s, sent fees: %d%s", expectedFees3, actualFeeDenom, multiFees, feeDenom)
-	expectedErr3 := sdkerrors.Wrap(types.ErrTooMuchWrkChainFee, errMsg3)
+	expectedErr3 := errorsmod.Wrap(types.ErrTooMuchWrkChainFee, errMsg3)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
 	require.Equal(t, expectedErr3.Error(), err3.Error(), "unexpected type of error: %s", err3)
@@ -272,7 +275,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
+	expectedErr := errorsmod.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx1")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
@@ -300,7 +303,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err2 := antehandler(ctx, tx2, false)
 
 	errMsg2 := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr2 := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg2)
+	expectedErr2 := errorsmod.Wrap(types.ErrIncorrectFeeDenomination, errMsg2)
 
 	require.NotNil(t, err2, "Did not error on invalid tx")
 	require.Equal(t, expectedErr2.Error(), err2.Error(), "unexpected type of error: %s", err2)
@@ -313,7 +316,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err3 := antehandler(ctx, tx3, false)
 
 	errMsg3 := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr3 := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg3)
+	expectedErr3 := errorsmod.Wrap(types.ErrIncorrectFeeDenomination, errMsg3)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
 	require.Equal(t, expectedErr3.Error(), err3.Error(), "unexpected type of error: %s", err3)
@@ -357,7 +360,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, actualRegFeeAmt, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx, false)
@@ -374,7 +377,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr = errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, actualRecFeeAmt, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx1, false)
@@ -392,7 +395,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr = errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, feeInt2, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx2, false)
@@ -409,7 +412,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 	_, err3 := antehandler(ctx, tx3, false)
 
-	expectedErr3 := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr3 := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, multiFees, actualFeeDenom)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
@@ -461,7 +464,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 
 	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, actualRegFeeAmt, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx, false)
@@ -478,7 +481,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 
 	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr = errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, actualRecFeeAmt, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx1, false)
@@ -496,7 +499,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 
 	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr = errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, feeInt2, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx2, false)
@@ -513,7 +516,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 
 	_, err3 := antehandler(ctx, tx3, false)
 
-	expectedErr3 := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr3 := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, multiFees, actualFeeDenom)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
@@ -755,7 +758,7 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 
 	_, err = antehandler(ctx, tx, false)
 
-	expectedErr := sdkerrors.Wrapf(types.ErrExceedsMaxStorage,
+	expectedErr := errorsmod.Wrapf(types.ErrExceedsMaxStorage,
 		"num slots exceeds max for wrkchain %d. Max can purchase: %d. Want in Msgs: %d", wcId, simapp.TestMaxStorage-startInStateLimit, numToPurchase)
 
 	require.NotNil(t, err, "Did not error on invalid tx")

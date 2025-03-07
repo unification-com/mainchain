@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
@@ -14,7 +15,7 @@ func (k Keeper) GetHighestBeaconID(ctx sdk.Context) (beaconID uint64, err error)
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.HighestBeaconIDKey)
 	if bz == nil {
-		return 0, sdkerrors.Wrapf(types.ErrInvalidGenesis, "initial beacon ID hasn't been set")
+		return 0, errorsmod.Wrapf(types.ErrInvalidGenesis, "initial beacon ID hasn't been set")
 	}
 	// convert from bytes to uint64
 	beaconID = types.GetBeaconIDFromBytes(bz)

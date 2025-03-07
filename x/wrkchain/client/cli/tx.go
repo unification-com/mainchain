@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -80,11 +81,11 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 			wrkchainGenesisHash, _ := cmd.Flags().GetString(FlagGenesisHash)
 
 			if len(moniker) == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain must have a moniker")
+				return errorsmod.Wrap(types.ErrMissingData, "WRKChain must have a moniker")
 			}
 
 			if len(wrkchainName) == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain must have a name")
+				return errorsmod.Wrap(types.ErrMissingData, "WRKChain must have a name")
 			}
 
 			params, err := queryClient.Params(
@@ -162,15 +163,15 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 			}
 
 			if wrkchainId == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
 			}
 
 			if len(blockHash) == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain block must have a Hash submitted")
+				return errorsmod.Wrap(types.ErrMissingData, "WRKChain block must have a Hash submitted")
 			}
 
 			if height == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain block hash submission must be for height > 0")
+				return errorsmod.Wrap(types.ErrMissingData, "WRKChain block hash submission must be for height > 0")
 			}
 
 			params, err := queryClient.Params(
@@ -239,7 +240,7 @@ $ %s tx %s purchase_storage 1 100
 			}
 
 			if wrkchainId == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
 			}
 
 			numToPurchase, err := strconv.Atoi(args[1])
@@ -249,7 +250,7 @@ $ %s tx %s purchase_storage 1 100
 			}
 
 			if numToPurchase == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "num_slots must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "num_slots must be > 0")
 			}
 
 			params, err := queryClient.Params(

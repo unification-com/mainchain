@@ -1,8 +1,8 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
@@ -397,7 +397,7 @@ func (k Keeper) GetAllLockedUnds(ctx sdk.Context) (lockedUnds []types.LockedUnd)
 func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUnd) error {
 	// must have an owner
 	//if lockedUnd.Owner.Empty() {
-	//	return sdkerrors.Wrap(types.ErrMissingData, "unable to set locked und - owner cannot be empty")
+	//	return errorsmod.Wrap(types.ErrMissingData, "unable to set locked und - owner cannot be empty")
 	//}
 	owner, accErr := sdk.AccAddressFromBech32(lockedUnd.Owner)
 	if accErr != nil {
@@ -406,7 +406,7 @@ func (k Keeper) SetLockedUndForAccount(ctx sdk.Context, lockedUnd types.LockedUn
 
 	// must be a positive amount, or zero
 	if lockedUnd.Amount.IsNegative() {
-		return sdkerrors.Wrap(types.ErrMissingData, "unable to set locked und - amount must be positive")
+		return errorsmod.Wrap(types.ErrMissingData, "unable to set locked und - amount must be positive")
 	}
 
 	store := ctx.KVStore(k.storeKey)

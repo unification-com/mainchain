@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	v046 "github.com/cosmos/cosmos-sdk/x/genutil/migrations/v046"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
@@ -44,7 +44,7 @@ $ %s migrate /path/to/genesis.json --chain-id=FUND-MainNet-3 --genesis-time=2022
 
 			var initialState types.AppMap
 			if err := json.Unmarshal(genDoc.AppState, &initialState); err != nil {
-				return errors.Wrap(err, "failed to JSON unmarshal initial genesis state")
+				return errorsmod.Wrap(err, "failed to JSON unmarshal initial genesis state")
 			}
 
 			// Run 0.44 -> 0.46 for Cosmos modules
@@ -54,7 +54,7 @@ $ %s migrate /path/to/genesis.json --chain-id=FUND-MainNet-3 --genesis-time=2022
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {
-				return errors.Wrap(err, "failed to JSON marshal migrated genesis state")
+				return errorsmod.Wrap(err, "failed to JSON marshal migrated genesis state")
 			}
 
 			genesisTime, _ := cmd.Flags().GetString(flagGenesisTime)
@@ -63,7 +63,7 @@ $ %s migrate /path/to/genesis.json --chain-id=FUND-MainNet-3 --genesis-time=2022
 
 				err := t.UnmarshalText([]byte(genesisTime))
 				if err != nil {
-					return errors.Wrap(err, "failed to unmarshal genesis time")
+					return errorsmod.Wrap(err, "failed to unmarshal genesis time")
 				}
 
 				genDoc.GenesisTime = t
@@ -76,12 +76,12 @@ $ %s migrate /path/to/genesis.json --chain-id=FUND-MainNet-3 --genesis-time=2022
 
 			bz, err := tmjson.Marshal(genDoc)
 			if err != nil {
-				return errors.Wrap(err, "failed to marshal genesis doc")
+				return errorsmod.Wrap(err, "failed to marshal genesis doc")
 			}
 
 			sortedBz, err := sdk.SortJSON(bz)
 			if err != nil {
-				return errors.Wrap(err, "failed to sort JSON genesis doc")
+				return errorsmod.Wrap(err, "failed to sort JSON genesis doc")
 			}
 
 			fmt.Println(string(sortedBz))

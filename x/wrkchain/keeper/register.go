@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
@@ -14,7 +15,7 @@ func (k Keeper) GetHighestWrkChainID(ctx sdk.Context) (wrkChainID uint64, err er
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.HighestWrkChainIDKey)
 	if bz == nil {
-		return 0, sdkerrors.Wrap(types.ErrInvalidGenesis, "initial wrkchain ID hasn't been set")
+		return 0, errorsmod.Wrap(types.ErrInvalidGenesis, "initial wrkchain ID hasn't been set")
 	}
 	// convert from bytes to uint64
 	wrkChainID = types.GetWrkChainIDFromBytes(bz)

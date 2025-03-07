@@ -3,19 +3,17 @@ package wrkchain_test
 import (
 	"errors"
 	"fmt"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	simapp "github.com/unification-com/mainchain/app"
-	"github.com/unification-com/mainchain/x/wrkchain/types"
 	"strings"
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-
-	"github.com/stretchr/testify/require"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+	simapp "github.com/unification-com/mainchain/app"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
+
 	"github.com/unification-com/mainchain/x/wrkchain"
 	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 )
@@ -94,7 +92,7 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 				Name:    simapp.GenerateRandomString(129),
 				Owner:   testAddrs[0].String(),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit"),
 		},
 		{
 			name: "moniker too big",
@@ -103,7 +101,7 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 				Name:    "name",
 				Owner:   testAddrs[0].String(),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit"),
 		},
 		{
 			name: "zero length moniker",
@@ -112,7 +110,7 @@ func TestInvalidMsgRegisterWrkChain(t *testing.T) {
 				Name:    "name",
 				Owner:   testAddrs[0].String(),
 			},
-			expectedError: sdkerrors.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker"),
+			expectedError: errorsmod.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker"),
 		},
 		{
 			name: "successful",
@@ -211,7 +209,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				BlockHash: simapp.GenerateRandomString(66),
 				Height:    0,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrInvalidData, "height must be > 0"),
+			expectedError: errorsmod.Wrap(types.ErrInvalidData, "height must be > 0"),
 		},
 		{
 			name: "blockhash too large",
@@ -220,7 +218,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				BlockHash: simapp.GenerateRandomString(67),
 				Height:    1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit"),
 		},
 		{
 			name: "parenthash too large",
@@ -230,7 +228,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				ParentHash: simapp.GenerateRandomString(67),
 				Height:     1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit"),
 		},
 		{
 			name: "hash1 too large",
@@ -241,7 +239,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				Hash1:      simapp.GenerateRandomString(67),
 				Height:     1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit"),
 		},
 		{
 			name: "hash2 too large",
@@ -253,7 +251,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				Hash2:      simapp.GenerateRandomString(67),
 				Height:     1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit"),
 		},
 		{
 			name: "hash3 too large",
@@ -266,7 +264,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				Hash3:      simapp.GenerateRandomString(67),
 				Height:     1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit"),
 		},
 		{
 			name: "wrkchain not registered",
@@ -276,7 +274,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				WrkchainId: 2,
 				Height:     1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet"),
+			expectedError: errorsmod.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet"),
 		},
 		{
 			name: "not wrkchain owner",
@@ -286,7 +284,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				WrkchainId: 1,
 				Height:     1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain"),
+			expectedError: errorsmod.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain"),
 		},
 		{
 			name: "successful",
@@ -306,7 +304,7 @@ func TestInvalidMsgRecordWrkChainBlock(t *testing.T) {
 				WrkchainId: 1,
 				Height:     1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrNewHeightMustBeHigher, "wrkchain block hashes height must be > last height recorded"),
+			expectedError: errorsmod.Wrap(types.ErrNewHeightMustBeHigher, "wrkchain block hashes height must be > last height recorded"),
 		},
 	}
 
@@ -394,7 +392,7 @@ func TestInvalidMsgPurchaseWrkChainStateStorage(t *testing.T) {
 				Owner:  testAddrs[0].String(),
 				Number: 0,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero"),
+			expectedError: errorsmod.Wrap(types.ErrContentTooLarge, "cannot purchase zero"),
 		},
 		{
 			name: "wrkchain not registered",
@@ -403,7 +401,7 @@ func TestInvalidMsgPurchaseWrkChainStateStorage(t *testing.T) {
 				Number:     10,
 				WrkchainId: 2,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet"),
+			expectedError: errorsmod.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet"),
 		},
 		{
 			name: "not wrkchain owner",
@@ -412,7 +410,7 @@ func TestInvalidMsgPurchaseWrkChainStateStorage(t *testing.T) {
 				Number:     10,
 				WrkchainId: 1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain"),
+			expectedError: errorsmod.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain"),
 		},
 		{
 			name: "exceeds max storage",
@@ -421,7 +419,7 @@ func TestInvalidMsgPurchaseWrkChainStateStorage(t *testing.T) {
 				Number:     simapp.TestMaxStorage,
 				WrkchainId: 1,
 			},
-			expectedError: sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", simapp.TestDefaultStorage+simapp.TestMaxStorage, simapp.TestMaxStorage)),
+			expectedError: errorsmod.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", simapp.TestDefaultStorage+simapp.TestMaxStorage, simapp.TestMaxStorage)),
 		},
 		{
 			name: "successful",

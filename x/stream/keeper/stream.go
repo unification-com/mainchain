@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/unification-com/mainchain/x/stream/types"
 )
@@ -82,12 +82,12 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	params := k.GetParams(ctx)
 
 	if !ok {
-		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "stream does not exist")
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, errorsmod.Wrap(types.ErrInvalidData, "stream does not exist")
 	}
 
 	// 1. check current stream deposit > 0
 	if stream.Deposit.IsNil() || stream.Deposit.IsNegative() || stream.Deposit.IsZero() {
-		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "stream deposit is zero")
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, errorsmod.Wrap(types.ErrInvalidData, "stream deposit is zero")
 	}
 
 	// 2. calculate amount to claim
@@ -96,12 +96,12 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 
 	// 3.1 sanity check 1: claimTotal is not negative or nil
 	if claimTotal.IsNil() || claimTotal.IsNegative() {
-		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "claim must cannot be nil or negative")
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, errorsmod.Wrap(types.ErrInvalidData, "claim must cannot be nil or negative")
 	}
 
 	// 3.2 sanity check 2: claimTotal <= deposit
 	if stream.Deposit.IsLT(claimTotal) {
-		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidData, "not enough deposit to claim")
+		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, errorsmod.Wrap(types.ErrInvalidData, "not enough deposit to claim")
 	}
 
 	// 4. calculate validator fee and deduct from claim amount
@@ -153,11 +153,11 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
-		return false, sdkerrors.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
+		return false, errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
 	}
 
 	if topUpDeposit.Denom != stream.Deposit.Denom {
-		return false, sdkerrors.Wrapf(types.ErrInvalidData, "top up denom does not match stream denom. stream: %s, top up %s", stream.Deposit.Denom, topUpDeposit.Denom)
+		return false, errorsmod.Wrapf(types.ErrInvalidData, "top up denom does not match stream denom. stream: %s, top up %s", stream.Deposit.Denom, topUpDeposit.Denom)
 	}
 
 	nowTime := ctx.BlockTime()
@@ -226,7 +226,7 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
-		return sdkerrors.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
+		return errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
 	}
 
 	// for event emission
@@ -289,11 +289,11 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
-		return sdkerrors.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
+		return errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
 	}
 
 	if !stream.Cancellable {
-		return sdkerrors.Wrap(types.ErrStreamNotCancellable, "cannot be cancelled")
+		return errorsmod.Wrap(types.ErrStreamNotCancellable, "cannot be cancelled")
 	}
 
 	// claim any outstanding flow
@@ -336,7 +336,7 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, deposit sdk.Coin, flowRate int64) (types.Stream, error) {
 
 	if k.IsStream(ctx, receiverAddr, senderAddr) {
-		return types.Stream{}, sdkerrors.Wrap(types.ErrStreamExists, "stream exists")
+		return types.Stream{}, errorsmod.Wrap(types.ErrStreamExists, "stream exists")
 	}
 
 	nowTime := ctx.BlockTime()

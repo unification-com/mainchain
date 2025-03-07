@@ -1,13 +1,14 @@
 package keeper_test
 
 import (
-	simapp "github.com/unification-com/mainchain/app"
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
+	simapp "github.com/unification-com/mainchain/app"
 )
 
 func TestAddAddressesToWhitelist(t *testing.T) {
@@ -21,7 +22,7 @@ func TestAddAddressesToWhitelist(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	expectedErr := sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
+	expectedErr := errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
 	err := app.EnterpriseKeeper.AddAddressToWhitelist(ctx, sdk.AccAddress{})
 	require.Equal(t, expectedErr.Error(), err.Error())
 }
@@ -41,7 +42,7 @@ func TestRemoveAddressesToWhitelist(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	expectedErr := sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
+	expectedErr := errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "address cannot be empty")
 	err := app.EnterpriseKeeper.RemoveAddressFromWhitelist(ctx, sdk.AccAddress{})
 	require.Equal(t, expectedErr.Error(), err.Error())
 }

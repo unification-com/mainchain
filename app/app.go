@@ -455,14 +455,12 @@ func NewApp(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	// ToDo - fix keeper imports
 	app.EnterpriseKeeper = entkeeper.NewKeeper(keys[enttypes.StoreKey], app.BankKeeper, app.AccountKeeper, appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	app.BeaconKeeper = beaconkeeper.NewKeeper(keys[beacontypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	app.WrkchainKeeper = wrkchainkeeper.NewKeeper(keys[wrkchaintypes.StoreKey], appCodec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	// ToDo - fix keeper imports
 	app.StreamKeeper = streamkeeper.NewKeeper(keys[streamtypes.StoreKey], app.BankKeeper, app.AccountKeeper, appCodec, authtypes.FeeCollectorName, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	/****  Module Options ****/

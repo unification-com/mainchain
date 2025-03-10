@@ -2,6 +2,7 @@ package keeper
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/unification-com/mainchain/x/enterprise/types"
@@ -180,9 +181,9 @@ func (k Keeper) GetSpentEFUNDAmountForAccount(ctx sdk.Context, address sdk.AccAd
 }
 
 // Get an iterator over all accounts with spent eFUND
-func (k Keeper) GetAllSpentEFUNDAccountsIterator(ctx sdk.Context) sdk.Iterator {
+func (k Keeper) GetAllSpentEFUNDAccountsIterator(ctx sdk.Context) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.SpentEFUNDAddressKeyPrefix)
+	return storetypes.KVStorePrefixIterator(store, types.SpentEFUNDAddressKeyPrefix)
 }
 
 func (k Keeper) GetAllSpentEFUNDs(ctx sdk.Context) (spentEFUNDs []types.SpentEFUND) {
@@ -376,9 +377,9 @@ func (k Keeper) GetLockedUndAmountForAccount(ctx sdk.Context, address sdk.AccAdd
 }
 
 // Get an iterator over all accounts with Locked FUND
-func (k Keeper) GetAllLockedUndAccountsIterator(ctx sdk.Context) sdk.Iterator {
+func (k Keeper) GetAllLockedUndAccountsIterator(ctx sdk.Context) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.LockedUndAddressKeyPrefix)
+	return storetypes.KVStorePrefixIterator(store, types.LockedUndAddressKeyPrefix)
 }
 
 func (k Keeper) GetAllLockedUnds(ctx sdk.Context) (lockedUnds []types.LockedUnd) {

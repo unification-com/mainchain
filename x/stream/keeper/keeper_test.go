@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	mathmod "cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -38,7 +39,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.app = app
 	s.ctx = ctx
 	s.queryClient = queryClient
-	s.addrs = simapp.AddTestAddrsIncremental(app, ctx, 100, sdk.NewInt(1000000000000000000))
+	s.addrs = simapp.AddTestAddrsIncremental(app, ctx, 100, mathmod.NewInt(1000000000000000000))
 	s.msgServer = keeper.NewMsgServerImpl(s.app.StreamKeeper)
 }
 

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -49,7 +50,7 @@ func (k Keeper) RemoveAddressFromWhitelist(ctx sdk.Context, address sdk.AccAddre
 // IterateWhitelist iterates over the all the whitelisted addresses and performs a callback function
 func (k Keeper) IterateWhitelist(ctx sdk.Context, cb func(addr sdk.AccAddress) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.WhitelistKeyPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.WhitelistKeyPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {

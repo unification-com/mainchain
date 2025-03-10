@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"time"
 
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/unification-com/mainchain/x/stream/types"
@@ -20,7 +21,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(24, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(24, 2),
 				},
 			},
 			expectErr: false,
@@ -39,7 +40,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(101, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(101, 2),
 				},
 			},
 			expectErr: true,
@@ -50,7 +51,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(-1, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(-1, 2),
 				},
 			},
 			expectErr: true,
@@ -61,7 +62,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.Dec{},
+					ValidatorFee: mathmod.LegacyDec{},
 				},
 			},
 			expectErr: true,

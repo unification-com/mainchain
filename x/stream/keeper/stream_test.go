@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"time"
 
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	simapp "github.com/unification-com/mainchain/app"
@@ -16,7 +17,7 @@ func (s *KeeperTestSuite) TestIsStream() {
 	nowTime := s.ctx.BlockTime()
 
 	expStream := types.Stream{
-		Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+		Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 		FlowRate:        100,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(),
@@ -39,7 +40,7 @@ func (s *KeeperTestSuite) TestSetGetStream() {
 	nowTime := s.ctx.BlockTime()
 
 	expStream := types.Stream{
-		Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+		Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 		FlowRate:        100,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(),
@@ -63,14 +64,14 @@ func (s *KeeperTestSuite) TestCreateNewStream_BasicSuccess() {
 	nowTime := s.ctx.BlockTime()
 
 	expStream := types.Stream{
-		Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)), // set to 0 when created. AddDeposit handles setting deposit in stream
+		Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)), // set to 0 when created. AddDeposit handles setting deposit in stream
 		FlowRate:        100,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(),
 		Cancellable:     true,
 	}
 
-	stream, err := s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), 100)
+	stream, err := s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)), 100)
 
 	s.Require().NoError(err)
 
@@ -118,10 +119,10 @@ func (s *KeeperTestSuite) TestCreateNewStream_BasicSuccess() {
 }
 
 func (s *KeeperTestSuite) TestCreateNewStream_Fail_Stream_Exists() {
-	_, err := s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), 100)
+	_, err := s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)), 100)
 	s.Require().NoError(err)
 
-	_, err = s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), 100)
+	_, err = s.app.StreamKeeper.CreateNewStream(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)), 100)
 	s.Require().ErrorContains(err, "stream exists")
 }
 
@@ -144,7 +145,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Basic_Success() {
 	nowTime := s.ctx.BlockTime()
 
 	expStream := types.Stream{
-		Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)), //default to zero when creating a new stream
+		Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)), //default to zero when creating a new stream
 		FlowRate:        1,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: nowTime,
@@ -156,7 +157,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Basic_Success() {
 	s.Require().NoError(err)
 
 	// Add Deposit to stream
-	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)))
+	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)))
 	s.Require().True(ok)
 	s.Require().NoError(err)
 
@@ -181,7 +182,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Basic_Success() {
 			attrDepositAmount, evOk := ev.GetAttribute(types.AttributeKeyAmountDeposited)
 			s.Require().True(evOk)
 			s.Require().Equal(types.AttributeKeyAmountDeposited, attrDepositAmount.Key)
-			s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)).String(), attrDepositAmount.Value)
+			s.Require().Equal(sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)).String(), attrDepositAmount.Value)
 
 			attrDepositDuration, evOk := ev.GetAttribute(types.AttributeKeyDepositDuration)
 			s.Require().True(evOk)
@@ -206,7 +207,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Basic_Success() {
 	// get stream from keeper
 	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
 	// should now be 1000stake
-	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)), stream.Deposit)
+	s.Require().Equal(sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)), stream.Deposit)
 	// Deposit of 1000, flow rate of 100/s, should have deposit zero time of now + 10s
 	s.Require().Equal(nowTime.Add(time.Second*1000), stream.DepositZeroTime)
 }
@@ -233,15 +234,15 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingNotExpired() {
 			sender:   s.addrs[0],
 			receiver: s.addrs[1],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(750)), // initial deposit was 1000, claim 250s ago
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(750)), // initial deposit was 1000, claim 250s ago
 				FlowRate:        1,
 				LastOutflowTime: time.Unix(nowTime.Unix()-250, 0).UTC(), // last claim was 250s ago
 				DepositZeroTime: nowTime.Add(time.Second * 500),         // have 500s left (created 500s ago, deposit 1000, flow rate 1/s)
 				Cancellable:     true,
 			},
-			deposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			expDepositZeroTime: nowTime.Add(time.Second * 1500),
-			expDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(1750)),
+			expDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(1750)),
 			expDiff:            1750,
 		},
 		{
@@ -249,15 +250,15 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingNotExpired() {
 			sender:   s.addrs[2],
 			receiver: s.addrs[3],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(45343254343)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(45343254343)),
 				FlowRate:        142723,
 				LastOutflowTime: time.Unix(nowTime.Unix()-317701, 0).UTC(),
 				DepositZeroTime: nowTime.Add(time.Second * 227701),
 				Cancellable:     true,
 			},
-			deposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(8359902543123)),
+			deposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(8359902543123)),
 			expDepositZeroTime: nowTime.Add(time.Second * 58802020),
-			expDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(8405245797466)),
+			expDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(8405245797466)),
 			expDiff:            59119721,
 		},
 		{
@@ -266,15 +267,15 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingNotExpired() {
 			sender:   s.addrs[4],
 			receiver: s.addrs[5],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(2474104396800)), // approx 2 weeks worth left
-				FlowRate:        1744292,                                                   // approx 4584/month
-				LastOutflowTime: time.Unix(nowTime.Unix()-604800, 0).UTC(),                 // approx 1 week ago - 2 weeks claimed
-				DepositZeroTime: nowTime.Add(time.Second * 604800),                         // 1 week in queryFuture
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(2474104396800)), // approx 2 weeks worth left
+				FlowRate:        1744292,                                                       // approx 4584/month
+				LastOutflowTime: time.Unix(nowTime.Unix()-604800, 0).UTC(),                     // approx 1 week ago - 2 weeks claimed
+				DepositZeroTime: nowTime.Add(time.Second * 604800),                             // 1 week in queryFuture
 				Cancellable:     true,
 			},
-			deposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(4584000000000)), // 4584
-			expDepositZeroTime: nowTime.Add(time.Second * 3232800),                        // in approx 5 weeks. 1 week deposit remaining, plus 1 month more
-			expDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(7058104396800)),
+			deposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(4584000000000)), // 4584
+			expDepositZeroTime: nowTime.Add(time.Second * 3232800),                            // in approx 5 weeks. 1 week deposit remaining, plus 1 month more
+			expDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(7058104396800)),
 			expDiff:            3837600, // diff between last claim and deposit zero. 6 weeks
 		},
 	}
@@ -332,68 +333,68 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingExpired() {
 			sender:   s.addrs[0],
 			receiver: s.addrs[1],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 				FlowRate:        1,
 				LastOutflowTime: time.Unix(nowTime.Unix()-1000, 0).UTC(),
 				DepositZeroTime: time.Unix(nowTime.Unix()-1000, 0).UTC(),
 				Cancellable:     true,
 			},
-			initialDeposit:     sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			newDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			initialDeposit:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			newDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			expDepositZeroTime: nowTime.Add(time.Second * 1000),
-			expDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expTotalStreamed:   sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expTotalStreamed:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:     "2",
 			sender:   s.addrs[2],
 			receiver: s.addrs[3],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 				FlowRate:        142723,
 				LastOutflowTime: time.Unix(nowTime.Unix()-1000, 0).UTC(),
 				DepositZeroTime: nowTime,
 				Cancellable:     true,
 			},
-			initialDeposit:     sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			newDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(8359902543123)),
+			initialDeposit:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			newDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(8359902543123)),
 			expDepositZeroTime: nowTime.Add(time.Second * 58574319),
-			expDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(8359902543123)),
-			expTotalStreamed:   sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(8359902543123)),
+			expTotalStreamed:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:     "3",
 			sender:   s.addrs[4],
 			receiver: s.addrs[5],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 				FlowRate:        142723,
 				LastOutflowTime: time.Unix(nowTime.Unix()-1000, 0).UTC(),
 				DepositZeroTime: nowTime,
 				Cancellable:     true,
 			},
-			initialDeposit:     sdk.NewCoin("stake", sdk.NewIntFromUint64(234232455325)),
-			newDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(8359902543123)),
+			initialDeposit:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(234232455325)),
+			newDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(8359902543123)),
 			expDepositZeroTime: nowTime.Add(time.Second * 58574319),
-			expDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(8359902543123)),
-			expTotalStreamed:   sdk.NewCoin("stake", sdk.NewIntFromUint64(234232455325)),
+			expDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(8359902543123)),
+			expTotalStreamed:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(234232455325)),
 		},
 		{
 			name:     "4",
 			sender:   s.addrs[6],
 			receiver: s.addrs[7],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 				FlowRate:        142723,
 				LastOutflowTime: time.Unix(nowTime.Unix()-1000, 0).UTC(),
 				DepositZeroTime: time.Unix(nowTime.Unix()-1000, 0).UTC(),
 				Cancellable:     true,
 			},
-			initialDeposit:     sdk.NewCoin("stake", sdk.NewIntFromUint64(234232455325)),
-			newDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(8359902543123)),
+			initialDeposit:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(234232455325)),
+			newDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(8359902543123)),
 			expDepositZeroTime: nowTime.Add(time.Second * 58574319),
-			expDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(8359902543123)),
-			expTotalStreamed:   sdk.NewCoin("stake", sdk.NewIntFromUint64(234232455325)),
+			expDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(8359902543123)),
+			expTotalStreamed:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(234232455325)),
 		},
 	}
 
@@ -404,7 +405,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingExpired() {
 			s.Require().NoError(err, "CreateNewStream NoError test name %s", tc.name)
 
 			// add initial deposit
-			if tc.initialDeposit.Amount.GT(sdk.NewIntFromUint64(0)) {
+			if tc.initialDeposit.Amount.GT(mathmod.NewIntFromUint64(0)) {
 				ok, err := s.app.StreamKeeper.AddDeposit(tCtx, tc.receiver, tc.sender, tc.initialDeposit)
 				s.Require().True(ok)
 				s.Require().NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
@@ -465,7 +466,7 @@ func (s *KeeperTestSuite) TestAddDeposit_ZeroFlowRate() {
 
 	// zero flow rate
 	str1Set := types.Stream{
-		Deposit:         sdk.NewCoin("stake", sdk.NewInt(0)),
+		Deposit:         sdk.NewCoin("stake", mathmod.NewInt(0)),
 		FlowRate:        0,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(),
@@ -507,98 +508,98 @@ func (s *KeeperTestSuite) TestAddDeposit_Scenarios() {
 			sender:                s.addrs[0],
 			receiver:              s.addrs[1],
 			flowRate:              1,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			newDeposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			newDeposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			createTimeOffset:      500,
 			expInitialDepZeroTime: 1000,
-			expNewDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(2000)),
+			expNewDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(2000)),
 			expNewDepZeroTime:     1500,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 		},
 		{
 			name:                  "simple 2 not expired",
 			sender:                s.addrs[2],
 			receiver:              s.addrs[3],
 			flowRate:              4324532,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(10461907814400)), // 4 weeks worth
-			newDeposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(10461907814400)), // another 4 weeks
-			createTimeOffset:      1814400,                                                    // 3 weeks ago
-			expInitialDepZeroTime: 2419200,                                                    // 4 weeks from creation date
-			expNewDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(20923815628800)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(10461907814400)), // 4 weeks worth
+			newDeposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(10461907814400)), // another 4 weeks
+			createTimeOffset:      1814400,                                                        // 3 weeks ago
+			expInitialDepZeroTime: 2419200,                                                        // 4 weeks from creation date
+			expNewDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(20923815628800)),
 			expNewDepZeroTime:     3024000, // approx 5 weeks in the queryFuture from now
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(10461907814400)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(10461907814400)),
 		},
 		{
 			name:                  "complex not expired",
 			sender:                s.addrs[4],
 			receiver:              s.addrs[5],
 			flowRate:              54875,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(149772587375)),  // 54875 x 2729341
-			newDeposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(1245790781440)), // 1245790781440 / 54875 = 22702337 seconds
-			createTimeOffset:      1605494,                                                   // 1605494 seconds ago
-			expInitialDepZeroTime: 2729341,                                                   // 2729341 seconds from creation date
-			expNewDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(1395563368815)), // 149772587375 + 1245790781440
-			expNewDepZeroTime:     23826184,                                                  // (2729341-1605494) + 22702337
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(149772587375)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(149772587375)),  // 54875 x 2729341
+			newDeposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(1245790781440)), // 1245790781440 / 54875 = 22702337 seconds
+			createTimeOffset:      1605494,                                                       // 1605494 seconds ago
+			expInitialDepZeroTime: 2729341,                                                       // 2729341 seconds from creation date
+			expNewDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(1395563368815)), // 149772587375 + 1245790781440
+			expNewDepZeroTime:     23826184,                                                      // (2729341-1605494) + 22702337
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(149772587375)),
 		},
 		{
 			name:                  "simple expires now",
 			sender:                s.addrs[6],
 			receiver:              s.addrs[7],
 			flowRate:              1,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			newDeposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			newDeposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			createTimeOffset:      1000,
 			expInitialDepZeroTime: 1000,
-			expNewDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expNewDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			expNewDepZeroTime:     1000,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:                  "simple expires in past",
 			sender:                s.addrs[8],
 			receiver:              s.addrs[9],
 			flowRate:              1,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			newDeposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			newDeposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			createTimeOffset:      1500,
 			expInitialDepZeroTime: 1000,
-			expNewDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			expNewDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			expNewDepZeroTime:     1000,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:                  "complex expires now",
 			sender:                s.addrs[10],
 			receiver:              s.addrs[11],
 			flowRate:              87656,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(231352935168)),
-			newDeposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(296752935417)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(231352935168)),
+			newDeposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(296752935417)),
 			createTimeOffset:      2639328, // same as expInitialDepZeroTime
 			expInitialDepZeroTime: 2639328, // 231352935168 / 87656
-			expNewDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(296752935417)),
+			expNewDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(296752935417)),
 			expNewDepZeroTime:     3385426,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(231352935168)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(231352935168)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:                  "complex expires in past",
 			sender:                s.addrs[12],
 			receiver:              s.addrs[13],
 			flowRate:              782563,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(2535134750264)),
-			newDeposit:            sdk.NewCoin("stake", sdk.NewIntFromUint64(3128529354197)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(2535134750264)),
+			newDeposit:            sdk.NewCoin("stake", mathmod.NewIntFromUint64(3128529354197)),
 			createTimeOffset:      3739341, // arbitrary - further in the past than expInitialDepZeroTime
 			expInitialDepZeroTime: 3239528, // 2535134750264 / 782563
-			expNewDeposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(3128529354197)),
+			expNewDeposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(3128529354197)),
 			expNewDepZeroTime:     3997798, // 3128529354197 / 782563
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(2535134750264)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(2535134750264)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 	}
 
@@ -687,7 +688,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Scenarios() {
 }
 
 func (s *KeeperTestSuite) TestAddDeposit_Fail_StreamNotExist() {
-	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)))
+	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)))
 	s.Require().False(ok)
 	s.Require().ErrorContains(err, "stream does not exist")
 
@@ -702,7 +703,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_InsufficientBalance() {
 	nowTime := s.ctx.BlockTime()
 
 	expStream := types.Stream{
-		Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)), //default to zero when creating a new stream
+		Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)), //default to zero when creating a new stream
 		FlowRate:        100,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(),
@@ -714,7 +715,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_InsufficientBalance() {
 	s.Require().NoError(err)
 
 	// deposit more than sender's balance
-	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", sdk.NewIntFromUint64(1000000000000000001)))
+	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, s.addrs[1], s.addrs[0], sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000000000000000001)))
 	s.Require().False(ok)
 	s.Require().ErrorContains(err, "insufficient funds")
 
@@ -722,13 +723,13 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_InsufficientBalance() {
 
 func (s *KeeperTestSuite) TestAddDeposit_Fail_Denom_Mismatch() {
 
-	newAccs := simapp.AddTestAddrsWithExtraNonBondCoin(s.app, s.ctx, 2, sdk.NewIntFromUint64(10000000), sdk.NewInt64Coin("notstake", 1000000))
+	newAccs := simapp.AddTestAddrsWithExtraNonBondCoin(s.app, s.ctx, 2, mathmod.NewIntFromUint64(10000000), sdk.NewInt64Coin("notstake", 1000000))
 
 	// set stream
 	nowTime := s.ctx.BlockTime()
 
 	expStream := types.Stream{
-		Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)), //default to zero when creating a new stream
+		Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)), //default to zero when creating a new stream
 		FlowRate:        100,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(),
@@ -740,7 +741,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_Denom_Mismatch() {
 	s.Require().NoError(err)
 
 	// deposit more than sender's balance
-	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, newAccs[1], newAccs[0], sdk.NewCoin("notstake", sdk.NewIntFromUint64(10000)))
+	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, newAccs[1], newAccs[0], sdk.NewCoin("notstake", mathmod.NewIntFromUint64(10000)))
 	s.Require().False(ok)
 	s.Require().ErrorContains(err, "top up denom does not match stream denom")
 
@@ -784,7 +785,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success() {
 	blockTime := time.Unix(time.Now().Unix(), 0).UTC()
 	tCtx = tCtx.WithBlockTime(blockTime).WithBlockHeight(1)
 	nowTime := tCtx.BlockTime()
-	deposit := sdk.NewCoin("stake", sdk.NewIntFromUint64(2400))
+	deposit := sdk.NewCoin("stake", mathmod.NewIntFromUint64(2400))
 
 	// create stream
 	_, err := s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[1], s.addrs[0], deposit, 1)
@@ -874,7 +875,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success_ExistingNotExpired() {
 			sender:   s.addrs[0],
 			receiver: s.addrs[1],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
 				FlowRate:        1,
 				LastOutflowTime: time.Unix(nowTime.Unix(), 0).UTC(),
 				DepositZeroTime: nowTime.Add(time.Second * 500),
@@ -888,7 +889,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success_ExistingNotExpired() {
 			sender:   s.addrs[2],
 			receiver: s.addrs[3],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 				FlowRate:        1,
 				LastOutflowTime: time.Unix(nowTime.Unix()-500, 0).UTC(),
 				DepositZeroTime: time.Unix(nowTime.Unix()-500, 0).UTC(),
@@ -902,7 +903,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success_ExistingNotExpired() {
 			sender:   s.addrs[4],
 			receiver: s.addrs[5],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 				FlowRate:        1,
 				LastOutflowTime: time.Unix(nowTime.Unix(), 0).UTC(),
 				DepositZeroTime: time.Unix(nowTime.Unix()-500, 0).UTC(),
@@ -916,7 +917,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success_ExistingNotExpired() {
 			sender:   s.addrs[6],
 			receiver: s.addrs[7],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(45343254343)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(45343254343)),
 				FlowRate:        142723,
 				LastOutflowTime: time.Unix(nowTime.Unix(), 0).UTC(),
 				DepositZeroTime: nowTime.Add(time.Second * 227701),
@@ -930,7 +931,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success_ExistingNotExpired() {
 			sender:   s.addrs[8],
 			receiver: s.addrs[9],
 			stream: types.Stream{
-				Deposit:         sdk.NewCoin("stake", sdk.NewIntFromUint64(2474104396800)),
+				Deposit:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(2474104396800)),
 				FlowRate:        1744292,
 				LastOutflowTime: time.Unix(nowTime.Unix(), 0).UTC(),
 				DepositZeroTime: nowTime.Add(time.Second * 604800),
@@ -976,13 +977,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[0],
 			receiver:              s.addrs[1],
 			startFlowRate:         1,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			newFlowRate:           2,
 			createTimeOffset:      500,
 			expInitialDepZeroTime: 1000,
 			expNewDepZeroTime:     250,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
 			expDuration:           250,
 		},
 		{
@@ -990,13 +991,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[2],
 			receiver:              s.addrs[3],
 			startFlowRate:         1,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			newFlowRate:           2,
 			createTimeOffset:      1500,
 			expInitialDepZeroTime: 1000,
 			expNewDepZeroTime:     0,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 			expDuration:           0,
 		},
 		{
@@ -1004,13 +1005,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[4],
 			receiver:              s.addrs[5],
 			startFlowRate:         2,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			newFlowRate:           1,
 			createTimeOffset:      100,
 			expInitialDepZeroTime: 500,
 			expNewDepZeroTime:     800,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(200)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(800)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(200)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(800)),
 			expDuration:           800,
 		},
 		{
@@ -1018,13 +1019,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[6],
 			receiver:              s.addrs[7],
 			startFlowRate:         2,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			newFlowRate:           1,
 			createTimeOffset:      1000,
 			expInitialDepZeroTime: 500,
 			expNewDepZeroTime:     0,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 			expDuration:           0,
 		},
 		{
@@ -1032,13 +1033,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[8],
 			receiver:              s.addrs[9],
 			startFlowRate:         1,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 			newFlowRate:           2,
 			createTimeOffset:      1500,
 			expInitialDepZeroTime: 0,
 			expNewDepZeroTime:     0,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 			expDuration:           0,
 		},
 		{
@@ -1046,13 +1047,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[10],
 			receiver:              s.addrs[11],
 			startFlowRate:         2,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 			newFlowRate:           3,
 			createTimeOffset:      1500,
 			expInitialDepZeroTime: 0,
 			expNewDepZeroTime:     0,
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 			expDuration:           0,
 		},
 		{
@@ -1060,13 +1061,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[12],
 			receiver:              s.addrs[13],
 			startFlowRate:         54875,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(149772587375)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(149772587375)),
 			newFlowRate:           69875,
 			createTimeOffset:      1605494,
-			expInitialDepZeroTime: 2729341,                                                 // 149772587375 / 54875
-			expNewDepZeroTime:     882591,                                                  // 61671104125 / 69875
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(88101483250)), // 54875 * 1605494
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(61671104125)), // 149772587375 - 88101483250
+			expInitialDepZeroTime: 2729341,                                                     // 149772587375 / 54875
+			expNewDepZeroTime:     882591,                                                      // 61671104125 / 69875
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(88101483250)), // 54875 * 1605494
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(61671104125)), // 149772587375 - 88101483250
 			expDuration:           882591,
 		},
 		{
@@ -1074,13 +1075,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[14],
 			receiver:              s.addrs[15],
 			startFlowRate:         69416,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(349274587314)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(349274587314)),
 			newFlowRate:           51249,
 			createTimeOffset:      2545494,
-			expInitialDepZeroTime: 5031615,                                                  // 349274587314 / 69416
-			expNewDepZeroTime:     3367413,                                                  // 172576575810 / 51249
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(176698011504)), // 69416 * 2545494
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(172576575810)), // 349274587314 - 176698011504
+			expInitialDepZeroTime: 5031615,                                                      // 349274587314 / 69416
+			expNewDepZeroTime:     3367413,                                                      // 172576575810 / 51249
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(176698011504)), // 69416 * 2545494
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(172576575810)), // 349274587314 - 176698011504
 			expDuration:           882591,
 		},
 		{
@@ -1088,13 +1089,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[16],
 			receiver:              s.addrs[17],
 			startFlowRate:         54875,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(149772587375)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(149772587375)),
 			newFlowRate:           69875,
 			createTimeOffset:      2729341,
-			expInitialDepZeroTime: 2729341,                                                  // 149772587375 / 54875
-			expNewDepZeroTime:     0,                                                        // 61671104125 / 69875
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(149772587375)), // 54875 * 1605494
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),            // 149772587375 - 88101483250
+			expInitialDepZeroTime: 2729341,                                                      // 149772587375 / 54875
+			expNewDepZeroTime:     0,                                                            // 61671104125 / 69875
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(149772587375)), // 54875 * 1605494
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),            // 149772587375 - 88101483250
 			expDuration:           0,
 		},
 		{
@@ -1102,13 +1103,13 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			sender:                s.addrs[18],
 			receiver:              s.addrs[19],
 			startFlowRate:         69875,
-			initialDeposit:        sdk.NewCoin("stake", sdk.NewIntFromUint64(249761587512)),
+			initialDeposit:        sdk.NewCoin("stake", mathmod.NewIntFromUint64(249761587512)),
 			newFlowRate:           32563,
 			createTimeOffset:      3574405,
-			expInitialDepZeroTime: 3574405,                                                  // 149772587375 / 54875
-			expNewDepZeroTime:     0,                                                        // 61671104125 / 69875
-			expClaim:              sdk.NewCoin("stake", sdk.NewIntFromUint64(249761587512)), // 54875 * 1605494
-			expRemainDeposit:      sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),            // 149772587375 - 88101483250
+			expInitialDepZeroTime: 3574405,                                                      // 149772587375 / 54875
+			expNewDepZeroTime:     0,                                                            // 61671104125 / 69875
+			expClaim:              sdk.NewCoin("stake", mathmod.NewIntFromUint64(249761587512)), // 54875 * 1605494
+			expRemainDeposit:      sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),            // 149772587375 - 88101483250
 			expDuration:           0,
 		},
 	}
@@ -1248,10 +1249,10 @@ func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 	nowTime := tCtx.BlockTime()
 
 	// set validator fee
-	valFee := sdk.NewDecWithPrec(1, 2)
+	valFee := mathmod.LegacyNewDecWithPrec(1, 2)
 	_ = s.app.StreamKeeper.SetParams(tCtx, types.Params{ValidatorFee: valFee})
 
-	deposit := sdk.NewCoin("stake", sdk.NewIntFromUint64(1000))
+	deposit := sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000))
 
 	// create stream
 	_, err := s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[1], s.addrs[0], deposit, 1)
@@ -1268,10 +1269,10 @@ func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 	// claim
 	amntClaimed, valFeeSent, totalClaim, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[1], s.addrs[0])
 	s.Require().NoError(err)
-	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(495)), amntClaimed, "amntClaimed")
-	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(5)), valFeeSent, "valFeeSent")
-	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), totalClaim, "totalClaim")
-	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), remainingDeposit, "remainingDeposit")
+	s.Require().Equal(sdk.NewCoin("stake", mathmod.NewIntFromUint64(495)), amntClaimed, "amntClaimed")
+	s.Require().Equal(sdk.NewCoin("stake", mathmod.NewIntFromUint64(5)), valFeeSent, "valFeeSent")
+	s.Require().Equal(sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)), totalClaim, "totalClaim")
+	s.Require().Equal(sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)), remainingDeposit, "remainingDeposit")
 
 	// check event emission
 	events := tCtx.EventManager().Events()
@@ -1319,7 +1320,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 	// check stream in keeper
 	stream, ok := s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0])
 	s.Require().True(ok)
-	s.Require().Equal(sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), stream.Deposit, "stream.Deposit")
+	s.Require().Equal(sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)), stream.Deposit, "stream.Deposit")
 }
 
 func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
@@ -1341,91 +1342,91 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			sender:            s.addrs[0],
 			receiver:          s.addrs[1],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			valFee:            0,
 			createTimeOffset:  500,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:              "simple, expired, no val fee",
 			sender:            s.addrs[2],
 			receiver:          s.addrs[3],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			valFee:            0,
 			createTimeOffset:  9999,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:              "simple, not expired, 5% val fee",
 			sender:            s.addrs[4],
 			receiver:          s.addrs[5],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			valFee:            5,
 			createTimeOffset:  500,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(475)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(25)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(475)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(25)),
 		},
 		{
 			name:              "simple, expired, 5% val fee",
 			sender:            s.addrs[6],
 			receiver:          s.addrs[7],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			valFee:            5,
 			createTimeOffset:  9999,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(950)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(50)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(950)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(50)),
 		},
 		{
 			name:              "not expired, no val fee",
 			sender:            s.addrs[8],
 			receiver:          s.addrs[9],
 			flowRate:          54769,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(198770009867)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(198770009867)),
 			valFee:            0,
 			createTimeOffset:  2628000,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(143932932000)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(143932932000)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(54837077867)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(143932932000)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(143932932000)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(54837077867)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:              "not expired, 3% val fee",
 			sender:            s.addrs[10],
 			receiver:          s.addrs[11],
 			flowRate:          69249,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(275585190123)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(275585190123)),
 			valFee:            3,
 			createTimeOffset:  1739523,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(120460228227)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(116846421381)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(155124961896)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(3613806846)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(120460228227)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(116846421381)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(155124961896)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(3613806846)),
 		},
 		{
 			name:              "expired, 9% val fee",
 			sender:            s.addrs[12],
 			receiver:          s.addrs[13],
 			flowRate:          73269,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(313563770856)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(313563770856)),
 			valFee:            9,
 			createTimeOffset:  5000000,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(313563770856)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(285343031479)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(28220739377)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(313563770856)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(285343031479)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(28220739377)),
 		},
 	}
 
@@ -1439,7 +1440,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 
 			// set params
 			newParams := types.Params{
-				ValidatorFee: sdk.NewDecWithPrec(tc.valFee, 2),
+				ValidatorFee: mathmod.LegacyNewDecWithPrec(tc.valFee, 2),
 			}
 
 			err := s.app.StreamKeeper.SetParams(tCtx, newParams)
@@ -1556,7 +1557,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Fail_NoDeposit() {
 			sender:   s.addrs[0],
 			receiver: s.addrs[1],
 			stream: types.Stream{
-				Deposit: sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+				Deposit: sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 			},
 		},
 		{
@@ -1625,10 +1626,10 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Success() {
 	nowTime := tCtx.BlockTime()
 
 	// set validator fee
-	valFee := sdk.NewDecWithPrec(1, 2)
+	valFee := mathmod.LegacyNewDecWithPrec(1, 2)
 	_ = s.app.StreamKeeper.SetParams(tCtx, types.Params{ValidatorFee: valFee})
 
-	deposit := sdk.NewCoin("stake", sdk.NewIntFromUint64(1000))
+	deposit := sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000))
 
 	// create stream
 	_, err := s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[1], s.addrs[0], deposit, 1)
@@ -1726,84 +1727,84 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			sender:            s.addrs[0],
 			receiver:          s.addrs[1],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			valFee:            0,
 			cancelTimeOffset:  1001,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRefundAmount:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:              "not expired, has deposit, no val fee",
 			sender:            s.addrs[2],
 			receiver:          s.addrs[3],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			valFee:            0,
 			cancelTimeOffset:  500,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(500)), // claim before cancel, so will have remaining deposit
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)), // claim before cancel, so will have remaining deposit
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRefundAmount:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
 		},
 		{
 			name:              "has expired, no deposit left, no val fee",
 			sender:            s.addrs[4],
 			receiver:          s.addrs[5],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 			valFee:            0,
 			cancelTimeOffset:  1001,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expRefundAmount:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:              "has expired, has deposit, 3% val fee",
 			sender:            s.addrs[6],
 			receiver:          s.addrs[7],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			valFee:            3,
 			cancelTimeOffset:  1001,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(970)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(30)),
-			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(0)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(970)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(30)),
+			expRefundAmount:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			name:              "not expired, has deposit, 3% val fee",
 			sender:            s.addrs[8],
 			receiver:          s.addrs[9],
 			flowRate:          1,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(1000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(1000)),
 			valFee:            3,
 			cancelTimeOffset:  500,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(485)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(15)),
-			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(500)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(485)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(15)),
+			expRefundAmount:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(500)),
 		},
 		{
 			name:              "not expired, has deposit, 4% val fee",
 			sender:            s.addrs[10],
 			receiver:          s.addrs[11],
 			flowRate:          2342343,
-			deposit:           sdk.NewCoin("stake", sdk.NewIntFromUint64(6155677404000)),
+			deposit:           sdk.NewCoin("stake", mathmod.NewIntFromUint64(6155677404000)),
 			valFee:            4,
 			cancelTimeOffset:  1814421,
-			expTotalClaim:     sdk.NewCoin("stake", sdk.NewIntFromUint64(4249996328403)),
-			expReceiverAmount: sdk.NewCoin("stake", sdk.NewIntFromUint64(4079996475267)),
-			expRemainDeposit:  sdk.NewCoin("stake", sdk.NewIntFromUint64(1905681075597)),
-			expValFee:         sdk.NewCoin("stake", sdk.NewIntFromUint64(169999853136)),
-			expRefundAmount:   sdk.NewCoin("stake", sdk.NewIntFromUint64(1905681075597)),
+			expTotalClaim:     sdk.NewCoin("stake", mathmod.NewIntFromUint64(4249996328403)),
+			expReceiverAmount: sdk.NewCoin("stake", mathmod.NewIntFromUint64(4079996475267)),
+			expRemainDeposit:  sdk.NewCoin("stake", mathmod.NewIntFromUint64(1905681075597)),
+			expValFee:         sdk.NewCoin("stake", mathmod.NewIntFromUint64(169999853136)),
+			expRefundAmount:   sdk.NewCoin("stake", mathmod.NewIntFromUint64(1905681075597)),
 		},
 	}
 
@@ -1819,7 +1820,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 
 			// set params
 			newParams := types.Params{
-				ValidatorFee: sdk.NewDecWithPrec(tc.valFee, 2),
+				ValidatorFee: mathmod.LegacyNewDecWithPrec(tc.valFee, 2),
 			}
 
 			err := s.app.StreamKeeper.SetParams(tCtx, newParams)
@@ -2082,7 +2083,7 @@ func (s *KeeperTestSuite) TestIterateAllStreams() {
 }
 
 func (s *KeeperTestSuite) TestMultipleDenoms() {
-	newAccs := simapp.AddTestAddrsWithExtraNonBondCoin(s.app, s.ctx, 100, sdk.NewIntFromUint64(10000000), sdk.NewInt64Coin("testdenom", 1000000))
+	newAccs := simapp.AddTestAddrsWithExtraNonBondCoin(s.app, s.ctx, 100, mathmod.NewIntFromUint64(10000000), sdk.NewInt64Coin("testdenom", 1000000))
 
 	tCtx := s.ctx
 	nowTime := time.Unix(time.Now().Unix(), 0).UTC()

@@ -5,6 +5,8 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
+	mathmod "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/unification-com/mainchain/x/stream/types"
@@ -58,7 +60,7 @@ func (k Keeper) DeleteStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAd
 // for use during genesis export etc.
 func (k Keeper) IterateAllStreams(ctx sdk.Context, cb func(sdk.AccAddress, sdk.AccAddress, types.Stream) bool) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.StreamKeyPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.StreamKeyPrefix)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
@@ -107,7 +109,7 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	// 4. calculate validator fee and deduct from claim amount
 	receiverAmount, valFee := types.CalculateValidatorFee(params.ValidatorFee, claimTotal)
 
-	if valFee.Amount.GT(sdk.NewIntFromUint64(0)) {
+	if valFee.Amount.GT(mathmod.NewIntFromUint64(0)) {
 		err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, sdk.NewCoins(valFee))
 
 		if err != nil {
@@ -116,7 +118,7 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	}
 
 	// 5. send modified amount from module account to receiver
-	if receiverAmount.Amount.GT(sdk.NewIntFromUint64(0)) {
+	if receiverAmount.Amount.GT(mathmod.NewIntFromUint64(0)) {
 		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, receiverAddr, sdk.NewCoins(receiverAmount))
 
 		if err != nil {
@@ -170,7 +172,7 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	if stream.DepositZeroTime.Before(nowTime) || stream.DepositZeroTime.Equal(nowTime) {
 		// In the case of expired, ClaimFromStream is called first to "reset" deposit to zero and forward
 		// remaining payment to the receiver wallet, effectively creating a new stream
-		if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
+		if stream.Deposit.Amount.GT(mathmod.NewIntFromUint64(0)) {
 			// only if stream has deposit
 			_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
 			if err != nil {
@@ -240,7 +242,7 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	duration := int64(0)
 
 	// Check if the stream still has deposit value.
-	if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
+	if stream.Deposit.Amount.GT(mathmod.NewIntFromUint64(0)) {
 		// still has deposit. Claim unpaid deposits with the old flow rate first
 		_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
 		if err != nil {
@@ -297,7 +299,7 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 	}
 
 	// claim any outstanding flow
-	if stream.Deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
+	if stream.Deposit.Amount.GT(mathmod.NewIntFromUint64(0)) {
 		_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
 		if err != nil {
 			return err
@@ -308,7 +310,7 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 
 	refundCoin := stream.Deposit
 	// return any existing deposit to the sender
-	if refundCoin.Amount.GT(sdk.NewIntFromUint64(0)) {
+	if refundCoin.Amount.GT(mathmod.NewIntFromUint64(0)) {
 		err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, senderAddr, sdk.NewCoins(refundCoin))
 		if err != nil {
 			return err
@@ -342,7 +344,7 @@ func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	nowTime := ctx.BlockTime()
 
 	stream := types.Stream{
-		Deposit:         sdk.NewCoin(deposit.Denom, sdk.NewInt(0)), // set to zero for correct calculation in AddDeposit
+		Deposit:         sdk.NewCoin(deposit.Denom, mathmod.NewInt(0)), // set to zero for correct calculation in AddDeposit
 		FlowRate:        flowRate,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(), // set to past, so deposit zero time correctly calculated in AddDeposit

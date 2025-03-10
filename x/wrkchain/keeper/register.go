@@ -2,6 +2,7 @@ package keeper
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -73,15 +74,15 @@ func (k Keeper) IsWrkChainRegistered(ctx sdk.Context, wrkchainId uint64) bool {
 }
 
 // GetWrkChainsIterator Get an iterator over all WrkChains in which the keys are the WrkChain Ids and the values are the WrkChains
-func (k Keeper) GetWrkChainsIterator(ctx sdk.Context) sdk.Iterator {
+func (k Keeper) GetWrkChainsIterator(ctx sdk.Context) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
+	return storetypes.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
 }
 
 // IterateWrkChains iterates over the all the wrkchain metadata and performs a callback function
 func (k Keeper) IterateWrkChains(ctx sdk.Context, cb func(wrkChain types.WrkChain) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {

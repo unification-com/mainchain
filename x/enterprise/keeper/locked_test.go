@@ -2,15 +2,16 @@ package keeper_test
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	simapp "github.com/unification-com/mainchain/app"
 	"math/rand"
 	"testing"
 
+	mathmod "cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
+
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -37,7 +38,7 @@ func TestGetTotalUnlocked(t *testing.T) {
 	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	simapp.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
+	simapp.AddTestAddrs(app, ctx, 1, mathmod.NewInt(20000))
 
 	denom := simapp.TestDenomination
 	amount := int64(1000)
@@ -58,7 +59,7 @@ func TestGetTotalUndSupply(t *testing.T) {
 	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	simapp.AddTestAddrs(app, ctx, 1, sdk.NewInt(20000))
+	simapp.AddTestAddrs(app, ctx, 1, mathmod.NewInt(20000))
 
 	totalSupply := app.BankKeeper.GetSupply(ctx, simapp.TestDenomination)
 	totalSupplyFromEnt := app.EnterpriseKeeper.GetTotalUndSupply(ctx)
@@ -319,7 +320,7 @@ func TestUnlockCoinsForFeesAndUsedCounterWithHalfFunds(t *testing.T) {
 
 	totalUsed := int64(0)
 
-	testAddresses := simapp.AddTestAddrs(app, ctx, 100, sdk.NewInt(10000))
+	testAddresses := simapp.AddTestAddrs(app, ctx, 100, mathmod.NewInt(10000))
 
 	for _, addr := range testAddresses {
 		amountToMint := int64(simapp.RandInBetween(1, 999))

@@ -1,18 +1,19 @@
 package ante_test
 
 import (
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	simapp "github.com/unification-com/mainchain/app"
 	"math/rand"
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-
+	mathmod "cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
+
+	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/enterprise/ante"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
@@ -51,7 +52,7 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(1))
+	accAmt := mathmod.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
@@ -97,7 +98,7 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 	pubK := privK.PubKey()
 	addr := sdk.AccAddress(pubK.Address())
 
-	accAmt := sdk.NewInt(int64(1))
+	accAmt := mathmod.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
@@ -136,7 +137,7 @@ func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(1))
+	accAmt := mathmod.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)

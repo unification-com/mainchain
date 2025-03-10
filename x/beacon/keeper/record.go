@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
@@ -47,7 +48,7 @@ func (k Keeper) GetBeaconTimestampByID(ctx sdk.Context, beaconID uint64, timesta
 // IterateBeacons iterates over the all the BEACON's timestamps and performs a callback function
 func (k Keeper) IterateBeaconTimestamps(ctx sdk.Context, beaconID uint64, cb func(beaconTimestamp types.BeaconTimestamp) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.BeaconAllTimestampsKey(beaconID))
+	iterator := storetypes.KVStorePrefixIterator(store, types.BeaconAllTimestampsKey(beaconID))
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -63,7 +64,7 @@ func (k Keeper) IterateBeaconTimestamps(ctx sdk.Context, beaconID uint64, cb fun
 // IterateBeaconTimestampsReverse iterates over the all the BEACON's timestamps in reverse order and performs a callback function
 func (k Keeper) IterateBeaconTimestampsReverse(ctx sdk.Context, beaconID uint64, cb func(beaconTimestamp types.BeaconTimestamp) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.BeaconAllTimestampsKey(beaconID))
+	iterator := storetypes.KVStoreReversePrefixIterator(store, types.BeaconAllTimestampsKey(beaconID))
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -59,7 +60,7 @@ func (k Keeper) RemovePurchaseOrderFromRaisedQueue(ctx sdk.Context, purchaseOrde
 // IterateRaisedQueue iterates over the all the raised purchase orders and performs a callback function
 func (k Keeper) IterateRaisedQueue(ctx sdk.Context, cb func(purchaseOrderId uint64) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.RaisedPoPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RaisedPoPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -108,7 +109,7 @@ func (k Keeper) RemovePurchaseOrderFromAcceptedQueue(ctx sdk.Context, purchaseOr
 // IterateAcceptedQueue iterates over the all the Accepted purchase orders and performs a callback function
 func (k Keeper) IterateAcceptedQueue(ctx sdk.Context, cb func(purchaseOrderId uint64) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.AcceptedPoPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.AcceptedPoPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -189,7 +190,7 @@ func (k Keeper) GetPurchaseOrderStatus(ctx sdk.Context, purchaseOrderID uint64) 
 // IteratePurchaseOrders iterates over the all the purchase orders and performs a callback function
 func (k Keeper) IteratePurchaseOrders(ctx sdk.Context, cb func(purchaseOrder types.EnterpriseUndPurchaseOrder) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.PurchaseOrderIDKeyPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.PurchaseOrderIDKeyPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {

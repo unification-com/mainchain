@@ -2,6 +2,7 @@ package keeper
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -75,15 +76,15 @@ func (k Keeper) IsBeaconRegistered(ctx sdk.Context, beaconID uint64) bool {
 }
 
 // GetBeaconsIterator Get an iterator over all BEACONs in which the keys are the BEACON Ids and the values are the BEACONs
-func (k Keeper) GetBeaconsIterator(ctx sdk.Context) sdk.Iterator {
+func (k Keeper) GetBeaconsIterator(ctx sdk.Context) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.RegisteredBeaconPrefix)
+	return storetypes.KVStorePrefixIterator(store, types.RegisteredBeaconPrefix)
 }
 
 // IterateBeacons iterates over the all the BEACON metadata and performs a callback function
 func (k Keeper) IterateBeacons(ctx sdk.Context, cb func(beacon types.Beacon) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.RegisteredBeaconPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RegisteredBeaconPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {

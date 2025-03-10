@@ -3,6 +3,7 @@ package types_test
 import (
 	"testing"
 
+	mathmod "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -42,13 +43,13 @@ func TestMsgCreateStream_ValidateBasic(t *testing.T) {
 		sender     sdk.AccAddress
 		expectPass bool
 	}{
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, s, true},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(0)), 100, r, s, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 0, r, s, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, sdk.AccAddress{}, s, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, sdk.AccAddress{}, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), 100, r, s, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, r, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 100, r, s, true},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(0)), 100, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 0, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 100, sdk.AccAddress{}, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 100, r, sdk.AccAddress{}, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100)), 100, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 100, r, r, false},
 	}
 
 	for i, tc := range tests {
@@ -139,10 +140,10 @@ func TestMsgTopUpDeposit_ValidateBasic(t *testing.T) {
 		receiver   sdk.AccAddress
 		expectPass bool
 	}{
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(0)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100)), sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(0)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
 	}
 
 	for i, tc := range tests {
@@ -283,7 +284,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(-1, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(-1, 2),
 				},
 			},
 			true,
@@ -294,7 +295,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(101, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(101, 2),
 				},
 			},
 			true,
@@ -305,7 +306,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: sdk.Dec{},
+					ValidatorFee: mathmod.LegacyDec{},
 				},
 			},
 			true,

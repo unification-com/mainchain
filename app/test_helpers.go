@@ -3,36 +3,37 @@ package app
 import (
 	"cosmossdk.io/math"
 	"encoding/json"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	"github.com/cosmos/cosmos-sdk/server"
-	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	undtypes "github.com/unification-com/mainchain/types"
-	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
-	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
-	streamtypes "github.com/unification-com/mainchain/x/stream/types"
-	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 	"math/rand"
 	"testing"
 	"time"
 
 	"cosmossdk.io/log"
+	mathmod "cosmossdk.io/math"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	"github.com/cosmos/cosmos-sdk/server"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/cosmos/ibc-go/v8/testing/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/ibc-go/v8/testing/mock"
+	undtypes "github.com/unification-com/mainchain/types"
+	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
+	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
+	streamtypes "github.com/unification-com/mainchain/x/stream/types"
+	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 const (
@@ -94,7 +95,7 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(TestDenomination, sdk.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(TestDenomination, mathmod.NewInt(100000000000000))),
 	}
 
 	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
@@ -175,10 +176,10 @@ func convertGenesisStateToNund(app *App, genesisState map[string]json.RawMessage
 	genesisState[stakingtypes.ModuleName] = app.AppCodec().MustMarshalJSON(stakingGenesis)
 
 	govGenesis := govtypesv1.DefaultGenesisState()
-	govGenesis.Params.MinDeposit = sdk.Coins{sdk.NewCoin(TestDenomination, sdk.NewIntFromUint64(10000000))}
+	govGenesis.Params.MinDeposit = sdk.Coins{sdk.NewCoin(TestDenomination, mathmod.NewIntFromUint64(10000000))}
 	genesisState[govtypes.ModuleName] = app.AppCodec().MustMarshalJSON(govGenesis)
 
-	crisisGenesis := crisistypes.NewGenesisState(sdk.NewCoin(TestDenomination, sdk.NewIntFromUint64(1000)))
+	crisisGenesis := crisistypes.NewGenesisState(sdk.NewCoin(TestDenomination, mathmod.NewIntFromUint64(1000)))
 	genesisState[crisistypes.ModuleName] = app.AppCodec().MustMarshalJSON(crisisGenesis)
 
 	return genesisState
@@ -198,7 +199,7 @@ func SetKeeperTestParamsAndDefaultValues(app *App, ctx sdk.Context) {
 	app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, 1)
 
 	// set to 0%. Individual unit tests will set specific %
-	app.StreamKeeper.SetParams(ctx, streamtypes.Params{ValidatorFee: sdk.NewDecFromInt(sdk.NewIntFromUint64(0))})
+	app.StreamKeeper.SetParams(ctx, streamtypes.Params{ValidatorFee: mathmod.LegacyNewDecFromInt(mathmod.NewIntFromUint64(0))})
 }
 
 func GenerateRandomStringWithCharset(length int, charset string) string {
@@ -235,11 +236,11 @@ func RandInBetween(min, max int) int {
 
 // AddTestAddrs constructs and returns accNum amount of accounts with an
 // initial balance of accAmt in random order
-func AddTestAddrs(app *App, ctx sdk.Context, accNum int, accAmt sdk.Int) []sdk.AccAddress {
+func AddTestAddrs(app *App, ctx sdk.Context, accNum int, accAmt mathmod.Int) []sdk.AccAddress {
 	return addTestAddrs(app, ctx, accNum, accAmt, createRandomAccounts)
 }
 
-func AddTestAddrsWithExtraNonBondCoin(app *App, ctx sdk.Context, accNum int, accAmt sdk.Int, extraCoin sdk.Coin) []sdk.AccAddress {
+func AddTestAddrsWithExtraNonBondCoin(app *App, ctx sdk.Context, accNum int, accAmt mathmod.Int, extraCoin sdk.Coin) []sdk.AccAddress {
 	testAddrs := createRandomAccounts(accNum)
 
 	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt), extraCoin)

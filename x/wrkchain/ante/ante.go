@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -153,7 +154,7 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 			m := msg.(*types.MsgPurchaseWrkChainStateStorage)
 			numSlots := m.Number
 			feePerSlot := wck.GetPurchaseStorageFeeAsCoin(ctx)
-			totalForSlotsAmt := feePerSlot.Amount.Mul(sdk.NewInt(int64(numSlots)))
+			totalForSlotsAmt := feePerSlot.Amount.Mul(mathmod.NewInt(int64(numSlots)))
 			totalForSlotsCoin := sdk.NewCoin(feePerSlot.Denom, totalForSlotsAmt)
 			expectedFees = expectedFees.Add(totalForSlotsCoin)
 			numMsgs = numMsgs + 1

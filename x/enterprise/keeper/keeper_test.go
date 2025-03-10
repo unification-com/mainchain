@@ -1,15 +1,17 @@
 package keeper_test
 
 import (
+	"testing"
+
+	mathmod "cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
-	simapp "github.com/unification-com/mainchain/app"
-	"github.com/unification-com/mainchain/x/enterprise/keeper"
-	"testing"
 
 	"github.com/unification-com/mainchain/app"
+	simapp "github.com/unification-com/mainchain/app"
+	"github.com/unification-com/mainchain/x/enterprise/keeper"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -39,7 +41,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.app = testApp
 	s.ctx = ctx
 	s.queryClient = queryClient
-	s.addrs = simapp.AddTestAddrsIncremental(testApp, ctx, 10, sdk.NewInt(30000000))
+	s.addrs = simapp.AddTestAddrsIncremental(testApp, ctx, 10, mathmod.NewInt(30000000))
 	s.msgServer = keeper.NewMsgServerImpl(s.app.EnterpriseKeeper)
 }
 

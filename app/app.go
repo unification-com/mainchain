@@ -522,7 +522,6 @@ func NewApp(
 		upgradetypes.ModuleName,
 	)
 
-	// TODO - only enterprise module has begin block - remove others once app modules have been modified
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.

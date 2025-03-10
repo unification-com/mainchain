@@ -4,11 +4,13 @@ import (
 	"strconv"
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
-func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) {
+func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) error {
 
 	raisedPurchaseOrderIds := k.GetAllRaisedPurchaseOrders(ctx)
 	entParams := k.GetParams(ctx)
@@ -23,10 +25,10 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) {
 	for _, poId := range raisedPurchaseOrderIds {
 		po, found := k.GetPurchaseOrder(ctx, poId)
 		if !found {
-			panic("purchase order not found!")
+			return errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "purchase order not found!")
 		}
 		if po.Status != types.StatusRaised {
-			panic("purchase order status is not raised!")
+			return errorsmod.Wrap(types.ErrInvalidStatus, "purchase order status is not raised!")
 		}
 		numAccepts := 0
 		numRejects := 0
@@ -46,7 +48,7 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) {
 			po.CompletionTime = timeNow
 			err := k.SetPurchaseOrder(ctx, po)
 			if err != nil {
-				panic(err)
+				return err
 			}
 			if !ctx.IsCheckTx() {
 				logger.Debug("auto reject stale purchase order", "poid", po.Id)
@@ -71,7 +73,7 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) {
 			po.CompletionTime = timeNow
 			err := k.SetPurchaseOrder(ctx, po)
 			if err != nil {
-				panic(err)
+				return err
 			}
 			if !ctx.IsCheckTx() {
 				logger.Debug("purchase order rejected", "poid", po.Id, "accepts", numAccepts, "rejects", numRejects, "decision", po.Status.String())
@@ -99,7 +101,7 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) {
 			po.CompletionTime = timeNow
 			err := k.SetPurchaseOrder(ctx, po)
 			if err != nil {
-				panic(err)
+				return err
 			}
 			if !ctx.IsCheckTx() {
 				logger.Debug("purchase order accepted", "poid", po.Id, "accepts", numAccepts, "rejects", numRejects, "decision", po.Status.String())
@@ -123,37 +125,39 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) {
 			)
 		}
 	}
+
+	return nil
 }
 
-func (k Keeper) ProcessAcceptedPurchaseOrders(ctx sdk.Context) {
+func (k Keeper) ProcessAcceptedPurchaseOrders(ctx sdk.Context) error {
 	acceptedPurchaseOrderIds := k.GetAllAcceptedPurchaseOrders(ctx)
 	logger := k.Logger(ctx)
 
 	for _, poId := range acceptedPurchaseOrderIds {
 		po, found := k.GetPurchaseOrder(ctx, poId)
 		if !found {
-			panic("purchase order not found!")
+			return errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "purchase order not found!")
 		}
 		if po.Status != types.StatusAccepted {
-			panic("purchase order status is not accepted!")
+			return errorsmod.Wrap(types.ErrInvalidStatus, "purchase order status is not accepted!")
 		}
 
 		// mark as completed
 		po.Status = types.StatusCompleted
 		err := k.SetPurchaseOrder(ctx, po)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		purchaser, err := sdk.AccAddressFromBech32(po.Purchaser)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		// Mint the Enterprise FUND
 		err = k.MintCoinsAndLock(ctx, purchaser, po.Amount)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		if !ctx.IsCheckTx() {
@@ -172,4 +176,6 @@ func (k Keeper) ProcessAcceptedPurchaseOrders(ctx sdk.Context) {
 			),
 		)
 	}
+
+	return nil
 }

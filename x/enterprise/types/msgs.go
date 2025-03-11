@@ -53,11 +53,6 @@ func (msg MsgUndPurchaseOrder) ValidateBasic() error {
 	return nil
 }
 
-// GetSignBytes Implements Msg.
-func (msg MsgUndPurchaseOrder) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
 // GetSigners Implements Msg.
 func (msg MsgUndPurchaseOrder) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Purchaser)
@@ -101,11 +96,6 @@ func (msg MsgProcessUndPurchaseOrder) ValidateBasic() error {
 		return errorsmod.Wrap(ErrInvalidStatus, "status must be accept or reject")
 	}
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgProcessUndPurchaseOrder) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
 // GetSigners Implements Msg.
@@ -153,11 +143,6 @@ func (msg MsgWhitelistAddress) ValidateBasic() error {
 	return nil
 }
 
-// GetSignBytes encodes the message for signing
-func (msg MsgWhitelistAddress) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
 // GetSigners defines whose signature is required
 func (msg MsgWhitelistAddress) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -168,12 +153,6 @@ func (msg MsgWhitelistAddress) GetSigners() []sdk.AccAddress {
 }
 
 // --- Modify Params Msg Type ---
-
-// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
-// the expected signer needs to sign.
-func (m MsgUpdateParams) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
 
 // GetSigners returns the expected signers for a MsgUpdateParams message.
 func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {

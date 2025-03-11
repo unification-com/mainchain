@@ -69,11 +69,6 @@ func (msg MsgRegisterWrkChain) ValidateBasic() error {
 	return nil
 }
 
-// GetSignBytes encodes the message for signing
-func (msg MsgRegisterWrkChain) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
 // GetSigners defines whose signature is required
 func (msg MsgRegisterWrkChain) GetSigners() []sdk.AccAddress {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
@@ -152,11 +147,6 @@ func (msg MsgRecordWrkChainBlock) ValidateBasic() error {
 	return nil
 }
 
-// GetSignBytes encodes the message for signing
-func (msg MsgRecordWrkChainBlock) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
 // GetSigners defines whose signature is required
 func (msg MsgRecordWrkChainBlock) GetSigners() []sdk.AccAddress {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
@@ -203,11 +193,6 @@ func (msg MsgPurchaseWrkChainStateStorage) ValidateBasic() error {
 	return nil
 }
 
-// GetSignBytes encodes the message for signing
-func (msg MsgPurchaseWrkChainStateStorage) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
 // GetSigners defines whose signature is required
 func (msg MsgPurchaseWrkChainStateStorage) GetSigners() []sdk.AccAddress {
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
@@ -218,12 +203,6 @@ func (msg MsgPurchaseWrkChainStateStorage) GetSigners() []sdk.AccAddress {
 }
 
 // --- Modify Params Msg Type ---
-
-// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
-// the expected signer needs to sign.
-func (m MsgUpdateParams) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
 
 // GetSigners returns the expected signers for a MsgUpdateParams message.
 func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {

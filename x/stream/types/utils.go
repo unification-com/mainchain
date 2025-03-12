@@ -119,7 +119,8 @@ func CalculateAmountToClaim(
 	return amountToClaim, remainingDepositValue
 }
 
-func CalculateValidatorFee(valFee mathmod.LegacyDec, amountToClaim sdk.Coin) (sdk.Coin, sdk.Coin) {
+func CalculateValidatorFee(valFeeStr string, amountToClaim sdk.Coin) (sdk.Coin, sdk.Coin) {
+	valFee, _ := mathmod.LegacyNewDecFromStr(valFeeStr)
 	var valFeeCoin sdk.Coin
 	var finalClaimCoin sdk.Coin
 

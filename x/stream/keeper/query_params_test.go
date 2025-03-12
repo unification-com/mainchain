@@ -1,14 +1,12 @@
 package keeper_test
 
 import (
-	mathmod "cosmossdk.io/math"
-
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 func (s *KeeperTestSuite) TestParamsQuery() {
-	defaultFee := mathmod.LegacyNewDecWithPrec(1, 2)
-	newFee := mathmod.LegacyNewDecWithPrec(24, 2)
+	defaultFee := "0.01"
+	newFee := "0.24"
 
 	req1 := &types.QueryParamsRequest{}
 	expRes1 := &types.QueryParamsResponse{Params: types.DefaultParams()}

@@ -4,18 +4,16 @@ import (
 	"fmt"
 
 	mathmod "cosmossdk.io/math"
-	"gopkg.in/yaml.v2"
-
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 // DefaultValidatorFee is set to 0%
-var DefaultValidatorFee = mathmod.LegacyNewDecWithPrec(1, 2)
+var DefaultValidatorFee = "0.01"
 
 // NewParams creates a new Params instance
-func NewParams(validatorFee mathmod.LegacyDec) Params {
+func NewParams(validatorFee string) Params {
 	return Params{
 		ValidatorFee: validatorFee,
 	}
@@ -36,16 +34,10 @@ func (p Params) Validate() error {
 	return nil
 }
 
-// String implements the Stringer interface.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
-}
-
-func validateBaseValidatorFee(i interface{}) error {
-	v, ok := i.(mathmod.LegacyDec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+func validateBaseValidatorFee(vFeeStr string) error {
+	v, err := mathmod.LegacyNewDecFromStr(vFeeStr)
+	if err != nil {
+		return fmt.Errorf("invalid validator fee string: %w", err)
 	}
 
 	if v.IsNil() {

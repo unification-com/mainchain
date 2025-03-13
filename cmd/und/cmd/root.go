@@ -6,8 +6,6 @@ import (
 	"io"
 	"os"
 
-	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
-
 	"cosmossdk.io/log"
 	dbm "github.com/cometbft/cometbft-db"
 	tmcfg "github.com/cometbft/cometbft/config"
@@ -154,8 +152,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		GetDenomConversionCmd(),
 	)
 
-	// add rosetta
-	rootCmd.AddCommand(rosettaCmd.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Codec))
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {

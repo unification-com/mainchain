@@ -76,15 +76,6 @@ func (msg MsgCreateStream) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
-func (msg MsgCreateStream) GetSigners() []sdk.AccAddress {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{sender}
-}
-
 // --- Claim Stream By sender & receiver Msg ---
 
 // NewMsgClaimStream is a constructor function for MsgClaimStream
@@ -116,15 +107,6 @@ func (msg MsgClaimStream) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgClaimStream) GetSigners() []sdk.AccAddress {
-	receiver, err := sdk.AccAddressFromBech32(msg.Receiver)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{receiver}
 }
 
 // --- Top up Deposit Msg ---
@@ -166,15 +148,6 @@ func (msg MsgTopUpDeposit) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
-func (msg MsgTopUpDeposit) GetSigners() []sdk.AccAddress {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{sender}
-}
-
 // --- Update Flow Rate Msg ---
 
 // NewMsgUpdateFlowRate is a constructor function for MsgUpdateFlowRate
@@ -214,15 +187,6 @@ func (msg MsgUpdateFlowRate) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
-func (msg MsgUpdateFlowRate) GetSigners() []sdk.AccAddress {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{sender}
-}
-
 // --- Cancel Stream Msg ---
 
 // NewMsgCancelStream is a constructor function for MsgCancelStream
@@ -256,22 +220,7 @@ func (msg MsgCancelStream) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
-func (msg MsgCancelStream) GetSigners() []sdk.AccAddress {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{sender}
-}
-
 // --- Modify Params Msg Type ---
-
-// GetSigners returns the expected signers for a MsgUpdateParams message.
-func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {

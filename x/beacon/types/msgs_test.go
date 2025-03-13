@@ -18,14 +18,6 @@ func TestMsgRegisterBeacon_Type(t *testing.T) {
 	require.Equal(t, RegisterAction, msg.Type())
 }
 
-func TestMsgRegisterBeacon_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgRegisterBeacon{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgRecordBeaconTimestamp_Route(t *testing.T) {
 	msg := MsgRecordBeaconTimestamp{}
 	require.Equal(t, ModuleName, msg.Route())
@@ -36,14 +28,6 @@ func TestMsgRecordBeaconTimestamp_Type(t *testing.T) {
 	require.Equal(t, RecordAction, msg.Type())
 }
 
-func TestMsgRecordBeaconTimestamp_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgRecordBeaconTimestamp{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgPurchaseBeaconStateStorage_Route(t *testing.T) {
 	msg := MsgPurchaseBeaconStateStorage{}
 	require.Equal(t, ModuleName, msg.Route())
@@ -52,14 +36,6 @@ func TestMsgPurchaseBeaconStateStorage_Route(t *testing.T) {
 func TestMsgPurchaseBeaconStateStorage_Type(t *testing.T) {
 	msg := MsgPurchaseBeaconStateStorage{}
 	require.Equal(t, PurchaseStorageAction, msg.Type())
-}
-
-func TestMsgPurchaseBeaconStateStorage_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgPurchaseBeaconStateStorage{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
 }
 
 func TestMsgRegisterBeacon(t *testing.T) {

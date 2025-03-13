@@ -19,14 +19,6 @@ func TestMsgUndPurchaseOrder_Type(t *testing.T) {
 	require.Equal(t, types.PurchaseAction, msg.Type())
 }
 
-func TestMsgUndPurchaseOrder_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgUndPurchaseOrder{Purchaser: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgProcessUndPurchaseOrder_Route(t *testing.T) {
 	msg := types.MsgProcessUndPurchaseOrder{}
 	require.Equal(t, types.ModuleName, msg.Route())
@@ -37,14 +29,6 @@ func TestMsgProcessUndPurchaseOrder_Type(t *testing.T) {
 	require.Equal(t, types.ProcessAction, msg.Type())
 }
 
-func TestMsgProcessUndPurchaseOrder_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgProcessUndPurchaseOrder{Signer: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgWhitelistAddress_Route(t *testing.T) {
 	msg := types.MsgWhitelistAddress{}
 	require.Equal(t, types.ModuleName, msg.Route())
@@ -53,14 +37,6 @@ func TestMsgWhitelistAddress_Route(t *testing.T) {
 func TestMsgWhitelistAddress_Type(t *testing.T) {
 	msg := types.MsgWhitelistAddress{}
 	require.Equal(t, types.WhitelistAddressAction, msg.Type())
-}
-
-func TestMsgWhitelistAddress_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgWhitelistAddress{Signer: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
 }
 
 func TestMsgUndPurchaseOrder_Validate(t *testing.T) {

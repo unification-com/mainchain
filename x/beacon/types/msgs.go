@@ -60,15 +60,6 @@ func (msg MsgRegisterBeacon) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
-func (msg MsgRegisterBeacon) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
-}
-
 // --- Record a BEACON timestamp hash Msg ---
 
 // NewMsgRecordBeaconTimestamp is a constructor function for MsgRecordBeaconTimestamp
@@ -114,15 +105,6 @@ func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
-func (msg MsgRecordBeaconTimestamp) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
-}
-
 // --- Purchase state storage Msg ---
 
 // NewMsgRecordBeaconTimestamp is a constructor function for MsgRecordBeaconTimestamp
@@ -160,22 +142,7 @@ func (msg MsgPurchaseBeaconStateStorage) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
-func (msg MsgPurchaseBeaconStateStorage) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
-}
-
 // --- Modify Params Msg Type ---
-
-// GetSigners returns the expected signers for a MsgUpdateParams message.
-func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {

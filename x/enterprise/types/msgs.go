@@ -53,15 +53,6 @@ func (msg MsgUndPurchaseOrder) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners Implements Msg.
-func (msg MsgUndPurchaseOrder) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Purchaser)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
-}
-
 // __Enterprise_UND_Process_Purchase_Order_Msg__________________________
 
 // MsgProcessUndPurchaseOrder defines a ProcessUndPurchaseOrder message - used to accept/reject a PO
@@ -96,15 +87,6 @@ func (msg MsgProcessUndPurchaseOrder) ValidateBasic() error {
 		return errorsmod.Wrap(ErrInvalidStatus, "status must be accept or reject")
 	}
 	return nil
-}
-
-// GetSigners Implements Msg.
-func (msg MsgProcessUndPurchaseOrder) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Signer)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
 }
 
 // __Enterprise_UND_Whitelist_Msg__________________________
@@ -143,22 +125,7 @@ func (msg MsgWhitelistAddress) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
-func (msg MsgWhitelistAddress) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Signer)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
-}
-
 // --- Modify Params Msg Type ---
-
-// GetSigners returns the expected signers for a MsgUpdateParams message.
-func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {

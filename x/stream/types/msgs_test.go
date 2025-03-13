@@ -25,14 +25,6 @@ func TestMsgCreateStream_Type(t *testing.T) {
 	require.Equal(t, types.CreateStreamAction, msg.Type())
 }
 
-func TestMsgCreateStream_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgCreateStream{Sender: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
-}
-
 func TestMsgCreateStream_ValidateBasic(t *testing.T) {
 	s := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
 	r := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
@@ -80,14 +72,6 @@ func TestMsgClaimStream_Type(t *testing.T) {
 	require.Equal(t, types.ClaimStreamAction, msg.Type())
 }
 
-func TestMsgClaimStream_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	receiverAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgClaimStream{Receiver: receiverAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(receiverAddr))
-}
-
 func TestMsgClaimStream_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		sender     sdk.AccAddress
@@ -123,14 +107,6 @@ func TestMsgTopUpDeposit_Route(t *testing.T) {
 func TestMsgTopUpDeposit_Type(t *testing.T) {
 	msg := types.MsgTopUpDeposit{}
 	require.Equal(t, types.TopUpDepositAction, msg.Type())
-}
-
-func TestMsgTopUpDeposit_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgCreateStream{Sender: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
 }
 
 func TestMsgTopUpDeposit_ValidateBasic(t *testing.T) {
@@ -173,14 +149,6 @@ func TestMsgUpdateFlowRate_Type(t *testing.T) {
 	require.Equal(t, types.UpdateFlowRateAction, msg.Type())
 }
 
-func TestMsgUpdateFlowRate_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgUpdateFlowRate{Sender: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
-}
-
 func TestMsgUpdateFlowRate_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		flowRate   int64
@@ -221,14 +189,6 @@ func TestMsgCancelStream_Type(t *testing.T) {
 	require.Equal(t, types.CancelStreamAction, msg.Type())
 }
 
-func TestMsgMsgCancelStream_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgCancelStream{Sender: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
-}
-
 func TestMsgCancelStream_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		receiver   sdk.AccAddress
@@ -255,13 +215,6 @@ func TestMsgCancelStream_ValidateBasic(t *testing.T) {
 }
 
 // MsgUpdateParams{}
-func TestMsgUpdateParams_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgUpdateParams{Authority: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
-}
 
 func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 	tests := []struct {

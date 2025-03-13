@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 
-	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/unification-com/mainchain/x/enterprise/types"
@@ -25,10 +24,14 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) error {
 	for _, poId := range raisedPurchaseOrderIds {
 		po, found := k.GetPurchaseOrder(ctx, poId)
 		if !found {
-			return errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "purchase order not found!")
+			logger.Warn("purchase order not found in abci method TallyPurchaseOrderDecisions", "poid", poId)
+			continue
+			//return errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "purchase order not found!")
 		}
 		if po.Status != types.StatusRaised {
-			return errorsmod.Wrap(types.ErrInvalidStatus, "purchase order status is not raised!")
+			logger.Warn("purchase order status is not raised in abci method TallyPurchaseOrderDecisions", "poid", poId)
+			continue
+			//return errorsmod.Wrap(types.ErrInvalidStatus, "purchase order status is not raised!")
 		}
 		numAccepts := 0
 		numRejects := 0
@@ -136,10 +139,14 @@ func (k Keeper) ProcessAcceptedPurchaseOrders(ctx sdk.Context) error {
 	for _, poId := range acceptedPurchaseOrderIds {
 		po, found := k.GetPurchaseOrder(ctx, poId)
 		if !found {
-			return errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "purchase order not found!")
+			logger.Warn("purchase order not found in abci method ProcessAcceptedPurchaseOrders", "poid", poId)
+			continue
+			//return errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "purchase order not found!")
 		}
 		if po.Status != types.StatusAccepted {
-			return errorsmod.Wrap(types.ErrInvalidStatus, "purchase order status is not accepted!")
+			logger.Warn("purchase order status is not accepted in abci method ProcessAcceptedPurchaseOrders", "poid", poId)
+			continue
+			//return errorsmod.Wrap(types.ErrInvalidStatus, "purchase order status is not accepted!")
 		}
 
 		// mark as completed

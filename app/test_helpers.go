@@ -1,7 +1,7 @@
 package app
 
 import (
-	"cosmossdk.io/math"
+	"context"
 	"encoding/json"
 	"math/rand"
 	"testing"
@@ -9,10 +9,9 @@ import (
 
 	"cosmossdk.io/log"
 	mathmod "cosmossdk.io/math"
-	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	tmtypes "github.com/cometbft/cometbft/types"
+	cmtypes "github.com/cometbft/cometbft/types"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -58,7 +57,6 @@ type SetupOptions struct {
 }
 
 func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
-
 	db := dbm.NewMemDB()
 
 	appOptions := make(simtestutil.AppOptionsMap, 0)
@@ -66,6 +64,9 @@ func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 	appOptions[server.FlagInvCheckPeriod] = invCheckPeriod
 
 	app := NewApp(log.NewNopLogger(), db, nil, true, appOptions)
+
+	// note - SDK sim returns app, app.DefaultGenesis().
+	// since FUND modules use nund to test, need to convert genesis
 	if withGenesis {
 		genesisState := app.DefaultGenesis()
 		genesisState = convertGenesisStateToNund(app, genesisState)
@@ -87,8 +88,8 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 	require.NoError(t, err)
 
 	// create validator set with single validator
-	validator := tmtypes.NewValidator(pubKey, 1)
-	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+	validator := cmtypes.NewValidator(pubKey, 1)
+	valSet := cmtypes.NewValidatorSet([]*cmtypes.Validator{validator})
 
 	// generate genesis account
 	senderPrivKey := secp256k1.GenPrivKey()
@@ -107,7 +108,7 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
 // of one consensus engine unit in the default token of the simapp from first genesis
 // account. A Nop logger is set in SimApp.
-func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *App {
+func SetupWithGenesisValSet(t *testing.T, valSet *cmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *App {
 	t.Helper()
 
 	app, genesisState := setup(true, 5)
@@ -118,36 +119,32 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	require.NoError(t, err)
 
 	// init chain will set the validator set and initialize the genesis accounts
-	app.InitChain(
-		abci.RequestInitChain{
-			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: simtestutil.DefaultConsensusParams,
-			AppStateBytes:   stateBytes,
-		},
+	_, err = app.InitChain(&abci.RequestInitChain{
+		Validators:      []abci.ValidatorUpdate{},
+		ConsensusParams: simtestutil.DefaultConsensusParams,
+		AppStateBytes:   stateBytes,
+	},
 	)
 
-	// commit genesis changes
-	app.Commit()
-	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
-		Height:             app.LastBlockHeight() + 1,
-		AppHash:            app.LastCommitID().Hash,
-		ValidatorsHash:     valSet.Hash(),
-		NextValidatorsHash: valSet.Hash(),
-	}})
+	require.NoError(t, err)
 
 	return app
 }
 
 // AddTestAddrsIncremental constructs and returns accNum amount of accounts with an
 // initial balance of accAmt in random order
-func AddTestAddrsIncremental(app *App, ctx sdk.Context, accNum int, accAmt math.Int) []sdk.AccAddress {
+func AddTestAddrsIncremental(app *App, ctx context.Context, accNum int, accAmt mathmod.Int) []sdk.AccAddress {
 	return addTestAddrs(app, ctx, accNum, accAmt, simtestutil.CreateIncrementalAccounts)
 }
 
-func addTestAddrs(app *App, ctx sdk.Context, accNum int, accAmt math.Int, strategy simtestutil.GenerateAccountStrategy) []sdk.AccAddress {
+func addTestAddrs(app *App, ctx context.Context, accNum int, accAmt mathmod.Int, strategy simtestutil.GenerateAccountStrategy) []sdk.AccAddress {
 	testAddrs := strategy(accNum)
+	bondDenom, err := app.StakingKeeper.BondDenom(ctx)
+	if err != nil {
+		panic(err)
+	}
 
-	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt))
+	initCoins := sdk.NewCoins(sdk.NewCoin(bondDenom, accAmt))
 
 	for _, addr := range testAddrs {
 		initAccountWithCoins(app, ctx, addr, initCoins)
@@ -156,7 +153,7 @@ func addTestAddrs(app *App, ctx sdk.Context, accNum int, accAmt math.Int, strate
 	return testAddrs
 }
 
-func initAccountWithCoins(app *App, ctx sdk.Context, addr sdk.AccAddress, coins sdk.Coins) {
+func initAccountWithCoins(app *App, ctx context.Context, addr sdk.AccAddress, coins sdk.Coins) {
 	err := app.BankKeeper.MintCoins(ctx, enttypes.ModuleName, coins)
 	if err != nil {
 		panic(err)
@@ -185,21 +182,23 @@ func convertGenesisStateToNund(app *App, genesisState map[string]json.RawMessage
 	return genesisState
 }
 
-func SetKeeperTestParamsAndDefaultValues(app *App, ctx sdk.Context) {
-	app.BeaconKeeper.SetParams(ctx, beacontypes.NewParams(24, 2, 2, TestDenomination, TestDefaultStorage, TestMaxStorage))
-	app.WrkchainKeeper.SetParams(ctx, wrkchaintypes.NewParams(24, 2, 2, TestDenomination, TestDefaultStorage, TestMaxStorage))
-	app.EnterpriseKeeper.SetParams(ctx, enttypes.Params{
+func SetKeeperTestParamsAndDefaultValues(app *App, ctx context.Context) {
+	// Todo - migrate modules from sdk.Context to context.Context
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	app.BeaconKeeper.SetParams(sdkCtx, beacontypes.NewParams(24, 2, 2, TestDenomination, TestDefaultStorage, TestMaxStorage))
+	app.WrkchainKeeper.SetParams(sdkCtx, wrkchaintypes.NewParams(24, 2, 2, TestDenomination, TestDefaultStorage, TestMaxStorage))
+	app.EnterpriseKeeper.SetParams(sdkCtx, enttypes.Params{
 		EntSigners:        sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String(),
 		Denom:             TestDenomination,
 		MinAccepts:        1,
 		DecisionTimeLimit: 1000,
 	})
-	_ = app.EnterpriseKeeper.SetTotalLockedUnd(ctx, sdk.NewInt64Coin(TestDenomination, 0))
-	_ = app.EnterpriseKeeper.SetTotalSpentEFUND(ctx, sdk.NewInt64Coin(TestDenomination, 0))
-	app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, 1)
+	_ = app.EnterpriseKeeper.SetTotalLockedUnd(sdkCtx, sdk.NewInt64Coin(TestDenomination, 0))
+	_ = app.EnterpriseKeeper.SetTotalSpentEFUND(sdkCtx, sdk.NewInt64Coin(TestDenomination, 0))
+	app.EnterpriseKeeper.SetHighestPurchaseOrderID(sdkCtx, 1)
 
 	// set to 0%. Individual unit tests will set specific %
-	app.StreamKeeper.SetParams(ctx, streamtypes.Params{ValidatorFee: mathmod.LegacyNewDecFromInt(mathmod.NewIntFromUint64(0))})
+	app.StreamKeeper.SetParams(sdkCtx, streamtypes.Params{ValidatorFee: "0.00"})
 }
 
 func GenerateRandomStringWithCharset(length int, charset string) string {
@@ -236,14 +235,18 @@ func RandInBetween(min, max int) int {
 
 // AddTestAddrs constructs and returns accNum amount of accounts with an
 // initial balance of accAmt in random order
-func AddTestAddrs(app *App, ctx sdk.Context, accNum int, accAmt mathmod.Int) []sdk.AccAddress {
+func AddTestAddrs(app *App, ctx context.Context, accNum int, accAmt mathmod.Int) []sdk.AccAddress {
 	return addTestAddrs(app, ctx, accNum, accAmt, createRandomAccounts)
 }
 
-func AddTestAddrsWithExtraNonBondCoin(app *App, ctx sdk.Context, accNum int, accAmt mathmod.Int, extraCoin sdk.Coin) []sdk.AccAddress {
+func AddTestAddrsWithExtraNonBondCoin(app *App, ctx context.Context, accNum int, accAmt mathmod.Int, extraCoin sdk.Coin) []sdk.AccAddress {
 	testAddrs := createRandomAccounts(accNum)
+	bondDenom, err := app.StakingKeeper.BondDenom(ctx)
+	if err != nil {
+		panic(err)
+	}
 
-	initCoins := sdk.NewCoins(sdk.NewCoin(app.StakingKeeper.BondDenom(ctx), accAmt), extraCoin)
+	initCoins := sdk.NewCoins(sdk.NewCoin(bondDenom, accAmt), extraCoin)
 
 	for _, addr := range testAddrs {
 		initAccountWithCoins(app, ctx, addr, initCoins)

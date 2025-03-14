@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata/testpb"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	"github.com/cosmos/gogoproto/proto"
+	undtypes "github.com/unification-com/mainchain/types"
 	"io"
 	"os"
 	"path/filepath"
@@ -338,8 +339,8 @@ func NewApp(
 		runtime.NewKVStoreService(keys[authtypes.StoreKey]),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
-		authcodec.NewBech32Codec(sdk.Bech32MainPrefix),
-		sdk.Bech32MainPrefix,
+		authcodec.NewBech32Codec(undtypes.Bech32MainPrefix), // undtypes.Bech32MainPrefix NOT sdk.Bech32MainPrefix
+		undtypes.Bech32MainPrefix,                           // undtypes.Bech32MainPrefix NOT sdk.Bech32MainPrefix
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 

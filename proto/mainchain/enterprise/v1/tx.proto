@@ -12,6 +12,8 @@ option go_package = "github.com/unification-com/mainchain/x/enterprise/types";
 
 // Msg defines the enterprise Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // UndPurchaseOrder defines a method to create new purchase order.
   rpc UndPurchaseOrder(MsgUndPurchaseOrder)
       returns (MsgUndPurchaseOrderResponse);

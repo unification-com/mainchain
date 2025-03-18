@@ -11,6 +11,8 @@ option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
 // Msg defines the beacon Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+  
   // RegisterBeacon defines a method to register a new beacon
   rpc RegisterBeacon(MsgRegisterBeacon)
       returns (MsgRegisterBeaconResponse);

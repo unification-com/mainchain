@@ -13,6 +13,7 @@ option go_package = "github.com/unification-com/mainchain/x/stream/types";
 
 // Msg defines the Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
 
   // CreateStream defines a method to create a new stream
   rpc CreateStream(MsgCreateStream) returns (MsgCreateStreamResponse);

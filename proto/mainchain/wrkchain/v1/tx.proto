@@ -11,6 +11,8 @@ option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
 // Msg defines the wrkchain Msg service.
 service Msg {
+  option (cosmos.msg.v1.service) = true;
+
   // RegisterWrkChain defines a method to register a new wrkchain
   rpc RegisterWrkChain(MsgRegisterWrkChain)
       returns (MsgRegisterWrkChainResponse);

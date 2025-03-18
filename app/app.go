@@ -333,14 +333,13 @@ func NewApp(
 	app.CapabilityKeeper.Seal()
 
 	// add keepers
-
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[authtypes.StoreKey]),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
-		authcodec.NewBech32Codec(undtypes.Bech32MainPrefix), // undtypes.Bech32MainPrefix NOT sdk.Bech32MainPrefix
-		undtypes.Bech32MainPrefix,                           // undtypes.Bech32MainPrefix NOT sdk.Bech32MainPrefix
+		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
+		undtypes.Bech32MainPrefix,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 

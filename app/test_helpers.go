@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	undtypes "github.com/unification-com/mainchain/types"
 	"math/rand"
 	"testing"
 	"time"
@@ -28,7 +30,6 @@ import (
 	"github.com/cosmos/ibc-go/v8/testing/mock"
 	"github.com/stretchr/testify/require"
 
-	undtypes "github.com/unification-com/mainchain/types"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 	streamtypes "github.com/unification-com/mainchain/x/stream/types"
@@ -65,6 +66,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 
 	app := NewApp(log.NewNopLogger(), db, nil, true, appOptions)
 
+	fmt.Println(app.DefaultGenesis())
 	// note - SDK sim returns app, app.DefaultGenesis().
 	// since FUND modules use nund to test, need to convert genesis
 	if withGenesis {
@@ -72,6 +74,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 		genesisState = convertGenesisStateToNund(app, genesisState)
 		return app, genesisState
 	}
+
 	return app, GenesisState{}
 }
 

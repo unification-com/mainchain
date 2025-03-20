@@ -8,7 +8,6 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	mathmod "cosmossdk.io/math"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +15,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
 
-	simapp "github.com/unification-com/mainchain/app"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 	"github.com/unification-com/mainchain/x/wrkchain/ante"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
@@ -38,15 +37,14 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 
 func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
+	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualFeeAmt := wrkParams.FeeRegister
@@ -62,7 +60,7 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 
 	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr := errorsmod.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", addr)
+	expectedErr := errorsmod.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", []byte(addr))
 
 	_, err := antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
@@ -74,15 +72,14 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 
 func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
+	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -160,15 +157,14 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 
 func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
+	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -245,15 +241,14 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 
 func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
+	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -325,11 +320,9 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -422,11 +415,9 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -526,11 +517,9 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 
 func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -614,11 +603,9 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -706,11 +693,9 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -719,7 +704,7 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	actualPurchaseAmt := wcParams.FeePurchaseStorage
 	actualFeeDenom := wcParams.Denom
 	startInStateLimit := uint64(100)
-	numToPurchase := simapp.TestMaxStorage - startInStateLimit + 1
+	numToPurchase := simapphelpers.SimTestDefaultMaxStorageLimit - startInStateLimit + 1
 	wcId := uint64(1)
 
 	privK := ed25519.GenPrivKey()
@@ -760,7 +745,7 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	_, err = antehandler(ctx, tx, false)
 
 	expectedErr := errorsmod.Wrapf(types.ErrExceedsMaxStorage,
-		"num slots exceeds max for wrkchain %d. Max can purchase: %d. Want in Msgs: %d", wcId, simapp.TestMaxStorage-startInStateLimit, numToPurchase)
+		"num slots exceeds max for wrkchain %d. Max can purchase: %d. Want in Msgs: %d", wcId, simapphelpers.SimTestDefaultMaxStorageLimit-startInStateLimit, numToPurchase)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)

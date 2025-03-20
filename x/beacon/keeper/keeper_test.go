@@ -4,13 +4,12 @@ import (
 	"testing"
 
 	mathmod "cosmossdk.io/math"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/unification-com/mainchain/app"
-	simapp "github.com/unification-com/mainchain/app"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/beacon/keeper"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
@@ -30,8 +29,8 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (s *KeeperTestSuite) SetupTest() {
-	app := simapp.Setup(s.T(), true)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(s.T())
+	ctx := app.BaseApp.NewContext(false)
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, app.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, app.BeaconKeeper)
@@ -40,7 +39,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.app = app
 	s.ctx = ctx
 	s.queryClient = queryClient
-	s.addrs = simapp.AddTestAddrsIncremental(app, ctx, 10, mathmod.NewInt(30000000))
+	s.addrs = simapphelpers.AddTestAddrsIncremental(app, ctx, 10, mathmod.NewInt(30000000))
 	s.msgServer = keeper.NewMsgServerImpl(s.app.BeaconKeeper)
 }
 func (s *KeeperTestSuite) TestParams() {

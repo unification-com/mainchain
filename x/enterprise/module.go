@@ -27,16 +27,18 @@ const (
 )
 
 var (
-	_ module.AppModuleBasic      = AppModule{}
-	_ module.AppModuleSimulation = AppModule{}
-	_ module.HasConsensusVersion = AppModule{}
-	_ module.HasGenesisBasics    = AppModule{}
-	_ module.HasGenesis          = AppModule{}
-	_ module.HasInvariants       = AppModule{}
-	_ module.HasServices         = AppModule{}
+	_ module.AppModuleBasic      = (*AppModuleBasic)(nil)
+	_ module.AppModuleSimulation = (*AppModule)(nil)
+	_ module.HasConsensusVersion = (*AppModule)(nil)
+	_ module.HasGenesisBasics    = (*AppModule)(nil)
+	_ module.HasGenesis          = (*AppModule)(nil)
+	_ module.HasName             = (*AppModule)(nil)
+	_ module.HasInvariants       = (*AppModule)(nil)
+	_ module.HasServices         = (*AppModule)(nil)
+	_ module.HasProposalMsgs     = (*AppModule)(nil)
 
-	_ appmodule.AppModule       = AppModule{}
-	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.AppModule       = (*AppModule)(nil)
+	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
 )
 
 // AppModuleBasic defines the basic application module used by the enterprise module.
@@ -171,12 +173,6 @@ func (AppModule) ConsensusVersion() uint64 { return consensusVersion }
 // BeginBlock returns the begin blocker for the enterprise module.
 func (am AppModule) BeginBlock(ctx context.Context) error {
 	return BeginBlocker(ctx, am.keeper)
-}
-
-// EndBlock returns the end blocker for the enterprise module. It returns no validator
-// updates.
-func (AppModule) EndBlock(context.Context) error {
-	return nil
 }
 
 //____________________________________________________________________________

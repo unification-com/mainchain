@@ -28,14 +28,16 @@ const (
 
 // type check to ensure the interface is properly implemented
 var (
-	_ module.AppModuleBasic      = AppModule{}
-	_ module.AppModuleSimulation = AppModule{}
-	_ module.HasConsensusVersion = AppModule{}
-	_ module.HasGenesisBasics    = AppModule{}
-	_ module.HasGenesis          = AppModule{}
-	_ module.HasServices         = AppModule{}
+	_ module.AppModuleBasic      = (*AppModuleBasic)(nil)
+	_ module.AppModuleSimulation = (*AppModule)(nil)
+	_ module.HasGenesisBasics    = (*AppModule)(nil)
+	_ module.HasGenesis          = (*AppModule)(nil)
+	_ module.HasName             = (*AppModule)(nil)
+	_ module.HasConsensusVersion = (*AppModule)(nil)
+	_ module.HasServices         = (*AppModule)(nil)
+	_ module.HasProposalMsgs     = (*AppModule)(nil)
 
-	_ appmodule.AppModule = AppModule{}
+	_ appmodule.AppModule = (*AppModule)(nil)
 )
 
 // AppModuleBasic object

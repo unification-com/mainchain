@@ -4,7 +4,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	"testing"
 )
@@ -46,22 +45,22 @@ func TestMsgUndPurchaseOrder_Validate(t *testing.T) {
 		expectPass bool
 	}{
 		{
-			sdk.NewInt64Coin(simapp.TestDenomination, 1),
+			sdk.NewInt64Coin(sdk.DefaultBondDenom, 1),
 			sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String(),
 			true,
 		},
 		{
-			sdk.NewInt64Coin(simapp.TestDenomination, 0),
+			sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 			sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String(),
 			false,
 		},
 		{
-			sdk.NewInt64Coin(simapp.TestDenomination, 1),
+			sdk.NewInt64Coin(sdk.DefaultBondDenom, 1),
 			"rubbish",
 			false,
 		},
 		{
-			sdk.NewInt64Coin(simapp.TestDenomination, 0),
+			sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 			"rubbish",
 			false,
 		},

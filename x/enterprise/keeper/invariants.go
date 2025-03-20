@@ -37,7 +37,7 @@ func ModuleAccountInvariant(keeper Keeper) sdk.Invariant {
 		macc := keeper.GetEnterpriseAccount(ctx)
 		maccCoins := keeper.GetCoins(ctx, macc.GetAddress())
 
-		broken := !maccCoins.IsEqual(totalLocked) || !maccCoins.IsEqual(sdk.NewCoins(lockedByAccount)) || !totalLocked.IsEqual(sdk.NewCoins(lockedByAccount))
+		broken := !maccCoins.Equal(totalLocked) || !maccCoins.Equal(sdk.NewCoins(lockedByAccount)) || !totalLocked.Equal(sdk.NewCoins(lockedByAccount))
 
 		return sdk.FormatInvariant(types.ModuleName, "locked",
 			fmt.Sprintf("\tenterprise ModuleAccount coins: %s\n\ttotal locked: %s\n\t sum of locked: %s\n",

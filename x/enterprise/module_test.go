@@ -1,10 +1,9 @@
 package enterprise_test
 
 import (
-	simapp "github.com/unification-com/mainchain/app"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"testing"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -12,15 +11,8 @@ import (
 )
 
 func TestItCreatesModuleAccountOnInitBlock(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-	//app.InitChain(
-	//	abcitypes.RequestInitChain{
-	//		AppStateBytes: []byte("{}"),
-	//		ChainId:       "test-chain-id",
-	//	},
-	//)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	acc := app.AccountKeeper.GetAccount(ctx, authtypes.NewModuleAddress(types.ModuleName))
 	require.NotNil(t, acc)

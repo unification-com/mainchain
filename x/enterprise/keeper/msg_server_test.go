@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -36,7 +37,7 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 				Authority: s.app.EnterpriseKeeper.GetAuthority(),
 				Params: types.Params{
 					EntSigners:        "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6,und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
-					Denom:             "test",
+					Denom:             sdk.DefaultBondDenom,
 					MinAccepts:        2,
 					DecisionTimeLimit: 2,
 				},

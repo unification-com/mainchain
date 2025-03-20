@@ -14,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 
-	undtypes "github.com/unification-com/mainchain/types"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -51,7 +50,7 @@ func GetCmdRaisePurchaseOrder() *cobra.Command {
 Example:
 $ %s tx %s purchase 1000000000000%s --from wrktest
 `,
-				version.AppName, types.ModuleName, undtypes.DefaultDenomination,
+				version.AppName, types.ModuleName, sdk.DefaultBondDenom,
 			),
 		),
 		Args: cobra.ExactArgs(1),
@@ -68,8 +67,8 @@ $ %s tx %s purchase 1000000000000%s --from wrktest
 				return err
 			}
 
-			if amount.Denom != undtypes.DefaultDenomination {
-				return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("denomination should be %s", undtypes.DefaultDenomination))
+			if amount.Denom != sdk.DefaultBondDenom {
+				return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("denomination should be %s", sdk.DefaultBondDenom))
 			}
 
 			msg := types.NewMsgUndPurchaseOrder(from, amount)

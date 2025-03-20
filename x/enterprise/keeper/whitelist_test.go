@@ -1,21 +1,19 @@
 package keeper_test
 
 import (
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"testing"
 
 	errorsmod "cosmossdk.io/errors"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
-	simapp "github.com/unification-com/mainchain/app"
 )
 
 func TestAddAddressesToWhitelist(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 
 	for _, addr := range testAddrs {
 		err := app.EnterpriseKeeper.AddAddressToWhitelist(ctx, addr)
@@ -28,10 +26,9 @@ func TestAddAddressesToWhitelist(t *testing.T) {
 }
 
 func TestRemoveAddressesToWhitelist(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := simapp.GenerateRandomTestAccounts(100)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddrs {
 		_ = app.EnterpriseKeeper.AddAddressToWhitelist(ctx, addr)
@@ -48,10 +45,9 @@ func TestRemoveAddressesToWhitelist(t *testing.T) {
 }
 
 func TestAddressIsWhitelisted(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := simapp.GenerateRandomTestAccounts(100)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(100)
 
 	for _, addr := range testAddrs {
 		isWhitelisted := app.EnterpriseKeeper.AddressIsWhitelisted(ctx, addr)

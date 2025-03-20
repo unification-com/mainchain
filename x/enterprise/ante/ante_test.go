@@ -1,19 +1,18 @@
 package ante_test
 
 import (
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"math/rand"
 	"testing"
 	"time"
 
 	mathmod "cosmossdk.io/math"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
 
-	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/x/enterprise/ante"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
@@ -35,11 +34,9 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 
 func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -81,11 +78,9 @@ func TestCheckLockedUndDecoratorModuleAndSupplyInsufficientFunds(t *testing.T) {
 
 func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -119,11 +114,9 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 
 func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCheckLockedUndDecorator(app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)

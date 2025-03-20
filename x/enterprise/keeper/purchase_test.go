@@ -2,20 +2,18 @@ package keeper_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simapp "github.com/unification-com/mainchain/app"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	"testing"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
 )
 
 // Tests for Highest Purchase Order ID
 
 func TestSetGetHighestPurchaseOrderID(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	for i := uint64(1); i <= 1000; i++ {
 		app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, i)
@@ -28,10 +26,9 @@ func TestSetGetHighestPurchaseOrderID(t *testing.T) {
 // Tests for Get/Set Purchase Order
 
 func TestSetGetPurchaseOrder(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := simapp.GenerateRandomTestAccounts(3)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(3)
 
 	_ = app.EnterpriseKeeper.AddAddressToWhitelist(ctx, testAddrs[1])
 
@@ -40,7 +37,7 @@ func TestSetGetPurchaseOrder(t *testing.T) {
 	for i := uint64(1); i <= 1000; i++ {
 		po := types.EnterpriseUndPurchaseOrder{}
 		po.Id = i
-		po.Amount = sdk.NewInt64Coin(simapp.TestDenomination, int64(i))
+		po.Amount = sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(i))
 
 		purchaser := testAddrs[1]
 		// should still be able to SetPurchaseOrder if address is not whitelisted.
@@ -71,7 +68,7 @@ func TestSetGetPurchaseOrder(t *testing.T) {
 		require.True(t, poFrom.String() == purchaser.String())
 
 		poAmount := app.EnterpriseKeeper.GetPurchaseOrderAmount(ctx, i)
-		require.True(t, poAmount.Denom == simapp.TestDenomination)
+		require.True(t, poAmount.Denom == sdk.DefaultBondDenom)
 		require.True(t, poAmount.Amount.Int64() == int64(i))
 	}
 
@@ -80,16 +77,15 @@ func TestSetGetPurchaseOrder(t *testing.T) {
 // Tests for Raise new Purchase Order
 
 func TestRaiseNewPurchaseOrder(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := simapp.GenerateRandomTestAccounts(100)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(100)
 
 	i, _ := app.EnterpriseKeeper.GetHighestPurchaseOrderID(ctx)
 
 	for _, from := range testAddrs {
-		amt := int64(simapp.RandInBetween(1, 10000))
-		amount := sdk.NewInt64Coin(simapp.TestDenomination, amt)
+		amt := int64(simapphelpers.RandInBetween(1, 10000))
+		amount := sdk.NewInt64Coin(sdk.DefaultBondDenom, amt)
 
 		_ = app.EnterpriseKeeper.AddAddressToWhitelist(ctx, from)
 
@@ -113,7 +109,7 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 		require.True(t, poDb.Id == expectedPo.Id)
 		require.True(t, poDb.Status == types.StatusRaised)
 		require.True(t, poDb.Purchaser == from.String())
-		require.True(t, poDb.Amount.Denom == simapp.TestDenomination)
+		require.True(t, poDb.Amount.Denom == sdk.DefaultBondDenom)
 		require.True(t, poDb.Amount.Amount.Int64() == amt)
 		require.True(t, poDb.Amount.IsEqual(expectedPo.Amount))
 
@@ -122,16 +118,15 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 }
 
 func TestHighestPurchaseOrderIdAfterRaise(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 	from := testAddrs[0]
 
 	_ = app.EnterpriseKeeper.AddAddressToWhitelist(ctx, from)
 
 	for i := uint64(1); i < 1000; i++ {
-		amount := sdk.NewInt64Coin(simapp.TestDenomination, int64(i))
+		amount := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(i))
 		po := types.EnterpriseUndPurchaseOrder{}
 		po.Amount = amount
 		po.Purchaser = from.String()
@@ -145,15 +140,14 @@ func TestHighestPurchaseOrderIdAfterRaise(t *testing.T) {
 }
 
 func TestPurchaseOrderExistsAfterRaise(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 	from := testAddrs[0]
 	_ = app.EnterpriseKeeper.AddAddressToWhitelist(ctx, from)
 
 	for i := uint64(1); i < 1000; i++ {
-		amount := sdk.NewInt64Coin(simapp.TestDenomination, int64(i))
+		amount := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(i))
 		po := types.EnterpriseUndPurchaseOrder{}
 		po.Amount = amount
 		po.Purchaser = from.String()
@@ -172,11 +166,10 @@ func TestPurchaseOrderExistsAfterRaise(t *testing.T) {
 // Tests for processing Purchase Orders
 
 func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	entSigners := app.EnterpriseKeeper.GetParamEntSignersAsAddressArray(ctx)
 	entSignerAddr := entSigners[0]
@@ -185,7 +178,7 @@ func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
 	_ = app.EnterpriseKeeper.AddAddressToWhitelist(ctx, from)
 
 	for i := uint64(1); i < 1000; i++ {
-		amount := sdk.NewInt64Coin(simapp.TestDenomination, int64(i))
+		amount := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(i))
 		po := types.EnterpriseUndPurchaseOrder{}
 		po.Amount = amount
 		po.Purchaser = from.String()
@@ -213,9 +206,8 @@ func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
 }
 
 func TestRaisedQueue(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	for i := uint64(1); i < 10000; i++ {
 		isInQueue := app.EnterpriseKeeper.PurchaseOrderIsInRaisedQueue(ctx, i)
@@ -232,15 +224,14 @@ func TestRaisedQueue(t *testing.T) {
 }
 
 func TestPurchaseOrderAddedToRaisedQueue(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 
 	for _, from := range testAddrs {
 		for i := uint64(1); i < 1000; i++ {
-			amount := sdk.NewInt64Coin(simapp.TestDenomination, int64(i))
+			amount := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(i))
 			po := types.EnterpriseUndPurchaseOrder{}
 			po.Amount = amount
 			po.Purchaser = from.String()
@@ -254,9 +245,8 @@ func TestPurchaseOrderAddedToRaisedQueue(t *testing.T) {
 }
 
 func TestRaisedQueueIterator(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	toAdd := []uint64{2, 23, 99, 12345, 6236285, 4, 7, 9, 24}
 
@@ -276,9 +266,8 @@ func TestRaisedQueueIterator(t *testing.T) {
 }
 
 func TestAcceptedQueue(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	for i := uint64(1); i < 10000; i++ {
 		isInQueue := app.EnterpriseKeeper.PurchaseOrderIsInAcceptedQueue(ctx, i)
@@ -295,9 +284,8 @@ func TestAcceptedQueue(t *testing.T) {
 }
 
 func TestAcceptedQueueIterator(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	toAdd := []uint64{2, 23, 99, 12345, 6236285, 4, 7, 9, 24}
 

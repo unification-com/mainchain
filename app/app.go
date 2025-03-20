@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata/testpb"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	"github.com/cosmos/gogoproto/proto"
-	undtypes "github.com/unification-com/mainchain/types"
 	"io"
 	"os"
 	"path/filepath"
@@ -130,8 +129,11 @@ import (
 	_ "github.com/unification-com/mainchain/client/docs/statik"
 )
 
-const Name = "und"
-const appHomeDir = ".und_mainchain"
+const (
+	Name                 = "und"
+	appHomeDir           = ".und_mainchain"
+	AccountAddressPrefix = "und"
+)
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -339,7 +341,7 @@ func NewApp(
 		authtypes.ProtoBaseAccount,
 		maccPerms,
 		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
-		undtypes.Bech32MainPrefix,
+		AccountAddressPrefix,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
@@ -353,7 +355,13 @@ func NewApp(
 	)
 
 	app.StakingKeeper = stakingkeeper.NewKeeper(
-		appCodec, runtime.NewKVStoreService(keys[stakingtypes.StoreKey]), app.AccountKeeper, app.BankKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String(), authcodec.NewBech32Codec(sdk.Bech32PrefixValAddr), authcodec.NewBech32Codec(sdk.Bech32PrefixConsAddr),
+		appCodec,
+		runtime.NewKVStoreService(keys[stakingtypes.StoreKey]),
+		app.AccountKeeper,
+		app.BankKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 	)
 
 	app.DistrKeeper = distrkeeper.NewKeeper(appCodec, runtime.NewKVStoreService(keys[distrtypes.StoreKey]),
@@ -945,6 +953,11 @@ func BlockedAddresses() map[string]bool {
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	return modAccAddrs
+}
+
+// GetTxConfig returns the txConfig
+func (app *App) GetTxConfig() client.TxConfig {
+	return app.txConfig
 }
 
 // initParamsKeeper init params keeper and its subspaces

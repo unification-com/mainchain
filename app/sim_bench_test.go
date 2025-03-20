@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -24,6 +25,13 @@ var FlagEnableBenchStreamingValue bool
 // Get flags every time the simulator is run
 func init() {
 	flag.BoolVar(&FlagEnableBenchStreamingValue, "EnableStreaming", false, "Enable streaming service")
+
+	userHomeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+
+	SimTestHomeDir = filepath.Join(userHomeDir, SimTestHome)
 }
 
 // Profile with:
@@ -58,7 +66,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 			appOptions.SetDefault(key, value)
 		}
 	}
-	appOptions.SetDefault(flags.FlagHome, DefaultNodeHome)
+	appOptions.SetDefault(flags.FlagHome, SimTestHomeDir)
 	appOptions.SetDefault(server.FlagInvCheckPeriod, simcli.FlagPeriodValue)
 
 	app := NewApp(logger, db, nil, true, appOptions, interBlockCacheOpt(), baseapp.SetChainID(SimAppChainID))
@@ -113,7 +121,7 @@ func BenchmarkInvariants(b *testing.B) {
 	}()
 
 	appOptions := make(simtestutil.AppOptionsMap, 0)
-	appOptions[flags.FlagHome] = DefaultNodeHome
+	appOptions[flags.FlagHome] = SimTestHomeDir
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 
 	app := NewApp(logger, db, nil, true, appOptions, interBlockCacheOpt(), baseapp.SetChainID(SimAppChainID))

@@ -74,13 +74,13 @@ func initAppConfig() (string, interface{}) {
 
 func initRootCmd(
 	rootCmd *cobra.Command,
-	txConfig client.TxConfig,
 	basicManager module.BasicManager,
+	txConfig client.TxConfig,
 ) {
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(basicManager, simapp.DefaultNodeHome),
 		//NewTestnetCmd(basicManager, banktypes.GenesisBalancesIterator{}),
-		debug.Cmd(),
+		addDebugCommands(debug.Cmd()),
 		confixcmd.ConfigCommand(),
 		pruning.Cmd(newApp, simapp.DefaultNodeHome),
 		snapshot.Cmd(newApp),

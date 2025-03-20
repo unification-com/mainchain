@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/unification-com/mainchain/app"
-	"github.com/unification-com/mainchain/app/params"
 )
 
 //var ChainID string
@@ -32,18 +31,18 @@ func NewRootCmd() *cobra.Command {
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
 	// note, this is not necessary when using app wiring, as depinject can be directly used (see root_v2.go)
 	tempApp := app.NewApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, simtestutil.NewAppOptionsWithFlagHome(app.DefaultNodeHome))
-	encodingConfig := params.EncodingConfig{
-		InterfaceRegistry: tempApp.InterfaceRegistry(),
-		Codec:             tempApp.AppCodec(),
-		TxConfig:          tempApp.TxConfig(),
-		Amino:             tempApp.LegacyAmino(),
-	}
+	//encodingConfig := params.EncodingConfig{
+	//	InterfaceRegistry: tempApp.InterfaceRegistry(),
+	//	Codec:             tempApp.AppCodec(),
+	//	TxConfig:          tempApp.TxConfig(),
+	//	Amino:             tempApp.LegacyAmino(),
+	//}
 
 	initClientCtx := client.Context{}.
-		WithCodec(encodingConfig.Codec).
-		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
-		WithTxConfig(encodingConfig.TxConfig).
-		WithLegacyAmino(encodingConfig.Amino).
+		WithCodec(tempApp.AppCodec()).
+		WithInterfaceRegistry(tempApp.InterfaceRegistry()).
+		//WithTxConfig(encodingConfig.TxConfig).
+		WithLegacyAmino(tempApp.LegacyAmino()).
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithHomeDir(simapp.DefaultNodeHome).
@@ -100,12 +99,7 @@ func NewRootCmd() *cobra.Command {
 		},
 	}
 
-	initRootCmd(rootCmd, encodingConfig.TxConfig, tempApp.BasicModuleManager)
-
-	// add keyring to autocli opts
-	//autoCliOpts := tempApp.AutoCliOpts()
-	//fmt.Println(autoCliOpts)
-	//autoCliOpts.ClientCtx = initClientCtx
+	initRootCmd(rootCmd, tempApp.BasicModuleManager, tempApp.GetTxConfig())
 
 	autoCliOpts, err := enrichAutoCliOpts(tempApp.AutoCliOpts(), initClientCtx)
 	if err != nil {

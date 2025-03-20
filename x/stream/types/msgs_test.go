@@ -237,7 +237,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: mathmod.LegacyNewDecWithPrec(-1, 2),
+					ValidatorFee: "-0.01",
 				},
 			},
 			true,
@@ -248,7 +248,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: mathmod.LegacyNewDecWithPrec(101, 2),
+					ValidatorFee: "1.01",
 				},
 			},
 			true,
@@ -259,11 +259,11 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: mathmod.LegacyDec{},
+					ValidatorFee: "",
 				},
 			},
 			true,
-			"validator fee cannot be nil",
+			"decimal string cannot be empty",
 		},
 		{
 			"Invalid authority",

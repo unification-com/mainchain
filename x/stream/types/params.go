@@ -34,21 +34,26 @@ func (p Params) Validate() error {
 	return nil
 }
 
-func validateBaseValidatorFee(vFeeStr string) error {
-	v, err := mathmod.LegacyNewDecFromStr(vFeeStr)
+func validateBaseValidatorFee(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	vDec, err := mathmod.LegacyNewDecFromStr(v)
 	if err != nil {
 		return fmt.Errorf("invalid validator fee string: %w", err)
 	}
 
-	if v.IsNil() {
+	if vDec.IsNil() {
 		return fmt.Errorf("validator fee cannot be nil")
 	}
 
-	if v.IsNegative() {
+	if vDec.IsNegative() {
 		return fmt.Errorf("validator fee cannot be negative: %s", v)
 	}
 
-	if v.GT(mathmod.LegacyOneDec()) {
+	if vDec.GT(mathmod.LegacyOneDec()) {
 		return fmt.Errorf("validator fee cannot be greater than 100%% (1.00). Sent %s", v)
 	}
 

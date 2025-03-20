@@ -11,7 +11,7 @@ func (s *KeeperTestSuite) TestImportExportGenesis() {
 	nowTime := time.Unix(time.Now().Unix(), 0).UTC()
 
 	for i := int64(1); i < 100; i++ {
-		deposit := sdk.NewInt64Coin("stake", 1000*i)
+		deposit := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000*i)
 		createTime := time.Unix(nowTime.Unix()-(i*9), 0).UTC()
 		tCtx = tCtx.WithBlockTime(createTime)
 		_, err := s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[i-1], s.addrs[i], deposit, i)

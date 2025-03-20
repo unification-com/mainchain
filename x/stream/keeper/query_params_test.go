@@ -1,11 +1,12 @@
 package keeper_test
 
 import (
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 func (s *KeeperTestSuite) TestParamsQuery() {
-	defaultFee := "0.01"
+	defaultFee := simapphelpers.SimTestDefaultStreamValFee
 	newFee := "0.24"
 
 	req1 := &types.QueryParamsRequest{}

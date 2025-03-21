@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	appparams "github.com/unification-com/mainchain/app/params"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 	streamtypes "github.com/unification-com/mainchain/x/stream/types"
@@ -79,6 +80,7 @@ type EmptyAppOptions struct{}
 func (EmptyAppOptions) Get(_ string) interface{} { return nil }
 
 func Setup(t *testing.T) *undapp.App {
+	appparams.SetAddressPrefixes()
 	t.Helper()
 
 	privVal := mock.NewPV()

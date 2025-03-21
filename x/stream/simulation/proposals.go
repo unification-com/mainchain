@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	mathmod "cosmossdk.io/math"
 	"math/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -35,7 +36,7 @@ func SimulateMsgUpdateParams(r *rand.Rand, _ sdk.Context, _ []simtypes.Account) 
 	var authority sdk.AccAddress = address.Module("gov")
 
 	params := types.DefaultParams()
-	params.ValidatorFee = sdk.NewDecWithPrec(int64(r.Intn(24)), 2)
+	params.ValidatorFee = mathmod.LegacyNewDecWithPrec(int64(r.Intn(24)), 2).String()
 
 	return &types.MsgUpdateParams{
 		Authority: authority.String(),

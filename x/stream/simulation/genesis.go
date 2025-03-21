@@ -28,7 +28,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	var validatorFee string
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, ValidatorFee, &validatorFee, simState.Rand,
+		ValidatorFee, &validatorFee, simState.Rand,
 		func(r *rand.Rand) { validatorFee = GenValidatorFee(r) },
 	)
 

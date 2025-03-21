@@ -3,7 +3,6 @@ package keeper
 import (
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/unification-com/mainchain/x/enterprise/types"
@@ -212,41 +211,41 @@ func (k Keeper) GetAllPurchaseOrders(ctx sdk.Context) (purchaseOrders []types.En
 	return
 }
 
-// GetPurchaseOrdersFiltered retrieves purchase orders filtered by a given set of params which
-// include pagination parameters along a purchase order status.
+//// GetPurchaseOrdersFiltered retrieves purchase orders filtered by a given set of params which
+//// include pagination parameters along a purchase order status.
+////
+//// NOTE: If no filters are provided, all proposals will be returned in paginated
+//// form.
+//func (k Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPurchaseOrdersParams) []types.EnterpriseUndPurchaseOrder {
+//	purchaseOrders := k.GetAllPurchaseOrders(ctx)
+//	filteredPurchaseOrders := make([]types.EnterpriseUndPurchaseOrder, 0, len(purchaseOrders))
 //
-// NOTE: If no filters are provided, all proposals will be returned in paginated
-// form.
-func (k Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPurchaseOrdersParams) []types.EnterpriseUndPurchaseOrder {
-	purchaseOrders := k.GetAllPurchaseOrders(ctx)
-	filteredPurchaseOrders := make([]types.EnterpriseUndPurchaseOrder, 0, len(purchaseOrders))
-
-	for _, po := range purchaseOrders {
-		matchStatus, matchPurchaser := true, true
-
-		// match status (if supplied/valid)
-		if types.ValidPurchaseOrderStatus(params.PurchaseOrderStatus) {
-			matchStatus = po.Status == params.PurchaseOrderStatus
-		}
-
-		if len(params.Purchaser) > 0 {
-			matchPurchaser = po.Purchaser == params.Purchaser.String()
-		}
-
-		if matchStatus && matchPurchaser {
-			filteredPurchaseOrders = append(filteredPurchaseOrders, po)
-		}
-	}
-
-	start, end := client.Paginate(len(filteredPurchaseOrders), params.Page, params.Limit, 100)
-	if start < 0 || end < 0 {
-		filteredPurchaseOrders = []types.EnterpriseUndPurchaseOrder{}
-	} else {
-		filteredPurchaseOrders = filteredPurchaseOrders[start:end]
-	}
-
-	return filteredPurchaseOrders
-}
+//	for _, po := range purchaseOrders {
+//		matchStatus, matchPurchaser := true, true
+//
+//		// match status (if supplied/valid)
+//		if types.ValidPurchaseOrderStatus(params.PurchaseOrderStatus) {
+//			matchStatus = po.Status == params.PurchaseOrderStatus
+//		}
+//
+//		if len(params.Purchaser) > 0 {
+//			matchPurchaser = po.Purchaser == params.Purchaser.String()
+//		}
+//
+//		if matchStatus && matchPurchaser {
+//			filteredPurchaseOrders = append(filteredPurchaseOrders, po)
+//		}
+//	}
+//
+//	start, end := client.Paginate(len(filteredPurchaseOrders), params.Page, params.Limit, 100)
+//	if start < 0 || end < 0 {
+//		filteredPurchaseOrders = []types.EnterpriseUndPurchaseOrder{}
+//	} else {
+//		filteredPurchaseOrders = filteredPurchaseOrders[start:end]
+//	}
+//
+//	return filteredPurchaseOrders
+//}
 
 // Sets the Purchase Order data
 func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) error {

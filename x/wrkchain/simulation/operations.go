@@ -42,19 +42,19 @@ func WeightedOperations(
 		weightMsgPurchaseWrkChainStateStorage int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRegisterWrkChain, &weightMsgRegisterWrkChain, nil,
+	appParams.GetOrGenerate(OpWeightMsgRegisterWrkChain, &weightMsgRegisterWrkChain, nil,
 		func(_ *rand.Rand) {
 			weightMsgRegisterWrkChain = DefaultMsgRegisterWrkChain
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRecordWrkChainBlock, &weightMsgRecordWrkChainBlock, nil,
+	appParams.GetOrGenerate(OpWeightMsgRecordWrkChainBlock, &weightMsgRecordWrkChainBlock, nil,
 		func(_ *rand.Rand) {
 			weightMsgRecordWrkChainBlock = DefaultMsgRecordWrkChainBlock
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgPurchaseWrkChainStateStorage, &weightMsgPurchaseWrkChainStateStorage, nil,
+	appParams.GetOrGenerate(OpWeightMsgPurchaseWrkChainStateStorage, &weightMsgPurchaseWrkChainStateStorage, nil,
 		func(_ *rand.Rand) {
 			weightMsgPurchaseWrkChainStateStorage = DefaultMsgPurchaseWrkChainStateStorage
 		},
@@ -131,7 +131,7 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}
@@ -210,7 +210,7 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}
@@ -288,7 +288,7 @@ func SimulateMsgPurchaseWrkChainStateStorage(k keeper.Keeper, bk types.BankKeepe
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}

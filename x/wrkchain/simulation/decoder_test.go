@@ -2,7 +2,7 @@ package simulation_test
 
 import (
 	"fmt"
-	simapp "github.com/unification-com/mainchain/app"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"testing"
 	"time"
 
@@ -21,7 +21,7 @@ var (
 )
 
 func TestDecodeStore(t *testing.T) {
-	testApp := simapp.Setup(t, false)
+	testApp := simapphelpers.Setup(t)
 	cdc := testApp.AppCodec()
 	dec := simulation.NewDecodeStore(cdc)
 

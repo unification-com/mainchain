@@ -7,6 +7,7 @@ import (
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
 	cmtcfg "github.com/cometbft/cometbft/config"
+	tmcli "github.com/cometbft/cometbft/libs/cli"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -79,6 +80,7 @@ func initRootCmd(
 ) {
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(basicManager, simapp.DefaultNodeHome),
+		tmcli.NewCompletionCmd(rootCmd, true),
 		//NewTestnetCmd(basicManager, banktypes.GenesisBalancesIterator{}),
 		addDebugCommands(debug.Cmd()),
 		confixcmd.ConfigCommand(),
@@ -125,34 +127,13 @@ func queryCommand() *cobra.Command {
 
 	cmd.AddCommand(
 		rpc.WaitTxCmd(),
+		rpc.ValidatorCommand(),
 		server.QueryBlockCmd(),
 		authcmd.QueryTxsByEventsCmd(),
 		server.QueryBlocksCmd(),
 		authcmd.QueryTxCmd(),
 		server.QueryBlockResultsCmd(),
 	)
-
-	// ToDo - need to remove this once enterprise module's minting process is modified
-	cmd.AddCommand(
-		GetTotalSupplyCmd(),
-	)
-
-	// replace bank total command with Enterprise version to get correct total supply
-	// since the Enterprise module's balance is not part of the circulating supply until
-	// it is used to pay for BEACON/WrkChain Tx fees
-
-	// Todo - fix
-	//origBankCmd, _, _ := cmd.Find([]string{"bank"})
-	//origTotalSupplyCmd, _, _ := origBankCmd.Find([]string{"total"})
-	//
-	//// remove "bank" command from "query" command
-	//cmd.RemoveCommand(origBankCmd)
-	//// remove "total" command from "bank" cmd
-	//origBankCmd.RemoveCommand(origTotalSupplyCmd)
-	//// add Enterprise version of "total" command to "bank" cmd
-	//origBankCmd.AddCommand(GetCmdQueryTotalSupplyOverrideBankDefault())
-	//// re-add "bank" command to "query"
-	//cmd.AddCommand(origBankCmd)
 
 	return cmd
 }
@@ -179,6 +160,40 @@ func txCommand() *cobra.Command {
 	)
 
 	return cmd
+}
+
+// overrideBankQuery is a convoluted way of overriding the x/bank module's default total-supply and total-supply-of
+// commands. This is currently necessary due to the method currently used by the x/enterprise module to mint eFUND,
+// meaning that eFUND are calculated and included in the total supply. In practice, this is not the case, since eFUND
+// only become part of the total supply once they have been spent for the first time. The override methods ensure
+// that eFUND are deducted from the total supply before returning the result, giving a true reflection of the
+// actual total supply.
+func overrideBankQuery(rootCmd *cobra.Command) *cobra.Command {
+	origQueryCmd, _, _ := rootCmd.Find([]string{"query"})
+	origBankCmd, _, _ := origQueryCmd.Find([]string{"bank"})
+
+	origTotalSupplyCmd, _, _ := origBankCmd.Find([]string{"total-supply"})
+	origTotalSupplyOfCmd, _, _ := origBankCmd.Find([]string{"total-supply-of"})
+
+	// remove "query" from "root"
+	rootCmd.RemoveCommand(origQueryCmd)
+	// remove "bank" from "query"
+	origQueryCmd.RemoveCommand(origBankCmd)
+	// remove "total-supply" command from "bank" cmd
+	origBankCmd.RemoveCommand(origTotalSupplyCmd)
+	// remove "total-supply-of" command from "bank" cmd
+	origBankCmd.RemoveCommand(origTotalSupplyOfCmd)
+
+	// add Enterprise version of "total-supply" command to "bank" cmd
+	origBankCmd.AddCommand(GetCmdQueryTotalSupplyOverrideBankDefault())
+	// add Enterprise version of "total-supply-of" command to "bank" cmd
+	origBankCmd.AddCommand(GetCmdQueryTotalSupplyOfOverrideBankDefault())
+
+	// re-add "bank" to "query"
+	origQueryCmd.AddCommand(origBankCmd)
+	// re-add "query" to "root"
+	rootCmd.AddCommand(origQueryCmd)
+	return rootCmd
 }
 
 // newApp creates the application

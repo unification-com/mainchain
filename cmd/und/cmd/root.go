@@ -110,6 +110,9 @@ func NewRootCmd() *cobra.Command {
 		panic(err)
 	}
 
+	// ToDo - need to remove this once enterprise module's minting process is modified
+	rootCmd = overrideBankQuery(rootCmd)
+
 	return rootCmd
 }
 

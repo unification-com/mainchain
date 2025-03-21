@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
@@ -66,26 +67,19 @@ To query for the total supply of a specific coin denomination use:
 
 func GetCmdQueryTotalSupplyOverrideBankDefault() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "total",
-		Short: "Query the total supply of coins of the chain",
+		Use:   "total-supply",
+		Short: "Query the total supply of coins of the chain (x/enterprise override)",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query total supply of coins that are held by accounts in the chain.
 
 Example:
   $ %s query bank total
-
-To query for the total supply of a specific coin denomination use:
-  $ %s query bank total --denom=[denom]
 `,
-				version.AppName, version.AppName,
+				version.AppName,
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			denom, err := cmd.Flags().GetString(FlagDenom)
 			if err != nil {
 				return err
 			}
@@ -97,13 +91,51 @@ To query for the total supply of a specific coin denomination use:
 			if err != nil {
 				return err
 			}
-			if denom == "" {
-				res, err := queryClient.TotalSupply(ctx, &enttypes.QueryTotalSupplyRequest{Pagination: pageReq})
-				if err != nil {
-					return err
-				}
+			res, err := queryClient.TotalSupply(ctx, &enttypes.QueryTotalSupplyRequest{Pagination: pageReq})
+			if err != nil {
+				return err
+			}
 
-				return clientCtx.PrintProto(res)
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	cmd.Flags().String(FlagDenom, "", "The specific balance denomination to query for")
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "all supply totals")
+
+	return cmd
+}
+
+func GetCmdQueryTotalSupplyOfOverrideBankDefault() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "total-supply-of [denom]",
+		Short: "Query the supply of a single coin denom (x/enterprise override)",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query total supply of coins that are held by accounts in the chain.
+
+Example:
+  $ %s query bank total %s
+`,
+				version.AppName, sdk.DefaultBondDenom,
+			),
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			denom := args[0]
+
+			queryClient := enttypes.NewQueryClient(clientCtx)
+			ctx := cmd.Context()
+
+			if err != nil {
+				return err
+			}
+			if denom == "" {
+				return fmt.Errorf("must provide denomination")
 			}
 
 			res, err := queryClient.SupplyOf(ctx, &enttypes.QuerySupplyOfRequest{Denom: denom})
@@ -115,9 +147,7 @@ To query for the total supply of a specific coin denomination use:
 		},
 	}
 
-	cmd.Flags().String(FlagDenom, "", "The specific balance denomination to query for")
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "all supply totals")
 
 	return cmd
 }

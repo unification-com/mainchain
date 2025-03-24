@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"io"
 
 	"cosmossdk.io/log"
@@ -135,6 +136,8 @@ func queryCommand() *cobra.Command {
 		server.QueryBlockResultsCmd(),
 	)
 
+	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
+
 	return cmd
 }
 
@@ -158,6 +161,8 @@ func txCommand() *cobra.Command {
 		authcmd.GetDecodeCommand(),
 		authcmd.GetSimulateCmd(),
 	)
+
+	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
 }

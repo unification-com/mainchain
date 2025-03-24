@@ -1,8 +1,19 @@
 {
-  "app_hash": "",
+  "app_name": "und",
+  "app_version": "1.10.1-42-g85b041b",
+  "genesis_time": "2025-03-21T10:10:46.123369564Z",
+  "chain_id": "FUND-DevNet-2",
+  "initial_height": 1,
+  "app_hash": null,
   "app_state": {
-    "07-tendermint": null,
     "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
       "accounts": [
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
@@ -88,19 +99,16 @@
           "pub_key": null,
           "sequence": "0"
         }
-      ],
-      "params": {
-        "max_memo_characters": "256",
-        "sig_verify_cost_ed25519": "590",
-        "sig_verify_cost_secp256k1": "1000",
-        "tx_sig_limit": "7",
-        "tx_size_cost_per_byte": "10"
-      }
+      ]
     },
     "authz": {
       "authorization": []
     },
     "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
       "balances": [
         {
           "address": "und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy",
@@ -211,12 +219,9 @@
           ]
         }
       ],
+      "supply": [],
       "denom_metadata": [],
-      "params": {
-        "default_send_enabled": true,
-        "send_enabled": []
-      },
-      "supply": []
+      "send_enabled": []
     },
     "beacon": {
       "params": {
@@ -227,8 +232,8 @@
         "default_storage_limit": "100",
         "max_storage_limit": "200"
       },
-      "registered_beacons": [],
-      "starting_beacon_id": "1"
+      "starting_beacon_id": "1",
+      "registered_beacons": []
     },
     "capability": {
       "index": "1",
@@ -261,27 +266,25 @@
       "validator_slash_events": []
     },
     "enterprise": {
-      "locked_und": [],
       "params": {
         "decision_time_limit": "120",
         "denom": "nund",
         "ent_signers": "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6,und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
         "min_accepts": "1"
       },
-      "purchase_orders": [],
-      "spent_efund": [],
       "starting_purchase_order_id": "1",
+      "purchase_orders": [],
+      "locked_und": [],
       "total_locked": {
-        "amount": "0",
-        "denom": "nund"
+        "denom": "nund",
+        "amount": "0"
       },
+      "whitelist": [],
+      "spent_efund": [],
       "total_spent": {
-        "amount": "0",
-        "denom": "nund"
-      },
-      "whitelist": [
-        "und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy"
-      ]
+        "denom": "nund",
+        "amount": "0"
+      }
     },
     "evidence": {
       "evidence": []
@@ -317,10 +320,32 @@
         "threshold": "0.500000000000000000",
         "veto_threshold": "0.334000000000000000",
         "min_initial_deposit_ratio": "0.000000000000000000",
+        "proposal_cancel_ratio": "0.500000000000000000",
+        "proposal_cancel_dest": "",
+        "expedited_voting_period": "86400s",
+        "expedited_threshold": "0.667000000000000000",
+        "expedited_min_deposit": [
+          {
+            "denom": "nund",
+            "amount": "50000000"
+          }
+        ],
         "burn_vote_quorum": false,
         "burn_proposal_deposit_prevote": false,
-        "burn_vote_veto": true
-      }
+        "burn_vote_veto": true,
+        "min_deposit_ratio": "0.010000000000000000"
+      },
+      "constitution": ""
+    },
+    "group": {
+      "group_seq": "0",
+      "groups": [],
+      "group_members": [],
+      "group_policy_seq": "0",
+      "group_policies": [],
+      "proposal_seq": "0",
+      "proposals": [],
+      "votes": []
     },
     "ibc": {
       "client_genesis": {
@@ -352,7 +377,16 @@
         "send_sequences": [],
         "recv_sequences": [],
         "ack_sequences": [],
-        "next_channel_sequence": "0"
+        "next_channel_sequence": "0",
+        "params": {
+          "upgrade_timeout": {
+            "height": {
+              "revision_number": "0",
+              "revision_height": "0"
+            },
+            "timestamp": "600000000000"
+          }
+        }
       }
     },
     "params": null,
@@ -386,7 +420,7 @@
     },
     "stream": {
       "params": {
-        "validator_fee": "0.010000000000000000"
+        "validator_fee": "0.01"
       },
       "streams": []
     },
@@ -410,29 +444,32 @@
         "default_storage_limit": "100",
         "max_storage_limit": "200"
       },
-      "registered_wrkchains": [],
-      "starting_wrkchain_id": "1"
+      "starting_wrkchain_id": "1",
+      "registered_wrkchains": []
     }
   },
-  "chain_id": "FUND-DevNet-2",
-  "consensus_params": {
-    "block": {
-      "max_bytes": "22020096",
-      "max_gas": "-1",
-      "time_iota_ms": "1000"
-    },
-    "evidence": {
-      "max_age_duration": "172800000000000",
-      "max_age_num_blocks": "100000",
-      "max_bytes": "1048576"
-    },
-    "validator": {
-      "pub_key_types": [
-        "ed25519"
-      ]
-    },
-    "version": {}
-  },
-  "genesis_time": "2021-03-25T00:00:00Z",
-  "initial_height": "1"
+  "consensus": {
+    "params": {
+      "block": {
+        "max_bytes": "22020096",
+        "max_gas": "-1"
+      },
+      "evidence": {
+        "max_age_num_blocks": "100000",
+        "max_age_duration": "172800000000000",
+        "max_bytes": "1048576"
+      },
+      "validator": {
+        "pub_key_types": [
+          "ed25519"
+        ]
+      },
+      "version": {
+        "app": "0"
+      },
+      "abci": {
+        "vote_extensions_enable_height": "0"
+      }
+    }
+  }
 }

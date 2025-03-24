@@ -18,7 +18,7 @@ RUN mkdir -p /root/src/mainchain && \
 WORKDIR /root/src/mainchain
 
 COPY ./go.mod ./go.sum ./
-RUN cd /root/src/mainchain && go mod tidy
+RUN cd /root/src/mainchain && go mod tidy && go mod download
 
 COPY . ./
 

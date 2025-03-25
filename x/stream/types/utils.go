@@ -3,6 +3,7 @@ package types
 import (
 	"time"
 
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -26,7 +27,7 @@ func PeriodEnumFromString(period string) StreamPeriod {
 	return StreamPeriodUnspecified
 }
 
-func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint64) (uint64, sdk.Dec, int64) {
+func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint64) (uint64, mathmod.LegacyDec, int64) {
 	baseDuration := uint64(1)
 	totalDuration := uint64(1)
 
@@ -54,12 +55,12 @@ func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint6
 	totalDuration = baseDuration * duration
 
 	if coin.IsNil() || coin.IsNegative() || coin.IsZero() || totalDuration == 0 {
-		return totalDuration, sdk.NewDecWithPrec(0, 0), 0
+		return totalDuration, mathmod.LegacyNewDecWithPrec(0, 0), 0
 	}
 
 	// flow rate calculation from deposit and duration
 	decCoin := sdk.NewDecCoinFromCoin(coin)
-	decDuration := sdk.NewDecFromInt(sdk.NewIntFromUint64(totalDuration))
+	decDuration := mathmod.LegacyNewDecFromInt(mathmod.NewIntFromUint64(totalDuration))
 
 	flowRate := decCoin.Amount.QuoTruncateMut(decDuration)
 
@@ -74,9 +75,9 @@ func CalculateDuration(deposit sdk.Coin, flowRate int64) int64 {
 	}
 	// no point if the deposit value is zero - e.g. if re-calculating from a new flow rate
 	// of an existing stream
-	if deposit.Amount.GT(sdk.NewIntFromUint64(0)) {
+	if deposit.Amount.GT(mathmod.NewIntFromUint64(0)) {
 		// calculate duration in seconds
-		decFlowRate := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(flowRate)))
+		decFlowRate := mathmod.LegacyNewDecFromInt(mathmod.NewIntFromUint64(uint64(flowRate)))
 		decDeposit := sdk.NewDecCoinFromCoin(deposit)
 		decDuration := decDeposit.Amount.QuoTruncateMut(decFlowRate)
 		// note: decimal values are rounded down, e.g. 2628008.9 to just 2628008.
@@ -99,36 +100,37 @@ func CalculateAmountToClaim(
 	if nowTime.After(depositZeroTime) || nowTime.Equal(depositZeroTime) {
 		// now > deposit_zero_time, use all remaining deposit
 		amountToClaim = deposit
-		remainingDepositValue = sdk.NewCoin(deposit.Denom, sdk.NewInt(0))
+		remainingDepositValue = sdk.NewCoin(deposit.Denom, mathmod.NewInt(0))
 	} else {
 		// calculate based on flow rate and remaining deposit
 		timeSinceLast := nowTime.Sub(lastOutflowTime)
 		secondsSinceLast := int64(timeSinceLast.Seconds())
 		numCoins := secondsSinceLast * flowRate
-		amountToClaim = sdk.NewCoin(deposit.Denom, sdk.NewIntFromUint64(uint64(numCoins)))
+		amountToClaim = sdk.NewCoin(deposit.Denom, mathmod.NewIntFromUint64(uint64(numCoins)))
 		if deposit.Amount.GT(amountToClaim.Amount) {
 			remainingDepositValue = deposit.Sub(amountToClaim)
 		} else {
 			// just in case
 			amountToClaim = deposit
-			remainingDepositValue = sdk.NewCoin(deposit.Denom, sdk.NewInt(0))
+			remainingDepositValue = sdk.NewCoin(deposit.Denom, mathmod.NewInt(0))
 		}
 	}
 
 	return amountToClaim, remainingDepositValue
 }
 
-func CalculateValidatorFee(valFee sdk.Dec, amountToClaim sdk.Coin) (sdk.Coin, sdk.Coin) {
+func CalculateValidatorFee(valFeeStr string, amountToClaim sdk.Coin) (sdk.Coin, sdk.Coin) {
+	valFee, _ := mathmod.LegacyNewDecFromStr(valFeeStr)
 	var valFeeCoin sdk.Coin
 	var finalClaimCoin sdk.Coin
 
-	if valFee.GT(sdk.NewDecFromInt(sdk.NewIntFromUint64(0))) {
+	if valFee.GT(mathmod.LegacyNewDecFromInt(mathmod.NewIntFromUint64(0))) {
 		decCoin := sdk.NewDecCoinFromCoin(amountToClaim)
 		valFeeAmount := decCoin.Amount.Mul(valFee).TruncateInt64()
-		valFeeCoin = sdk.NewCoin(amountToClaim.Denom, sdk.NewIntFromUint64(uint64(valFeeAmount)))
+		valFeeCoin = sdk.NewCoin(amountToClaim.Denom, mathmod.NewIntFromUint64(uint64(valFeeAmount)))
 		finalClaimCoin = amountToClaim.Sub(valFeeCoin)
 	} else {
-		valFeeCoin = sdk.NewCoin(amountToClaim.Denom, sdk.NewIntFromUint64(0))
+		valFeeCoin = sdk.NewCoin(amountToClaim.Denom, mathmod.NewIntFromUint64(0))
 		finalClaimCoin = amountToClaim
 	}
 

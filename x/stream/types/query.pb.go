@@ -182,11 +182,12 @@ func (m *QueryParamsResponse) GetParams() Params {
 
 // QueryCalculateFlowRateRequest is the request type for the Query/CalculateFlowRate RPC method
 type QueryCalculateFlowRateRequest struct {
-	// coin is the coin to be used in the calculation, e.g. 10000000000nund
+	// coin is the coin to be used in the calculation, e.g. 10000000000nund. This is the total amount to be paid over
+	// the specified duration
 	Coin string `protobuf:"bytes,1,opt,name=coin,proto3" json:"coin,omitempty"`
 	// period is the enumerated value of a period to be used in the calculation, e.g. month = 6
 	Period StreamPeriod `protobuf:"varint,2,opt,name=period,proto3,enum=mainchain.stream.v1.StreamPeriod" json:"period,omitempty"`
-	// duration is the number of periods to be used in the calculation, e.g. 1 = 1 month
+	// duration is the number of periods to be used in the calculation, e.g. 2 = 2 months
 	Duration uint64 `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
 }
 
@@ -229,9 +230,9 @@ type QueryCalculateFlowRateResponse struct {
 	Coin types.Coin `protobuf:"bytes,1,opt,name=coin,proto3" json:"coin"`
 	// period is the enumerated value of a period used in the calculation, e.g. month = 6
 	Period StreamPeriod `protobuf:"varint,2,opt,name=period,proto3,enum=mainchain.stream.v1.StreamPeriod" json:"period,omitempty"`
-	// duration is the number of periods used in the calculation, e.g. 1 = 1 month
+	// duration is the number of periods used in the calculation, e.g. 2 = 2 months
 	Duration uint64 `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
-	// seconds is the calculated number of seconds for the stream (period * duration)
+	// seconds is the calculated number of seconds for the stream (seconds in period * duration)
 	Seconds uint64 `protobuf:"varint,4,opt,name=seconds,proto3" json:"seconds,omitempty"`
 	// flow_rate is the calculated rate of coins per second, in the lowest denomination - e.g. nund
 	FlowRate int64 `protobuf:"varint,5,opt,name=flow_rate,json=flowRate,proto3" json:"flow_rate,omitempty"`

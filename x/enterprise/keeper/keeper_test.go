@@ -1,15 +1,16 @@
 package keeper_test
 
 import (
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	"testing"
+
+	mathmod "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
-	simapp "github.com/unification-com/mainchain/app"
-	"github.com/unification-com/mainchain/x/enterprise/keeper"
-	"testing"
 
 	"github.com/unification-com/mainchain/app"
+	"github.com/unification-com/mainchain/x/enterprise/keeper"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -28,9 +29,8 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (s *KeeperTestSuite) SetupTest() {
-	testApp := simapp.Setup(s.T(), false)
-	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(testApp, ctx)
+	testApp := simapphelpers.Setup(s.T())
+	ctx := testApp.BaseApp.NewContext(false)
 
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, testApp.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, testApp.EnterpriseKeeper)
@@ -39,7 +39,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.app = testApp
 	s.ctx = ctx
 	s.queryClient = queryClient
-	s.addrs = simapp.AddTestAddrsIncremental(testApp, ctx, 10, sdk.NewInt(30000000))
+	s.addrs = simapphelpers.AddTestAddrsIncremental(testApp, ctx, 10, mathmod.NewInt(30000000))
 	s.msgServer = keeper.NewMsgServerImpl(s.app.EnterpriseKeeper)
 }
 
@@ -63,7 +63,7 @@ func (s *KeeperTestSuite) TestParams() {
 			name: "set full valid params",
 			input: types.Params{
 				EntSigners:        "und1djn9sr7vtghtarp5ccvtrc0mwg9dlzjrj7alw6,und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed",
-				Denom:             "test",
+				Denom:             sdk.DefaultBondDenom,
 				MinAccepts:        2,
 				DecisionTimeLimit: 2,
 			},

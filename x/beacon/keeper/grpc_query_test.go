@@ -4,7 +4,7 @@ import (
 	gocontext "context"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	simapp "github.com/unification-com/mainchain/app"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/beacon/types"
 	"time"
 )
@@ -133,8 +133,8 @@ func (s *KeeperTestSuite) TestGRPCQueryBeaconsFiltered() {
 					expectedB := types.Beacon{}
 					expectedB.Owner = addrs[0].String()
 					expectedB.LastTimestampId = 0
-					expectedB.Moniker = simapp.GenerateRandomString(12)
-					expectedB.Name = simapp.GenerateRandomString(24)
+					expectedB.Moniker = simapphelpers.GenerateRandomString(12)
+					expectedB.Name = simapphelpers.GenerateRandomString(24)
 					expectedB.RegTime = uint64(ctx.BlockTime().Unix())
 
 					bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
@@ -278,7 +278,7 @@ func (s *KeeperTestSuite) TestGRPCQueryBeaconTimestamp() {
 				s.Require().Equal(uint64(1), bID)
 
 				expectedTs := types.BeaconTimestamp{
-					Hash:        simapp.GenerateRandomString(32),
+					Hash:        simapphelpers.GenerateRandomString(32),
 					SubmitTime:  uint64(time.Now().Unix()),
 					TimestampId: 1,
 				}
@@ -362,10 +362,10 @@ func (s *KeeperTestSuite) TestGRPCQueryBeaconStorage() {
 				expRes = types.QueryBeaconStorageResponse{
 					BeaconId:       bID,
 					Owner:          addrs[0].String(),
-					CurrentLimit:   types.DefaultStorageLimit,
+					CurrentLimit:   simapphelpers.SimTestDefaultStorageLimit,
 					CurrentUsed:    1,
-					Max:            types.DefaultMaxStorageLimit,
-					MaxPurchasable: types.DefaultMaxStorageLimit - types.DefaultStorageLimit,
+					Max:            simapphelpers.SimTestDefaultMaxStorageLimit,
+					MaxPurchasable: simapphelpers.SimTestDefaultMaxStorageLimit - simapphelpers.SimTestDefaultStorageLimit,
 				}
 
 			},

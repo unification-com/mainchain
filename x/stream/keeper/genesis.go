@@ -45,7 +45,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState *types.GenesisState) {
 		k.accKeeper.SetModuleAccount(ctx, moduleAcc)
 	}
 
-	if !balances.IsEqual(moduleHoldings) {
+	if !balances.Equal(moduleHoldings) {
 		panic(fmt.Sprintf("stream module acc balance does not match the module holdings: %s != %s", balances, moduleHoldings))
 	}
 }

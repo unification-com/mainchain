@@ -1,8 +1,10 @@
 package v3
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/unification-com/mainchain/x/wrkchain/exported"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
@@ -21,7 +23,7 @@ var (
 // module state.
 func Migrate(
 	ctx sdk.Context,
-	store sdk.KVStore,
+	store storetypes.KVStore,
 	legacySubspace exported.Subspace,
 	cdc codec.BinaryCodec,
 ) error {

@@ -20,7 +20,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(24, 2),
+					ValidatorFee: "0.24",
 				},
 			},
 			expectErr: false,
@@ -39,7 +39,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(101, 2),
+					ValidatorFee: "1.01",
 				},
 			},
 			expectErr: true,
@@ -50,7 +50,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(-1, 2),
+					ValidatorFee: "-0.01",
 				},
 			},
 			expectErr: true,
@@ -61,11 +61,11 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: sdk.Dec{},
+					ValidatorFee: "",
 				},
 			},
 			expectErr: true,
-			expErrMsg: "validator fee cannot be nil",
+			expErrMsg: "decimal string cannot be empty",
 		},
 	}
 
@@ -95,13 +95,13 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expResult: &types.MsgCreateStreamResponse{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expectErr: false,
@@ -112,7 +112,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -124,7 +124,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   "",
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -136,7 +136,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   "rubbish",
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -149,7 +149,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: "",
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -161,7 +161,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: "rubbish",
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -173,7 +173,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: "und17xpfvakm2amg962yls6f84z3kell8c5lhuyfdm", // module account with no banking permissions
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -185,7 +185,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[0].String(), // module account with no banking permissions
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -209,7 +209,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[2].String(),
 				Receiver: s.addrs[3].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 0),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -221,7 +221,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[2].String(),
 				Receiver: s.addrs[3].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 0,
 			},
 			expResult: nil,
@@ -233,7 +233,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[2].String(),
 				Receiver: s.addrs[3].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: -1,
 			},
 			expResult: nil,
@@ -245,7 +245,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 			request: &types.MsgCreateStream{
 				Sender:   s.addrs[2].String(),
 				Receiver: s.addrs[3].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 10),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 10),
 				FlowRate: 1,
 			},
 			expResult: nil,
@@ -270,6 +270,10 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 }
 
 func (s *KeeperTestSuite) TestMsgServerClaimStream() {
+
+	// Set fee to 0.01 (default is 0.00)
+	_ = s.app.StreamKeeper.SetParams(s.ctx, types.NewParams("0.01"))
+
 	testCases := []struct {
 		name      string
 		create    *types.MsgCreateStream
@@ -283,7 +287,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			create: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			claim: &types.MsgClaimStream{
@@ -291,10 +295,10 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 				Receiver: s.addrs[1].String(),
 			},
 			expResult: &types.MsgClaimStreamResponse{
-				TotalClaimed:     sdk.NewInt64Coin("stake", 1000),
-				StreamPayment:    sdk.NewInt64Coin("stake", 990),
-				ValidatorFee:     sdk.NewInt64Coin("stake", 10), // default fee is 1%
-				RemainingDeposit: sdk.NewInt64Coin("stake", 0),
+				TotalClaimed:     sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
+				StreamPayment:    sdk.NewInt64Coin(sdk.DefaultBondDenom, 990),
+				ValidatorFee:     sdk.NewInt64Coin(sdk.DefaultBondDenom, 10), // default fee is 1%
+				RemainingDeposit: sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 			},
 			expectErr: false,
 			expErrMsg: "",
@@ -400,17 +404,17 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			create: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			topup: &types.MsgTopUpDeposit{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 			},
 			expResult: &types.MsgTopUpDepositResponse{
-				DepositAmount:   sdk.NewInt64Coin("stake", 1000),
-				CurrentDeposit:  sdk.NewInt64Coin("stake", 2000),
+				DepositAmount:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
+				CurrentDeposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 2000),
 				DepositZeroTime: time.Unix(nowTime.Unix()+1500, 0).UTC(),
 			},
 			expectErr: false,
@@ -421,7 +425,7 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			create: &types.MsgCreateStream{
 				Sender:   s.addrs[2].String(),
 				Receiver: s.addrs[3].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			topup: &types.MsgTopUpDeposit{
@@ -439,7 +443,7 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			topup: &types.MsgTopUpDeposit{
 				Sender:   "rubbish",
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 			},
 			expResult: nil,
 			expectErr: true,
@@ -451,7 +455,7 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			topup: &types.MsgTopUpDeposit{
 				Sender:   "",
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 			},
 			expResult: nil,
 			expectErr: true,
@@ -463,7 +467,7 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			topup: &types.MsgTopUpDeposit{
 				Sender:   s.addrs[0].String(),
 				Receiver: "rubbish",
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 			},
 			expResult: nil,
 			expectErr: true,
@@ -475,7 +479,7 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			topup: &types.MsgTopUpDeposit{
 				Sender:   s.addrs[1].String(),
 				Receiver: "",
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 			},
 			expResult: nil,
 			expectErr: true,
@@ -487,7 +491,7 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			topup: &types.MsgTopUpDeposit{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 0),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 			},
 			expResult: nil,
 			expectErr: true,
@@ -511,7 +515,7 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			topup: &types.MsgTopUpDeposit{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[9].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 			},
 			expResult: nil,
 			expectErr: true,
@@ -561,7 +565,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 			create: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			flowRate: &types.MsgUpdateFlowRate{
@@ -703,7 +707,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			create: &types.MsgCreateStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
-				Deposit:  sdk.NewInt64Coin("stake", 1000),
+				Deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 				FlowRate: 1,
 			},
 			cancel: &types.MsgCancelStream{
@@ -800,7 +804,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream_Fail_NotCancellable() {
 
 	nowTime := time.Unix(time.Now().Unix(), 0).UTC()
 	expStream := types.Stream{
-		Deposit:         sdk.NewInt64Coin("stake", 1000),
+		Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 		FlowRate:        1,
 		LastOutflowTime: nowTime,
 		DepositZeroTime: time.Unix(0, 0).UTC(),

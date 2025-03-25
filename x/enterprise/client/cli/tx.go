@@ -2,19 +2,19 @@ package cli
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
+	"strconv"
+	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/spf13/cobra"
 
-	undtypes "github.com/unification-com/mainchain/types"
 	"github.com/unification-com/mainchain/x/enterprise/types"
-	"strconv"
-	"strings"
 )
 
 const (
@@ -50,7 +50,7 @@ func GetCmdRaisePurchaseOrder() *cobra.Command {
 Example:
 $ %s tx %s purchase 1000000000000%s --from wrktest
 `,
-				version.AppName, types.ModuleName, undtypes.DefaultDenomination,
+				version.AppName, types.ModuleName, sdk.DefaultBondDenom,
 			),
 		),
 		Args: cobra.ExactArgs(1),
@@ -67,8 +67,8 @@ $ %s tx %s purchase 1000000000000%s --from wrktest
 				return err
 			}
 
-			if amount.Denom != undtypes.DefaultDenomination {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("denomination should be %s", undtypes.DefaultDenomination))
+			if amount.Denom != sdk.DefaultBondDenom {
+				return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("denomination should be %s", sdk.DefaultBondDenom))
 			}
 
 			msg := types.NewMsgUndPurchaseOrder(from, amount)
@@ -117,7 +117,7 @@ $ %s tx %s process 24 reject --from ent
 			}
 
 			if !types.ValidPurchaseOrderAcceptRejectStatus(decision) {
-				return sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")
+				return errorsmod.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")
 			}
 
 			msg := types.NewMsgProcessUndPurchaseOrder(purchaseOrderId, decision, from)
@@ -165,7 +165,7 @@ $ %s tx %s whitelist remove und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --from en
 			}
 
 			if !types.ValidWhitelistAction(action) {
-				return sdkerrors.Wrap(types.ErrInvalidWhitelistAction, "action should be add or remove")
+				return errorsmod.Wrap(types.ErrInvalidWhitelistAction, "action should be add or remove")
 			}
 
 			msg := types.NewMsgWhitelistAddress(address, action, from)

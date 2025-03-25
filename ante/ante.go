@@ -1,11 +1,12 @@
 package ante
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
-	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 	beaconante "github.com/unification-com/mainchain/x/beacon/ante"
 	entante "github.com/unification-com/mainchain/x/enterprise/ante"
 	wrkante "github.com/unification-com/mainchain/x/wrkchain/ante"
@@ -24,28 +25,28 @@ type HandlerOptions struct {
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 	if options.AccountKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "account keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "account keeper is required for AnteHandler")
 	}
 	if options.BankKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
 	}
 	if options.BK == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
 	}
 	if options.SignModeHandler == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for AnteHandler")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for AnteHandler")
 	}
 	if options.WrkchainKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "wrkchain keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "wrkchain keeper is required for AnteHandler")
 	}
 	if options.BeaconKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "beacon keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "beacon keeper is required for AnteHandler")
 	}
 	if options.EnterpriseKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "enterprise keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "enterprise keeper is required for AnteHandler")
 	}
 	if options.EnterpriseKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "ibc keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "ibc keeper is required for AnteHandler")
 	}
 
 	anteDecorators := []sdk.AnteDecorator{

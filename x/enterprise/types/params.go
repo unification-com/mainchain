@@ -3,7 +3,6 @@ package types
 import (
 	"errors"
 	"fmt"
-	undtypes "github.com/unification-com/mainchain/types"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,7 +21,7 @@ func NewParams(denom string, minAccepts uint64, decisionLimit uint64, entSigners
 func DefaultParams() Params {
 	return Params{
 		EntSigners:        "und1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq5x8kpm", // default to 0000000000000000000000000000000000000000
-		Denom:             undtypes.DefaultDenomination,
+		Denom:             sdk.DefaultBondDenom,
 		MinAccepts:        1,
 		DecisionTimeLimit: 84600,
 	}

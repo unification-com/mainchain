@@ -3,6 +3,7 @@ package types_test
 import (
 	"testing"
 
+	mathmod "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -24,14 +25,6 @@ func TestMsgCreateStream_Type(t *testing.T) {
 	require.Equal(t, types.CreateStreamAction, msg.Type())
 }
 
-func TestMsgCreateStream_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgCreateStream{Sender: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
-}
-
 func TestMsgCreateStream_ValidateBasic(t *testing.T) {
 	s := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
 	r := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
@@ -42,13 +35,13 @@ func TestMsgCreateStream_ValidateBasic(t *testing.T) {
 		sender     sdk.AccAddress
 		expectPass bool
 	}{
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, s, true},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(0)), 100, r, s, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 0, r, s, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, sdk.AccAddress{}, s, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, sdk.AccAddress{}, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), 100, r, s, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(10000)), 100, r, r, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 100, r, s, true},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(0)), 100, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 0, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 100, sdk.AccAddress{}, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 100, r, sdk.AccAddress{}, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100)), 100, r, s, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(10000)), 100, r, r, false},
 	}
 
 	for i, tc := range tests {
@@ -77,14 +70,6 @@ func TestMsgClaimStream_Route(t *testing.T) {
 func TestMsgClaimStream_Type(t *testing.T) {
 	msg := types.MsgClaimStream{}
 	require.Equal(t, types.ClaimStreamAction, msg.Type())
-}
-
-func TestMsgClaimStream_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	receiverAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgClaimStream{Receiver: receiverAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(receiverAddr))
 }
 
 func TestMsgClaimStream_ValidateBasic(t *testing.T) {
@@ -124,14 +109,6 @@ func TestMsgTopUpDeposit_Type(t *testing.T) {
 	require.Equal(t, types.TopUpDepositAction, msg.Type())
 }
 
-func TestMsgTopUpDeposit_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgCreateStream{Sender: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
-}
-
 func TestMsgTopUpDeposit_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		deposit    sdk.Coin
@@ -139,10 +116,10 @@ func TestMsgTopUpDeposit_ValidateBasic(t *testing.T) {
 		receiver   sdk.AccAddress
 		expectPass bool
 	}{
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(100)), sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
-		{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewIntFromUint64(0)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), true},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress{}, false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100)), sdk.AccAddress{}, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
+		{sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(0)), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()), false},
 	}
 
 	for i, tc := range tests {
@@ -170,14 +147,6 @@ func TestMsgUpdateFlowRate_Route(t *testing.T) {
 func TestMsgUpdateFlowRate_Type(t *testing.T) {
 	msg := types.MsgUpdateFlowRate{}
 	require.Equal(t, types.UpdateFlowRateAction, msg.Type())
-}
-
-func TestMsgUpdateFlowRate_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgUpdateFlowRate{Sender: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
 }
 
 func TestMsgUpdateFlowRate_ValidateBasic(t *testing.T) {
@@ -220,14 +189,6 @@ func TestMsgCancelStream_Type(t *testing.T) {
 	require.Equal(t, types.CancelStreamAction, msg.Type())
 }
 
-func TestMsgMsgCancelStream_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgCancelStream{Sender: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
-}
-
 func TestMsgCancelStream_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		receiver   sdk.AccAddress
@@ -254,13 +215,6 @@ func TestMsgCancelStream_ValidateBasic(t *testing.T) {
 }
 
 // MsgUpdateParams{}
-func TestMsgUpdateParams_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	senderAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgUpdateParams{Authority: senderAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(senderAddr))
-}
 
 func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 	tests := []struct {
@@ -283,7 +237,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(-1, 2),
+					ValidatorFee: "-0.01",
 				},
 			},
 			true,
@@ -294,7 +248,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(101, 2),
+					ValidatorFee: "1.01",
 				},
 			},
 			true,
@@ -305,11 +259,11 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			types.MsgUpdateParams{
 				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				Params: types.Params{
-					ValidatorFee: sdk.Dec{},
+					ValidatorFee: "",
 				},
 			},
 			true,
-			"validator fee cannot be nil",
+			"decimal string cannot be empty",
 		},
 		{
 			"Invalid authority",

@@ -1,13 +1,15 @@
 package v3_test
 
 import (
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"testing"
 
+	storetypes "cosmossdk.io/store/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/require"
+
 	"github.com/unification-com/mainchain/x/enterprise"
 	"github.com/unification-com/mainchain/x/enterprise/exported"
 	v3 "github.com/unification-com/mainchain/x/enterprise/migrations/v3"
@@ -30,8 +32,8 @@ func TestMigrate(t *testing.T) {
 	encCfg := moduletestutil.MakeTestEncodingConfig(enterprise.AppModuleBasic{})
 	cdc := encCfg.Codec
 
-	storeKey := sdk.NewKVStoreKey(v3.ModuleName)
-	tKey := sdk.NewTransientStoreKey("transient_test")
+	storeKey := storetypes.NewKVStoreKey(v3.ModuleName)
+	tKey := storetypes.NewTransientStoreKey("transient_test")
 	ctx := testutil.DefaultContext(storeKey, tKey)
 	store := ctx.KVStore(storeKey)
 

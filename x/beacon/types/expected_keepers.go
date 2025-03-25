@@ -1,8 +1,8 @@
 package types
 
 import (
+	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // EnterpriseKeeper defines the expected enterprise keeper
@@ -18,16 +18,16 @@ type ParamSubspace interface {
 
 // BankKeeper defines the expected bank keeper
 type BankKeeper interface {
-	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+	GetSupply(ctx context.Context, denom string) sdk.Coin
 
-	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins
+	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin
 
-	LockedCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	LockedCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
+	SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 }
 
 // AccountKeeper defines the expected account keeper (noalias)
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI // only used for simulation
+	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI // only used for simulation
 }

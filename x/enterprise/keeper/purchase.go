@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
+	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -14,7 +15,7 @@ func (k Keeper) GetHighestPurchaseOrderID(ctx sdk.Context) (purchaseOrderID uint
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.HighestPurchaseOrderIDKey)
 	if bz == nil {
-		return 0, sdkerrors.Wrap(types.ErrInvalidGenesis, "initial purchase order ID hasn't been set")
+		return 0, errorsmod.Wrap(types.ErrInvalidGenesis, "initial purchase order ID hasn't been set")
 	}
 	// convert from bytes to uint64
 	purchaseOrderID = types.GetPurchaseOrderIDFromBytes(bz)
@@ -58,7 +59,7 @@ func (k Keeper) RemovePurchaseOrderFromRaisedQueue(ctx sdk.Context, purchaseOrde
 // IterateRaisedQueue iterates over the all the raised purchase orders and performs a callback function
 func (k Keeper) IterateRaisedQueue(ctx sdk.Context, cb func(purchaseOrderId uint64) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.RaisedPoPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RaisedPoPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -107,7 +108,7 @@ func (k Keeper) RemovePurchaseOrderFromAcceptedQueue(ctx sdk.Context, purchaseOr
 // IterateAcceptedQueue iterates over the all the Accepted purchase orders and performs a callback function
 func (k Keeper) IterateAcceptedQueue(ctx sdk.Context, cb func(purchaseOrderId uint64) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.AcceptedPoPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.AcceptedPoPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -188,7 +189,7 @@ func (k Keeper) GetPurchaseOrderStatus(ctx sdk.Context, purchaseOrderID uint64) 
 // IteratePurchaseOrders iterates over the all the purchase orders and performs a callback function
 func (k Keeper) IteratePurchaseOrders(ctx sdk.Context, cb func(purchaseOrder types.EnterpriseUndPurchaseOrder) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.PurchaseOrderIDKeyPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.PurchaseOrderIDKeyPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -210,46 +211,46 @@ func (k Keeper) GetAllPurchaseOrders(ctx sdk.Context) (purchaseOrders []types.En
 	return
 }
 
-// GetPurchaseOrdersFiltered retrieves purchase orders filtered by a given set of params which
-// include pagination parameters along a purchase order status.
+//// GetPurchaseOrdersFiltered retrieves purchase orders filtered by a given set of params which
+//// include pagination parameters along a purchase order status.
+////
+//// NOTE: If no filters are provided, all proposals will be returned in paginated
+//// form.
+//func (k Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPurchaseOrdersParams) []types.EnterpriseUndPurchaseOrder {
+//	purchaseOrders := k.GetAllPurchaseOrders(ctx)
+//	filteredPurchaseOrders := make([]types.EnterpriseUndPurchaseOrder, 0, len(purchaseOrders))
 //
-// NOTE: If no filters are provided, all proposals will be returned in paginated
-// form.
-func (k Keeper) GetPurchaseOrdersFiltered(ctx sdk.Context, params types.QueryPurchaseOrdersParams) []types.EnterpriseUndPurchaseOrder {
-	purchaseOrders := k.GetAllPurchaseOrders(ctx)
-	filteredPurchaseOrders := make([]types.EnterpriseUndPurchaseOrder, 0, len(purchaseOrders))
-
-	for _, po := range purchaseOrders {
-		matchStatus, matchPurchaser := true, true
-
-		// match status (if supplied/valid)
-		if types.ValidPurchaseOrderStatus(params.PurchaseOrderStatus) {
-			matchStatus = po.Status == params.PurchaseOrderStatus
-		}
-
-		if len(params.Purchaser) > 0 {
-			matchPurchaser = po.Purchaser == params.Purchaser.String()
-		}
-
-		if matchStatus && matchPurchaser {
-			filteredPurchaseOrders = append(filteredPurchaseOrders, po)
-		}
-	}
-
-	start, end := client.Paginate(len(filteredPurchaseOrders), params.Page, params.Limit, 100)
-	if start < 0 || end < 0 {
-		filteredPurchaseOrders = []types.EnterpriseUndPurchaseOrder{}
-	} else {
-		filteredPurchaseOrders = filteredPurchaseOrders[start:end]
-	}
-
-	return filteredPurchaseOrders
-}
+//	for _, po := range purchaseOrders {
+//		matchStatus, matchPurchaser := true, true
+//
+//		// match status (if supplied/valid)
+//		if types.ValidPurchaseOrderStatus(params.PurchaseOrderStatus) {
+//			matchStatus = po.Status == params.PurchaseOrderStatus
+//		}
+//
+//		if len(params.Purchaser) > 0 {
+//			matchPurchaser = po.Purchaser == params.Purchaser.String()
+//		}
+//
+//		if matchStatus && matchPurchaser {
+//			filteredPurchaseOrders = append(filteredPurchaseOrders, po)
+//		}
+//	}
+//
+//	start, end := client.Paginate(len(filteredPurchaseOrders), params.Page, params.Limit, 100)
+//	if start < 0 || end < 0 {
+//		filteredPurchaseOrders = []types.EnterpriseUndPurchaseOrder{}
+//	} else {
+//		filteredPurchaseOrders = filteredPurchaseOrders[start:end]
+//	}
+//
+//	return filteredPurchaseOrders
+//}
 
 // Sets the Purchase Order data
 func (k Keeper) SetPurchaseOrder(ctx sdk.Context, purchaseOrder types.EnterpriseUndPurchaseOrder) error {
 	if !types.ValidPurchaseOrderStatus(purchaseOrder.Status) {
-		return sdkerrors.Wrap(types.ErrInvalidStatus, "unable to set purchase order - invalid status")
+		return errorsmod.Wrap(types.ErrInvalidStatus, "unable to set purchase order - invalid status")
 	}
 
 	store := ctx.KVStore(k.storeKey)

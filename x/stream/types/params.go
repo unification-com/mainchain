@@ -3,19 +3,17 @@ package types
 import (
 	"fmt"
 
-	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	mathmod "cosmossdk.io/math"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"gopkg.in/yaml.v2"
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 // DefaultValidatorFee is set to 0%
-var DefaultValidatorFee = sdk.NewDecWithPrec(1, 2)
+var DefaultValidatorFee = "0.01"
 
 // NewParams creates a new Params instance
-func NewParams(validatorFee sdk.Dec) Params {
+func NewParams(validatorFee string) Params {
 	return Params{
 		ValidatorFee: validatorFee,
 	}
@@ -36,27 +34,26 @@ func (p Params) Validate() error {
 	return nil
 }
 
-// String implements the Stringer interface.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
-}
-
 func validateBaseValidatorFee(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.IsNil() {
+	vDec, err := mathmod.LegacyNewDecFromStr(v)
+	if err != nil {
+		return fmt.Errorf("invalid validator fee string: %w", err)
+	}
+
+	if vDec.IsNil() {
 		return fmt.Errorf("validator fee cannot be nil")
 	}
 
-	if v.IsNegative() {
+	if vDec.IsNegative() {
 		return fmt.Errorf("validator fee cannot be negative: %s", v)
 	}
 
-	if v.GT(math.LegacyOneDec()) {
+	if vDec.GT(mathmod.LegacyOneDec()) {
 		return fmt.Errorf("validator fee cannot be greater than 100%% (1.00). Sent %s", v)
 	}
 

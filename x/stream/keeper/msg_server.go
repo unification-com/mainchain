@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -37,30 +38,30 @@ func (k msgServer) CreateStream(goCtx context.Context, msg *types.MsgCreateStrea
 	}
 
 	if k.bankKeeper.BlockedAddr(receiverAddr) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.Receiver)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.Receiver)
 	}
 
 	// ToDo - add to unit tests
 	if msg.Sender == msg.Receiver {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "sender and receiver cannot be same address")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "sender and receiver cannot be same address")
 	}
 
 	if k.IsStream(ctx, receiverAddr, senderAddr) {
-		return nil, sdkerrors.Wrap(types.ErrStreamExists, "use update stream msg to modify existing stream")
+		return nil, errorsmod.Wrap(types.ErrStreamExists, "use update stream msg to modify existing stream")
 	}
 
 	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "deposit must be > zero")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "deposit must be > zero")
 	}
 
 	if msg.FlowRate <= 0 {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "flow rate must be > zero")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "flow rate must be > zero")
 	}
 
 	duration := types.CalculateDuration(msg.Deposit, msg.FlowRate)
 
 	if duration < 60 {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "calculated duration too short. Must be > 1 minute")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "calculated duration too short. Must be > 1 minute")
 	}
 
 	// create the "empty" stream
@@ -102,7 +103,7 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 	ok := k.IsStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
 	finalClaimCoin, valFeeCoin, totalClaimValue, remainingDeposit, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
@@ -134,17 +135,17 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 	}
 
 	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "deposit must be > zero")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "deposit must be > zero")
 	}
 
 	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
 	if msg.Deposit.Denom != stream.Deposit.Denom {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidData, "top up denom does not match stream denom. stream: %s, top up %s", stream.Deposit.Denom, msg.Deposit.Denom)
+		return nil, errorsmod.Wrapf(types.ErrInvalidData, "top up denom does not match stream denom. stream: %s, top up %s", stream.Deposit.Denom, msg.Deposit.Denom)
 	}
 
 	// Add the requested deposit
@@ -180,11 +181,11 @@ func (k msgServer) UpdateFlowRate(goCtx context.Context, msg *types.MsgUpdateFlo
 	}
 
 	if msg.FlowRate <= 0 {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "flow rate must be > zero")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "flow rate must be > zero")
 	}
 
 	if !k.IsStream(ctx, receiverAddr, senderAddr) {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
 	// update the flow rate
@@ -215,11 +216,11 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
 	if !stream.Cancellable {
-		return nil, sdkerrors.Wrap(types.ErrStreamNotCancellable, "cannot be cancelled")
+		return nil, errorsmod.Wrap(types.ErrStreamNotCancellable, "cannot be cancelled")
 	}
 
 	// cancel stream
@@ -234,7 +235,7 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 
 func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if k.authority != req.Authority {
-		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
+		return nil, errorsmod.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)

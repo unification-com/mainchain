@@ -33,7 +33,7 @@ func ModuleAccountInvariant(k Keeper) sdk.Invariant {
 			return false
 		})
 
-		broken := !mAccBalance.IsEqual(totalDeposits)
+		broken := !mAccBalance.Equal(totalDeposits)
 
 		return sdk.FormatInvariant(types.ModuleName, "deposits",
 			fmt.Sprintf("\tstream ModuleAccount coins: %s\n\ttotal deposits: %s\n",

@@ -1,7 +1,9 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
@@ -69,15 +71,15 @@ func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, height uint
 
 // GetWrkChainBlockHashesIterator Gets an iterator over all WrkChain hashess in
 // which the keys are the WrkChain Ids and the values are the WrkChainBlocks
-func (k Keeper) GetWrkChainBlockHashesIterator(ctx sdk.Context, wrkchainID uint64) sdk.Iterator {
+func (k Keeper) GetWrkChainBlockHashesIterator(ctx sdk.Context, wrkchainID uint64) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
+	return storetypes.KVStorePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
 }
 
 // IterateWrkChainBlockHashes iterates over the all the hashes for a wrkchain and performs a callback function
 func (k Keeper) IterateWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64, cb func(wrkChain types.WrkChainBlock) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
+	iterator := storetypes.KVStorePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -92,7 +94,7 @@ func (k Keeper) IterateWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64, c
 
 func (k Keeper) IterateWrkChainBlockHashesPaginated(ctx sdk.Context, wrkchainID uint64, page, limit uint, cb func(wrkChain types.WrkChainBlock) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIteratorPaginated(store, types.WrkChainAllBlocksKey(wrkchainID), page, limit)
+	iterator := storetypes.KVStorePrefixIteratorPaginated(store, types.WrkChainAllBlocksKey(wrkchainID), page, limit)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wcb types.WrkChainBlock
@@ -108,7 +110,7 @@ func (k Keeper) IterateWrkChainBlockHashesPaginated(ctx sdk.Context, wrkchainID 
 // and performs a callback function
 func (k Keeper) IterateWrkChainBlockHashesReverse(ctx sdk.Context, wrkchainID uint64, cb func(wrkChain types.WrkChainBlock) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStoreReversePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
+	iterator := storetypes.KVStoreReversePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {

@@ -1,9 +1,11 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
@@ -14,7 +16,7 @@ func (k Keeper) GetHighestWrkChainID(ctx sdk.Context) (wrkChainID uint64, err er
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.HighestWrkChainIDKey)
 	if bz == nil {
-		return 0, sdkerrors.Wrap(types.ErrInvalidGenesis, "initial wrkchain ID hasn't been set")
+		return 0, errorsmod.Wrap(types.ErrInvalidGenesis, "initial wrkchain ID hasn't been set")
 	}
 	// convert from bytes to uint64
 	wrkChainID = types.GetWrkChainIDFromBytes(bz)
@@ -72,15 +74,15 @@ func (k Keeper) IsWrkChainRegistered(ctx sdk.Context, wrkchainId uint64) bool {
 }
 
 // GetWrkChainsIterator Get an iterator over all WrkChains in which the keys are the WrkChain Ids and the values are the WrkChains
-func (k Keeper) GetWrkChainsIterator(ctx sdk.Context) sdk.Iterator {
+func (k Keeper) GetWrkChainsIterator(ctx sdk.Context) storetypes.Iterator {
 	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
+	return storetypes.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
 }
 
 // IterateWrkChains iterates over the all the wrkchain metadata and performs a callback function
 func (k Keeper) IterateWrkChains(ctx sdk.Context, cb func(wrkChain types.WrkChain) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
+	iterator := storetypes.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {

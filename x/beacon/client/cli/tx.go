@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -73,10 +74,10 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 			beaconName, _ := cmd.Flags().GetString(FlagName)
 
 			if len(moniker) == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "please enter a moniker")
+				return errorsmod.Wrap(types.ErrMissingData, "please enter a moniker")
 			}
 			if len(beaconName) == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "please enter a name")
+				return errorsmod.Wrap(types.ErrMissingData, "please enter a name")
 			}
 
 			params, err := queryClient.Params(
@@ -135,7 +136,7 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 			submitTime, _ := cmd.Flags().GetUint64(FlagSubmitTime)
 
 			if len(hash) == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "BEACON timestamp must have a Hash submitted")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "BEACON timestamp must have a Hash submitted")
 			}
 
 			if submitTime == 0 {
@@ -149,7 +150,7 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 			}
 
 			if beaconId == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "beacon_id must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "beacon_id must be > 0")
 			}
 
 			params, err := queryClient.Params(
@@ -214,7 +215,7 @@ $ %s tx %s purchase_storage 1 100
 			}
 
 			if beaconId == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "beacon_id must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "beacon_id must be > 0")
 			}
 
 			numToPurchase, err := strconv.Atoi(args[1])
@@ -224,7 +225,7 @@ $ %s tx %s purchase_storage 1 100
 			}
 
 			if numToPurchase == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "num_slots must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "num_slots must be > 0")
 			}
 
 			params, err := queryClient.Params(

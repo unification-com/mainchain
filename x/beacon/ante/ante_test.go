@@ -6,14 +6,21 @@ import (
 	"testing"
 	"time"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	errorsmod "cosmossdk.io/errors"
+	mathmod "cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
+	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
-	simapp "github.com/unification-com/mainchain/app"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/beacon/ante"
 	"github.com/unification-com/mainchain/x/beacon/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
@@ -35,15 +42,14 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 
 func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, simapp.TestDenomination, 200, 300))
+	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualFeeAmt := bParams.FeeRegister
 	actualFeeDenom := bParams.Denom
@@ -56,9 +62,18 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 	msg := types.NewMsgRegisterBeacon("test", "Test", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(actualFeeDenom, int64(actualFeeAmt)))
 
+	//tx, _ := GenTx(ctx, txGen, []sdk.Msg{
+	//	msg,
+	//}, fee, 300000, "", []uint64{0, 0}, []uint64{0, 0}, []cryptotypes.PrivKey{
+	//	privK,
+	//}, []cryptotypes.PrivKey{
+	//	privK,
+	//},
+	//)
+
 	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", addr)
+	expectedErr := errorsmod.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", []byte(addr))
 
 	_, err := antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
@@ -70,10 +85,9 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 
 func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -97,13 +111,22 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	msg := types.NewMsgRegisterBeacon("test", "Test", addr)
 	fee := sdk.NewCoins(sdk.NewInt64Coin(feeDenom, feeInt))
 
-	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+	tx, _ := GenTx(ctx, txGen, []sdk.Msg{
+		msg,
+	}, fee, 300000, "", []uint64{0, 0}, []uint64{0, 0}, []cryptotypes.PrivKey{
+		privK,
+	}, []cryptotypes.PrivKey{
+		privK,
+	},
+	)
+
+	//tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 1, expected fees: %v%v, sent fees: %v%v", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
 
-	expectedErr := sdkerrors.Wrap(types.ErrInsufficientBeaconFee, errMsg)
+	expectedErr := errorsmod.Wrap(types.ErrInsufficientBeaconFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
@@ -118,7 +141,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRecFeeAmt, actualFeeDenom, feeInt1, feeDenom)
-	expectedErr1 := sdkerrors.Wrap(types.ErrInsufficientBeaconFee, errMsg1)
+	expectedErr1 := errorsmod.Wrap(types.ErrInsufficientBeaconFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1.Error(), err1.Error(), "unexpected type of error: %s", err1)
@@ -135,7 +158,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err2 := antehandler(ctx, tx2, false)
 
 	errMsg2 := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", expectedFees, actualFeeDenom, feeInt2, feeDenom)
-	expectedErr2 := sdkerrors.Wrap(types.ErrInsufficientBeaconFee, errMsg2)
+	expectedErr2 := errorsmod.Wrap(types.ErrInsufficientBeaconFee, errMsg2)
 
 	require.NotNil(t, err2, "Did not error on invalid tx")
 	require.Equal(t, expectedErr2.Error(), err2.Error(), "unexpected type of error: %s", err2)
@@ -149,7 +172,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	_, err3 := antehandler(ctx, tx3, false)
 
 	errMsg3 := fmt.Sprintf("insufficient fee to pay for beacon tx. numMsgs in tx: 3, expected fees: %d%s, sent fees: %d%s", expectedFees3, actualFeeDenom, multiFees, feeDenom)
-	expectedErr3 := sdkerrors.Wrap(types.ErrInsufficientBeaconFee, errMsg3)
+	expectedErr3 := errorsmod.Wrap(types.ErrInsufficientBeaconFee, errMsg3)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
 	require.Equal(t, expectedErr3.Error(), err3.Error(), "unexpected type of error: %s", err3)
@@ -158,10 +181,9 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 
 func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 
@@ -190,7 +212,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRegFeeAmt, actualFeeDenom, feeInt, feeDenom)
-	expectedErr := sdkerrors.Wrap(types.ErrTooMuchBeaconFee, errMsg)
+	expectedErr := errorsmod.Wrap(types.ErrTooMuchBeaconFee, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
@@ -205,7 +227,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", actualRecFeeAmt, actualFeeDenom, feeInt1, feeDenom)
-	expectedErr1 := sdkerrors.Wrap(types.ErrTooMuchBeaconFee, errMsg1)
+	expectedErr1 := errorsmod.Wrap(types.ErrTooMuchBeaconFee, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1.Error(), err1.Error(), "unexpected type of error: %s", err1)
@@ -222,7 +244,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err2 := antehandler(ctx, tx2, false)
 
 	errMsg2 := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: 1, expected fees: %d%s, sent fees: %d%s", expectedFees, actualFeeDenom, feeInt2, feeDenom)
-	expectedErr2 := sdkerrors.Wrap(types.ErrTooMuchBeaconFee, errMsg2)
+	expectedErr2 := errorsmod.Wrap(types.ErrTooMuchBeaconFee, errMsg2)
 
 	require.NotNil(t, err2, "Did not error on invalid tx")
 	require.Equal(t, expectedErr2.Error(), err2.Error(), "unexpected type of error: %s", err2)
@@ -236,7 +258,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	_, err3 := antehandler(ctx, tx3, false)
 
 	errMsg3 := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: 3, expected fees: %d%s, sent fees: %d%s", expectedFees3, actualFeeDenom, multiFees, feeDenom)
-	expectedErr3 := sdkerrors.Wrap(types.ErrTooMuchBeaconFee, errMsg3)
+	expectedErr3 := errorsmod.Wrap(types.ErrTooMuchBeaconFee, errMsg3)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
 	require.Equal(t, expectedErr3.Error(), err3.Error(), "unexpected type of error: %s", err3)
@@ -245,10 +267,9 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 
 func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 
@@ -277,7 +298,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 
 	errMsg := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
+	expectedErr := errorsmod.Wrap(types.ErrIncorrectFeeDenomination, errMsg)
 
 	require.NotNil(t, err, "Did not error on invalid tx1")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
@@ -292,7 +313,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err1 := antehandler(ctx, tx1, false)
 
 	errMsg1 := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr1 := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg1)
+	expectedErr1 := errorsmod.Wrap(types.ErrIncorrectFeeDenomination, errMsg1)
 
 	require.NotNil(t, err1, "Did not error on invalid tx")
 	require.Equal(t, expectedErr1.Error(), err1.Error(), "unexpected type of error: %s", err1)
@@ -308,7 +329,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err2 := antehandler(ctx, tx2, false)
 
 	errMsg2 := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr2 := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg2)
+	expectedErr2 := errorsmod.Wrap(types.ErrIncorrectFeeDenomination, errMsg2)
 
 	require.NotNil(t, err2, "Did not error on invalid tx")
 	require.Equal(t, expectedErr2.Error(), err2.Error(), "unexpected type of error: %s", err2)
@@ -321,7 +342,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	_, err3 := antehandler(ctx, tx3, false)
 
 	errMsg3 := fmt.Sprintf("incorrect fee denomination. expected %s", actualFeeDenom)
-	expectedErr3 := sdkerrors.Wrap(types.ErrIncorrectFeeDenomination, errMsg3)
+	expectedErr3 := errorsmod.Wrap(types.ErrIncorrectFeeDenomination, errMsg3)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
 	require.Equal(t, expectedErr3.Error(), err3.Error(), "unexpected type of error: %s", err3)
@@ -329,10 +350,9 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 
@@ -349,7 +369,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(1))
+	accAmt := mathmod.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
@@ -365,7 +385,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, actualRegFeeAmt, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx, false)
@@ -382,7 +402,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr = errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, actualRecFeeAmt, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx1, false)
@@ -400,7 +420,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr = errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, feeInt2, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx2, false)
@@ -417,7 +437,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 	_, err3 := antehandler(ctx, tx3, false)
 
-	expectedErr3 := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr3 := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, initCoins, multiFees, actualFeeDenom)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
@@ -426,10 +446,9 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -445,7 +464,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(actualRecFeeAmt - 2))
+	accAmt := mathmod.NewInt(int64(actualRecFeeAmt - 2))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
@@ -469,7 +488,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 
 	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, fee, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, actualRegFeeAmt, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx, false)
@@ -486,7 +505,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 
 	tx1, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg1}, fee1, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr = errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, actualRecFeeAmt, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx1, false)
@@ -504,7 +523,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 
 	tx2, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg2}, fee2, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
-	expectedErr = sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr = errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, feeInt2, actualFeeDenom)
 
 	_, err = antehandler(ctx, tx2, false)
@@ -521,7 +540,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 
 	_, err3 := antehandler(ctx, tx3, false)
 
-	expectedErr3 := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+	expectedErr3 := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 		"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %d%s", initCoins, withLocked, multiFees, actualFeeDenom)
 
 	require.NotNil(t, err3, "Did not error on invalid tx")
@@ -530,10 +549,9 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 
 func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -549,7 +567,7 @@ func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(actualRegFeeAmt * 3))
+	accAmt := mathmod.NewInt(int64(actualRegFeeAmt * 3))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
@@ -615,10 +633,9 @@ func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -634,7 +651,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(1))
+	accAmt := mathmod.NewInt(int64(1))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
@@ -704,11 +721,9 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	app := simapp.Setup(t, true)
-	ctx := app.BaseApp.NewContext(true, tmproto.Header{})
-	simapp.SetKeeperTestParamsAndDefaultValues(app, ctx)
-	encodingConfig := simapp.MakeEncodingConfig()
-	txGen := encodingConfig.TxConfig
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
 
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
@@ -717,7 +732,7 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	actualPurchaseAmt := bParams.FeePurchaseStorage
 	actualFeeDenom := bParams.Denom
 	startInStateLimit := uint64(100)
-	numToPurchase := simapp.TestMaxStorage - startInStateLimit + 1
+	numToPurchase := simapphelpers.SimTestDefaultMaxStorageLimit - startInStateLimit + 1
 	bId := uint64(1)
 
 	privK := ed25519.GenPrivKey()
@@ -725,7 +740,7 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	addr := sdk.AccAddress(pubK.Address())
 
 	// fund the account
-	accAmt := sdk.NewInt(int64(actualPurchaseAmt * numToPurchase))
+	accAmt := mathmod.NewInt(int64(actualPurchaseAmt * numToPurchase))
 	initCoins := sdk.NewCoins(sdk.NewCoin(actualFeeDenom, accAmt))
 	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
 	app.AccountKeeper.SetAccount(ctx, acc)
@@ -755,9 +770,83 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 
 	_, err = antehandler(ctx, tx, false)
 
-	expectedErr := sdkerrors.Wrapf(types.ErrExceedsMaxStorage,
-		"num slots exceeds max for beacon %d. Max can purchase: %d. Want in Msgs: %d", bId, simapp.TestMaxStorage-startInStateLimit, numToPurchase)
+	expectedErr := errorsmod.Wrapf(types.ErrExceedsMaxStorage,
+		"num slots exceeds max for beacon %d. Max can purchase: %d. Want in Msgs: %d", bId, simapphelpers.SimTestDefaultMaxStorageLimit-startInStateLimit, numToPurchase)
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
+}
+
+// GenTx generates a signed mock transaction.
+func GenTx(
+	ctx sdk.Context,
+	gen client.TxConfig,
+	msgs []sdk.Msg,
+	feeAmt sdk.Coins,
+	gas uint64,
+	chainID string,
+	accNums, accSeqs []uint64,
+	signers, signatures []cryptotypes.PrivKey,
+) (sdk.Tx, error) {
+	sigs := make([]signing.SignatureV2, len(signers))
+
+	// create a random length memo
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	memo := simulation.RandStringOfLength(r, simulation.RandIntBetween(r, 0, 100))
+	signMode, err := authsigning.APISignModeToInternal(gen.SignModeHandler().DefaultMode())
+	if err != nil {
+		return nil, err
+	}
+
+	// 1st round: set SignatureV2 with empty signatures, to set correct
+	// signer infos.
+	for i, p := range signers {
+		sigs[i] = signing.SignatureV2{
+			PubKey: p.PubKey(),
+			Data: &signing.SingleSignatureData{
+				SignMode: signMode,
+			},
+			Sequence: accSeqs[i],
+		}
+	}
+
+	baseTxBuilder := gen.NewTxBuilder()
+
+	err = baseTxBuilder.SetMsgs(msgs...)
+	if err != nil {
+		return nil, err
+	}
+	err = baseTxBuilder.SetSignatures(sigs...)
+	if err != nil {
+		return nil, err
+	}
+	baseTxBuilder.SetMemo(memo)
+	baseTxBuilder.SetFeeAmount(feeAmt)
+	baseTxBuilder.SetGasLimit(gas)
+
+	// 2nd round: once all signer infos are set, every signer can sign.
+	for i, p := range signatures {
+		signerData := authsigning.SignerData{
+			ChainID:       chainID,
+			AccountNumber: accNums[i],
+			Sequence:      accSeqs[i],
+		}
+		signBytes, err := authsigning.GetSignBytesAdapter(
+			ctx, gen.SignModeHandler(), signMode, signerData, baseTxBuilder.GetTx())
+		if err != nil {
+			panic(err)
+		}
+
+		sig, err := p.Sign(signBytes)
+		if err != nil {
+			panic(err)
+		}
+		sigs[i].Data.(*signing.SingleSignatureData).Signature = sig
+		err = baseTxBuilder.SetSignatures(sigs...)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return baseTxBuilder.GetTx(), nil
 }

@@ -2,8 +2,12 @@ package ante
 
 import (
 	"fmt"
+
+	errorsmod "cosmossdk.io/errors"
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/unification-com/mainchain/x/wrkchain/exported"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
@@ -38,7 +42,7 @@ func (wfd CorrectWrkChainFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, si
 	feeTx, ok := tx.(sdk.FeeTx)
 
 	if !ok {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "WRKChain Tx must be a FeeTx")
+		return ctx, errorsmod.Wrap(sdkerrors.ErrTxDecode, "WRKChain Tx must be a FeeTx")
 	}
 
 	// check if the Tx contains WrkChain Msgs. If not, move on to the next decorator in the chain
@@ -112,7 +116,7 @@ func checkWrkChainMaxSlots(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) er
 	for bId, pd := range purchaseData {
 		if pd.want > pd.max {
 			errMsg := fmt.Sprintf("num slots exceeds max for wrkchain %d. Max can purchase: %d. Want in Msgs: %d", bId, pd.max, pd.want)
-			return sdkerrors.Wrap(exported.ErrExceedsMaxStorage, errMsg)
+			return errorsmod.Wrap(exported.ErrExceedsMaxStorage, errMsg)
 		}
 	}
 
@@ -134,7 +138,7 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 
 	if !hasFeeDenom {
 		errMsg := fmt.Sprintf("incorrect fee denomination. expected %s", expectedFeeDenom)
-		return sdkerrors.Wrap(exported.ErrIncorrectFeeDenomination, errMsg)
+		return errorsmod.Wrap(exported.ErrIncorrectFeeDenomination, errMsg)
 	}
 
 	// go through Msgs wrapped in the Tx, and check for WRKChain messages
@@ -150,7 +154,7 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 			m := msg.(*types.MsgPurchaseWrkChainStateStorage)
 			numSlots := m.Number
 			feePerSlot := wck.GetPurchaseStorageFeeAsCoin(ctx)
-			totalForSlotsAmt := feePerSlot.Amount.Mul(sdk.NewInt(int64(numSlots)))
+			totalForSlotsAmt := feePerSlot.Amount.Mul(mathmod.NewInt(int64(numSlots)))
 			totalForSlotsCoin := sdk.NewCoin(feePerSlot.Denom, totalForSlotsAmt)
 			expectedFees = expectedFees.Add(totalForSlotsCoin)
 			numMsgs = numMsgs + 1
@@ -160,12 +164,12 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 	totalFees := sdk.Coins{expectedFees}
 	if tx.GetFee().IsAllLT(totalFees) {
 		errMsg := fmt.Sprintf("insufficient fee to pay for WrkChain tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return sdkerrors.Wrap(exported.ErrInsufficientWrkChainFee, errMsg)
+		return errorsmod.Wrap(exported.ErrInsufficientWrkChainFee, errMsg)
 	}
 
 	if tx.GetFee().IsAllGT(totalFees) {
 		errMsg := fmt.Sprintf("too much fee sent to pay for WrkChain tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
-		return sdkerrors.Wrap(exported.ErrTooMuchWrkChainFee, errMsg)
+		return errorsmod.Wrap(exported.ErrTooMuchWrkChainFee, errMsg)
 	}
 
 	return nil
@@ -179,11 +183,11 @@ func checkFeePayerHasFunds(ctx sdk.Context, bankKeeper BankKeeper, accKeeper Acc
 	fees := tx.GetFee()
 
 	if feePayerAcc == nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", feePayer)
+		return errorsmod.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", feePayer)
 	}
 
 	if !fees.IsValid() {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid fee: %s", fees)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidCoins, "invalid fee: %s", fees)
 	}
 
 	coins := bankKeeper.GetAllBalances(ctx, feePayerAcc.GetAddress()) //feePayerAcc.GetCoins()
@@ -202,7 +206,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, bankKeeper BankKeeper, accKeeper Acc
 	// verify the account has enough funds to pay for fees, including any locked enterprise FUND
 	_, hasNeg := potentialCoins.SafeSub(fee)
 	if hasNeg {
-		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+		err := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", coins, potentialCoins, fees)
 		return err
 	}
@@ -217,7 +221,7 @@ func checkFeePayerHasFunds(ctx sdk.Context, bankKeeper BankKeeper, accKeeper Acc
 	potentialSpendableCoins = potentialSpendableCoins.Add(lockedUndCoins...)
 
 	if _, hasNeg := potentialSpendableCoins.SafeSub(fee); hasNeg {
-		err := sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds,
+		err := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
 			"insufficient spendable und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", spendableCoins, potentialSpendableCoins, fees)
 		return err
 	}

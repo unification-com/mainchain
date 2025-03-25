@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -37,33 +38,19 @@ func (msg MsgUndPurchaseOrder) Type() string { return PurchaseAction }
 func (msg MsgUndPurchaseOrder) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Purchaser)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid purchaser address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid purchaser address (%s)", err)
 	}
 
 	if !msg.Amount.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
 	}
 	if msg.Amount.IsZero() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "amount must be greater than zero")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, "amount must be greater than zero")
 	}
 	if msg.Amount.IsNegative() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "amount must be a positive value")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, "amount must be a positive value")
 	}
 	return nil
-}
-
-// GetSignBytes Implements Msg.
-func (msg MsgUndPurchaseOrder) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners Implements Msg.
-func (msg MsgUndPurchaseOrder) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Purchaser)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
 }
 
 // __Enterprise_UND_Process_Purchase_Order_Msg__________________________
@@ -90,30 +77,16 @@ func (msg MsgProcessUndPurchaseOrder) ValidateBasic() error {
 
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid signer address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid signer address (%s)", err)
 	}
 
 	if msg.PurchaseOrderId == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "purchase order id must be greater than zero")
+		return errorsmod.Wrap(sdkerrors.ErrUnknownRequest, "purchase order id must be greater than zero")
 	}
 	if !ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
-		return sdkerrors.Wrap(ErrInvalidStatus, "status must be accept or reject")
+		return errorsmod.Wrap(ErrInvalidStatus, "status must be accept or reject")
 	}
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgProcessUndPurchaseOrder) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners Implements Msg.
-func (msg MsgProcessUndPurchaseOrder) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Signer)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
 }
 
 // __Enterprise_UND_Whitelist_Msg__________________________
@@ -140,50 +113,24 @@ func (msg MsgWhitelistAddress) Type() string { return WhitelistAddressAction }
 func (msg MsgWhitelistAddress) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid signer address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid signer address (%s)", err)
 	}
 	_, err = sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid address (%s)", err)
 	}
 	if !ValidWhitelistAction(msg.Action) {
-		return sdkerrors.Wrap(ErrInvalidWhitelistAction, "action must be add or remove")
+		return errorsmod.Wrap(ErrInvalidWhitelistAction, "action must be add or remove")
 	}
 	return nil
 }
 
-// GetSignBytes encodes the message for signing
-func (msg MsgWhitelistAddress) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgWhitelistAddress) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Signer)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
-}
-
 // --- Modify Params Msg Type ---
-
-// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
-// the expected signer needs to sign.
-func (m MsgUpdateParams) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
-// GetSigners returns the expected signers for a MsgUpdateParams message.
-func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrap(err, "invalid authority address")
+		return errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if err := m.Params.Validate(); err != nil {

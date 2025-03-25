@@ -3,7 +3,6 @@ package types
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	undtypes "github.com/unification-com/mainchain/types"
 )
 
 func ValidateGenesis(data GenesisState) error {
@@ -91,9 +90,9 @@ func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
 		DefaultParams(),
 		1,
-		sdk.NewInt64Coin(undtypes.DefaultDenomination, 0),
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 		nil, nil, nil,
-		sdk.NewInt64Coin(undtypes.DefaultDenomination, 0),
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 		nil,
 	)
 }

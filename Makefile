@@ -17,7 +17,6 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain \
 		  -X github.com/cosmos/cosmos-sdk/version.AppName=und \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_CORE_SEM_VERSION) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags)"
 
 export UND_LDFLAGS = $(ldflags)

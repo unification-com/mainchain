@@ -18,14 +18,6 @@ func TestMsgRegisterWrkChain_Type(t *testing.T) {
 	require.Equal(t, "register_wrkchain", msg.Type())
 }
 
-func TestMsgRegisterWrkChain_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgRegisterWrkChain{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgRecordWrkChainBlock_Route(t *testing.T) {
 	msg := MsgRecordWrkChainBlock{}
 	require.Equal(t, ModuleName, msg.Route())
@@ -34,14 +26,6 @@ func TestMsgRecordWrkChainBlock_Route(t *testing.T) {
 func TestMsgRecordWrkChainBlock_Type(t *testing.T) {
 	msg := MsgRecordWrkChainBlock{}
 	require.Equal(t, "record_wrkchain_hash", msg.Type())
-}
-
-func TestMsgRecordWrkChainBlock_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgRecordWrkChainBlock{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
 }
 
 func TestMsgRegisterWrkChain(t *testing.T) {

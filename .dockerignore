@@ -9,3 +9,6 @@
 build
 dist
 docs/.vuepress/dist
+
+# scripts
+scripts/devnet_txs.sh

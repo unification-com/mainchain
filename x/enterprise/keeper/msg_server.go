@@ -3,12 +3,14 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/telemetry"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"strconv"
 
+	errorsmod "cosmossdk.io/errors"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -33,15 +35,15 @@ func (k msgServer) UndPurchaseOrder(goCtx context.Context, msg *types.MsgUndPurc
 	}
 
 	if msg.Amount.Denom != k.GetParamDenom(ctx) {
-		return nil, sdkerrors.Wrap(types.ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", k.GetParamDenom(ctx)))
+		return nil, errorsmod.Wrap(types.ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", k.GetParamDenom(ctx)))
 	}
 
 	if !msg.Amount.IsPositive() {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "amount must be > 0")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "amount must be > 0")
 	}
 
 	if !k.AddressIsWhitelisted(ctx, accAddr) {
-		return nil, sdkerrors.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", msg.Purchaser))
+		return nil, errorsmod.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", msg.Purchaser))
 	}
 
 	po := types.EnterpriseUndPurchaseOrder{
@@ -80,35 +82,35 @@ func (k msgServer) ProcessUndPurchaseOrder(goCtx context.Context, msg *types.Msg
 	}
 
 	if !k.IsAuthorisedToDecide(ctx, signer) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")
+		return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")
 	}
 
 	if !k.PurchaseOrderExists(ctx, msg.PurchaseOrderId) {
-		return nil, sdkerrors.Wrapf(types.ErrPurchaseOrderDoesNotExist, "id: %d", msg.PurchaseOrderId)
+		return nil, errorsmod.Wrapf(types.ErrPurchaseOrderDoesNotExist, "id: %d", msg.PurchaseOrderId)
 	}
 
 	if !types.ValidPurchaseOrderAcceptRejectStatus(msg.Decision) {
-		return nil, sdkerrors.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")
+		return nil, errorsmod.Wrap(types.ErrInvalidDecision, "decision should be accept or reject")
 	}
 
 	purchaseOrder, found := k.GetPurchaseOrder(ctx, msg.PurchaseOrderId)
 
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrPurchaseOrderDoesNotExist, "purchase order id %d does not exist", msg.PurchaseOrderId)
+		return nil, errorsmod.Wrapf(types.ErrPurchaseOrderDoesNotExist, "purchase order id %d does not exist", msg.PurchaseOrderId)
 	}
 
 	if purchaseOrder.Status == types.StatusNil {
-		return nil, sdkerrors.Wrapf(types.ErrPurchaseOrderNotRaised, "purchase order %d not raised!", msg.PurchaseOrderId)
+		return nil, errorsmod.Wrapf(types.ErrPurchaseOrderNotRaised, "purchase order %d not raised!", msg.PurchaseOrderId)
 	}
 
 	if purchaseOrder.Status != types.StatusRaised {
-		return nil, sdkerrors.Wrapf(types.ErrPurchaseOrderAlreadyProcessed, "id %d already processed: %s", msg.PurchaseOrderId, purchaseOrder.Status.String())
+		return nil, errorsmod.Wrapf(types.ErrPurchaseOrderAlreadyProcessed, "id %d already processed: %s", msg.PurchaseOrderId, purchaseOrder.Status.String())
 	}
 
 	currentDecisions := purchaseOrder.Decisions
 	for _, d := range currentDecisions {
 		if msg.Signer == d.Signer {
-			return nil, sdkerrors.Wrapf(types.ErrSignerAlreadyMadeDecision, "signer %s already decided: %s", msg.Signer, d.Decision.String())
+			return nil, errorsmod.Wrapf(types.ErrSignerAlreadyMadeDecision, "signer %s already decided: %s", msg.Signer, d.Decision.String())
 		}
 	}
 
@@ -137,20 +139,20 @@ func (k msgServer) WhitelistAddress(goCtx context.Context, msg *types.MsgWhiteli
 
 	signer, accErr := sdk.AccAddressFromBech32(msg.Signer)
 	if accErr != nil {
-		return nil, sdkerrors.Wrap(accErr, "signer address")
+		return nil, errorsmod.Wrap(accErr, "signer address")
 	}
 
 	addr, accErr := sdk.AccAddressFromBech32(msg.Address)
 	if accErr != nil {
-		return nil, sdkerrors.Wrap(accErr, "whitelist address")
+		return nil, errorsmod.Wrap(accErr, "whitelist address")
 	}
 
 	if !k.IsAuthorisedToDecide(ctx, signer) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer modifying whitelist")
+		return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer modifying whitelist")
 	}
 
 	if !types.ValidWhitelistAction(msg.Action) {
-		return nil, sdkerrors.Wrap(types.ErrInvalidDecision, "action should be add or remove")
+		return nil, errorsmod.Wrap(types.ErrInvalidDecision, "action should be add or remove")
 	}
 
 	err := k.ProcessWhitelistAction(ctx, addr, msg.Action, signer)
@@ -175,7 +177,7 @@ func (k msgServer) WhitelistAddress(goCtx context.Context, msg *types.MsgWhiteli
 
 func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if k.authority != req.Authority {
-		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
+		return nil, errorsmod.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)

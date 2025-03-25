@@ -1,6 +1,7 @@
 package ante
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	beacon "github.com/unification-com/mainchain/x/beacon/exported"
@@ -21,7 +22,7 @@ func (ld CheckLockedUndDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 	feeTx, ok := tx.(sdk.FeeTx)
 
 	if !ok {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+		return ctx, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 
 	feePayer := feeTx.FeePayer()
@@ -36,7 +37,7 @@ func (ld CheckLockedUndDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 		err := ld.entk.UnlockCoinsForFees(ctx, feePayer, feeTx.GetFee())
 
 		if err != nil {
-			return ctx, sdkerrors.Wrap(err, "failed to unlock enterprise und")
+			return ctx, errorsmod.Wrap(err, "failed to unlock enterprise und")
 		}
 
 	}

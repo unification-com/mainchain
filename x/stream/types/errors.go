@@ -3,7 +3,7 @@ package types
 // DONTCOVER
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 )
 
 const (
@@ -21,12 +21,12 @@ const (
 
 // x/stream module sentinel errors
 var (
-	ErrStreamDoesNotExist   = sdkerrors.Register(ModuleName, CodeStreamDoesNotExist, "stream does not exist")
-	ErrStreamExists         = sdkerrors.Register(ModuleName, CodeStreamAlreadyExists, "stream exists")
-	ErrInvalidData          = sdkerrors.Register(ModuleName, CodeInvalidData, "invalid data")
-	ErrMissingData          = sdkerrors.Register(ModuleName, CodeMissingData, "missing data")
-	ErrContentTooLarge      = sdkerrors.Register(ModuleName, CodeContentTooLarge, "msg content too large")
-	ErrStreamNotCancellable = sdkerrors.Register(ModuleName, CodeNotCancellable, "stream not cancellable")
+	ErrStreamDoesNotExist   = errorsmod.Register(ModuleName, CodeStreamDoesNotExist, "stream does not exist")
+	ErrStreamExists         = errorsmod.Register(ModuleName, CodeStreamAlreadyExists, "stream exists")
+	ErrInvalidData          = errorsmod.Register(ModuleName, CodeInvalidData, "invalid data")
+	ErrMissingData          = errorsmod.Register(ModuleName, CodeMissingData, "missing data")
+	ErrContentTooLarge      = errorsmod.Register(ModuleName, CodeContentTooLarge, "msg content too large")
+	ErrStreamNotCancellable = errorsmod.Register(ModuleName, CodeNotCancellable, "stream not cancellable")
 
-	ErrInsufficientDeposit = sdkerrors.Register(ModuleName, CodeInsufficientDeposit, "insufficient deposit")
+	ErrInsufficientDeposit = errorsmod.Register(ModuleName, CodeInsufficientDeposit, "insufficient deposit")
 )

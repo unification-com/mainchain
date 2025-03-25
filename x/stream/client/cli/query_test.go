@@ -34,7 +34,7 @@ func (s *CLITestSuite) TestGetAllStreamsCmd() {
 			"valid query",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryStreamsResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)
@@ -89,7 +89,7 @@ func (s *CLITestSuite) TestGetAllStreamsByReceiverCmd() {
 			"valid query",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryAllStreamsForReceiverResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)
@@ -156,7 +156,7 @@ func (s *CLITestSuite) TestGetCmdGetStreamCmd() {
 			"valid query",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryStreamByReceiverSenderResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)
@@ -237,7 +237,7 @@ func (s *CLITestSuite) TestGetCmdGetStreamByReceiverSenderCurrentFlowCmd() {
 			"valid query",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryStreamReceiverSenderCurrentFlowResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)
@@ -318,7 +318,7 @@ func (s *CLITestSuite) TestGetCmdGetAllStreamsBySenderCmd() {
 			"valid query",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryAllStreamsForSenderResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)
@@ -383,7 +383,7 @@ func (s *CLITestSuite) TestGetCmdCalculateFlowRateCmd() {
 			"valid query",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryCalculateFlowRateResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)
@@ -401,7 +401,7 @@ func (s *CLITestSuite) TestGetCmdCalculateFlowRateCmd() {
 			"invalid period",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryCalculateFlowRateResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)
@@ -419,7 +419,7 @@ func (s *CLITestSuite) TestGetCmdCalculateFlowRateCmd() {
 			"invalid coin",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryCalculateFlowRateResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)
@@ -437,7 +437,7 @@ func (s *CLITestSuite) TestGetCmdCalculateFlowRateCmd() {
 			"invalid duration",
 			func() client.Context {
 				bz, _ := s.encCfg.Codec.Marshal(&types.QueryCalculateFlowRateResponse{})
-				c := clitestutil.NewMockTendermintRPC(abci.ResponseQuery{
+				c := clitestutil.NewMockCometRPC(abci.ResponseQuery{
 					Value: bz,
 				})
 				return s.baseCtx.WithClient(c)

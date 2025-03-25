@@ -3,9 +3,9 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -103,7 +103,7 @@ func (q Keeper) StreamByReceiverSender(c context.Context, req *types.QueryStream
 	stream, ok := q.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
 	return &types.QueryStreamByReceiverSenderResponse{
@@ -135,7 +135,7 @@ func (q Keeper) StreamReceiverSenderCurrentFlow(c context.Context, req *types.Qu
 	stream, ok := q.GetStream(ctx, receiverAddr, senderAddr)
 
 	if !ok {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "stream not found")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
 	nowTime := ctx.BlockTime()

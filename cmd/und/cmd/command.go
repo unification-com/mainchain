@@ -167,40 +167,6 @@ func txCommand() *cobra.Command {
 	return cmd
 }
 
-// overrideBankQuery is a convoluted way of overriding the x/bank module's default total-supply and total-supply-of
-// commands. This is currently necessary due to the method currently used by the x/enterprise module to mint eFUND,
-// meaning that eFUND are calculated and included in the total supply. In practice, this is not the case, since eFUND
-// only become part of the total supply once they have been spent for the first time. The override methods ensure
-// that eFUND are deducted from the total supply before returning the result, giving a true reflection of the
-// actual total supply.
-func overrideBankQuery(rootCmd *cobra.Command) *cobra.Command {
-	origQueryCmd, _, _ := rootCmd.Find([]string{"query"})
-	origBankCmd, _, _ := origQueryCmd.Find([]string{"bank"})
-
-	origTotalSupplyCmd, _, _ := origBankCmd.Find([]string{"total-supply"})
-	origTotalSupplyOfCmd, _, _ := origBankCmd.Find([]string{"total-supply-of"})
-
-	// remove "query" from "root"
-	rootCmd.RemoveCommand(origQueryCmd)
-	// remove "bank" from "query"
-	origQueryCmd.RemoveCommand(origBankCmd)
-	// remove "total-supply" command from "bank" cmd
-	origBankCmd.RemoveCommand(origTotalSupplyCmd)
-	// remove "total-supply-of" command from "bank" cmd
-	origBankCmd.RemoveCommand(origTotalSupplyOfCmd)
-
-	// add Enterprise version of "total-supply" command to "bank" cmd
-	origBankCmd.AddCommand(GetCmdQueryTotalSupplyOverrideBankDefault())
-	// add Enterprise version of "total-supply-of" command to "bank" cmd
-	origBankCmd.AddCommand(GetCmdQueryTotalSupplyOfOverrideBankDefault())
-
-	// re-add "bank" to "query"
-	origQueryCmd.AddCommand(origBankCmd)
-	// re-add "query" to "root"
-	rootCmd.AddCommand(origQueryCmd)
-	return rootCmd
-}
-
 // newApp creates the application
 func newApp(
 	logger log.Logger,

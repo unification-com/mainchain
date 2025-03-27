@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	consensusVersion uint64 = 3
+	consensusVersion uint64 = 4
 )
 
 var (
@@ -33,9 +33,9 @@ var (
 	_ module.HasGenesisBasics    = (*AppModule)(nil)
 	_ module.HasGenesis          = (*AppModule)(nil)
 	_ module.HasName             = (*AppModule)(nil)
-	_ module.HasInvariants       = (*AppModule)(nil)
-	_ module.HasServices         = (*AppModule)(nil)
-	_ module.HasProposalMsgs     = (*AppModule)(nil)
+	//_ module.HasInvariants       = (*AppModule)(nil) // ToDo - Invariants no longer required.
+	_ module.HasServices     = (*AppModule)(nil)
+	_ module.HasProposalMsgs = (*AppModule)(nil)
 
 	_ appmodule.AppModule       = (*AppModule)(nil)
 	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
@@ -132,10 +132,10 @@ func (AppModule) Name() string {
 	return types.ModuleName
 }
 
-// RegisterInvariants performs a no-op.
-func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
-	keeper.RegisterInvariants(ir, am.keeper)
-}
+//// RegisterInvariants performs a no-op.
+//func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
+//	keeper.RegisterInvariants(ir, am.keeper)
+//}
 
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
@@ -146,10 +146,13 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	//m := keeper.NewMigrator(am.keeper)
 	//cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2)
 
-	m := keeper.NewMigrator(am.keeper, am.legacySubspace)
-	if err := cfg.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
-		panic(fmt.Sprintf("failed to migrate x/%s from version 2 to 3: %v", types.ModuleName, err))
-	}
+	//m := keeper.NewMigrator(am.keeper, am.legacySubspace)
+	//if err := cfg.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
+	//	panic(fmt.Sprintf("failed to migrate x/%s from version 2 to 3: %v", types.ModuleName, err))
+	//}
+
+	// Note: although consensus version is now 4, there is no in-state migration.
+	// The only change is that nund will be burned for the module account
 }
 
 // InitGenesis performs genesis initialization for the enterprise module. It returns

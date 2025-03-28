@@ -5,8 +5,10 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	circuittypes "cosmossdk.io/x/circuit/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -23,10 +25,21 @@ func (app *App) registerUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		UpgradeName,
 		func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+			sdkCtx := sdk.UnwrapSDKContext(ctx)
+			sdkCtx.Logger().Info("Starting module migrations...")
+			versionMap, err := app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
 
-			app.BurnEnterpriseAccCoins(ctx)
+			if err != nil {
+				return nil, err
+			}
 
-			return app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
+			err = app.BurnEnterpriseAccCoins(ctx)
+
+			if err != nil {
+				return nil, err
+			}
+
+			return versionMap, err
 		},
 	)
 
@@ -65,20 +78,22 @@ func (app *App) registerUpgradeHandlers() {
 // be used without modification.
 //
 // For the migration from v3 to v4, all minted FUND delegated to the enterprise module account is burned
-func (app *App) BurnEnterpriseAccCoins(ctx context.Context) {
+func (app *App) BurnEnterpriseAccCoins(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	sdkCtx.Logger().Info("Starting module migrations...")
-
 	// burn enterprise module account balance
+	burnModule := govtypes.ModuleName // need to use another module with burn permissions
 	sdkCtx.Logger().Info("Burn enterprise module account balance")
 	totalLockedBefore := app.EnterpriseKeeper.GetTotalLockedUnd(sdkCtx)
 	totalSupplyBefore := app.BankKeeper.GetSupply(ctx, sdk.DefaultBondDenom)
-	legacyTotalSupply := totalSupplyBefore.Sub(totalLockedBefore)
-	modAccBalanceBefore := app.BankKeeper.GetBalance(ctx, app.AccountKeeper.GetModuleAddress(enttypes.ModuleName), sdk.DefaultBondDenom)
-	sdkCtx.Logger().Info("totalLockedBefore", totalLockedBefore.String())
-	sdkCtx.Logger().Info("totalSupplyBefore", totalSupplyBefore.String())
-	sdkCtx.Logger().Info("legacyTotalSupply", legacyTotalSupply.String())
-	sdkCtx.Logger().Info("modAccBalanceBefore", modAccBalanceBefore.String())
+	legacyActualTotalSupply := totalSupplyBefore.Sub(totalLockedBefore)
+	entModAccBalanceBefore := app.BankKeeper.GetBalance(ctx, app.AccountKeeper.GetModuleAddress(enttypes.ModuleName), sdk.DefaultBondDenom)
+	burnModAccBalanceBefore := app.BankKeeper.GetBalance(ctx, app.AccountKeeper.GetModuleAddress(burnModule), sdk.DefaultBondDenom)
+
+	sdkCtx.Logger().Info(fmt.Sprintf("totalLockedBefore %s", totalLockedBefore.String()))
+	sdkCtx.Logger().Info(fmt.Sprintf("totalSupplyBefore %s", totalSupplyBefore.String()))
+	sdkCtx.Logger().Info(fmt.Sprintf("legacyActualTotalSupply %s", legacyActualTotalSupply.String()))
+	sdkCtx.Logger().Info(fmt.Sprintf("entModAccBalanceBefore %s", entModAccBalanceBefore.String()))
+	sdkCtx.Logger().Info(fmt.Sprintf("burnModAccBalanceBefore %s", burnModAccBalanceBefore.String()))
 
 	lockedEfund := app.EnterpriseKeeper.GetAllLockedUnds(sdkCtx)
 
@@ -89,21 +104,34 @@ func (app *App) BurnEnterpriseAccCoins(ctx context.Context) {
 		lOwner := l.Owner
 		ownerAcc, _ := sdk.AccAddressFromBech32(lOwner)
 
-		// ToDo - handle errors
 		// 3. undelegate from module to account
-		_ = app.BankKeeper.UndelegateCoinsFromModuleToAccount(ctx, enttypes.ModuleName, ownerAcc, sdk.NewCoins(lBalance))
+		lockedCoins := sdk.NewCoins(lBalance)
+		err := app.BankKeeper.UndelegateCoinsFromModuleToAccount(ctx, enttypes.ModuleName, ownerAcc, lockedCoins)
+		if err != nil {
+			return err
+		}
 		// 4. send from account to module
-		_ = app.BankKeeper.SendCoinsFromAccountToModule(ctx, ownerAcc, enttypes.ModuleName, sdk.NewCoins(lBalance))
+		err = app.BankKeeper.SendCoinsFromAccountToModule(ctx, ownerAcc, burnModule, lockedCoins)
+		if err != nil {
+			return err
+		}
 		// 5. burn
-		_ = app.BankKeeper.BurnCoins(ctx, enttypes.ModuleName, sdk.NewCoins(lBalance))
+		err = app.BankKeeper.BurnCoins(ctx, burnModule, lockedCoins)
+		if err != nil {
+			return err
+		}
 	}
 
 	totalLockedAfter := app.EnterpriseKeeper.GetTotalLockedUnd(sdkCtx)
-	totalSupplyAfter := app.BankKeeper.GetSupply(ctx, sdk.DefaultBondDenom)
-	modAccBalanceAfter := app.BankKeeper.GetBalance(ctx, app.AccountKeeper.GetModuleAddress(enttypes.ModuleName), sdk.DefaultBondDenom)
-	sdkCtx.Logger().Info("totalLockedAfter", totalLockedAfter.String())
-	sdkCtx.Logger().Info("totalSupplyAfter", totalSupplyAfter.String())
-	sdkCtx.Logger().Info("modAccBalanceAfter", modAccBalanceAfter.String())
+	ActualTotalSupplyAfter := app.BankKeeper.GetSupply(ctx, sdk.DefaultBondDenom)
+	entModAccBalanceAfter := app.BankKeeper.GetBalance(ctx, app.AccountKeeper.GetModuleAddress(enttypes.ModuleName), sdk.DefaultBondDenom)
+	burnModAccBalanceAfter := app.BankKeeper.GetBalance(ctx, app.AccountKeeper.GetModuleAddress(burnModule), sdk.DefaultBondDenom)
+	sdkCtx.Logger().Info(fmt.Sprintf("totalLockedAfter %s", totalLockedAfter.String()))
+	sdkCtx.Logger().Info(fmt.Sprintf("ActualTotalSupplyAfter %s", ActualTotalSupplyAfter.String()))
+	sdkCtx.Logger().Info(fmt.Sprintf("entModAccBalanceAfter %s", entModAccBalanceAfter.String()))
+	sdkCtx.Logger().Info(fmt.Sprintf("burnModAccBalanceAfter %s", burnModAccBalanceAfter.String()))
+
+	return nil
 }
 
 //func (app *App) upgradeHandler(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {

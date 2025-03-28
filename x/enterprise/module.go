@@ -153,6 +153,8 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 
 	// Note: although consensus version is now 4, there is no in-state migration.
 	// The only change is that nund will be burned for the module account
+	m := keeper.NewMigrator(am.keeper, am.accountKeeper)
+	cfg.RegisterMigration(types.ModuleName, 3, m.Migrate3to4)
 }
 
 // InitGenesis performs genesis initialization for the enterprise module. It returns

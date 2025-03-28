@@ -150,9 +150,8 @@ var (
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
-		// ToDo: temporary Burner for this upgrade only
 		// ToDo: Next version will only require authtypes.Minter
-		enttypes.ModuleName:         {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		enttypes.ModuleName:         {authtypes.Minter, authtypes.Staking},
 		ibctransfertypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 		streamtypes.ModuleName:      nil,
 	}

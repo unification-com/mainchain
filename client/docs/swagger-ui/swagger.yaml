@@ -4,7 +4,7 @@ info:
   description: A REST interface for Unification Mainchain state queries
   version: 1.0.0
 paths:
-  '/mainchain/beacon/v1/beacon/{beacon_id}':
+  /mainchain/beacon/v1/beacon/{beacon_id}:
     get:
       summary: Beacon queries the metadata of a beacon.
       operationId: Beacon
@@ -89,7 +89,7 @@ paths:
           format: uint64
       tags:
         - BEACON
-  '/mainchain/beacon/v1/beacon/{beacon_id}/storage':
+  /mainchain/beacon/v1/beacon/{beacon_id}/storage:
     get:
       summary: BeaconStorage queries beacon storage for for given beacon ID
       operationId: BeaconStorage
@@ -160,7 +160,7 @@ paths:
           format: uint64
       tags:
         - BEACON
-  '/mainchain/beacon/v1/beacon/{beacon_id}/timestamp/{timestamp_id}':
+  /mainchain/beacon/v1/beacon/{beacon_id}/timestamp/{timestamp_id}:
     get:
       summary: BeaconTimestamp queries a timestamp of a beacon
       operationId: BeaconTimestamp
@@ -472,7 +472,7 @@ paths:
                       format: byte
       tags:
         - BEACON
-  '/mainchain/enterprise/v1/account/{address}':
+  /mainchain/enterprise/v1/account/{address}:
     get:
       summary: >-
         EnterpriseAccount queries an account address for their locked FUND and
@@ -655,7 +655,7 @@ paths:
                       format: byte
       tags:
         - Enterprise
-  '/mainchain/enterprise/v1/locked/{owner}':
+  /mainchain/enterprise/v1/locked/{owner}:
     get:
       summary: LockedUndByAddress queries an account address for their locked FUND
       operationId: LockedUndByAddress
@@ -733,7 +733,7 @@ paths:
                       decisions on raised purchase orders
                   denom:
                     type: string
-                    title: 'denom is the denomination of eFUND, e.g. nund'
+                    title: denom is the denomination of eFUND, e.g. nund
                   min_accepts:
                     type: string
                     format: uint64
@@ -856,7 +856,7 @@ paths:
                               signer is an authorised address for making
                               decisions
                           decision:
-                            title: 'decision is the decision made, i.e. accept/reject'
+                            title: decision is the decision made, i.e. accept/reject
                             type: string
                             enum:
                               - STATUS_NIL
@@ -1018,7 +1018,7 @@ paths:
           default: STATUS_NIL
       tags:
         - Enterprise
-  '/mainchain/enterprise/v1/pos/{purchase_order_id}':
+  /mainchain/enterprise/v1/pos/{purchase_order_id}:
     get:
       summary: >-
         EnterpriseUndPurchaseOrder queries purchase order details based on
@@ -1096,7 +1096,7 @@ paths:
                           type: string
                           title: signer is an authorised address for making decisions
                         decision:
-                          title: 'decision is the decision made, i.e. accept/reject'
+                          title: decision is the decision made, i.e. accept/reject
                           type: string
                           enum:
                             - STATUS_NIL
@@ -1165,7 +1165,7 @@ paths:
           format: uint64
       tags:
         - Enterprise
-  '/mainchain/enterprise/v1/spent/{address}':
+  /mainchain/enterprise/v1/spent/{address}:
     get:
       summary: >-
         SpentEFUNDByAddress queries the total eFUND usage to date for a given
@@ -1322,7 +1322,7 @@ paths:
                       format: byte
       tags:
         - Enterprise
-  '/mainchain/enterprise/v1/whitelist/{address}':
+  /mainchain/enterprise/v1/whitelist/{address}:
     get:
       summary: >-
         Whitelisted queries whether or not the given address is authorised to
@@ -1733,7 +1733,7 @@ paths:
           type: boolean
       tags:
         - Payment Streams
-  '/mainchain/stream/v1/streams/receiver/{receiver_addr}':
+  /mainchain/stream/v1/streams/receiver/{receiver_addr}:
     get:
       summary: AllStreamsForReceiver queries all Streams for a given receiver address
       operationId: AllStreamsForReceiver
@@ -1914,7 +1914,7 @@ paths:
           type: boolean
       tags:
         - Payment Streams
-  '/mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}':
+  /mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}:
     get:
       summary: >-
         StreamByReceiverSender queries a stream for a given receiver and sender
@@ -2020,7 +2020,7 @@ paths:
           type: string
       tags:
         - Payment Streams
-  '/mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}/current_flow':
+  /mainchain/stream/v1/streams/receiver/{receiver_addr}/{sender_addr}/current_flow:
     get:
       summary: >-
         StreamReceiverSenderCurrentFlow queries a stream by the given
@@ -2080,7 +2080,7 @@ paths:
           type: string
       tags:
         - Payment Streams
-  '/mainchain/stream/v1/streams/sender/{sender_addr}':
+  /mainchain/stream/v1/streams/sender/{sender_addr}:
     get:
       summary: AllStreamsForSender queries all Streams for a given sender address
       operationId: AllStreamsForSender
@@ -2333,7 +2333,7 @@ paths:
                       format: byte
       tags:
         - WrkChain
-  '/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}':
+  /mainchain/wrkchain/v1/wrkchain/{wrkchain_id}:
     get:
       summary: WrkChain queries the metadata of a wrkchain.
       operationId: WrkChain
@@ -2363,7 +2363,7 @@ paths:
                       block
                   type:
                     type: string
-                    description: 'type is the wrkchain type, e.g. geth, cosmos etc.'
+                    description: type is the wrkchain type, e.g. geth, cosmos etc.
                   lastblock:
                     type: string
                     format: uint64
@@ -2426,7 +2426,7 @@ paths:
           format: uint64
       tags:
         - WrkChain
-  '/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{height}':
+  /mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{height}:
     get:
       summary: WrkChainBlock queries a submitted hash of a wrkchain
       operationId: WrkChainBlock
@@ -2520,7 +2520,7 @@ paths:
           format: uint64
       tags:
         - WrkChain
-  '/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/storage':
+  /mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/storage:
     get:
       summary: WrkChainStorage queries wrkchain storage for for given wrkchain ID
       operationId: WrkChainStorage
@@ -2625,7 +2625,7 @@ paths:
                         block
                     type:
                       type: string
-                      description: 'type is the wrkchain type, e.g. geth, cosmos etc.'
+                      description: type is the wrkchain type, e.g. geth, cosmos etc.
                     lastblock:
                       type: string
                       format: uint64
@@ -2767,7 +2767,7 @@ paths:
           type: boolean
       tags:
         - WrkChain
-  '/cosmos/auth/v1beta1/account_info/{address}':
+  /cosmos/auth/v1beta1/account_info/{address}:
     get:
       summary: AccountInfo queries account info which is common to all account types.
       description: 'Since: cosmos-sdk 0.47'
@@ -3655,7 +3655,7 @@ paths:
           type: boolean
       tags:
         - Auth
-  '/cosmos/auth/v1beta1/accounts/{address}':
+  /cosmos/auth/v1beta1/accounts/{address}:
     get:
       summary: Account returns account details based on address.
       operationId: Account
@@ -4046,7 +4046,7 @@ paths:
           type: string
       tags:
         - Auth
-  '/cosmos/auth/v1beta1/address_by_id/{id}':
+  /cosmos/auth/v1beta1/address_by_id/{id}:
     get:
       summary: AccountAddressByID returns account address based on account number.
       description: 'Since: cosmos-sdk 0.46.2'
@@ -4495,7 +4495,7 @@ paths:
                         }
       tags:
         - Auth
-  '/cosmos/auth/v1beta1/bech32/{address_bytes}':
+  /cosmos/auth/v1beta1/bech32/{address_bytes}:
     get:
       summary: AddressBytesToString converts Account Address bytes to string
       description: 'Since: cosmos-sdk 0.46'
@@ -4716,7 +4716,7 @@ paths:
           format: byte
       tags:
         - Auth
-  '/cosmos/auth/v1beta1/bech32/{address_string}':
+  /cosmos/auth/v1beta1/bech32/{address_string}:
     get:
       summary: AddressStringToBytes converts Address string to bytes
       description: 'Since: cosmos-sdk 0.46'
@@ -5332,7 +5332,7 @@ paths:
                         }
       tags:
         - Auth
-  '/cosmos/auth/v1beta1/module_accounts/{name}':
+  /cosmos/auth/v1beta1/module_accounts/{name}:
     get:
       summary: ModuleAccountByName returns the module account info by module name
       operationId: ModuleAccountByName
@@ -5952,7 +5952,7 @@ paths:
         - Auth
   /cosmos/authz/v1beta1/grants:
     get:
-      summary: 'Returns list of `Authorization`, granted to the grantee by the granter.'
+      summary: Returns list of `Authorization`, granted to the grantee by the granter.
       operationId: Grants
       responses:
         '200':
@@ -6454,7 +6454,7 @@ paths:
           type: boolean
       tags:
         - Authz
-  '/cosmos/authz/v1beta1/grants/grantee/{grantee}':
+  /cosmos/authz/v1beta1/grants/grantee/{grantee}:
     get:
       summary: GranteeGrants returns a list of `GrantAuthorization` by grantee.
       description: 'Since: cosmos-sdk 0.46'
@@ -6944,9 +6944,9 @@ paths:
           type: boolean
       tags:
         - Authz
-  '/cosmos/authz/v1beta1/grants/granter/{granter}':
+  /cosmos/authz/v1beta1/grants/granter/{granter}:
     get:
-      summary: 'GranterGrants returns list of `GrantAuthorization`, granted by granter.'
+      summary: GranterGrants returns list of `GrantAuthorization`, granted by granter.
       description: 'Since: cosmos-sdk 0.46'
       operationId: GranterGrants
       responses:
@@ -7434,7 +7434,7 @@ paths:
           type: boolean
       tags:
         - Authz
-  '/cosmos/bank/v1beta1/balances/{address}':
+  /cosmos/bank/v1beta1/balances/{address}:
     get:
       summary: AllBalances queries the balance of all coins for a single account.
       description: >-
@@ -7587,7 +7587,7 @@ paths:
           type: boolean
       tags:
         - Bank
-  '/cosmos/bank/v1beta1/balances/{address}/by_denom':
+  /cosmos/bank/v1beta1/balances/{address}/by_denom:
     get:
       summary: Balance queries the balance of a single coin for a single account.
       operationId: Balance
@@ -7650,7 +7650,7 @@ paths:
           type: string
       tags:
         - Bank
-  '/cosmos/bank/v1beta1/denom_owners/{denom}':
+  /cosmos/bank/v1beta1/denom_owners/{denom}:
     get:
       summary: >-
         DenomOwners queries for all account addresses that own a particular
@@ -8196,7 +8196,7 @@ paths:
           type: boolean
       tags:
         - Bank
-  '/cosmos/bank/v1beta1/denoms_metadata/{denom}':
+  /cosmos/bank/v1beta1/denoms_metadata/{denom}:
     get:
       summary: DenomMetadata queries the client metadata of a given coin denomination.
       operationId: DenomMetadata
@@ -8691,7 +8691,7 @@ paths:
           type: boolean
       tags:
         - Bank
-  '/cosmos/bank/v1beta1/spendable_balances/{address}':
+  /cosmos/bank/v1beta1/spendable_balances/{address}:
     get:
       summary: >-
         SpendableBalances queries the spendable balance of all coins for a
@@ -8844,7 +8844,7 @@ paths:
           type: boolean
       tags:
         - Bank
-  '/cosmos/bank/v1beta1/spendable_balances/{address}/by_denom':
+  /cosmos/bank/v1beta1/spendable_balances/{address}/by_denom:
     get:
       summary: >-
         SpendableBalanceByDenom queries the spendable balance of a single denom
@@ -10929,7 +10929,7 @@ paths:
                         }
       tags:
         - Service
-  '/cosmos/base/tendermint/v1beta1/blocks/{height}':
+  /cosmos/base/tendermint/v1beta1/blocks/{height}:
     get:
       summary: GetBlockByHeight queries block for given height.
       operationId: GetBlockByHeight
@@ -13314,7 +13314,7 @@ paths:
           type: boolean
       tags:
         - Service
-  '/cosmos/base/tendermint/v1beta1/validatorsets/{height}':
+  /cosmos/base/tendermint/v1beta1/validatorsets/{height}:
     get:
       summary: GetValidatorSetByHeight queries validator-set at a given height.
       operationId: GetValidatorSetByHeight
@@ -13957,7 +13957,7 @@ paths:
           type: boolean
       tags:
         - Circuit
-  '/cosmos/circuit/v1/accounts/{address}':
+  /cosmos/circuit/v1/accounts/{address}:
     get:
       summary: Account returns account permissions.
       operationId: CircuitAccount
@@ -14280,7 +14280,7 @@ paths:
                       format: byte
       tags:
         - Distribution
-  '/cosmos/distribution/v1beta1/delegators/{delegator_address}/rewards':
+  /cosmos/distribution/v1beta1/delegators/{delegator_address}/rewards:
     get:
       summary: |-
         DelegationTotalRewards queries the total rewards accrued by each
@@ -14373,7 +14373,7 @@ paths:
           type: string
       tags:
         - Distribution
-  '/cosmos/distribution/v1beta1/delegators/{delegator_address}/rewards/{validator_address}':
+  /cosmos/distribution/v1beta1/delegators/{delegator_address}/rewards/{validator_address}:
     get:
       summary: DelegationRewards queries the total rewards accrued by a delegation.
       operationId: DelegationRewards
@@ -14440,7 +14440,7 @@ paths:
           type: string
       tags:
         - Distribution
-  '/cosmos/distribution/v1beta1/delegators/{delegator_address}/validators':
+  /cosmos/distribution/v1beta1/delegators/{delegator_address}/validators:
     get:
       summary: DelegatorValidators queries the validators of a delegator.
       operationId: DelegatorValidators
@@ -14490,7 +14490,7 @@ paths:
           type: string
       tags:
         - Distribution
-  '/cosmos/distribution/v1beta1/delegators/{delegator_address}/withdraw_address':
+  /cosmos/distribution/v1beta1/delegators/{delegator_address}/withdraw_address:
     get:
       summary: DelegatorWithdrawAddress queries withdraw address of a delegator.
       operationId: DelegatorWithdrawAddress
@@ -14595,7 +14595,7 @@ paths:
                       format: byte
       tags:
         - Distribution
-  '/cosmos/distribution/v1beta1/validators/{validator_address}':
+  /cosmos/distribution/v1beta1/validators/{validator_address}:
     get:
       summary: >-
         ValidatorDistributionInfo queries validator commission and
@@ -14681,7 +14681,7 @@ paths:
           type: string
       tags:
         - Distribution
-  '/cosmos/distribution/v1beta1/validators/{validator_address}/commission':
+  /cosmos/distribution/v1beta1/validators/{validator_address}/commission:
     get:
       summary: ValidatorCommission queries accumulated commission for a validator.
       operationId: ValidatorCommission
@@ -14746,7 +14746,7 @@ paths:
           type: string
       tags:
         - Distribution
-  '/cosmos/distribution/v1beta1/validators/{validator_address}/outstanding_rewards':
+  /cosmos/distribution/v1beta1/validators/{validator_address}/outstanding_rewards:
     get:
       summary: ValidatorOutstandingRewards queries rewards of a validator address.
       operationId: ValidatorOutstandingRewards
@@ -14818,7 +14818,7 @@ paths:
           type: string
       tags:
         - Distribution
-  '/cosmos/distribution/v1beta1/validators/{validator_address}/slashes':
+  /cosmos/distribution/v1beta1/validators/{validator_address}/slashes:
     get:
       summary: ValidatorSlashes queries slash events of a validator.
       operationId: ValidatorSlashes
@@ -15443,7 +15443,7 @@ paths:
           type: boolean
       tags:
         - Evidence
-  '/cosmos/evidence/v1beta1/evidence/{hash}':
+  /cosmos/evidence/v1beta1/evidence/{hash}:
     get:
       summary: Evidence queries evidence based on evidence hash.
       operationId: Evidence
@@ -15845,7 +15845,7 @@ paths:
           format: byte
       tags:
         - Evidence
-  '/cosmos/feegrant/v1beta1/allowance/{granter}/{grantee}':
+  /cosmos/feegrant/v1beta1/allowance/{granter}/{grantee}:
     get:
       summary: Allowance returns granted allwance to the grantee by the granter.
       operationId: Allowance
@@ -16156,7 +16156,7 @@ paths:
           type: string
       tags:
         - Fee Grant
-  '/cosmos/feegrant/v1beta1/allowances/{grantee}':
+  /cosmos/feegrant/v1beta1/allowances/{grantee}:
     get:
       summary: Allowances returns all the grants for the given grantee address.
       operationId: Allowances
@@ -16534,7 +16534,7 @@ paths:
           type: boolean
       tags:
         - Fee Grant
-  '/cosmos/feegrant/v1beta1/issued/{granter}':
+  /cosmos/feegrant/v1beta1/issued/{granter}:
     get:
       summary: AllowancesByGranter returns all the grants given by an address
       description: 'Since: cosmos-sdk 0.46'
@@ -16916,7 +16916,7 @@ paths:
           type: boolean
       tags:
         - Fee Grant
-  '/cosmos/gov/v1beta1/params/{params_type}':
+  /cosmos/gov/v1beta1/params/{params_type}:
     get:
       summary: Params queries all parameters of the gov module.
       operationId: GovParams
@@ -17790,7 +17790,7 @@ paths:
           type: boolean
       tags:
         - Gov
-  '/cosmos/gov/v1beta1/proposals/{proposal_id}':
+  /cosmos/gov/v1beta1/proposals/{proposal_id}:
     get:
       summary: Proposal queries proposal details based on ProposalID.
       operationId: Proposal
@@ -18268,7 +18268,7 @@ paths:
           format: uint64
       tags:
         - Gov
-  '/cosmos/gov/v1beta1/proposals/{proposal_id}/deposits':
+  /cosmos/gov/v1beta1/proposals/{proposal_id}/deposits:
     get:
       summary: Deposits queries all deposits of a single proposal.
       operationId: Deposits
@@ -18598,7 +18598,7 @@ paths:
           type: boolean
       tags:
         - Gov
-  '/cosmos/gov/v1beta1/proposals/{proposal_id}/deposits/{depositor}':
+  /cosmos/gov/v1beta1/proposals/{proposal_id}/deposits/{depositor}:
     get:
       summary: >-
         Deposit queries single deposit information based on proposalID,
@@ -18856,7 +18856,7 @@ paths:
           type: string
       tags:
         - Gov
-  '/cosmos/gov/v1beta1/proposals/{proposal_id}/tally':
+  /cosmos/gov/v1beta1/proposals/{proposal_id}/tally:
     get:
       summary: TallyResult queries the tally of a proposal vote.
       operationId: TallyResult
@@ -19090,7 +19090,7 @@ paths:
           format: uint64
       tags:
         - Gov
-  '/cosmos/gov/v1beta1/proposals/{proposal_id}/votes':
+  /cosmos/gov/v1beta1/proposals/{proposal_id}/votes:
     get:
       summary: Votes queries votes of a given proposal.
       operationId: Votes
@@ -19449,9 +19449,9 @@ paths:
           type: boolean
       tags:
         - Gov
-  '/cosmos/gov/v1beta1/proposals/{proposal_id}/votes/{voter}':
+  /cosmos/gov/v1beta1/proposals/{proposal_id}/votes/{voter}:
     get:
-      summary: 'Vote queries voted information based on proposalID, voterAddr.'
+      summary: Vote queries voted information based on proposalID, voterAddr.
       operationId: Vote
       responses:
         '200':
@@ -19946,7 +19946,7 @@ paths:
                         }
       tags:
         - Gov
-  '/cosmos/gov/v1/params/{params_type}':
+  /cosmos/gov/v1/params/{params_type}:
     get:
       summary: Params queries all parameters of the gov module.
       operationId: GovV1Params
@@ -20990,7 +20990,7 @@ paths:
           type: boolean
       tags:
         - Gov
-  '/cosmos/gov/v1/proposals/{proposal_id}':
+  /cosmos/gov/v1/proposals/{proposal_id}:
     get:
       summary: Proposal queries proposal details based on ProposalID.
       operationId: GovV1Proposal
@@ -21507,7 +21507,7 @@ paths:
           format: uint64
       tags:
         - Gov
-  '/cosmos/gov/v1/proposals/{proposal_id}/deposits':
+  /cosmos/gov/v1/proposals/{proposal_id}/deposits:
     get:
       summary: Deposits queries all deposits of a single proposal.
       operationId: GovV1Deposit
@@ -21837,7 +21837,7 @@ paths:
           type: boolean
       tags:
         - Gov
-  '/cosmos/gov/v1/proposals/{proposal_id}/deposits/{depositor}':
+  /cosmos/gov/v1/proposals/{proposal_id}/deposits/{depositor}:
     get:
       summary: >-
         Deposit queries single deposit information based on proposalID,
@@ -22095,7 +22095,7 @@ paths:
           type: string
       tags:
         - Gov
-  '/cosmos/gov/v1/proposals/{proposal_id}/tally':
+  /cosmos/gov/v1/proposals/{proposal_id}/tally:
     get:
       summary: TallyResult queries the tally of a proposal vote.
       operationId: GovV1TallyResult
@@ -22331,7 +22331,7 @@ paths:
           format: uint64
       tags:
         - Gov
-  '/cosmos/gov/v1/proposals/{proposal_id}/votes':
+  /cosmos/gov/v1/proposals/{proposal_id}/votes:
     get:
       summary: Votes queries votes of a given proposal.
       operationId: GovV1Votes
@@ -22674,9 +22674,9 @@ paths:
           type: boolean
       tags:
         - Gov
-  '/cosmos/gov/v1/proposals/{proposal_id}/votes/{voter}':
+  /cosmos/gov/v1/proposals/{proposal_id}/votes/{voter}:
     get:
-      summary: 'Vote queries voted information based on proposalID, voterAddr.'
+      summary: Vote queries voted information based on proposalID, voterAddr.
       operationId: GovV1Vote
       responses:
         '200':
@@ -22943,7 +22943,7 @@ paths:
           type: string
       tags:
         - Gov
-  '/cosmos/group/v1/group_info/{group_id}':
+  /cosmos/group/v1/group_info/{group_id}:
     get:
       summary: GroupInfo queries group info based on group id.
       operationId: GroupInfo
@@ -23201,7 +23201,7 @@ paths:
           format: uint64
       tags:
         - Group
-  '/cosmos/group/v1/group_members/{group_id}':
+  /cosmos/group/v1/group_members/{group_id}:
     get:
       summary: GroupMembers queries members of a group by group id.
       operationId: GroupMembers
@@ -23528,7 +23528,7 @@ paths:
           type: boolean
       tags:
         - Group
-  '/cosmos/group/v1/group_policies_by_admin/{admin}':
+  /cosmos/group/v1/group_policies_by_admin/{admin}:
     get:
       summary: GroupPoliciesByAdmin queries group policies by admin address.
       operationId: GroupPoliciesByAdmin
@@ -24045,7 +24045,7 @@ paths:
           type: boolean
       tags:
         - Group
-  '/cosmos/group/v1/group_policies_by_group/{group_id}':
+  /cosmos/group/v1/group_policies_by_group/{group_id}:
     get:
       summary: GroupPoliciesByGroup queries group policies by group id.
       operationId: GroupPoliciesByGroup
@@ -24563,7 +24563,7 @@ paths:
           type: boolean
       tags:
         - Group
-  '/cosmos/group/v1/group_policy_info/{address}':
+  /cosmos/group/v1/group_policy_info/{address}:
     get:
       summary: >-
         GroupPolicyInfo queries group policy info based on account address of
@@ -25336,7 +25336,7 @@ paths:
           type: boolean
       tags:
         - Group
-  '/cosmos/group/v1/groups_by_admin/{admin}':
+  /cosmos/group/v1/groups_by_admin/{admin}:
     get:
       summary: GroupsByAdmin queries groups by admin address.
       operationId: GroupsByAdmin
@@ -25675,7 +25675,7 @@ paths:
           type: boolean
       tags:
         - Group
-  '/cosmos/group/v1/groups_by_member/{address}':
+  /cosmos/group/v1/groups_by_member/{address}:
     get:
       summary: GroupsByMember queries groups by member address.
       operationId: GroupsByMember
@@ -26014,7 +26014,7 @@ paths:
           type: boolean
       tags:
         - Group
-  '/cosmos/group/v1/proposal/{proposal_id}':
+  /cosmos/group/v1/proposal/{proposal_id}:
     get:
       summary: Proposal queries a proposal based on proposal id.
       operationId: GroupProposal
@@ -26545,7 +26545,7 @@ paths:
           format: uint64
       tags:
         - Group
-  '/cosmos/group/v1/proposals/{proposal_id}/tally':
+  /cosmos/group/v1/proposals/{proposal_id}/tally:
     get:
       summary: >-
         TallyResult returns the tally result of a proposal. If the proposal is
@@ -26785,7 +26785,7 @@ paths:
           format: uint64
       tags:
         - Group
-  '/cosmos/group/v1/proposals_by_group_policy/{address}':
+  /cosmos/group/v1/proposals_by_group_policy/{address}:
     get:
       summary: >-
         ProposalsByGroupPolicy queries proposals based on account address of
@@ -27409,7 +27409,7 @@ paths:
           type: boolean
       tags:
         - Group
-  '/cosmos/group/v1/vote_by_proposal_voter/{proposal_id}/{voter}':
+  /cosmos/group/v1/vote_by_proposal_voter/{proposal_id}/{voter}:
     get:
       summary: VoteByProposalVoter queries a vote by proposal id and voter.
       operationId: VoteByProposalVoter
@@ -27664,7 +27664,7 @@ paths:
           type: string
       tags:
         - Group
-  '/cosmos/group/v1/votes_by_proposal/{proposal_id}':
+  /cosmos/group/v1/votes_by_proposal/{proposal_id}:
     get:
       summary: VotesByProposal queries a vote by proposal id.
       operationId: VotesByProposal
@@ -27993,7 +27993,7 @@ paths:
           type: boolean
       tags:
         - Group
-  '/cosmos/group/v1/votes_by_voter/{voter}':
+  /cosmos/group/v1/votes_by_voter/{voter}:
     get:
       summary: VotesByVoter queries a vote by voter.
       operationId: VotesByVoter
@@ -28555,7 +28555,7 @@ paths:
           type: boolean
       tags:
         - Slashing
-  '/cosmos/slashing/v1beta1/signing_infos/{cons_address}':
+  /cosmos/slashing/v1beta1/signing_infos/{cons_address}:
     get:
       summary: SigningInfo queries the signing info of given cons address
       operationId: SigningInfo
@@ -28655,7 +28655,7 @@ paths:
           type: string
       tags:
         - Slashing
-  '/cosmos/staking/v1beta1/delegations/{delegator_addr}':
+  /cosmos/staking/v1beta1/delegations/{delegator_addr}:
     get:
       summary: >-
         DelegatorDelegations queries all delegations of a given delegator
@@ -29005,7 +29005,7 @@ paths:
           type: boolean
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/delegators/{delegator_addr}/redelegations':
+  /cosmos/staking/v1beta1/delegators/{delegator_addr}/redelegations:
     get:
       summary: Redelegations queries redelegations of given address.
       description: >-
@@ -29449,7 +29449,7 @@ paths:
           type: boolean
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/delegators/{delegator_addr}/unbonding_delegations':
+  /cosmos/staking/v1beta1/delegators/{delegator_addr}/unbonding_delegations:
     get:
       summary: >-
         DelegatorUnbondingDelegations queries all unbonding delegations of a
@@ -29813,7 +29813,7 @@ paths:
           type: boolean
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/delegators/{delegator_addr}/validators':
+  /cosmos/staking/v1beta1/delegators/{delegator_addr}/validators:
     get:
       summary: |-
         DelegatorValidators queries all validators info for given delegator
@@ -30445,7 +30445,7 @@ paths:
           type: boolean
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/delegators/{delegator_addr}/validators/{validator_addr}':
+  /cosmos/staking/v1beta1/delegators/{delegator_addr}/validators/{validator_addr}:
     get:
       summary: |-
         DelegatorValidator queries validator info for given delegator validator
@@ -30996,7 +30996,7 @@ paths:
           type: string
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/historical_info/{height}':
+  /cosmos/staking/v1beta1/historical_info/{height}:
     get:
       summary: HistoricalInfo queries the historical info for given height.
       operationId: HistoricalInfo
@@ -32716,7 +32716,7 @@ paths:
           type: boolean
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/validators/{validator_addr}':
+  /cosmos/staking/v1beta1/validators/{validator_addr}:
     get:
       summary: Validator queries validator info for given validator address.
       operationId: Validator
@@ -33260,7 +33260,7 @@ paths:
           type: string
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/validators/{validator_addr}/delegations':
+  /cosmos/staking/v1beta1/validators/{validator_addr}/delegations:
     get:
       summary: ValidatorDelegations queries delegate info for given validator.
       description: >-
@@ -33605,7 +33605,7 @@ paths:
           type: boolean
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/validators/{validator_addr}/delegations/{delegator_addr}':
+  /cosmos/staking/v1beta1/validators/{validator_addr}/delegations/{delegator_addr}:
     get:
       summary: Delegation queries delegate info for given validator delegator pair.
       operationId: Delegation
@@ -33873,7 +33873,7 @@ paths:
           type: string
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/validators/{validator_addr}/delegations/{delegator_addr}/unbonding_delegation':
+  /cosmos/staking/v1beta1/validators/{validator_addr}/delegations/{delegator_addr}/unbonding_delegation:
     get:
       summary: |-
         UnbondingDelegation queries unbonding info for given validator delegator
@@ -34150,7 +34150,7 @@ paths:
           type: string
       tags:
         - Staking
-  '/cosmos/staking/v1beta1/validators/{validator_addr}/unbonding_delegations':
+  /cosmos/staking/v1beta1/validators/{validator_addr}/unbonding_delegations:
     get:
       summary: >-
         ValidatorUnbondingDelegations queries unbonding delegations of a
@@ -36249,7 +36249,7 @@ paths:
                     description: Response code.
                   data:
                     type: string
-                    description: 'Result bytes, if any.'
+                    description: Result bytes, if any.
                   raw_log:
                     type: string
                     description: >-
@@ -36791,7 +36791,7 @@ paths:
               RPC method.
       tags:
         - Tx
-  '/cosmos/tx/v1beta1/txs/block/{height}':
+  /cosmos/tx/v1beta1/txs/block/{height}:
     get:
       summary: GetBlockWithTxs fetches a block with decoded txs.
       description: 'Since: cosmos-sdk 0.45.2'
@@ -37060,7 +37060,7 @@ paths:
           type: boolean
       tags:
         - Tx
-  '/cosmos/tx/v1beta1/txs/{hash}':
+  /cosmos/tx/v1beta1/txs/{hash}:
     get:
       summary: GetTx fetches a tx by hash.
       operationId: GetTx
@@ -37265,13 +37265,13 @@ paths:
                         }
       parameters:
         - name: hash
-          description: 'hash is the tx hash to query, encoded as a hex string.'
+          description: hash is the tx hash to query, encoded as a hex string.
           in: path
           required: true
           type: string
       tags:
         - Tx
-  '/cosmos/upgrade/v1beta1/applied_plan/{name}':
+  /cosmos/upgrade/v1beta1/applied_plan/{name}:
     get:
       summary: AppliedPlan queries a previously applied upgrade plan by its name.
       operationId: AppliedPlan
@@ -38385,7 +38385,7 @@ paths:
           type: string
       tags:
         - Upgrade
-  '/cosmos/upgrade/v1beta1/upgraded_consensus_state/{last_height}':
+  /cosmos/upgrade/v1beta1/upgraded_consensus_state/{last_height}:
     get:
       summary: >-
         UpgradedConsensusState queries the consensus state that will serve
@@ -39038,7 +39038,7 @@ paths:
           type: boolean
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}:
     get:
       summary: Channel queries an IBC Channel.
       operationId: Channel
@@ -39384,7 +39384,7 @@ paths:
           type: string
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/client_state':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/client_state:
     get:
       summary: >-
         ChannelClientState queries for the client state for the channel
@@ -39834,7 +39834,7 @@ paths:
           type: string
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/consensus_state/revision/{revision_number}/height/{revision_height}':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/consensus_state/revision/{revision_number}/height/{revision_height}:
     get:
       summary: |-
         ChannelConsensusState queries for the consensus state for the channel
@@ -40281,7 +40281,7 @@ paths:
           format: uint64
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/next_sequence':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/next_sequence:
     get:
       summary: >-
         NextSequenceReceive returns the next receive sequence for a given
@@ -40540,7 +40540,7 @@ paths:
           type: string
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/next_sequence_send':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/next_sequence_send:
     get:
       summary: NextSequenceSend returns the next send sequence for a given channel.
       operationId: NextSequenceSend
@@ -40797,7 +40797,7 @@ paths:
           type: string
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_acknowledgements':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_acknowledgements:
     get:
       summary: >-
         PacketAcknowledgements returns all the packet acknowledgements
@@ -41173,7 +41173,7 @@ paths:
           collectionFormat: multi
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_acks/{sequence}':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_acks/{sequence}:
     get:
       summary: PacketAcknowledgement queries a stored packet acknowledgement hash.
       operationId: PacketAcknowledgement
@@ -41440,7 +41440,7 @@ paths:
           format: uint64
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_commitments':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_commitments:
     get:
       summary: |-
         PacketCommitments returns all the packet commitments hashes associated
@@ -41805,7 +41805,7 @@ paths:
           type: boolean
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_commitments/{packet_ack_sequences}/unreceived_acks':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_commitments/{packet_ack_sequences}/unreceived_acks:
     get:
       summary: >-
         UnreceivedAcks returns all the unreceived IBC acknowledgements
@@ -42074,7 +42074,7 @@ paths:
           minItems: 1
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_commitments/{packet_commitment_sequences}/unreceived_packets':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_commitments/{packet_commitment_sequences}/unreceived_packets:
     get:
       summary: >-
         UnreceivedPackets returns all the unreceived IBC packets associated with
@@ -42343,7 +42343,7 @@ paths:
           minItems: 1
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_commitments/{sequence}':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_commitments/{sequence}:
     get:
       summary: PacketCommitment queries a stored packet commitment hash.
       operationId: PacketCommitment
@@ -42611,7 +42611,7 @@ paths:
           format: uint64
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_receipts/{sequence}':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/packet_receipts/{sequence}:
     get:
       summary: >-
         PacketReceipt queries if a given packet sequence has been received on
@@ -42882,7 +42882,7 @@ paths:
           format: uint64
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/upgrade':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/upgrade:
     get:
       summary: Upgrade returns the upgrade for a given port and channel id.
       operationId: Upgrade
@@ -43231,7 +43231,7 @@ paths:
           type: string
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/upgrade_error':
+  /ibc/core/channel/v1/channels/{channel_id}/ports/{port_id}/upgrade_error:
     get:
       summary: UpgradeError returns the error receipt if the upgrade handshake failed.
       operationId: UpgradeError
@@ -43500,7 +43500,7 @@ paths:
           type: string
       tags:
         - IBC Channel
-  '/ibc/core/channel/v1/connections/{connection}/channels':
+  /ibc/core/channel/v1/connections/{connection}/channels:
     get:
       summary: |-
         ConnectionChannels queries all the channels associated with a connection
@@ -44681,7 +44681,7 @@ paths:
           type: boolean
       tags:
         - IBC Client
-  '/ibc/core/client/v1/client_states/{client_id}':
+  /ibc/core/client/v1/client_states/{client_id}:
     get:
       summary: ClientState queries an IBC light client.
       operationId: ClientState
@@ -45111,7 +45111,7 @@ paths:
           type: string
       tags:
         - IBC Client
-  '/ibc/core/client/v1/client_status/{client_id}':
+  /ibc/core/client/v1/client_status/{client_id}:
     get:
       summary: Status queries the status of an IBC client.
       operationId: ClientStatus
@@ -45330,7 +45330,7 @@ paths:
           type: string
       tags:
         - IBC Client
-  '/ibc/core/client/v1/consensus_states/{client_id}':
+  /ibc/core/client/v1/consensus_states/{client_id}:
     get:
       summary: |-
         ConsensusStates queries all the consensus state associated with a given
@@ -45855,7 +45855,7 @@ paths:
           type: boolean
       tags:
         - IBC Client
-  '/ibc/core/client/v1/consensus_states/{client_id}/heights':
+  /ibc/core/client/v1/consensus_states/{client_id}/heights:
     get:
       summary: >-
         ConsensusStateHeights queries the height of every consensus states
@@ -46195,7 +46195,7 @@ paths:
           type: boolean
       tags:
         - IBC Client
-  '/ibc/core/client/v1/consensus_states/{client_id}/revision/{revision_number}/height/{revision_height}':
+  /ibc/core/client/v1/consensus_states/{client_id}/revision/{revision_number}/height/{revision_height}:
     get:
       summary: >-
         ConsensusState queries a consensus state associated with a client state
@@ -47948,7 +47948,7 @@ paths:
               Query/VerifyMembership RPC method
       tags:
         - IBC Client
-  '/ibc/core/connection/v1/client_connections/{client_id}':
+  /ibc/core/connection/v1/client_connections/{client_id}:
     get:
       summary: |-
         ClientConnections queries the connection paths associated with a client
@@ -48616,7 +48616,7 @@ paths:
           type: boolean
       tags:
         - IBC Connection
-  '/ibc/core/connection/v1/connections/{connection_id}':
+  /ibc/core/connection/v1/connections/{connection_id}:
     get:
       summary: Connection queries an IBC connection end.
       operationId: Connection
@@ -48962,7 +48962,7 @@ paths:
           type: string
       tags:
         - IBC Connection
-  '/ibc/core/connection/v1/connections/{connection_id}/client_state':
+  /ibc/core/connection/v1/connections/{connection_id}/client_state:
     get:
       summary: |-
         ConnectionClientState queries the client state associated with the
@@ -49405,7 +49405,7 @@ paths:
           type: string
       tags:
         - IBC Connection
-  '/ibc/core/connection/v1/connections/{connection_id}/consensus_state/revision/{revision_number}/height/{revision_height}':
+  /ibc/core/connection/v1/connections/{connection_id}/consensus_state/revision/{revision_number}/height/{revision_height}:
     get:
       summary: |-
         ConnectionConsensusState queries the consensus state associated with the
@@ -50070,7 +50070,7 @@ paths:
                         }
       tags:
         - IBC Connection
-  '/ibc/apps/transfer/v1/channels/{channel_id}/ports/{port_id}/escrow_address':
+  /ibc/apps/transfer/v1/channels/{channel_id}/ports/{port_id}/escrow_address:
     get:
       summary: >-
         EscrowAddress returns the escrow address for a particular port and
@@ -50123,7 +50123,7 @@ paths:
           type: string
       tags:
         - IBC Transfer
-  '/ibc/apps/transfer/v1/denom_hashes/{trace}':
+  /ibc/apps/transfer/v1/denom_hashes/{trace}:
     get:
       summary: DenomHash queries a denomination hash information.
       operationId: DenomHash
@@ -50165,7 +50165,7 @@ paths:
                       format: byte
       parameters:
         - name: trace
-          description: 'The denomination trace ([port_id]/[channel_id])+/[denom]'
+          description: The denomination trace ([port_id]/[channel_id])+/[denom]
           in: path
           required: true
           type: string
@@ -50307,7 +50307,7 @@ paths:
           type: boolean
       tags:
         - IBC Transfer
-  '/ibc/apps/transfer/v1/denom_traces/{hash}':
+  /ibc/apps/transfer/v1/denom_traces/{hash}:
     get:
       summary: DenomTrace queries a denomination trace information.
       operationId: DenomTrace
@@ -50372,7 +50372,7 @@ paths:
           type: string
       tags:
         - IBC Transfer
-  '/ibc/apps/transfer/v1/denoms/{denom}/total_escrow':
+  /ibc/apps/transfer/v1/denoms/{denom}/total_escrow:
     get:
       summary: >-
         TotalEscrowForDenom returns the total amount of tokens in escrow based
@@ -50976,7 +50976,7 @@ definitions:
           of in-state storage
       denom:
         type: string
-        title: 'denom is the expected denomination to pay for fees, e.g. nund'
+        title: denom is the expected denomination to pay for fees, e.g. nund
       default_storage_limit:
         type: string
         format: uint64
@@ -51178,7 +51178,7 @@ definitions:
               unit of in-state storage
           denom:
             type: string
-            title: 'denom is the expected denomination to pay for fees, e.g. nund'
+            title: denom is the expected denomination to pay for fees, e.g. nund
           default_storage_limit:
             type: string
             format: uint64
@@ -51266,7 +51266,7 @@ definitions:
               type: string
               title: signer is an authorised address for making decisions
             decision:
-              title: 'decision is the decision made, i.e. accept/reject'
+              title: decision is the decision made, i.e. accept/reject
               type: string
               enum:
                 - STATUS_NIL
@@ -51382,7 +51382,7 @@ definitions:
           raised purchase orders
       denom:
         type: string
-        title: 'denom is the denomination of eFUND, e.g. nund'
+        title: denom is the denomination of eFUND, e.g. nund
       min_accepts:
         type: string
         format: uint64
@@ -51403,7 +51403,7 @@ definitions:
         type: string
         title: signer is an authorised address for making decisions
       decision:
-        title: 'decision is the decision made, i.e. accept/reject'
+        title: decision is the decision made, i.e. accept/reject
         type: string
         enum:
           - STATUS_NIL
@@ -51606,7 +51606,7 @@ definitions:
                   type: string
                   title: signer is an authorised address for making decisions
                 decision:
-                  title: 'decision is the decision made, i.e. accept/reject'
+                  title: decision is the decision made, i.e. accept/reject
                   type: string
                   enum:
                     - STATUS_NIL
@@ -51711,7 +51711,7 @@ definitions:
                     type: string
                     title: signer is an authorised address for making decisions
                   decision:
-                    title: 'decision is the decision made, i.e. accept/reject'
+                    title: decision is the decision made, i.e. accept/reject
                     type: string
                     enum:
                       - STATUS_NIL
@@ -51800,7 +51800,7 @@ definitions:
               raised purchase orders
           denom:
             type: string
-            title: 'denom is the denomination of eFUND, e.g. nund'
+            title: denom is the denomination of eFUND, e.g. nund
           min_accepts:
             type: string
             format: uint64
@@ -52429,7 +52429,7 @@ definitions:
           of in-state storage
       denom:
         type: string
-        title: 'denom is the expected denomination to pay for fees, e.g. nund'
+        title: denom is the expected denomination to pay for fees, e.g. nund
       default_storage_limit:
         type: string
         format: uint64
@@ -52465,7 +52465,7 @@ definitions:
               unit of in-state storage
           denom:
             type: string
-            title: 'denom is the expected denomination to pay for fees, e.g. nund'
+            title: denom is the expected denomination to pay for fees, e.g. nund
           default_storage_limit:
             type: string
             format: uint64
@@ -52549,7 +52549,7 @@ definitions:
             title: genesis is an optional hash of the wrkchain's genesis block
           type:
             type: string
-            description: 'type is the wrkchain type, e.g. geth, cosmos etc.'
+            description: type is the wrkchain type, e.g. geth, cosmos etc.
           lastblock:
             type: string
             format: uint64
@@ -52631,7 +52631,7 @@ definitions:
               title: genesis is an optional hash of the wrkchain's genesis block
             type:
               type: string
-              description: 'type is the wrkchain type, e.g. geth, cosmos etc.'
+              description: type is the wrkchain type, e.g. geth, cosmos etc.
             lastblock:
               type: string
               format: uint64
@@ -52698,7 +52698,7 @@ definitions:
         title: genesis is an optional hash of the wrkchain's genesis block
       type:
         type: string
-        description: 'type is the wrkchain type, e.g. geth, cosmos etc.'
+        description: type is the wrkchain type, e.g. geth, cosmos etc.
       lastblock:
         type: string
         format: uint64
@@ -63582,7 +63582,7 @@ definitions:
           grantee is the address of the user being granted an allowance of
           another user's funds.
       allowance:
-        description: 'allowance can be any of basic, periodic, allowed fee allowance.'
+        description: allowance can be any of basic, periodic, allowed fee allowance.
         type: object
         properties:
           type_url:
@@ -63662,7 +63662,7 @@ definitions:
               grantee is the address of the user being granted an allowance of
               another user's funds.
           allowance:
-            description: 'allowance can be any of basic, periodic, allowed fee allowance.'
+            description: allowance can be any of basic, periodic, allowed fee allowance.
             type: object
             properties:
               type_url:
@@ -63749,7 +63749,7 @@ definitions:
                 grantee is the address of the user being granted an allowance of
                 another user's funds.
             allowance:
-              description: 'allowance can be any of basic, periodic, allowed fee allowance.'
+              description: allowance can be any of basic, periodic, allowed fee allowance.
               type: object
               properties:
                 type_url:
@@ -63861,7 +63861,7 @@ definitions:
                 grantee is the address of the user being granted an allowance of
                 another user's funds.
             allowance:
-              description: 'allowance can be any of basic, periodic, allowed fee allowance.'
+              description: allowance can be any of basic, periodic, allowed fee allowance.
               type: object
               properties:
                 type_url:
@@ -69666,7 +69666,7 @@ definitions:
         properties:
           rate:
             type: string
-            description: 'rate is the commission rate charged to delegators, as a fraction.'
+            description: rate is the commission rate charged to delegators, as a fraction.
           max_rate:
             type: string
             description: >-
@@ -69687,7 +69687,7 @@ definitions:
     properties:
       rate:
         type: string
-        description: 'rate is the commission rate charged to delegators, as a fraction.'
+        description: rate is the commission rate charged to delegators, as a fraction.
       max_rate:
         type: string
         description: >-
@@ -73512,7 +73512,7 @@ definitions:
         description: Response code.
       data:
         type: string
-        description: 'Result bytes, if any.'
+        description: Result bytes, if any.
       raw_log:
         type: string
         description: |-
@@ -74045,7 +74045,7 @@ definitions:
             description: Response code.
           data:
             type: string
-            description: 'Result bytes, if any.'
+            description: Result bytes, if any.
           raw_log:
             type: string
             description: |-
@@ -75044,7 +75044,7 @@ definitions:
             description: Response code.
           data:
             type: string
-            description: 'Result bytes, if any.'
+            description: Result bytes, if any.
           raw_log:
             type: string
             description: |-
@@ -75365,7 +75365,7 @@ definitions:
               description: Response code.
             data:
               type: string
-              description: 'Result bytes, if any.'
+              description: Result bytes, if any.
             raw_log:
               type: string
               description: |-
@@ -77640,7 +77640,7 @@ definitions:
               type: string
             index:
               type: boolean
-          description: 'EventAttribute is a single key-value pair, associated with an event.'
+          description: EventAttribute is a single key-value pair, associated with an event.
     description: |-
       Event allows application developers to attach additional information to
       ResponseFinalizeBlock and ResponseCheckTx.
@@ -77654,7 +77654,7 @@ definitions:
         type: string
       index:
         type: boolean
-    description: 'EventAttribute is a single key-value pair, associated with an event.'
+    description: EventAttribute is a single key-value pair, associated with an event.
   cosmos.upgrade.v1beta1.ModuleVersion:
     type: object
     properties:
@@ -78226,7 +78226,7 @@ definitions:
           this channel will travel
       version:
         type: string
-        title: 'opaque channel version, which is agreed upon during the handshake'
+        title: opaque channel version, which is agreed upon during the handshake
       upgrade_sequence:
         type: string
         format: uint64
@@ -78331,7 +78331,7 @@ definitions:
           this channel will travel
       version:
         type: string
-        title: 'opaque channel version, which is agreed upon during the handshake'
+        title: opaque channel version, which is agreed upon during the handshake
       port_id:
         type: string
         title: port identifier
@@ -78987,7 +78987,7 @@ definitions:
               this channel will travel
           version:
             type: string
-            title: 'opaque channel version, which is agreed upon during the handshake'
+            title: opaque channel version, which is agreed upon during the handshake
           upgrade_sequence:
             type: string
             format: uint64

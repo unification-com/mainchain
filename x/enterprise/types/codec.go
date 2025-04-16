@@ -19,7 +19,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&LockedUnds{}, "enterprise/LockedUnds", nil)
 	cdc.RegisterConcrete(&SpentEFUND{}, "enterprise/SpentEFUND", nil)
 	cdc.RegisterConcrete(&EnterpriseUserAccount{}, "enterprise/EnterpriseUserAccount", nil)
-	cdc.RegisterConcrete(&UndSupply{}, "enterprise/UndSupply", nil)
 	cdc.RegisterConcrete(&WhitelistAddresses{}, "enterprise/WhitelistAddresses", nil)
 	cdc.RegisterConcrete(&Params{}, "enterprise/Params", nil)
 	cdc.RegisterConcrete(&GenesisState{}, "enterprise/GenesisState", nil)

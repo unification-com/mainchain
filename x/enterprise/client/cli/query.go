@@ -33,11 +33,9 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdGetPurchaseOrderByID(),
 		GetCmdGetLockedUndByAddress(),
 		GetCmdQueryTotalLocked(),
-		GetCmdQueryTotalUnlocked(),
 		GetCmdGetWhitelistedAddresses(),
 		GetCmdGetAddresIsWhitelisted(),
 		GetCmdGetEnterpriseUserAccount(),
-		GetCmdGetEnterpriseSupply(),
 		GetCmdGetSpentEFUNDByAddress(),
 		GetCmdQueryTotalSpentEFUND(),
 	)
@@ -242,30 +240,30 @@ func GetCmdQueryTotalLocked() *cobra.Command {
 	return cmd
 }
 
-// GetCmdQueryTotalUnlocked implements a command to return the current total locked enterprise und
-func GetCmdQueryTotalUnlocked() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "total-unlocked",
-		Short: "Query the current total unlocked und in circulation",
-		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-
-			res, err := queryClient.TotalUnlocked(context.Background(), &types.QueryTotalUnlockedRequest{})
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
+//// GetCmdQueryTotalUnlocked implements a command to return the current total locked enterprise und
+//func GetCmdQueryTotalUnlocked() *cobra.Command {
+//	cmd := &cobra.Command{
+//		Use:   "total-unlocked",
+//		Short: "Query the current total unlocked und in circulation",
+//		Args:  cobra.NoArgs,
+//		RunE: func(cmd *cobra.Command, args []string) error {
+//			clientCtx, err := client.GetClientQueryContext(cmd)
+//			if err != nil {
+//				return err
+//			}
+//			queryClient := types.NewQueryClient(clientCtx)
+//
+//			res, err := queryClient.TotalUnlocked(context.Background(), &types.QueryTotalUnlockedRequest{})
+//			if err != nil {
+//				return err
+//			}
+//
+//			return clientCtx.PrintProto(res)
+//		},
+//	}
+//	flags.AddQueryFlagsToCmd(cmd)
+//	return cmd
+//}
 
 // GetCmdGetWhitelistedAddresses queries all addresses whitelisted for raising enterprise und purchase orders
 func GetCmdGetWhitelistedAddresses() *cobra.Command {
@@ -345,31 +343,6 @@ func GetCmdGetEnterpriseUserAccount() *cobra.Command {
 			res, err := queryClient.EnterpriseAccount(context.Background(), &types.QueryEnterpriseAccountRequest{
 				Address: address.String(),
 			})
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-// GetCmdGetEnterpriseSupply queries eFUND data, including locked, unlocked and total chain supply
-func GetCmdGetEnterpriseSupply() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "ent-supply",
-		Short: "get eFUND data, including locked, unlocked and chain total supply",
-		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-
-			res, err := queryClient.EnterpriseSupply(context.Background(), &types.QueryEnterpriseSupplyRequest{})
 			if err != nil {
 				return err
 			}

@@ -11,7 +11,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata/testpb"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	"github.com/cosmos/gogoproto/proto"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -32,6 +35,9 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 
 	storetypes "cosmossdk.io/store/types"
+	"cosmossdk.io/x/circuit"
+	circuitkeeper "cosmossdk.io/x/circuit/keeper"
+	circuittypes "cosmossdk.io/x/circuit/types"
 	"cosmossdk.io/x/evidence"
 	evidencekeeper "cosmossdk.io/x/evidence/keeper"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -109,8 +115,6 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
-
 	"github.com/unification-com/mainchain/ante"
 	"github.com/unification-com/mainchain/x/beacon"
 	beaconkeeper "github.com/unification-com/mainchain/x/beacon/keeper"
@@ -139,40 +143,6 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
-	// non-dependant module elements, such as codec registration
-	// and genesis verification.
-	ModuleBasics = module.NewBasicManager(
-		auth.AppModuleBasic{},
-		genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-		bank.AppModuleBasic{},
-		capability.AppModuleBasic{},
-		staking.AppModuleBasic{},
-		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(
-			[]govclient.ProposalHandler{
-				paramsclient.ProposalHandler,
-			},
-		),
-		params.AppModuleBasic{},
-		crisis.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		ibc.AppModuleBasic{},
-		ibctm.AppModuleBasic{},
-		feegrantmodule.AppModuleBasic{},
-		upgrade.AppModuleBasic{},
-		evidence.AppModuleBasic{},
-		transfer.AppModuleBasic{},
-		authzmodule.AppModuleBasic{},
-		groupmodule.AppModuleBasic{},
-		vesting.AppModuleBasic{},
-		enterprise.AppModule{},
-		wrkchain.AppModule{},
-		beacon.AppModule{},
-		consensus.AppModuleBasic{},
-		stream.AppModuleBasic{},
-	)
-
 	// module account permissions
 	maccPerms = map[string][]string{
 		authtypes.FeeCollectorName:     nil,
@@ -180,9 +150,10 @@ var (
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
-		enttypes.ModuleName:            {authtypes.Minter, authtypes.Staking},
-		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		streamtypes.ModuleName:         nil,
+		// ToDo: Next version will only require authtypes.Minter
+		enttypes.ModuleName:         {authtypes.Minter, authtypes.Staking},
+		ibctransfertypes.ModuleName: {authtypes.Minter, authtypes.Burner},
+		streamtypes.ModuleName:      nil,
 	}
 )
 
@@ -226,6 +197,7 @@ type App struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	GroupKeeper           groupkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
+	CircuitKeeper         circuitkeeper.Keeper
 
 	EnterpriseKeeper entkeeper.Keeper
 	BeaconKeeper     beaconkeeper.Keeper
@@ -296,7 +268,7 @@ func NewApp(
 		govtypes.StoreKey, paramstypes.StoreKey, consensusparamtypes.StoreKey, ibcexported.StoreKey,
 		upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, authzkeeper.StoreKey, group.StoreKey,
-		enttypes.StoreKey, beacontypes.StoreKey, wrkchaintypes.StoreKey, streamtypes.StoreKey,
+		enttypes.StoreKey, beacontypes.StoreKey, wrkchaintypes.StoreKey, streamtypes.StoreKey, circuittypes.StoreKey,
 	)
 
 	// register streaming services
@@ -384,6 +356,9 @@ func NewApp(
 	app.StakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
+
+	app.CircuitKeeper = circuitkeeper.NewKeeper(appCodec, runtime.NewKVStoreService(keys[circuittypes.StoreKey]), authtypes.NewModuleAddress(govtypes.ModuleName).String(), app.AccountKeeper.AddressCodec())
+	app.BaseApp.SetCircuitBreaker(&app.CircuitKeeper)
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(runtime.NewKVStoreService(keys[authzkeeper.StoreKey]), appCodec, app.MsgServiceRouter(), app.AccountKeeper)
 
@@ -501,6 +476,8 @@ func NewApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
+		circuit.NewAppModule(appCodec, app.CircuitKeeper),
+
 		enterprise.NewAppModule(appCodec, app.EnterpriseKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(enttypes.ModuleName)),
 		beacon.NewAppModule(appCodec, app.BeaconKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(beacontypes.ModuleName)),
 		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(wrkchaintypes.ModuleName)),
@@ -589,6 +566,7 @@ func NewApp(
 		vestingtypes.ModuleName,
 		group.ModuleName,
 		consensusparamtypes.ModuleName,
+		circuittypes.ModuleName,
 		enttypes.ModuleName,
 		beacontypes.ModuleName,
 		wrkchaintypes.ModuleName,
@@ -880,24 +858,11 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// Register node gRPC service for grpc-gateway.
 	nodeservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
-	// Register enterprise GRPC routes first, to ensure /supply/total is overridden
-	// with the enterprise version. If it is loaded "in order", i.e. bank module first,
-	// then the router will use the bank module's version.
-	//ModuleBasics["enterprise"].RegisterRESTRoutes(clientCtx, apiSvr.Router)
-	//
-	//// Register legacy and grpc-gateway routes for all modules.
-	//ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
-
-	// Register enterprise GRPC routes first, to ensure /cosmos/bank/v1beta1/supply is overridden
-	// with the enterprise version. If it is loaded "in order", i.e. bank module first,
-	// then the router will use the bank module's version.
-	ModuleBasics["enterprise"].RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
-
 	// Register other GRPC routes
 	app.BasicModuleManager.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
-	if err := server.RegisterSwaggerAPI(apiSvr.ClientCtx, apiSvr.Router, apiConfig.Swagger); err != nil {
+	if err := RegisterSwaggerAPI(apiSvr.Router, apiConfig.Swagger); err != nil {
 		panic(err)
 	}
 }
@@ -922,16 +887,23 @@ func (app *App) RegisterNodeService(clientCtx client.Context, cfg config.Config)
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg)
 }
 
-//// RegisterSwaggerAPI registers swagger route with API Server
-//func RegisterSwaggerAPI(rtr *mux.Router) {
-//	statikFS, err := fs.NewApp()
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	staticServer := http.FileServer(statikFS)
-//	rtr.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger/", staticServer))
-//}
+// RegisterSwaggerAPI registers swagger route with API Server
+func RegisterSwaggerAPI(rtr *mux.Router, swaggerEnabled bool) error {
+
+	if !swaggerEnabled {
+		return nil
+	}
+
+	statikFS, err := fs.New()
+	if err != nil {
+		return err
+	}
+
+	staticServer := http.FileServer(statikFS)
+	rtr.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger/", staticServer))
+
+	return nil
+}
 
 // GetMaccPerms returns a copy of the module account permissions
 func GetMaccPerms() map[string][]string {

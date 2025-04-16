@@ -29,12 +29,12 @@ func (ld CheckLockedUndDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 
 	if (wrkchain.CheckIsWrkChainTx(feeTx) || beacon.CheckIsBeaconTx(feeTx)) && ld.entk.IsLocked(ctx, feePayer) {
 		// WRKChain/BEACON Tx and has locked Enterprise FUND.
-		// check for and Undelegate any Locked FUND to pay for fees
-		// We undelegate and unlock here (instead of handler) because
+		// check for and mint any Locked FUND to pay for fees
+		// We unlock and mint (instead of msg_server) because
 		// fees are paid during the Ante process, further in the chain
 		// WRKChain/BEACON Txs have been checked before this decorator is called
 
-		err := ld.entk.UnlockCoinsForFees(ctx, feePayer, feeTx.GetFee())
+		err := ld.entk.UnlockAndMintCoinsForFees(ctx, feePayer, feeTx.GetFee())
 
 		if err != nil {
 			return ctx, errorsmod.Wrap(err, "failed to unlock enterprise und")

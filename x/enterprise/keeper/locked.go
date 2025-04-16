@@ -4,7 +4,6 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -44,69 +43,6 @@ func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 	var totalLocked sdk.Coin
 	k.cdc.MustUnmarshal(bz, &totalLocked)
 	return totalLocked
-}
-
-// GetTotalUnLockedUnd returns the amount of unlocked FUND - i.e. in active
-// circulation (totalSupply - locked)
-func (k Keeper) GetTotalUnLockedUnd(ctx sdk.Context) sdk.Coin {
-	supply := k.bankKeeper.GetSupply(ctx, k.GetParamDenom(ctx))
-	locked := k.GetTotalLockedUnd(ctx)
-
-	unlocked := supply.Sub(locked)
-
-	return unlocked
-}
-
-// GetTotalUndSupply returns the total FUND in supply, obtained from the supply module's keeper
-func (k Keeper) GetTotalUndSupply(ctx sdk.Context) sdk.Coin {
-	return k.bankKeeper.GetSupply(ctx, k.GetParamDenom(ctx))
-}
-
-// GetEnterpriseSupplyIncludingLockedUnd returns information including total FUND supply, total locked and unlocked
-func (k Keeper) GetEnterpriseSupplyIncludingLockedUnd(ctx sdk.Context) types.UndSupply {
-	total := k.bankKeeper.GetSupply(ctx, k.GetParamDenom(ctx))
-	locked := k.GetTotalLockedUnd(ctx)
-
-	unlocked := total.Sub(locked)
-
-	denom := k.GetParamDenom(ctx)
-
-	totalSupply := types.UndSupply{
-		Denom:  denom,
-		Locked: locked.Amount.Uint64(),
-		Amount: unlocked.Amount.Uint64(),
-		Total:  total.Amount.Uint64(),
-	}
-
-	return totalSupply
-}
-
-// GetTotalSupplyWithLockedNundRemoved sits on top of the Bank Keeper's GetPaginatedTotalSupply and
-// removes locked FUND from nund supply
-func (k Keeper) GetTotalSupplyWithLockedNundRemoved(ctx sdk.Context, pagination *query.PageRequest) (sdk.Coins, *query.PageResponse, error) {
-	supplyCoins, pageResp, err := k.bankKeeper.GetPaginatedTotalSupply(ctx, pagination)
-	locked := k.GetTotalLockedUnd(ctx)
-
-	for i, c := range supplyCoins {
-		if c.Denom == k.GetParamDenom(ctx) {
-			unlocked := c.Sub(locked)
-			supplyCoins[i] = unlocked
-		}
-	}
-
-	return supplyCoins, pageResp, err
-}
-
-func (k Keeper) GetSupplyOfWithLockedNundRemoved(ctx sdk.Context, denom string) sdk.Coin {
-	supply := k.bankKeeper.GetSupply(ctx, denom)
-
-	if denom == k.GetParamDenom(ctx) {
-		locked := k.GetTotalLockedUnd(ctx)
-		unlocked := supply.Sub(locked)
-		return unlocked
-	} else {
-		return supply
-	}
 }
 
 // SetTotalLockedUnd sets the total locked FUND
@@ -200,35 +136,16 @@ func (k Keeper) GetAllSpentEFUNDs(ctx sdk.Context) (spentEFUNDs []types.SpentEFU
 
 // __MINTER_AND_UNLOCKER________________________________________________
 
-// MintCoinsAndLock implements an alias call to the underlying bank keeper's MintCoins
-// MintCoinsAndLock to be used in BeginBlocker.
-func (k Keeper) MintCoinsAndLock(ctx sdk.Context, recipient sdk.AccAddress, amount sdk.Coin) error {
+// CreateAndLockEFUND creates and locks eFUND
+// CreateAndLockEFUND to be used in BeginBlocker.
+// Minting will be handled in UnlockCoinsForFees
+func (k Keeper) CreateAndLockEFUND(ctx sdk.Context, recipient sdk.AccAddress, amount sdk.Coin) error {
 	if amount.Amount.IsZero() {
 		// skip as no coins need to be minted
 		return nil
 	}
-
-	newCoins := sdk.NewCoins(amount)
-	//first mint
-	err := k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
-	if err != nil {
-		return err
-	}
-
-	// Send them to the purchaser's account
-	err = k.sendCoinsFromModuleToAccount(ctx, recipient, newCoins)
-	if err != nil {
-		return err
-	}
-
-	// Delegate the Enterprise FUND module so they can't be spent
-	err = k.bankKeeper.DelegateCoinsFromAccountToModule(ctx, recipient, types.ModuleName, newCoins)
-	if err != nil {
-		return err
-	}
-
 	// keep track of how much FUND is locked for this account, and in total
-	err = k.incrementLockedUnd(ctx, recipient, amount)
+	err := k.incrementLockedUnd(ctx, recipient, amount)
 	if err != nil {
 		return err
 	}
@@ -236,7 +153,9 @@ func (k Keeper) MintCoinsAndLock(ctx sdk.Context, recipient sdk.AccAddress, amou
 	return nil
 }
 
-func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, feesToPay sdk.Coins) error {
+// UnlockAndMintCoinsForFees unlocks any locked eFUND and mints them in the bank keeper
+// to pay for fees
+func (k Keeper) UnlockAndMintCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, feesToPay sdk.Coins) error {
 
 	logger := k.Logger(ctx)
 	lockedUnd := k.GetLockedUndForAccount(ctx, feePayer).Amount
@@ -251,9 +170,14 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 
 	if !hasNeg {
 		// locked FUND >= total fees
-		// undelegate the fee amount to allow for payment
-		err := k.bankKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, feesToPay)
+		// mint the fee amount to allow for payment
+		err := k.bankKeeper.MintCoins(ctx, types.ModuleName, feesToPay)
+		if err != nil {
+			return err
+		}
 
+		// Send them to the purchaser's account
+		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, feesToPay)
 		if err != nil {
 			return err
 		}
@@ -281,9 +205,8 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		logger.Debug("enterprise unlocking und", "for", feePayer.String(), "amt", feeNundCoin.Amount)
 
 	} else {
-		// calculate how much can be undelegated, and if, by undelegating, the account
-		// would have enough to pay for the fees. If not, don't undelegate
-		//feePayerAcc := k.accKeeper.GetAccount(ctx, feePayer)
+		// calculate how much can be unlocked and minted, and if, by minting, the account
+		// would have enough to pay for the fees. If not, don't mint/unlock
 
 		// How many spendable FUND does the account have
 		spendableCoins := k.bankKeeper.SpendableCoins(ctx, feePayer)
@@ -291,14 +214,22 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 		// calculate how much would be available if FUND were unlocked
 		potentiallyAvailable := spendableCoins.Add(lockedUndCoins...)
 
-		// is this enough to pay for the fees
-		_, hasNeg := potentiallyAvailable.SafeSub(feeToPay)
+		// is this enough to pay for the fees?
+		_, hasNeg2 := potentiallyAvailable.SafeSub(feeToPay)
 
 		// only undelegate & unlock if the resulting unlock will be enough to pay for the fees.
-		if !hasNeg {
+		if !hasNeg2 {
 			// undelegate the fee amount to allow for payment
-			err := k.bankKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, lockedUndCoins)
+			//err := k.bankKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, lockedUndCoins)
 
+			//first mint
+			err := k.bankKeeper.MintCoins(ctx, types.ModuleName, lockedUndCoins)
+			if err != nil {
+				return err
+			}
+
+			// Send them to the purchaser's account
+			err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, feePayer, lockedUndCoins)
 			if err != nil {
 				return err
 			}
@@ -329,16 +260,6 @@ func (k Keeper) UnlockCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddress, fee
 	}
 
 	return nil
-}
-
-// sendCoinsFromModuleToAccount implements an alias call to the underlying supply keeper's SendCoinsFromModuleToAccount
-// Used in MintCoinsAndLock to send newly minted coins from enterprise module to recipient account
-func (k Keeper) sendCoinsFromModuleToAccount(ctx sdk.Context, recipientAddr sdk.AccAddress, newCoins sdk.Coins) error {
-	if newCoins.Empty() {
-		// skip as no coins need to be minted
-		return nil
-	}
-	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, recipientAddr, newCoins)
 }
 
 //__LOCKED_FUND__________________________________________________________

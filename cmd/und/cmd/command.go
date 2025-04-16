@@ -23,7 +23,6 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	"github.com/cosmos/ibc-go/v8/testing/simapp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -80,16 +79,16 @@ func initRootCmd(
 	txConfig client.TxConfig,
 ) {
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(basicManager, simapp.DefaultNodeHome),
+		genutilcli.InitCmd(basicManager, app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		//NewTestnetCmd(basicManager, banktypes.GenesisBalancesIterator{}),
 		addDebugCommands(debug.Cmd()),
 		confixcmd.ConfigCommand(),
-		pruning.Cmd(newApp, simapp.DefaultNodeHome),
+		pruning.Cmd(newApp, app.DefaultNodeHome),
 		snapshot.Cmd(newApp),
 	)
 
-	server.AddCommandsWithStartCmdOptions(rootCmd, simapp.DefaultNodeHome, newApp, appExport, server.StartCmdOptions{
+	server.AddCommandsWithStartCmdOptions(rootCmd, app.DefaultNodeHome, newApp, appExport, server.StartCmdOptions{
 		AddFlags: func(startCmd *cobra.Command) {
 			crisis.AddModuleInitFlags(startCmd)
 		},
@@ -108,7 +107,7 @@ func initRootCmd(
 
 // genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
 func genesisCommand(txConfig client.TxConfig, basicManager module.BasicManager, cmds ...*cobra.Command) *cobra.Command {
-	cmd := genutilcli.Commands(txConfig, basicManager, simapp.DefaultNodeHome)
+	cmd := genutilcli.Commands(txConfig, basicManager, app.DefaultNodeHome)
 
 	for _, subCmd := range cmds {
 		cmd.AddCommand(subCmd)
@@ -165,40 +164,6 @@ func txCommand() *cobra.Command {
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
-}
-
-// overrideBankQuery is a convoluted way of overriding the x/bank module's default total-supply and total-supply-of
-// commands. This is currently necessary due to the method currently used by the x/enterprise module to mint eFUND,
-// meaning that eFUND are calculated and included in the total supply. In practice, this is not the case, since eFUND
-// only become part of the total supply once they have been spent for the first time. The override methods ensure
-// that eFUND are deducted from the total supply before returning the result, giving a true reflection of the
-// actual total supply.
-func overrideBankQuery(rootCmd *cobra.Command) *cobra.Command {
-	origQueryCmd, _, _ := rootCmd.Find([]string{"query"})
-	origBankCmd, _, _ := origQueryCmd.Find([]string{"bank"})
-
-	origTotalSupplyCmd, _, _ := origBankCmd.Find([]string{"total-supply"})
-	origTotalSupplyOfCmd, _, _ := origBankCmd.Find([]string{"total-supply-of"})
-
-	// remove "query" from "root"
-	rootCmd.RemoveCommand(origQueryCmd)
-	// remove "bank" from "query"
-	origQueryCmd.RemoveCommand(origBankCmd)
-	// remove "total-supply" command from "bank" cmd
-	origBankCmd.RemoveCommand(origTotalSupplyCmd)
-	// remove "total-supply-of" command from "bank" cmd
-	origBankCmd.RemoveCommand(origTotalSupplyOfCmd)
-
-	// add Enterprise version of "total-supply" command to "bank" cmd
-	origBankCmd.AddCommand(GetCmdQueryTotalSupplyOverrideBankDefault())
-	// add Enterprise version of "total-supply-of" command to "bank" cmd
-	origBankCmd.AddCommand(GetCmdQueryTotalSupplyOfOverrideBankDefault())
-
-	// re-add "bank" to "query"
-	origQueryCmd.AddCommand(origBankCmd)
-	// re-add "query" to "root"
-	rootCmd.AddCommand(origQueryCmd)
-	return rootCmd
 }
 
 // newApp creates the application

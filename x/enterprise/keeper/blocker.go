@@ -26,12 +26,10 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) error {
 		if !found {
 			logger.Warn("purchase order not found in abci method TallyPurchaseOrderDecisions", "poid", poId)
 			continue
-			//return errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "purchase order not found!")
 		}
 		if po.Status != types.StatusRaised {
 			logger.Warn("purchase order status is not raised in abci method TallyPurchaseOrderDecisions", "poid", poId)
 			continue
-			//return errorsmod.Wrap(types.ErrInvalidStatus, "purchase order status is not raised!")
 		}
 		numAccepts := 0
 		numRejects := 0
@@ -141,12 +139,10 @@ func (k Keeper) ProcessAcceptedPurchaseOrders(ctx sdk.Context) error {
 		if !found {
 			logger.Warn("purchase order not found in abci method ProcessAcceptedPurchaseOrders", "poid", poId)
 			continue
-			//return errorsmod.Wrap(types.ErrPurchaseOrderDoesNotExist, "purchase order not found!")
 		}
 		if po.Status != types.StatusAccepted {
 			logger.Warn("purchase order status is not accepted in abci method ProcessAcceptedPurchaseOrders", "poid", poId)
 			continue
-			//return errorsmod.Wrap(types.ErrInvalidStatus, "purchase order status is not accepted!")
 		}
 
 		// mark as completed
@@ -162,7 +158,7 @@ func (k Keeper) ProcessAcceptedPurchaseOrders(ctx sdk.Context) error {
 		}
 
 		// Mint the Enterprise FUND
-		err = k.MintCoinsAndLock(ctx, purchaser, po.Amount)
+		err = k.CreateAndLockEFUND(ctx, purchaser, po.Amount)
 		if err != nil {
 			return err
 		}

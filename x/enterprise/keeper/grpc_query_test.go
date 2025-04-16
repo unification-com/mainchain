@@ -346,123 +346,6 @@ func (s *KeeperTestSuite) TestGRPCQueryTotalLocked() {
 	s.Require().Equal(expectedRes, lRes)
 }
 
-func (s *KeeperTestSuite) TestGRPCQueryTotalUnlocked() {
-	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
-
-	toLock := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	toUnock := sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)
-	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
-	s.Require().NoError(err)
-
-	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnock})
-	s.Require().NoError(err)
-
-	req := &types.QueryTotalUnlockedRequest{}
-
-	expectedUnlocked := app.EnterpriseKeeper.GetTotalUnLockedUnd(ctx)
-
-	expectedRes := &types.QueryTotalUnlockedResponse{
-		Amount: expectedUnlocked,
-	}
-
-	lRes, err := queryClient.TotalUnlocked(gocontext.Background(), req)
-
-	s.Require().NoError(err)
-	s.Require().Equal(expectedRes, lRes)
-}
-
-func (s *KeeperTestSuite) TestGRPCQueryEnterpriseSupply() {
-	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
-
-	toLock := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	toUnlock := sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)
-
-	baseSupply := app.BankKeeper.GetSupply(ctx, sdk.DefaultBondDenom)
-	locked := toLock.Sub(toUnlock)
-	unlocked := baseSupply.Add(toUnlock)
-	total := baseSupply.Add(toLock)
-
-	expectedTotalSupply := types.UndSupply{
-		Denom:  sdk.DefaultBondDenom,
-		Locked: locked.Amount.Uint64(),
-		Amount: unlocked.Amount.Uint64(),
-		Total:  total.Amount.Uint64(),
-	}
-
-	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
-	s.Require().NoError(err)
-
-	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
-	s.Require().NoError(err)
-
-	req := &types.QueryEnterpriseSupplyRequest{}
-
-	expectedRes := &types.QueryEnterpriseSupplyResponse{
-		Supply: expectedTotalSupply,
-	}
-
-	lRes, err := queryClient.EnterpriseSupply(gocontext.Background(), req)
-
-	s.Require().NoError(err)
-	s.Require().Equal(expectedRes, lRes)
-}
-
-func (s *KeeperTestSuite) TestGRPCQueryTotalSupply() {
-	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
-
-	toLock := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	toUnlock := sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)
-
-	baseSupply := app.BankKeeper.GetSupply(ctx, sdk.DefaultBondDenom)
-	expectedTotalSupply := baseSupply.Add(toUnlock)
-
-	expectedResponse := &types.QueryTotalSupplyResponse{
-		Supply: sdk.NewCoins(
-			expectedTotalSupply,
-		),
-	}
-
-	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
-	s.Require().NoError(err)
-
-	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
-	s.Require().NoError(err)
-
-	req := &types.QueryTotalSupplyRequest{}
-
-	lRes, err := queryClient.TotalSupply(gocontext.Background(), req)
-
-	s.Require().NoError(err)
-	s.Require().Equal(expectedResponse.Supply, lRes.Supply)
-}
-
-func (s *KeeperTestSuite) TestGRPCQuerySupplyOf() {
-	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
-
-	toLock := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	toUnlock := sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)
-
-	baseSupply := app.BankKeeper.GetSupply(ctx, sdk.DefaultBondDenom)
-	expectedTotalSupply := baseSupply.Add(toUnlock)
-
-	expectedResponse := &types.QuerySupplyOfResponse{
-		Amount: expectedTotalSupply,
-	}
-
-	err := app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[0], toLock)
-	s.Require().NoError(err)
-
-	err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[0], sdk.Coins{toUnlock})
-	s.Require().NoError(err)
-
-	req := &types.QuerySupplyOfRequest{Denom: sdk.DefaultBondDenom}
-
-	lRes, err := queryClient.SupplyOf(gocontext.Background(), req)
-
-	s.Require().NoError(err)
-	s.Require().Equal(expectedResponse, lRes)
-}
-
 func (s *KeeperTestSuite) TestGRPCQueryWhitelist() {
 	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 
@@ -527,10 +410,10 @@ func (s *KeeperTestSuite) TestTotalSpentEFUND() {
 		expectedPo.Status = types.StatusCompleted
 		_ = app.EnterpriseKeeper.SetPurchaseOrder(ctx, expectedPo)
 
-		err = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[i], poAmountCoin)
+		err = app.EnterpriseKeeper.CreateAndLockEFUND(ctx, addrs[i], poAmountCoin)
 		s.Require().NoError(err)
 
-		err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
+		err = app.EnterpriseKeeper.UnlockAndMintCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
 		s.Require().NoError(err)
 
 		totalUnlocked += toUnlock
@@ -563,10 +446,10 @@ func (s *KeeperTestSuite) TestSpentEFUNDByAddress() {
 		expectedPo.Status = types.StatusCompleted
 		_ = app.EnterpriseKeeper.SetPurchaseOrder(ctx, expectedPo)
 
-		err = app.EnterpriseKeeper.MintCoinsAndLock(ctx, addrs[i], poAmountCoin)
+		err = app.EnterpriseKeeper.CreateAndLockEFUND(ctx, addrs[i], poAmountCoin)
 		s.Require().NoError(err)
 
-		err = app.EnterpriseKeeper.UnlockCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
+		err = app.EnterpriseKeeper.UnlockAndMintCoinsForFees(ctx, addrs[i], sdk.Coins{toUnlockCoin})
 		s.Require().NoError(err)
 
 		expectedResp := &types.QuerySpentEFUNDByAddressResponse{Amount: sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(toUnlock))}

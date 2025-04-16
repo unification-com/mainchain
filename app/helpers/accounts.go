@@ -6,6 +6,7 @@ import (
 	"time"
 
 	mathmod "cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -26,6 +27,19 @@ var (
 // initial balance of accAmt in random order
 func AddTestAddrsIncremental(app *app.App, ctx context.Context, accNum int, accAmt mathmod.Int) []sdk.AccAddress {
 	return addTestAddrs(app, ctx, accNum, accAmt, simtestutil.CreateIncrementalAccounts)
+}
+
+func AddTestAccForTxSigning(app *app.App, ctx context.Context, initCoins sdk.Coins) (*ed25519.PrivKey, sdk.AccAddress) {
+	privK := ed25519.GenPrivKey()
+	pubK := privK.PubKey()
+	addr := sdk.AccAddress(pubK.Address())
+
+	acc := app.AccountKeeper.NewAccountWithAddress(ctx, addr)
+	app.AccountKeeper.SetAccount(ctx, acc)
+
+	initAccountWithCoins(app, ctx, addr, initCoins)
+
+	return privK, addr
 }
 
 func addTestAddrs(app *app.App, ctx context.Context, accNum int, accAmt mathmod.Int, strategy simtestutil.GenerateAccountStrategy) []sdk.AccAddress {

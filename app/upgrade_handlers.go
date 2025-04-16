@@ -26,7 +26,8 @@ func (app *App) registerUpgradeHandlers() {
 		UpgradeName,
 		func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 			sdkCtx := sdk.UnwrapSDKContext(ctx)
-			sdkCtx.Logger().Info("Starting module migrations...")
+
+			sdkCtx.Logger().Info("upgrade handler: run module migrations")
 			versionMap, err := app.ModuleManager.RunMigrations(ctx, app.Configurator(), fromVM)
 
 			if err != nil {
@@ -82,7 +83,7 @@ func (app *App) BurnEnterpriseAccCoins(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	// burn enterprise module account balance
 	burnModule := govtypes.ModuleName // need to use another module with burn permissions
-	sdkCtx.Logger().Info("Burn enterprise module account balance")
+	sdkCtx.Logger().Info("upgrade handler: burn enterprise module account balance")
 	totalLockedBefore := app.EnterpriseKeeper.GetTotalLockedUnd(sdkCtx)
 	totalSupplyBefore := app.BankKeeper.GetSupply(ctx, sdk.DefaultBondDenom)
 	legacyActualTotalSupply := totalSupplyBefore.Sub(totalLockedBefore)

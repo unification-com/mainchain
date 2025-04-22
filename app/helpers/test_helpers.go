@@ -48,9 +48,9 @@ const (
 
 	SimTestDefaultStorageLimit    uint64 = 1000
 	SimTestDefaultMaxStorageLimit uint64 = 10000
-
-	SimTestDefaultStreamValFee = "0.01"
 )
+
+var SimTestDefaultStreamValFee = sdkmath.LegacyNewDecWithPrec(1, 2)
 
 // DefaultConsensusParams defines the default Tendermint consensus params used
 // in Und App testing.

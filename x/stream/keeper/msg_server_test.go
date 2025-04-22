@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	mathmod "cosmossdk.io/math"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,7 +21,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: "0.24",
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(24, 2),
 				},
 			},
 			expectErr: false,
@@ -39,7 +40,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: "1.01",
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(101, 2),
 				},
 			},
 			expectErr: true,
@@ -50,7 +51,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: "-0.01",
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(-1, 2),
 				},
 			},
 			expectErr: true,
@@ -61,11 +62,11 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: "",
+					ValidatorFee: mathmod.LegacyDec{},
 				},
 			},
 			expectErr: true,
-			expErrMsg: "decimal string cannot be empty",
+			expErrMsg: "validator fee cannot be nil",
 		},
 	}
 
@@ -272,7 +273,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateStream() {
 func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 
 	// Set fee to 0.01 (default is 0.00)
-	_ = s.app.StreamKeeper.SetParams(s.ctx, types.NewParams("0.01"))
+	_ = s.app.StreamKeeper.SetParams(s.ctx, types.NewParams(mathmod.LegacyNewDecWithPrec(1, 2)))
 
 	testCases := []struct {
 		name      string

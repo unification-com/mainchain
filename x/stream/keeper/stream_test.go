@@ -1251,7 +1251,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 	nowTime := tCtx.BlockTime()
 
 	// set validator fee
-	valFee := "0.01"
+	valFee := mathmod.LegacyNewDecWithPrec(1, 2)
 	_ = s.app.StreamKeeper.SetParams(tCtx, types.Params{ValidatorFee: valFee})
 
 	deposit := sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000))
@@ -1336,7 +1336,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 		receiver          sdk.AccAddress
 		flowRate          int64
 		deposit           sdk.Coin
-		valFee            string
+		valFee            mathmod.LegacyDec
 		createTimeOffset  int64 // seconds in past from "now"
 		expTotalClaim     sdk.Coin
 		expReceiverAmount sdk.Coin
@@ -1349,7 +1349,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			receiver:          s.addrs[1],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
-			valFee:            "0.00",
+			valFee:            mathmod.LegacyNewDecWithPrec(0, 2),
 			createTimeOffset:  500,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(500)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(500)),
@@ -1362,7 +1362,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			receiver:          s.addrs[3],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
-			valFee:            "0.00",
+			valFee:            mathmod.LegacyNewDecWithPrec(0, 2),
 			createTimeOffset:  9999,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
@@ -1375,7 +1375,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			receiver:          s.addrs[5],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
-			valFee:            "0.05",
+			valFee:            mathmod.LegacyNewDecWithPrec(5, 2),
 			createTimeOffset:  500,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(500)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(475)),
@@ -1388,7 +1388,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			receiver:          s.addrs[7],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
-			valFee:            "0.05",
+			valFee:            mathmod.LegacyNewDecWithPrec(5, 2),
 			createTimeOffset:  9999,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(950)),
@@ -1401,7 +1401,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			receiver:          s.addrs[9],
 			flowRate:          54769,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(198770009867)),
-			valFee:            "0.00",
+			valFee:            mathmod.LegacyNewDecWithPrec(0, 2),
 			createTimeOffset:  2628000,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(143932932000)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(143932932000)),
@@ -1414,7 +1414,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			receiver:          s.addrs[11],
 			flowRate:          69249,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(275585190123)),
-			valFee:            "0.03",
+			valFee:            mathmod.LegacyNewDecWithPrec(3, 2),
 			createTimeOffset:  1739523,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(120460228227)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(116846421381)),
@@ -1427,7 +1427,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			receiver:          s.addrs[13],
 			flowRate:          73269,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(313563770856)),
-			valFee:            "0.09",
+			valFee:            mathmod.LegacyNewDecWithPrec(9, 2),
 			createTimeOffset:  5000000,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(313563770856)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(285343031479)),
@@ -1632,7 +1632,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Success() {
 	nowTime := tCtx.BlockTime()
 
 	// set validator fee
-	valFee := "0.01"
+	valFee := mathmod.LegacyNewDecWithPrec(1, 2)
 	_ = s.app.StreamKeeper.SetParams(tCtx, types.Params{ValidatorFee: valFee})
 
 	deposit := sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000))
@@ -1725,7 +1725,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 		receiver          sdk.AccAddress
 		flowRate          int64
 		deposit           sdk.Coin
-		valFee            string
+		valFee            mathmod.LegacyDec
 		cancelTimeOffset  int64    // seconds from "now"
 		expTotalClaim     sdk.Coin // after cancel
 		expReceiverAmount sdk.Coin // after cancel
@@ -1739,7 +1739,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			receiver:          s.addrs[1],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
-			valFee:            "0.00",
+			valFee:            mathmod.LegacyNewDecWithPrec(0, 2),
 			cancelTimeOffset:  1001,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
@@ -1753,7 +1753,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			receiver:          s.addrs[3],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
-			valFee:            "0.00",
+			valFee:            mathmod.LegacyNewDecWithPrec(0, 2),
 			cancelTimeOffset:  500,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(500)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(500)),
@@ -1767,7 +1767,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			receiver:          s.addrs[5],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(0)),
-			valFee:            "0.00",
+			valFee:            mathmod.LegacyNewDecWithPrec(0, 2),
 			cancelTimeOffset:  1001,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(0)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(0)),
@@ -1781,7 +1781,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			receiver:          s.addrs[7],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
-			valFee:            "0.03",
+			valFee:            mathmod.LegacyNewDecWithPrec(3, 2),
 			cancelTimeOffset:  1001,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(970)),
@@ -1795,7 +1795,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			receiver:          s.addrs[9],
 			flowRate:          1,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)),
-			valFee:            "0.03",
+			valFee:            mathmod.LegacyNewDecWithPrec(3, 2),
 			cancelTimeOffset:  500,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(500)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(485)),
@@ -1809,7 +1809,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			receiver:          s.addrs[11],
 			flowRate:          2342343,
 			deposit:           sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(6155677404000)),
-			valFee:            "0.04",
+			valFee:            mathmod.LegacyNewDecWithPrec(4, 2),
 			cancelTimeOffset:  1814421,
 			expTotalClaim:     sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(4249996328403)),
 			expReceiverAmount: sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(4079996475267)),

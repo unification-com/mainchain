@@ -211,17 +211,17 @@ func TestCalculateAmountToClaim(t *testing.T) {
 
 func TestCalculateValidatorFee(t *testing.T) {
 
-	zeroPerc := "0.00"
-	onePerc := "0.01"
-	fivePerc := "0.05"
-	tenPerc := "0.10"
-	twentyFourPerc := "0.24"
-	ninetyNinePerc := "0.99"
-	hundredPerc := "1.00"
+	zeroPerc := mathmod.LegacyNewDecWithPrec(0, 2)
+	onePerc := mathmod.LegacyNewDecWithPrec(1, 2)
+	fivePerc := mathmod.LegacyNewDecWithPrec(5, 2)
+	tenPerc := mathmod.LegacyNewDecWithPrec(10, 2)
+	twentyFourPerc := mathmod.LegacyNewDecWithPrec(24, 2)
+	ninetyNinePerc := mathmod.LegacyNewDecWithPrec(99, 2)
+	hundredPerc := mathmod.LegacyNewDecWithPrec(100, 2)
 
 	testCases := []struct {
 		name                   string
-		valFee                 string
+		valFee                 mathmod.LegacyDec
 		amountToClaim          sdk.Coin
 		expectedFinalClaimCoin sdk.Coin
 		expectedValFeeCoin     sdk.Coin

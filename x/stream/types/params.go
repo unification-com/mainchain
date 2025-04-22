@@ -10,10 +10,10 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 // DefaultValidatorFee is set to 0%
-var DefaultValidatorFee = "0.01"
+var DefaultValidatorFee = mathmod.LegacyNewDecWithPrec(1, 2)
 
 // NewParams creates a new Params instance
-func NewParams(validatorFee string) Params {
+func NewParams(validatorFee mathmod.LegacyDec) Params {
 	return Params{
 		ValidatorFee: validatorFee,
 	}
@@ -35,25 +35,20 @@ func (p Params) Validate() error {
 }
 
 func validateBaseValidatorFee(i interface{}) error {
-	v, ok := i.(string)
+	v, ok := i.(mathmod.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	vDec, err := mathmod.LegacyNewDecFromStr(v)
-	if err != nil {
-		return fmt.Errorf("invalid validator fee string: %w", err)
-	}
-
-	if vDec.IsNil() {
+	if v.IsNil() {
 		return fmt.Errorf("validator fee cannot be nil")
 	}
 
-	if vDec.IsNegative() {
+	if v.IsNegative() {
 		return fmt.Errorf("validator fee cannot be negative: %s", v)
 	}
 
-	if vDec.GT(mathmod.LegacyOneDec()) {
+	if v.GT(mathmod.LegacyOneDec()) {
 		return fmt.Errorf("validator fee cannot be greater than 100%% (1.00). Sent %s", v)
 	}
 

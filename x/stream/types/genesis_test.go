@@ -34,7 +34,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "valid genesis state and params",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: "0.01",
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(1, 2),
 				},
 				Streams: []types.StreamExport{
 					{
@@ -67,7 +67,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid: empty genesis state",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: "",
+					ValidatorFee: mathmod.LegacyDec{},
 				},
 				Streams: []types.StreamExport{},
 			},
@@ -77,7 +77,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid: genesis state fee > 100%",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: "1.01",
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(101, 2),
 				},
 				Streams: []types.StreamExport{},
 			},
@@ -87,7 +87,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid: genesis state fee < 0%",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: "-0.01",
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(-1, 2),
 				},
 				Streams: []types.StreamExport{},
 			},

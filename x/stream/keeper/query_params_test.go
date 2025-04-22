@@ -1,13 +1,15 @@
 package keeper_test
 
 import (
+	mathmod "cosmossdk.io/math"
+	
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 func (s *KeeperTestSuite) TestParamsQuery() {
 	defaultFee := simapphelpers.SimTestDefaultStreamValFee
-	newFee := "0.24"
+	newFee := mathmod.LegacyNewDecWithPrec(24, 2)
 
 	req1 := &types.QueryParamsRequest{}
 	expRes1 := &types.QueryParamsResponse{Params: types.DefaultParams()}

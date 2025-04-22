@@ -200,7 +200,7 @@ do
   ACC_SEQ=${ACC_SEQUENCESS[$i]}
   echo "${ACC} raise Enterprise POs"
   # no need to generate & sign offline
-  ${UNDCLI_BIN} tx enterprise purchase 1000000000000000nund --from=${ACC} $(get_base_tx_flags) $(get_gas_flags)
+  ${UNDCLI_BIN} tx enterprise purchase 1199500000000nund --from=${ACC} $(get_base_tx_flags) $(get_gas_flags)
   ACC_SEQUENCESS[$i]=$(awk "BEGIN {print $ACC_SEQ+1}")
 done
 

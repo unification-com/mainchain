@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
-	
+
 	storetypes "cosmossdk.io/store/types"
 	circuittypes "cosmossdk.io/x/circuit/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"

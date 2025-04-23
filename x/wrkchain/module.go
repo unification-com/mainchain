@@ -14,9 +14,9 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	"github.com/unification-com/mainchain/x/wrkchain/exported"
 
 	"github.com/unification-com/mainchain/x/wrkchain/client/cli"
+	"github.com/unification-com/mainchain/x/wrkchain/exported"
 	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/simulation"
 	"github.com/unification-com/mainchain/x/wrkchain/types"

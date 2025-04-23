@@ -3,6 +3,7 @@ package keeper
 import (
 	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
 

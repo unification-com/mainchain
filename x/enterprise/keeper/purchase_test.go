@@ -1,12 +1,13 @@
 package keeper_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
-	"github.com/unification-com/mainchain/x/enterprise/types"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
 // Tests for Highest Purchase Order ID

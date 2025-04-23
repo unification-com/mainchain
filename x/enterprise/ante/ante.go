@@ -4,6 +4,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	beacon "github.com/unification-com/mainchain/x/beacon/exported"
 	wrkchain "github.com/unification-com/mainchain/x/wrkchain/exported"
 )

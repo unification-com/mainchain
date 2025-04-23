@@ -1,11 +1,13 @@
 package keeper_test
 
 import (
-	"github.com/stretchr/testify/require"
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
-	"github.com/unification-com/mainchain/x/wrkchain/types"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 // Tests for Highest WRKChain ID

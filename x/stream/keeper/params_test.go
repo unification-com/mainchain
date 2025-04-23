@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	mathmod "cosmossdk.io/math"
+
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 

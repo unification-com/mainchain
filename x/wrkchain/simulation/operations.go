@@ -2,6 +2,8 @@ package simulation
 
 import (
 	"errors"
+	"math/rand"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -9,9 +11,9 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
-	"math/rand"
 )
 
 const (

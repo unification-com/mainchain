@@ -1,12 +1,12 @@
 package keeper_test
 
 import (
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"time"
 
 	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 

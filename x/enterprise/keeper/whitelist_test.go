@@ -1,13 +1,14 @@
 package keeper_test
 
 import (
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"testing"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 )
 
 func TestAddAddressesToWhitelist(t *testing.T) {

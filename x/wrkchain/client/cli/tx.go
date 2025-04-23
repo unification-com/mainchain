@@ -6,14 +6,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/spf13/cobra"
-
 	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/spf13/cobra"
 
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )

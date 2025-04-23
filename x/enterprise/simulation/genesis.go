@@ -3,12 +3,13 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"math/rand"
 	"strings"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 

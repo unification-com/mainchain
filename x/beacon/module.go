@@ -2,10 +2,10 @@ package beacon
 
 import (
 	"context"
-	"cosmossdk.io/core/appmodule"
 	"encoding/json"
 	"fmt"
 
+	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -36,7 +36,7 @@ var (
 	_ module.HasConsensusVersion = (*AppModule)(nil)
 	_ module.HasServices         = (*AppModule)(nil)
 	_ module.HasProposalMsgs     = (*AppModule)(nil)
-	
+
 	_ appmodule.AppModule = (*AppModule)(nil)
 )
 

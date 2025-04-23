@@ -2,7 +2,7 @@ package keeper_test
 
 import (
 	mathmod "cosmossdk.io/math"
-	
+
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/stream/types"
 )

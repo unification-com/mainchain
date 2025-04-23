@@ -2,7 +2,6 @@ package simulation_test
 
 import (
 	"fmt"
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"testing"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	"github.com/stretchr/testify/require"
 
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/wrkchain/simulation"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )

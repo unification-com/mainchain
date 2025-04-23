@@ -1,12 +1,12 @@
 package enterprise_test
 
 import (
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"testing"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 

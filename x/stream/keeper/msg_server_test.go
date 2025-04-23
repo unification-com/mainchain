@@ -1,9 +1,9 @@
 package keeper_test
 
 import (
-	mathmod "cosmossdk.io/math"
 	"time"
 
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/unification-com/mainchain/x/stream/types"

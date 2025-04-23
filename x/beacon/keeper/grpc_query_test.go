@@ -3,10 +3,12 @@ package keeper_test
 import (
 	gocontext "context"
 	"fmt"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/types/query"
+
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/beacon/types"
-	"time"
 )
 
 func (s *KeeperTestSuite) TestGRPCQueryParams() {

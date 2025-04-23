@@ -1,11 +1,16 @@
 package app
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/x/tx/signing"
-	"encoding/json"
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 	"github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata/testpb"
@@ -13,10 +18,6 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
 
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/spf13/cast"
@@ -416,7 +417,7 @@ func NewApp(
 
 	app.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
-			// register the governance hooks
+		// register the governance hooks
 		),
 	)
 
@@ -562,7 +563,6 @@ func NewApp(
 		enttypes.ModuleName,
 	)
 
-	// ToDO - check all modules for endblock abci methods
 	app.ModuleManager.SetOrderEndBlockers(
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
@@ -980,21 +980,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	keyTable.RegisterParamSet(&ibcconnectiontypes.Params{})
 	paramsKeeper.Subspace(ibcexported.ModuleName).WithKeyTable(keyTable)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName).WithKeyTable(ibctransfertypes.ParamKeyTable())
-
-	// ToDo - check no longer required
-	//paramsKeeper.Subspace(authtypes.ModuleName)
-	//paramsKeeper.Subspace(banktypes.ModuleName)
-	//paramsKeeper.Subspace(stakingtypes.ModuleName)
-	//paramsKeeper.Subspace(distrtypes.ModuleName)
-	//paramsKeeper.Subspace(slashingtypes.ModuleName)
-	//paramsKeeper.Subspace(govtypes.ModuleName)
-	//paramsKeeper.Subspace(crisistypes.ModuleName)
-	//paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	//paramsKeeper.Subspace(ibcexported.ModuleName)
-	//paramsKeeper.Subspace(enttypes.ModuleName)
-	//paramsKeeper.Subspace(beacontypes.ModuleName)
-	//paramsKeeper.Subspace(wrkchaintypes.ModuleName)
-	//paramsKeeper.Subspace(streamtypes.ModuleName)
 
 	return paramsKeeper
 }

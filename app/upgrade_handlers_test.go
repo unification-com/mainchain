@@ -1,16 +1,17 @@
 package app_test
 
 import (
-	mathmod "cosmossdk.io/math"
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/stretchr/testify/require"
-	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 	"math/rand"
 	"testing"
 
+	mathmod "cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/stretchr/testify/require"
+
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
 )
 
 func TestUpgradeHandlerBurn(t *testing.T) {

@@ -1,11 +1,12 @@
 package keeper_test
 
 import (
-	"github.com/cometbft/cometbft/crypto/ed25519"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"math/rand"
 
+	"github.com/cometbft/cometbft/crypto/ed25519"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 

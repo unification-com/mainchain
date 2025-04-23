@@ -3,6 +3,8 @@ package types_test
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -176,4 +178,36 @@ func TestMsgWhitelistAddress_Validate(t *testing.T) {
 			require.Error(t, msg.ValidateBasic(), "test: %v", i)
 		}
 	}
+}
+
+func TestMsgUndPurchaseOrderGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	amount := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
+	msg := types.NewMsgUndPurchaseOrder(addr, amount)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"enterprise/PurchaseUnd","value":{"amount":{"amount":"1000","denom":"stake"},"purchaser":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgProcessUndPurchaseOrderGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := types.NewMsgProcessUndPurchaseOrder(1, 1, addr)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"enterprise/ProcessUndPurchaseOrder","value":{"decision":1,"purchase_order_id":"1","signer":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgWhitelistAddressGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	wl := sdk.AccAddress("addr2")
+	msg := types.NewMsgWhitelistAddress(wl, 1, addr)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"enterprise/WhitelistAddress","value":{"address":"cosmos1v9jxgu3jc697dt","signer":"cosmos1v9jxgu33kfsgr5","whitelist_action":1}}`
+	require.Equal(t, expected, string(res))
 }

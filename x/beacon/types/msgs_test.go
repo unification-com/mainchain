@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/cometbft/cometbft/crypto/ed25519"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -142,4 +144,34 @@ func TestMsgPurchaseBeaconStateStorage(t *testing.T) {
 			require.Error(t, msg.ValidateBasic(), "test: %v", i)
 		}
 	}
+}
+
+func TestMsgRegisterBeaconGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgRegisterBeacon("testbeacon", "testbeaconname", addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"beacon/RegisterBeacon","value":{"moniker":"testbeacon","name":"testbeaconname","owner":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgPurchaseBeaconStateStorageGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgPurchaseBeaconStateStorage(1, 1000, addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"beacon/PurchaseBeaconStateStorage","value":{"beacon_id":"1","number":"1000","owner":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgRecordBeaconTimestampGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgRecordBeaconTimestamp(1, "abc123", 1000, addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"beacon/RecordBeaconTimestamp","value":{"beacon_id":"1","hash":"abc123","owner":"cosmos1v9jxgu33kfsgr5","submit_time":"1000"}}`
+	require.Equal(t, expected, string(res))
 }

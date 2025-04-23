@@ -2,7 +2,6 @@ package keeper_test
 
 import (
 	"fmt"
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"math/rand"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 

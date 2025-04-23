@@ -2,12 +2,14 @@ package keeper_test
 
 import (
 	"encoding/hex"
+	"math/rand"
+	"time"
+
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/unification-com/mainchain/x/beacon/types"
-	"math/rand"
-	"time"
 )
 
 const (

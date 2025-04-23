@@ -2,27 +2,17 @@ package helpers
 
 import (
 	"encoding/json"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	appparams "github.com/unification-com/mainchain/app/params"
-	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
-	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
-	streamtypes "github.com/unification-com/mainchain/x/stream/types"
-	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-
+	"cosmossdk.io/log"
+	sdkmath "cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
-
 	dbm "github.com/cosmos/cosmos-db"
-
-	"cosmossdk.io/log"
-	sdkmath "cosmossdk.io/math"
-
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -33,8 +23,14 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/stretchr/testify/require"
 
 	undapp "github.com/unification-com/mainchain/app"
+	appparams "github.com/unification-com/mainchain/app/params"
+	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
+	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
+	streamtypes "github.com/unification-com/mainchain/x/stream/types"
+	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 // SimAppChainID hardcoded chainID for simulation

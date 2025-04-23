@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/unification-com/mainchain/x/beacon/exported"
 	v3 "github.com/unification-com/mainchain/x/beacon/migrations/v3"
 )

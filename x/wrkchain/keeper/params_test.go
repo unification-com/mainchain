@@ -1,11 +1,12 @@
 package keeper_test
 
 import (
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 

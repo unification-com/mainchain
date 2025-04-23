@@ -1,9 +1,9 @@
 package simulation
 
 import (
-	mathmod "cosmossdk.io/math"
 	"math/rand"
 
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"

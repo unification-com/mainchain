@@ -1,9 +1,9 @@
 package simulation
 
 import (
-	mathmod "cosmossdk.io/math"
 	"math/rand"
 
+	mathmod "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"

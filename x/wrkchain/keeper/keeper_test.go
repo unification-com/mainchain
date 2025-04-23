@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"testing"
 
 	mathmod "cosmossdk.io/math"
@@ -10,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/unification-com/mainchain/app"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )

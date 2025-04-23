@@ -1,22 +1,22 @@
 package ante_test
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/stretchr/testify/suite"
-	simapp "github.com/unification-com/mainchain/app"
-	simapphelpers "github.com/unification-com/mainchain/app/helpers"
-	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	"math/rand"
 	"testing"
 	"time"
 
 	mathmod "cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
 
+	simapp "github.com/unification-com/mainchain/app"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	"github.com/unification-com/mainchain/x/enterprise/ante"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"

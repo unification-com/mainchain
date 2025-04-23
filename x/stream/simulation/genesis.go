@@ -17,16 +17,16 @@ const (
 )
 
 // GenValidatorFee randomized ValidatorFee
-func GenValidatorFee(r *rand.Rand) string {
+func GenValidatorFee(r *rand.Rand) mathmod.LegacyDec {
 	// 0 to 50%
-	return mathmod.LegacyNewDecWithPrec(int64(r.Intn(24)), 2).String()
+	return mathmod.LegacyNewDecWithPrec(int64(r.Intn(24)), 2)
 }
 
 // RandomizedGenState generates a random GenesisState for the stream module.
 func RandomizedGenState(simState *module.SimulationState) {
 	var streams []types.StreamExport
 
-	var validatorFee string
+	var validatorFee mathmod.LegacyDec
 	simState.AppParams.GetOrGenerate(
 		ValidatorFee, &validatorFee, simState.Rand,
 		func(r *rand.Rand) { validatorFee = GenValidatorFee(r) },

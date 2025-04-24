@@ -25,7 +25,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the beacon module's genesis state.
 type GenesisState struct {
-	// params defines all the paramaters of the module.
+	// params defines all the parameters of the module.
 	Params            Params        `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 	StartingBeaconId  uint64        `protobuf:"varint,2,opt,name=starting_beacon_id,json=startingBeaconId,proto3" json:"starting_beacon_id,omitempty"`
 	RegisteredBeacons BeaconExports `protobuf:"bytes,3,rep,name=registered_beacons,json=registeredBeacons,proto3,castrepeated=BeaconExports" json:"registered_beacons"`

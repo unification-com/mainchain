@@ -2361,9 +2361,9 @@ paths:
                     title: >-
                       genesis is an optional hash of the wrkchain's genesis
                       block
-                  type:
+                  base_type:
                     type: string
-                    description: type is the wrkchain type, e.g. geth, cosmos etc.
+                    description: base_type is the wrkchain type, e.g. geth, cosmos etc.
                   lastblock:
                     type: string
                     format: uint64
@@ -2426,7 +2426,7 @@ paths:
           format: uint64
       tags:
         - WrkChain
-  /mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{height}:
+  /mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{wc_height}:
     get:
       summary: WrkChainBlock queries a submitted hash of a wrkchain
       operationId: WrkChainBlock
@@ -2512,8 +2512,8 @@ paths:
           required: true
           type: string
           format: uint64
-        - name: height
-          description: height is the block number of the hash to query for
+        - name: wc_height
+          description: wc_height is the block number of the hash to query for
           in: path
           required: true
           type: string
@@ -2623,9 +2623,9 @@ paths:
                       title: >-
                         genesis is an optional hash of the wrkchain's genesis
                         block
-                    type:
+                    base_type:
                       type: string
-                      description: type is the wrkchain type, e.g. geth, cosmos etc.
+                      description: base_type is the wrkchain type, e.g. geth, cosmos etc.
                     lastblock:
                       type: string
                       format: uint64
@@ -52547,9 +52547,9 @@ definitions:
           genesis:
             type: string
             title: genesis is an optional hash of the wrkchain's genesis block
-          type:
+          base_type:
             type: string
-            description: type is the wrkchain type, e.g. geth, cosmos etc.
+            description: base_type is the wrkchain type, e.g. geth, cosmos etc.
           lastblock:
             type: string
             format: uint64
@@ -52629,9 +52629,9 @@ definitions:
             genesis:
               type: string
               title: genesis is an optional hash of the wrkchain's genesis block
-            type:
+            base_type:
               type: string
-              description: type is the wrkchain type, e.g. geth, cosmos etc.
+              description: base_type is the wrkchain type, e.g. geth, cosmos etc.
             lastblock:
               type: string
               format: uint64
@@ -52696,9 +52696,9 @@ definitions:
       genesis:
         type: string
         title: genesis is an optional hash of the wrkchain's genesis block
-      type:
+      base_type:
         type: string
-        description: type is the wrkchain type, e.g. geth, cosmos etc.
+        description: base_type is the wrkchain type, e.g. geth, cosmos etc.
       lastblock:
         type: string
         format: uint64

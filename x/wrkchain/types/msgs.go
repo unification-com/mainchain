@@ -40,6 +40,7 @@ func (msg MsgRegisterWrkChain) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRegisterWrkChain) Type() string { return RegisterAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRegisterWrkChain) ValidateBasic() error {
 	ownerAddr, err := sdk.AccAddressFromBech32(msg.Owner)
@@ -100,6 +101,7 @@ func (msg MsgRecordWrkChainBlock) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRecordWrkChainBlock) Type() string { return RecordAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRecordWrkChainBlock) ValidateBasic() error {
 	ownerAddr, err := sdk.AccAddressFromBech32(msg.Owner)
@@ -159,6 +161,7 @@ func (msg MsgPurchaseWrkChainStateStorage) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgPurchaseWrkChainStateStorage) Type() string { return PurchaseStorageAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgPurchaseWrkChainStateStorage) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)

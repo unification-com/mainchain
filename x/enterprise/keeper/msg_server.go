@@ -38,8 +38,12 @@ func (k msgServer) UndPurchaseOrder(goCtx context.Context, msg *types.MsgUndPurc
 		return nil, errorsmod.Wrap(types.ErrInvalidDenomination, fmt.Sprintf("denomination must be %s", k.GetParamDenom(ctx)))
 	}
 
+	if msg.Amount.IsZero() {
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "amount must be greater than zero")
+	}
+
 	if !msg.Amount.IsPositive() {
-		return nil, errorsmod.Wrap(types.ErrInvalidData, "amount must be > 0")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "amount must be positive")
 	}
 
 	if !k.AddressIsWhitelisted(ctx, accAddr) {
@@ -83,6 +87,10 @@ func (k msgServer) ProcessUndPurchaseOrder(goCtx context.Context, msg *types.Msg
 
 	if !k.IsAuthorisedToDecide(ctx, signer) {
 		return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "unauthorised signer processing purchase order")
+	}
+
+	if msg.PurchaseOrderId == 0 {
+		return nil, errorsmod.Wrap(sdkerrors.ErrUnknownRequest, "purchase order id must be greater than zero")
 	}
 
 	if !k.PurchaseOrderExists(ctx, msg.PurchaseOrderId) {

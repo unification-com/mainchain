@@ -16,3 +16,9 @@ echo "Generating API module"
 	cd proto
 	buf generate --template buf.gen.pulsar.yaml
 )
+
+echo ""
+echo "Now run:"
+echo ""
+echo "   sudo chown -R $(id -u):$(id -g) api"
+echo ""

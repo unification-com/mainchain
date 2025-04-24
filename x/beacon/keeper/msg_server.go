@@ -84,6 +84,14 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		return nil, accErr
 	}
 
+	if msg.BeaconId == 0 {
+		return nil, errorsmod.Wrap(types.ErrMissingData, "id must be greater than zero")
+	}
+
+	if len(msg.Hash) == 0 {
+		return nil, errorsmod.Wrap(types.ErrMissingData, "hash cannot be empty")
+	}
+
 	if len(msg.Hash) > 66 {
 		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit")
 	}
@@ -135,6 +143,10 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 	ownerAddr, accErr := sdk.AccAddressFromBech32(msg.Owner)
 	if accErr != nil {
 		return nil, accErr
+	}
+
+	if msg.BeaconId == 0 {
+		return nil, errorsmod.Wrap(types.ErrMissingData, "id must be greater than zero")
 	}
 
 	if msg.Number == 0 {

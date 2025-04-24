@@ -149,6 +149,10 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 		return nil, accErr
 	}
 
+	if msg.WrkchainId == 0 {
+		return nil, errorsmod.Wrap(types.ErrWrkChainDoesNotExist, "id must be greater than zero")
+	}
+
 	if msg.Number == 0 {
 		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
 	}

@@ -156,7 +156,7 @@ message QueryStreamReceiverSenderCurrentFlowResponse {
   // configured_flow_rate is the flow rate configured in the stream
   int64 configured_flow_rate = 1;
   // current_flow_rate is the actual flow rate. This will be zero if the depositZeroTime has passed, or deposit is zero
-  int64 current_flow_rate = 2;
+  int64 current_flow_rate = 2 [(amino.dont_omitempty) = true];
 }
 
 // QueryAllStreamsForSenderRequest is the request type for the Query/AllStreamsForSender RPC method

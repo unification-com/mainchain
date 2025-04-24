@@ -7,7 +7,6 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -79,7 +78,7 @@ $ %s tx %s purchase 1000000000000%s --from wrktest
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -128,7 +127,7 @@ $ %s tx %s process 24 reject --from ent
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -177,6 +176,6 @@ $ %s tx %s whitelist remove und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --from en
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

@@ -1,6 +1,8 @@
 package types_test
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"testing"
 
 	mathmod "cosmossdk.io/math"
@@ -285,4 +287,61 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			require.NoError(t, err)
 		}
 	}
+}
+
+func TestMsgCreateStreamGetSignBytes(t *testing.T) {
+	sender := sdk.AccAddress("addr1")
+	receiver := sdk.AccAddress("addr2")
+	deposit := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
+	msg := types.NewMsgCreateStream(deposit, 1, receiver, sender)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"mainchain/x/stream/MsgCreateStream","value":{"deposit":{"amount":"1000","denom":"nund"},"flow_rate":"1","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgClaimStreamGetSignBytes(t *testing.T) {
+	sender := sdk.AccAddress("addr1")
+	receiver := sdk.AccAddress("addr2")
+	msg := types.NewMsgClaimStream(receiver, sender)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"mainchain/x/stream/MsgClaimStream","value":{"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgTopUpDepositGetSignBytes(t *testing.T) {
+	sender := sdk.AccAddress("addr1")
+	receiver := sdk.AccAddress("addr2")
+	deposit := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
+	msg := types.NewMsgTopUpDeposit(receiver, sender, deposit)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"mainchain/x/stream/MsgTopUpDeposit","value":{"deposit":{"amount":"1000","denom":"nund"},"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgUpdateFlowRateGetSignBytes(t *testing.T) {
+	sender := sdk.AccAddress("addr1")
+	receiver := sdk.AccAddress("addr2")
+	msg := types.NewMsgUpdateFlowRate(receiver, sender, 1)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"mainchain/x/stream/MsgUpdateFlowRate","value":{"flow_rate":"1","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgCancelStreamGetSignBytes(t *testing.T) {
+	sender := sdk.AccAddress("addr1")
+	receiver := sdk.AccAddress("addr2")
+	msg := types.NewMsgCancelStream(receiver, sender)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"mainchain/x/stream/MsgCancelStream","value":{"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	require.Equal(t, expected, string(res))
 }

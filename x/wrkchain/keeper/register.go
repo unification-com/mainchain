@@ -218,7 +218,7 @@ func (k Keeper) RegisterNewWrkChain(ctx sdk.Context, moniker string, wrkchainNam
 	wrkchain.Owner = owner.String()
 	wrkchain.Name = wrkchainName
 	wrkchain.Genesis = genesisHash
-	wrkchain.Type = baseType
+	wrkchain.BaseType = baseType
 	wrkchain.RegTime = uint64(ctx.BlockTime().Unix())
 
 	err = k.SetWrkChain(ctx, wrkchain)

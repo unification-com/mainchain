@@ -25,7 +25,7 @@ const (
 	FlagHash1       = "hash1"
 	FlagHash2       = "hash2"
 	FlagHash3       = "hash3"
-	FlagHeight      = "wc_height"
+	FlagWcHeight    = "wc_height"
 	FlagName        = "name"
 	FlagBaseChain   = "base"
 	FlagGenesisHash = "genesis"
@@ -111,7 +111,7 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagMoniker, "", "WRKChain's moniker")
 	cmd.Flags().String(FlagName, "", "(optional) WRKChain's name")
 	cmd.Flags().String(FlagGenesisHash, "", "(optional) WRKChain's Genesis hash")
@@ -148,7 +148,7 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 			// used for getting fees and checking wrkchain
 			queryClient := types.NewQueryClient(clientCtx)
 
-			height, _ := cmd.Flags().GetUint64(FlagHeight)
+			height, _ := cmd.Flags().GetUint64(FlagWcHeight)
 			blockHash, _ := cmd.Flags().GetString(FlagBlockHash)
 			parentHash, _ := cmd.Flags().GetString(FlagParentHash)
 			hash1, _ := cmd.Flags().GetString(FlagHash1)
@@ -194,8 +194,8 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().Uint64(FlagHeight, 0, "WRKChain block's height/block number")
+	//flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Uint64(FlagWcHeight, 0, "WRKChain block's height/block number")
 	cmd.Flags().String(FlagBlockHash, "", "WRKChain block's header (main) hash")
 	cmd.Flags().String(FlagParentHash, "", "(optional) WRKChain block's parent hash")
 	cmd.Flags().String(FlagHash1, "", "(optional) Additional WRKChain hash - e.g. State Merkle Root")
@@ -273,6 +273,6 @@ $ %s tx %s purchase_storage 1 100
 
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

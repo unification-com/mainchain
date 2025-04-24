@@ -22,6 +22,11 @@ proto-gen:
 	@mkdir github.com && chmod 777 github.com
 	@$(protoImage) sh ./scripts/protocgen.sh
 
+proto-gen-pulsar:
+	@echo "Generating Protobuf Pulsar files"
+	@chmod 777 proto/buf.lock
+	@$(protoImage) sh ./scripts/protocgen-pulsar.sh
+
 proto-format:
 	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;
 

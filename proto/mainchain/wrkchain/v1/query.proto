@@ -23,7 +23,7 @@ service Query {
 
   // WrkChainBlock queries a submitted hash of a wrkchain
   rpc WrkChainBlock(QueryWrkChainBlockRequest) returns (QueryWrkChainBlockResponse) {
-    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{height}";
+    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{wc_height}";
   }
 
   // WrkChainsFiltered queries all wrkchain metadata for given search parameters
@@ -60,8 +60,8 @@ message QueryWrkChainResponse {
 message QueryWrkChainBlockRequest {
   // wrkchain_id is the id of the wrkchain to query for
   uint64 wrkchain_id = 1;
-  // height is the block number of the hash to query for
-  uint64 height = 2;
+  // wc_height is the block number of the hash to query for
+  uint64 wc_height = 2;
 }
 
 // QueryWrkChainBlockResponse is the response type for the Query/WrkChainBlock RPC method

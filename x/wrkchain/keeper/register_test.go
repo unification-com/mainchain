@@ -47,7 +47,7 @@ func TestSetGetWrkChain(t *testing.T) {
 			Moniker:    simapphelpers.GenerateRandomString(12),
 			Name:       simapphelpers.GenerateRandomString(20),
 			Genesis:    simapphelpers.GenerateRandomString(32),
-			Type:       "tendemrint",
+			BaseType:   "tendemrint",
 			RegTime:    uint64(time.Now().Unix()),
 			Owner:      addr.String(),
 		}
@@ -99,7 +99,7 @@ func TestRegisterWrkChain(t *testing.T) {
 		expectedWc.Moniker = moniker
 		expectedWc.Name = name
 		expectedWc.Genesis = genesisHash
-		expectedWc.Type = "geth"
+		expectedWc.BaseType = "geth"
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)

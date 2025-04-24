@@ -15,8 +15,8 @@ message WrkChain {
   string name = 3;
   // genesis is an optional hash of the wrkchain's genesis block
   string genesis = 4;
-  // type is the wrkchain type, e.g. geth, cosmos etc.
-  string type = 5;
+  // base_type is the wrkchain type, e.g. geth, cosmos etc.
+  string base_type = 5;
   // lastblock is the current highest recorded height for the wrkchain
   uint64 lastblock = 6;
   // num_blocks is the current number of block hashes stored in state for the wrkchain

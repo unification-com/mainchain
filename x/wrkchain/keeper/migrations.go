@@ -5,6 +5,7 @@ import (
 
 	"github.com/unification-com/mainchain/x/wrkchain/exported"
 	v3 "github.com/unification-com/mainchain/x/wrkchain/migrations/v3"
+	v4 "github.com/unification-com/mainchain/x/wrkchain/migrations/v4"
 )
 
 // Migrator is a struct for handling in-place store migrations.
@@ -32,4 +33,8 @@ func NewMigrator(k Keeper, ss exported.Subspace) Migrator {
 // module state.
 func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 	return v3.Migrate(ctx, ctx.KVStore(m.keeper.storeKey), m.legacySubspace, m.keeper.cdc)
+}
+
+func (m Migrator) Migrate3to4(ctx sdk.Context) error {
+	return v4.Migrate(ctx, ctx.KVStore(m.keeper.storeKey), m.keeper.cdc)
 }

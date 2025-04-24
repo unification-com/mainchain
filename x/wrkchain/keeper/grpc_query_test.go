@@ -253,14 +253,14 @@ func (s *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 		{
 			"zero block height request",
 			func() {
-				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, Height: 0}
+				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, WcHeight: 0}
 			},
 			false,
 		},
 		{
 			"valid request",
 			func() {
-				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, Height: 1}
+				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, WcHeight: 1}
 
 				wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, "moniker", "name", "ghash", "tm", addrs[0])
 				s.Require().NoError(err)

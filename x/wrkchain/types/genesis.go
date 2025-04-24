@@ -57,8 +57,8 @@ func ValidateGenesis(data GenesisState) error {
 		if record.Wrkchain.Moniker == "" {
 			return fmt.Errorf("invalid WrkChain: Moniker: %s. Error: Missing Moniker", record.Wrkchain.Moniker)
 		}
-		if record.Wrkchain.Type == "" {
-			return fmt.Errorf("invalid WrkChain: BaseType: %s. Error: Missing BaseType", record.Wrkchain.Type)
+		if record.Wrkchain.BaseType == "" {
+			return fmt.Errorf("invalid WrkChain: BaseType: %s. Error: Missing BaseType", record.Wrkchain.BaseType)
 		}
 		if record.InStateLimit == 0 {
 			return fmt.Errorf("invalid WrkChain: InStateLimit: %d. Error: Missing InStateLimit", record.InStateLimit)

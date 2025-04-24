@@ -55,7 +55,7 @@ func (q Keeper) WrkChainBlock(c context.Context, req *types.QueryWrkChainBlockRe
 	}
 
 	// todo - if height == 0, return genesis
-	if req.Height == 0 {
+	if req.WcHeight == 0 {
 		return nil, status.Error(codes.InvalidArgument, "height can not be 0")
 	}
 
@@ -67,10 +67,10 @@ func (q Keeper) WrkChainBlock(c context.Context, req *types.QueryWrkChainBlockRe
 		return nil, status.Errorf(codes.NotFound, "wrkchain %d doesn't exist", req.WrkchainId)
 	}
 
-	wrkchainBlock, found := q.GetWrkChainBlock(ctx, req.WrkchainId, req.Height)
+	wrkchainBlock, found := q.GetWrkChainBlock(ctx, req.WrkchainId, req.WcHeight)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "block %d doesn't exist for wrkchain %d", req.Height, req.WrkchainId)
+		return nil, status.Errorf(codes.NotFound, "block %d doesn't exist for wrkchain %d", req.WcHeight, req.WrkchainId)
 	}
 
 	return &types.QueryWrkChainBlockResponse{

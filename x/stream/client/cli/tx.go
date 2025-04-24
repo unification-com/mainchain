@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -82,7 +81,7 @@ $ %s tx %s create und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 777000000000nund 29
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -121,7 +120,7 @@ $ %s tx %s claim und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy --from t1
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -165,7 +164,7 @@ $ %s tx %s topup und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 100000000000nund --f
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -209,7 +208,7 @@ $ %s tx %s update-flow und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 246973 --from 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -248,6 +247,6 @@ $ %s tx %s cancel und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy --from t1
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	//flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

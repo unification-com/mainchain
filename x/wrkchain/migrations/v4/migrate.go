@@ -33,9 +33,15 @@ func GetWrkChainIDBytes(wrkChainID uint64) (wrkChainIDBz []byte) {
 func migrateRegisteredWrkChainsToNewType(ctx sdk.Context, store storetypes.KVStore, cdc codec.BinaryCodec) error {
 	iterator := storetypes.KVStorePrefixIterator(store, RegisteredWrkChainPrefix)
 
+	defer iterator.Close()
+
 	for ; iterator.Valid(); iterator.Next() {
 		var oldWc V3WrkChain
-		cdc.MustUnmarshal(iterator.Value(), &oldWc)
+
+		err := cdc.Unmarshal(iterator.Value(), &oldWc)
+		if err != nil {
+			return err
+		}
 
 		newWc := types.WrkChain{
 			WrkchainId:   oldWc.WrkchainId,
@@ -50,7 +56,12 @@ func migrateRegisteredWrkChainsToNewType(ctx sdk.Context, store storetypes.KVSto
 			Owner:        oldWc.Owner,
 		}
 
-		store.Set(WrkChainKey(oldWc.WrkchainId), cdc.MustMarshal(&newWc))
+		bz, err := cdc.Marshal(&newWc)
+		if err != nil {
+			return err
+		}
+
+		store.Set(iterator.Key(), bz)
 	}
 
 	return nil

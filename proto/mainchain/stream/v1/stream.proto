@@ -33,6 +33,7 @@ enum StreamPeriod {
 
 // Stream holds data about a stream
 message Stream {
+  option (amino.name) = "stream/v1/Stream";
   // deposit tracks the total amount the user has deposited to cover the stream, including any updates to the stream
   cosmos.base.v1beta1.Coin deposit = 1 [ (gogoproto.nullable) = false ];
   // flow_rate is the current rate of nund per second

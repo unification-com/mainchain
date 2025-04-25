@@ -37,16 +37,16 @@ message MsgRegisterWrkChain {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "wrkchain/RegisterWrkChain";
+  option (amino.name) = "wrkchain/MsgRegisterWrkChain";
 
   // moniker is a short identifier for a wrkchain
   string moniker = 1;
   // name is a long name for a wrkchain
   string name = 2;
   // genesis_hash is a hash of the genesis block of the wrkchain
-  string genesis_hash = 3 [(gogoproto.jsontag) = "genesis", (gogoproto.moretags) = "yaml:\"genesis\""];
+  string genesis_hash = 3;
   // base_type is the type of wrkchain, e.g. geth, cosmos etc.
-  string base_type = 4 [(gogoproto.jsontag) = "type", (gogoproto.moretags) = "yaml:\"type\""];
+  string base_type = 4;
   // owner is the address of the owner of the wrkchain
   string owner = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
@@ -70,9 +70,9 @@ message MsgRecordWrkChainBlock {
   // height is the block height/number of the hashes being submitted
   uint64 height = 2;
   // block_hash is the main block hash
-  string block_hash = 3 [(gogoproto.jsontag) = "blockhash", (gogoproto.moretags) = "yaml:\"blockhash\""];
+  string block_hash = 3;
   // parent_hash is an optional parent block hash for the given height/block number
-  string parent_hash = 4 [(gogoproto.jsontag) = "parenthash", (gogoproto.moretags) = "yaml:\"parenthash\""];
+  string parent_hash = 4;
   // hash1 is an optional supplementary hash to be submitted, for example TxHash
   string hash1 = 5;
   // hash2 is an optional supplementary hash to be submitted, for example TxHash
@@ -97,7 +97,7 @@ message MsgPurchaseWrkChainStateStorage {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "wrkchain/PurchaseWrkChainStateStorage";
+  option (amino.name) = "wrkchain/MsgPurchaseWrkChainStorage"; // Note: name shortened due to amino length restriction
 
   // wrkchain_id is the id of the wrkchain the storage is being purchased for
   uint64 wrkchain_id = 1;

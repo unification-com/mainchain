@@ -1,12 +1,14 @@
 syntax = "proto3";
 package mainchain.wrkchain.v1;
 
+import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/wrkchain/types";
 
 // WrkChain holds metadata about a registered wrkchain
 message WrkChain {
+  option (amino.name) = "wrkchain/v1/WrkChain";
   // wrkchain_id is the id of the wrkchain
   uint64 wrkchain_id = 1;
   // moniker is the readable id of the wrkchain
@@ -31,6 +33,7 @@ message WrkChain {
 
 // WrkChainStorageLimit holds tata about the wrkchain's current in-state storage limit
 message WrkChainStorageLimit {
+  option (amino.name) = "wrkchain/v1/WrkChainStorageLimit";
   // wrkchain_id is the id of the wrkchain
   uint64 wrkchain_id = 1;
   // in_state_limit is the current maximum number of blocks that will be held in state for the wrkchain
@@ -39,6 +42,7 @@ message WrkChainStorageLimit {
 
 // WrkChainBlock holds data about a wrkchain's block hash submission
 message WrkChainBlock {
+  option (amino.name) = "wrkchain/v1/WrkChainBlock";
   // height is the block number/height of the stored wrkchain block hash
   uint64 height = 1;
   // blockhash is the block hash of the stored wrkchain block
@@ -57,6 +61,7 @@ message WrkChainBlock {
 
 // Params defines the parameters for the wrkchain module.
 message Params {
+  option (amino.name) = "wrkchain/v1/Params";
   // fee_register is the cost to register a wkrchain
   uint64 fee_register = 1;
   // fee_record is the cost to record a single wkrchain hash

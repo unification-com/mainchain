@@ -9,16 +9,14 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&Stream{}, "stream/Stream", nil)
-	cdc.RegisterConcrete(&StreamExport{}, "stream/StreamExport", nil)
-	cdc.RegisterConcrete(&Params{}, "stream/Params", nil)
-	cdc.RegisterConcrete(&GenesisState{}, "stream/GenesisState", nil)
+	cdc.RegisterConcrete(&Stream{}, "stream/v1/Stream", nil)
+	cdc.RegisterConcrete(&Params{}, "stream/v1/Params", nil)
 
-	legacy.RegisterAminoMsg(cdc, &MsgCreateStream{}, "mainchain/x/stream/MsgCreateStream")
-	legacy.RegisterAminoMsg(cdc, &MsgClaimStream{}, "mainchain/x/stream/MsgClaimStream")
-	legacy.RegisterAminoMsg(cdc, &MsgTopUpDeposit{}, "mainchain/x/stream/MsgTopUpDeposit")
-	legacy.RegisterAminoMsg(cdc, &MsgUpdateFlowRate{}, "mainchain/x/stream/MsgUpdateFlowRate")
-	legacy.RegisterAminoMsg(cdc, &MsgCancelStream{}, "mainchain/x/stream/MsgCancelStream")
+	legacy.RegisterAminoMsg(cdc, &MsgCreateStream{}, "stream/MsgCreateStream")
+	legacy.RegisterAminoMsg(cdc, &MsgClaimStream{}, "stream/MsgClaimStream")
+	legacy.RegisterAminoMsg(cdc, &MsgTopUpDeposit{}, "stream/MsgTopUpDeposit")
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateFlowRate{}, "stream/MsgUpdateFlowRate")
+	legacy.RegisterAminoMsg(cdc, &MsgCancelStream{}, "stream/MsgCancelStream")
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/stream/MsgUpdateParams")
 }
 

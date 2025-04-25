@@ -12,17 +12,14 @@ import (
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 
-	cdc.RegisterConcrete(&WrkChain{}, "wrkchain/WrkChain", nil)
-	cdc.RegisterConcrete(&WrkChainBlock{}, "wrkchain/WrkChainBlock", nil)
-	cdc.RegisterConcrete(&WrkChainBlockGenesisExport{}, "wrkchain/WrkChainBlockGenesisExport", nil)
-	cdc.RegisterConcrete(&Params{}, "wrkchain/Params", nil)
-	cdc.RegisterConcrete(&GenesisState{}, "wrkchain/GenesisState", nil)
-	cdc.RegisterConcrete(&WrkChainExport{}, "wrkchain/WrkChainExport", nil)
-	cdc.RegisterConcrete(&WrkChainStorageLimit{}, "wrkchain/WrkChainStorageLimit", nil)
-	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/wrkchain/MsgUpdateParams")
-	legacy.RegisterAminoMsg(cdc, &MsgRegisterWrkChain{}, "wrkchain/RegisterWrkChain")
+	cdc.RegisterConcrete(&WrkChain{}, "wrkchain/v1/WrkChain", nil)
+	cdc.RegisterConcrete(&WrkChainBlock{}, "wrkchain/v1/WrkChainBlock", nil)
+	cdc.RegisterConcrete(&Params{}, "wrkchain/v1/Params", nil)
+	cdc.RegisterConcrete(&WrkChainStorageLimit{}, "wrkchain/v1/WrkChainStorageLimit", nil)
+	legacy.RegisterAminoMsg(cdc, &MsgRegisterWrkChain{}, "wrkchain/MsgRegisterWrkChain")
 	legacy.RegisterAminoMsg(cdc, &MsgRecordWrkChainBlock{}, "wrkchain/MsgRecordWrkChainBlock")
-	legacy.RegisterAminoMsg(cdc, &MsgPurchaseWrkChainStateStorage{}, "wrkchain/PurchaseWrkChainStateStorage")
+	legacy.RegisterAminoMsg(cdc, &MsgPurchaseWrkChainStateStorage{}, "wrkchain/MsgPurchaseWrkChainStorage")
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/wrkchain/MsgUpdateParams")
 
 }
 

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"errors"
-	"github.com/cosmos/cosmos-sdk/client/flags"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"io"
 
 	"cosmossdk.io/log"
@@ -12,6 +12,7 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/debug"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -78,17 +79,20 @@ func initRootCmd(
 	basicManager module.BasicManager,
 	txConfig client.TxConfig,
 ) {
+
+	ac := appCreator{}
+
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(basicManager, app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		//NewTestnetCmd(basicManager, banktypes.GenesisBalancesIterator{}),
+		NewTestnetCmd(basicManager, banktypes.GenesisBalancesIterator{}, ac),
 		addDebugCommands(debug.Cmd()),
 		confixcmd.ConfigCommand(),
-		pruning.Cmd(newApp, app.DefaultNodeHome),
-		snapshot.Cmd(newApp),
+		pruning.Cmd(ac.newApp, app.DefaultNodeHome),
+		snapshot.Cmd(ac.newApp),
 	)
 
-	server.AddCommandsWithStartCmdOptions(rootCmd, app.DefaultNodeHome, newApp, appExport, server.StartCmdOptions{
+	server.AddCommandsWithStartCmdOptions(rootCmd, app.DefaultNodeHome, ac.newApp, ac.appExport, server.StartCmdOptions{
 		AddFlags: func(startCmd *cobra.Command) {
 			crisis.AddModuleInitFlags(startCmd)
 		},
@@ -99,7 +103,7 @@ func initRootCmd(
 		server.StatusCommand(),
 		genesisCommand(txConfig, basicManager),
 		queryCommand(),
-		txCommand(),
+		txCommand(basicManager),
 		keys.Commands(),
 		GetDenomConversionCmd(),
 	)
@@ -140,7 +144,7 @@ func queryCommand() *cobra.Command {
 	return cmd
 }
 
-func txCommand() *cobra.Command {
+func txCommand(basicManager module.BasicManager) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        "tx",
 		Short:                      "Transactions subcommands",
@@ -161,13 +165,19 @@ func txCommand() *cobra.Command {
 		authcmd.GetSimulateCmd(),
 	)
 
+	// NOTE: this must be registered for now so that submit-legacy-proposal
+	// message (e.g. consumer-addition proposal) can be routed to the its handler and processed correctly.
+	basicManager.AddTxCommands(cmd)
+
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
 }
 
+type appCreator struct{}
+
 // newApp creates the application
-func newApp(
+func (a appCreator) newApp(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
@@ -182,7 +192,7 @@ func newApp(
 }
 
 // appExport creates a new simapp (optionally at a given height) and exports state.
-func appExport(
+func (a appCreator) appExport(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,

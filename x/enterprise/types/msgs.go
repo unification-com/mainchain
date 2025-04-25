@@ -34,6 +34,7 @@ func (msg MsgUndPurchaseOrder) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgUndPurchaseOrder) Type() string { return PurchaseAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgUndPurchaseOrder) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Purchaser)
@@ -72,6 +73,7 @@ func (msg MsgProcessUndPurchaseOrder) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgProcessUndPurchaseOrder) Type() string { return ProcessAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgProcessUndPurchaseOrder) ValidateBasic() error {
 
@@ -109,6 +111,7 @@ func (msg MsgWhitelistAddress) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgWhitelistAddress) Type() string { return WhitelistAddressAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgWhitelistAddress) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Signer)

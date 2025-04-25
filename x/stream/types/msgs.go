@@ -44,6 +44,7 @@ func (msg MsgCreateStream) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgCreateStream) Type() string { return CreateStreamAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgCreateStream) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Sender)
@@ -94,6 +95,7 @@ func (msg MsgClaimStream) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgClaimStream) Type() string { return ClaimStreamAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgClaimStream) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Receiver)
@@ -129,6 +131,7 @@ func (msg MsgTopUpDeposit) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgTopUpDeposit) Type() string { return TopUpDepositAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgTopUpDeposit) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Sender)
@@ -168,6 +171,7 @@ func (msg MsgUpdateFlowRate) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgUpdateFlowRate) Type() string { return UpdateFlowRateAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgUpdateFlowRate) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Sender)
@@ -205,6 +209,7 @@ func (msg MsgCancelStream) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgCancelStream) Type() string { return CancelStreamAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgCancelStream) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Sender)

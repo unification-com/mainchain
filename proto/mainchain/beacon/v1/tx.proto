@@ -38,7 +38,7 @@ message MsgRegisterBeacon {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "beacon/RegisterBeacon";
+  option (amino.name) = "beacon/MsgRegisterBeacon";
 
   // moniker is a short identifier for a beacon
   string moniker = 1;
@@ -60,7 +60,7 @@ message MsgRecordBeaconTimestamp {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "beacon/RecordBeaconTimestamp";
+  option (amino.name) = "beacon/MsgRecordBeaconTimestamp";
 
   // beacon_id is the id of the beacon the timestamp is being submitted for
   uint64 beacon_id = 1;
@@ -86,7 +86,7 @@ message MsgPurchaseBeaconStateStorage {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "beacon/PurchaseBeaconStateStorage";
+  option (amino.name) = "beacon/MsgPurchaseBeaconStateStorage";
 
   // beacon_id is the id of the beacon the storage is being purchased for
   uint64 beacon_id = 1;

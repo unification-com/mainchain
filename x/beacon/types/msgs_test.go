@@ -152,7 +152,7 @@ func TestMsgRegisterBeaconGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"beacon/RegisterBeacon","value":{"moniker":"testbeacon","name":"testbeaconname","owner":"cosmos1v9jxgu33kfsgr5"}}`
+	expected := `{"type":"beacon/MsgRegisterBeacon","value":{"moniker":"testbeacon","name":"testbeaconname","owner":"cosmos1v9jxgu33kfsgr5"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -162,7 +162,7 @@ func TestMsgPurchaseBeaconStateStorageGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"beacon/PurchaseBeaconStateStorage","value":{"beacon_id":"1","number":"1000","owner":"cosmos1v9jxgu33kfsgr5"}}`
+	expected := `{"type":"beacon/MsgPurchaseBeaconStateStorage","value":{"beacon_id":"1","number":"1000","owner":"cosmos1v9jxgu33kfsgr5"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -172,6 +172,6 @@ func TestMsgRecordBeaconTimestampGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"beacon/RecordBeaconTimestamp","value":{"beacon_id":"1","hash":"abc123","owner":"cosmos1v9jxgu33kfsgr5","submit_time":"1000"}}`
+	expected := `{"type":"beacon/MsgRecordBeaconTimestamp","value":{"beacon_id":"1","hash":"abc123","owner":"cosmos1v9jxgu33kfsgr5","submit_time":"1000"}}`
 	require.Equal(t, expected, string(res))
 }

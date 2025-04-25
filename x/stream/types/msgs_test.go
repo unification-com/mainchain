@@ -297,7 +297,7 @@ func TestMsgCreateStreamGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"mainchain/x/stream/MsgCreateStream","value":{"deposit":{"amount":"1000","denom":"nund"},"flow_rate":"1","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	expected := `{"type":"stream/MsgCreateStream","value":{"deposit":{"amount":"1000","denom":"nund"},"flow_rate":"1","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -308,7 +308,7 @@ func TestMsgClaimStreamGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"mainchain/x/stream/MsgClaimStream","value":{"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	expected := `{"type":"stream/MsgClaimStream","value":{"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -320,7 +320,7 @@ func TestMsgTopUpDepositGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"mainchain/x/stream/MsgTopUpDeposit","value":{"deposit":{"amount":"1000","denom":"nund"},"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	expected := `{"type":"stream/MsgTopUpDeposit","value":{"deposit":{"amount":"1000","denom":"nund"},"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -331,7 +331,7 @@ func TestMsgUpdateFlowRateGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"mainchain/x/stream/MsgUpdateFlowRate","value":{"flow_rate":"1","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	expected := `{"type":"stream/MsgUpdateFlowRate","value":{"flow_rate":"1","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -342,6 +342,6 @@ func TestMsgCancelStreamGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"mainchain/x/stream/MsgCancelStream","value":{"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	expected := `{"type":"stream/MsgCancelStream","value":{"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
 	require.Equal(t, expected, string(res))
 }

@@ -38,6 +38,7 @@ func (msg MsgRegisterBeacon) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRegisterBeacon) Type() string { return RegisterAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRegisterBeacon) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
@@ -83,6 +84,7 @@ func (msg MsgRecordBeaconTimestamp) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRecordBeaconTimestamp) Type() string { return RecordAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
@@ -126,6 +128,7 @@ func (msg MsgPurchaseBeaconStateStorage) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgPurchaseBeaconStateStorage) Type() string { return PurchaseStorageAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgPurchaseBeaconStateStorage) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)

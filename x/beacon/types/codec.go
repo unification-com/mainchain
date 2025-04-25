@@ -12,17 +12,15 @@ import (
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 
-	cdc.RegisterConcrete(&Beacon{}, "beacon/Beacon", nil)
-	cdc.RegisterConcrete(&BeaconTimestamp{}, "beacon/BeaconTimestamp", nil)
-	cdc.RegisterConcrete(&BeaconTimestampGenesisExport{}, "beacon/BeaconTimestampGenesisExport", nil)
-	cdc.RegisterConcrete(&Params{}, "beacon/Params", nil)
-	cdc.RegisterConcrete(&GenesisState{}, "beacon/GenesisState", nil)
-	cdc.RegisterConcrete(&BeaconExport{}, "beacon/BeaconExport", nil)
-	cdc.RegisterConcrete(&BeaconStorageLimit{}, "beacon/BeaconStorageLimit", nil)
+	cdc.RegisterConcrete(&Beacon{}, "beacon/v1/Beacon", nil)
+	cdc.RegisterConcrete(&BeaconTimestamp{}, "beacon/v1/BeaconTimestamp", nil)
+	cdc.RegisterConcrete(&Params{}, "beacon/v1/Params", nil)
+	cdc.RegisterConcrete(&BeaconStorageLimit{}, "beacon/v1/BeaconStorageLimit", nil)
+
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/beacon/MsgUpdateParams")
-	legacy.RegisterAminoMsg(cdc, &MsgRegisterBeacon{}, "beacon/RegisterBeacon")
-	legacy.RegisterAminoMsg(cdc, &MsgRecordBeaconTimestamp{}, "beacon/RecordBeaconTimestamp")
-	legacy.RegisterAminoMsg(cdc, &MsgPurchaseBeaconStateStorage{}, "beacon/PurchaseBeaconStateStorage")
+	legacy.RegisterAminoMsg(cdc, &MsgRegisterBeacon{}, "beacon/MsgRegisterBeacon")
+	legacy.RegisterAminoMsg(cdc, &MsgRecordBeaconTimestamp{}, "beacon/MsgRecordBeaconTimestamp")
+	legacy.RegisterAminoMsg(cdc, &MsgPurchaseBeaconStateStorage{}, "beacon/MsgPurchaseBeaconStateStorage")
 
 }
 

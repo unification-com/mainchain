@@ -41,7 +41,6 @@ func (k msgServer) CreateStream(goCtx context.Context, msg *types.MsgCreateStrea
 		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.Receiver)
 	}
 
-	// ToDo - add to unit tests
 	if msg.Sender == msg.Receiver {
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "sender and receiver cannot be same address")
 	}

@@ -38,7 +38,7 @@ message MsgUndPurchaseOrder {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "enterprise/PurchaseUnd";
+  option (amino.name) = "enterprise/MsgUndPurchaseOrder";
 
   // purchaser is the address of the account raising the purchase order
   string purchaser = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -55,10 +55,10 @@ message MsgProcessUndPurchaseOrder {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "enterprise/ProcessUndPurchaseOrder";
+  option (amino.name) = "enterprise/MsgProcessUndPurchaseOrder";
 
   // purchase_order_id is the ID of the purchase order being raised
-  uint64 purchase_order_id = 1 [ (gogoproto.jsontag) = "id", (gogoproto.moretags) = "yaml:\"id\"" ];
+  uint64 purchase_order_id = 1;
   // decision is an enumerated PurchaseOrderStatus representing, for example accepted/rejected
   PurchaseOrderStatus decision = 2;
   // signer is the address of the authorised decision maker
@@ -75,14 +75,14 @@ message MsgWhitelistAddress {
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "enterprise/WhitelistAddress";
+  option (amino.name) = "enterprise/MsgWhitelistAddress";
 
   // address is the address for which the action is being executed
   string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // signer is the address of the authorised decision maker
   string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // whitelist_action is the action being executed, and is either add or remove.
-  WhitelistAction whitelist_action = 3 [ (gogoproto.customname) = "Action",  (gogoproto.jsontag) = "action", (gogoproto.moretags) = "yaml:\"action\"" ];
+  // action is the action being executed, and is either add or remove.
+  WhitelistAction action = 3;
 }
 
 // MsgWhitelistAddressResponse defines the Msg/WhitelistAddress response type.

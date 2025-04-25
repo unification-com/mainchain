@@ -1,6 +1,7 @@
 syntax = "proto3";
 package mainchain.stream.v1;
 
+import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
@@ -8,11 +9,12 @@ option go_package = "github.com/unification-com/mainchain/x/stream/types";
 
 // Params defines the parameters for the module.
 message Params {
+  option (amino.name) = "stream/v1/Params";
   // validator_fee is the chain-wide fee validators will receive from stream payments. A percentage value from 0 to 1
   string validator_fee = 1 [
-    (gogoproto.moretags)   = "yaml:\"validator_fee\"",
+    (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false,
-    (gogoproto.jsontag)    = "validator_fee,omitempty"
+    (amino.dont_omitempty) = true
   ];
 }

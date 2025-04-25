@@ -25,6 +25,7 @@ proto-gen:
 proto-pulsar-gen:
 	@echo "Generating Protobuf Pulsar files"
 	@chmod 777 proto/buf.lock
+	@chmod 777 -R api
 	@$(protoImage) sh ./scripts/protocgen-pulsar.sh
 
 proto-format:

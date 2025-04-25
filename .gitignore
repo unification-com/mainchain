@@ -21,6 +21,7 @@ simapp.test
 app.test
 cpu.out
 mem.out
+tests/testdata
 
 # Graphviz
 dependency-graph.png

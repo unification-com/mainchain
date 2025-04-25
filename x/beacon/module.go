@@ -75,15 +75,11 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 	}
 }
 
+// GetTxCmd ToDo - possibly migrate to autocli
 // GetTxCmd returns the root tx command for the auth module.
 func (AppModuleBasic) GetTxCmd() *cobra.Command {
 	return cli.GetTxCmd()
 }
-
-//// GetQueryCmd returns the root query command for the auth module.
-//func (AppModuleBasic) GetQueryCmd() *cobra.Command {
-//	return cli.GetQueryCmd()
-//}
 
 // RegisterInterfaces registers interfaces and implementations of the auth module.
 func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {

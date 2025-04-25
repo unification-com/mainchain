@@ -187,7 +187,7 @@ func TestMsgUndPurchaseOrderGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"enterprise/PurchaseUnd","value":{"amount":{"amount":"1000","denom":"stake"},"purchaser":"cosmos1v9jxgu33kfsgr5"}}`
+	expected := `{"type":"enterprise/MsgUndPurchaseOrder","value":{"amount":{"amount":"1000","denom":"stake"},"purchaser":"cosmos1v9jxgu33kfsgr5"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -197,7 +197,7 @@ func TestMsgProcessUndPurchaseOrderGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"enterprise/ProcessUndPurchaseOrder","value":{"decision":1,"purchase_order_id":"1","signer":"cosmos1v9jxgu33kfsgr5"}}`
+	expected := `{"type":"enterprise/MsgProcessUndPurchaseOrder","value":{"decision":1,"purchase_order_id":"1","signer":"cosmos1v9jxgu33kfsgr5"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -208,6 +208,6 @@ func TestMsgWhitelistAddressGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"enterprise/WhitelistAddress","value":{"address":"cosmos1v9jxgu3jc697dt","signer":"cosmos1v9jxgu33kfsgr5","whitelist_action":1}}`
+	expected := `{"type":"enterprise/MsgWhitelistAddress","value":{"action":1,"address":"cosmos1v9jxgu3jc697dt","signer":"cosmos1v9jxgu33kfsgr5"}}`
 	require.Equal(t, expected, string(res))
 }

@@ -199,7 +199,7 @@ func TestMsgRegisterWrkChainGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"wrkchain/RegisterWrkChain","value":{"base_type":"cosmos","genesis_hash":"abc123","moniker":"testwrkchain","name":"testwrkchainname","owner":"cosmos1v9jxgu33kfsgr5"}}`
+	expected := `{"type":"wrkchain/MsgRegisterWrkChain","value":{"base_type":"cosmos","genesis_hash":"abc123","moniker":"testwrkchain","name":"testwrkchainname","owner":"cosmos1v9jxgu33kfsgr5"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -209,7 +209,7 @@ func TestMsgPurchaseBeaconStateStorageGetSignBytes(t *testing.T) {
 	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"wrkchain/PurchaseWrkChainStateStorage","value":{"number":"1000","owner":"cosmos1v9jxgu33kfsgr5","wrkchain_id":"1"}}`
+	expected := `{"type":"wrkchain/MsgPurchaseWrkChainStorage","value":{"number":"1000","owner":"cosmos1v9jxgu33kfsgr5","wrkchain_id":"1"}}`
 	require.Equal(t, expected, string(res))
 }
 

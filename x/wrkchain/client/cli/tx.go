@@ -111,7 +111,7 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	//flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagMoniker, "", "WRKChain's moniker")
 	cmd.Flags().String(FlagName, "", "(optional) WRKChain's name")
 	cmd.Flags().String(FlagGenesisHash, "", "(optional) WRKChain's Genesis hash")
@@ -194,7 +194,7 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 		},
 	}
 
-	//flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().Uint64(FlagWcHeight, 0, "WRKChain block's height/block number")
 	cmd.Flags().String(FlagBlockHash, "", "WRKChain block's header (main) hash")
 	cmd.Flags().String(FlagParentHash, "", "(optional) WRKChain block's parent hash")
@@ -273,6 +273,6 @@ $ %s tx %s purchase_storage 1 100
 
 		},
 	}
-	//flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

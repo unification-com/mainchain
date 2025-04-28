@@ -101,7 +101,7 @@ $ %s tx %s register --moniker=MyBeacon --name="My WRKChain" --from mykey
 
 		},
 	}
-	//flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagMoniker, "", "BEACON's moniker")
 	cmd.Flags().String(FlagName, "", "(optional) BEACON's name")
 	return cmd
@@ -174,7 +174,7 @@ $ %s tx %s record 1 --hash=d04b98f48e8 --subtime=1234356 --from mykey
 
 		},
 	}
-	//flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagTimestampHash, "", "BEACON's timestamp hash")
 	cmd.Flags().Uint64(FlagSubmitTime, 0, "BEACON's timestamp submission time")
 	return cmd
@@ -249,6 +249,6 @@ $ %s tx %s purchase_storage 1 100
 
 		},
 	}
-	//flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

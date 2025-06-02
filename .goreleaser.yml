@@ -19,6 +19,7 @@ builds:
       - windows
     goarch:
       - amd64
+      - arm64
     ldflags:
       - -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain
       - -X github.com/cosmos/cosmos-sdk/version.AppName=und

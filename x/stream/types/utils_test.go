@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
@@ -122,80 +123,80 @@ func TestCalculateAmountToClaim(t *testing.T) {
 			nowTime,
 			nowTime,
 			nowTime,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
 			1000,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			"2",
 			nowTime,
 			nowTime.Add(time.Second * time.Duration(1000)),
 			time.Unix(nowTime.Unix()-1000, 0),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(2000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(2000)),
 			1,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
 		},
 		{
 			"3",
 			nowTime,
 			nowTime.Add(time.Second * time.Duration(1)),
 			time.Unix(nowTime.Unix()-999, 0),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
 			1,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(999)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(999)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1)),
 		},
 		{
 			"4",
 			nowTime,
 			nowTime.Add(time.Second * time.Duration(940)),
 			time.Unix(nowTime.Unix()-60, 0),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
 			1,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(60)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(940)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(60)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(940)),
 		},
 		{
 			"5",
 			nowTime,
 			nowTime,
 			time.Unix(nowTime.Unix()-234276, 0),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1494667526000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1494667526000)),
 			6379943,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1494667526000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1494667526000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			"6",
 			nowTime,
 			nowTime.Add(time.Second * time.Duration(8626)),
 			time.Unix(nowTime.Unix()-23427, 0),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(204496312979)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(204496312979)),
 			6379943,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(149462924661)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(55033388318)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(149462924661)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(55033388318)),
 		},
 		{
 			"7",
 			nowTime,
 			nowTime.Add(time.Second * time.Duration(1)),
 			time.Unix(nowTime.Unix()-2627999, 0),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(4584000003123)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(4584000003123)),
 			1744292,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(4583997631708)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(2371415)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(4583997631708)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(2371415)),
 		},
 		{
 			"8",
 			nowTime,
 			nowTime.Add(time.Second * time.Duration(10)),
 			time.Unix(nowTime.Unix()-2627999, 0),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(450000000000)), // deposit is less than 1744292 * 2627999
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(450000000000)), // deposit is less than 1744292 * 2627999
 			1744292,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(450000000000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(450000000000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
 		},
 	}
 
@@ -210,17 +211,17 @@ func TestCalculateAmountToClaim(t *testing.T) {
 
 func TestCalculateValidatorFee(t *testing.T) {
 
-	zeroPerc := sdk.NewDecWithPrec(0, 2)
-	onePerc := sdk.NewDecWithPrec(1, 2)
-	fivePerc := sdk.NewDecWithPrec(5, 2)
-	tenPerc := sdk.NewDecWithPrec(10, 2)
-	twentyFourPerc := sdk.NewDecWithPrec(24, 2)
-	ninetyNinePerc := sdk.NewDecWithPrec(99, 2)
-	hundredPerc := sdk.NewDecWithPrec(100, 2)
+	zeroPerc := mathmod.LegacyNewDecWithPrec(0, 2)
+	onePerc := mathmod.LegacyNewDecWithPrec(1, 2)
+	fivePerc := mathmod.LegacyNewDecWithPrec(5, 2)
+	tenPerc := mathmod.LegacyNewDecWithPrec(10, 2)
+	twentyFourPerc := mathmod.LegacyNewDecWithPrec(24, 2)
+	ninetyNinePerc := mathmod.LegacyNewDecWithPrec(99, 2)
+	hundredPerc := mathmod.LegacyNewDecWithPrec(100, 2)
 
 	testCases := []struct {
 		name                   string
-		valFee                 sdk.Dec
+		valFee                 mathmod.LegacyDec
 		amountToClaim          sdk.Coin
 		expectedFinalClaimCoin sdk.Coin
 		expectedValFeeCoin     sdk.Coin
@@ -228,79 +229,79 @@ func TestCalculateValidatorFee(t *testing.T) {
 		{
 			"1",
 			zeroPerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			"2",
 			onePerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(990)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(10)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(990)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(10)),
 		},
 		{
 			"3",
 			tenPerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(900)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(100)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(900)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(100)),
 		},
 		{
 			"4",
 			fivePerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(950)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(50)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(950)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(50)),
 		},
 		{
 			"5",
 			twentyFourPerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(760)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(240)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(760)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(240)),
 		},
 		{
 			"6",
 			ninetyNinePerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(10)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(990)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(10)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(990)),
 		},
 		{
 			"7",
 			hundredPerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(1000)),
 		},
 		{
 			"8",
 			onePerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(8723642874687)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(8636406445941)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(87236428746)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(8723642874687)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(8636406445941)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(87236428746)),
 		},
 		{
 			"9",
 			twentyFourPerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(912742861395)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(693684574661)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(219058286734)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(912742861395)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(693684574661)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(219058286734)),
 		},
 		{
 			"10",
 			twentyFourPerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
 		},
 		{
 			"11",
 			zeroPerc,
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
-			sdk.NewCoin("testdenom", sdk.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
+			sdk.NewCoin("testdenom", mathmod.NewIntFromUint64(0)),
 		},
 	}
 

@@ -28,6 +28,8 @@ function get_locked_efund() {
   TOTAL_L=$(curl -s "${RPC}"/mainchain/enterprise/v1/locked | jq -r '.amount.amount')
   if [ "$TOTAL_L" -gt "0" ]; then
     TOTAL_LOCKED_EFUND=$(echo "${TOTAL_L}" | awk '{printf("%.2f", $1/(1000000000))}')
+  else
+    TOTAL_LOCKED_EFUND=0
   fi
 }
 

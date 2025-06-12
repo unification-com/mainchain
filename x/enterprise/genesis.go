@@ -5,6 +5,7 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/unification-com/mainchain/x/enterprise/keeper"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
@@ -85,18 +86,19 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 		}
 	}
 
-	// ensure locked FUND is registered with supply keeper
-	var moduleHoldings sdk.Coins
-	moduleHoldings = moduleHoldings.Add(data.TotalLocked)
-
-	balances := bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
-	if balances.IsZero() {
-		accountKeeper.SetModuleAccount(ctx, moduleAcc)
-	}
-
-	if !balances.IsEqual(moduleHoldings) {
-		panic(fmt.Sprintf("enterprise module balance does not match the module holdings: %s <-> %s", balances, moduleHoldings))
-	}
+	// ToDo - deprecated. Minting now occurs at the point of eFUND usage
+	//// ensure locked FUND is registered with supply keeper
+	//var moduleHoldings sdk.Coins
+	//moduleHoldings = moduleHoldings.Add(data.TotalLocked)
+	//
+	//balances := bankKeeper.GetAllBalances(ctx, moduleAcc.GetAddress())
+	//if balances.IsZero() {
+	//	accountKeeper.SetModuleAccount(ctx, moduleAcc)
+	//}
+	//
+	//if !balances.Equal(moduleHoldings) {
+	//	panic(fmt.Sprintf("enterprise module balance does not match the module holdings: %s <-> %s", balances, moduleHoldings))
+	//}
 
 	return []abci.ValidatorUpdate{}
 }

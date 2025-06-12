@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/spf13/cobra"
-
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/spf13/cobra"
 
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
@@ -25,7 +25,7 @@ const (
 	FlagHash1       = "hash1"
 	FlagHash2       = "hash2"
 	FlagHash3       = "hash3"
-	FlagHeight      = "wc_height"
+	FlagWcHeight    = "wc_height"
 	FlagName        = "name"
 	FlagBaseChain   = "base"
 	FlagGenesisHash = "genesis"
@@ -80,11 +80,11 @@ $ %s tx %s register --moniker="MyWrkChain" --genesis="d04b98f48e8f8bcc15c6ae5ac0
 			wrkchainGenesisHash, _ := cmd.Flags().GetString(FlagGenesisHash)
 
 			if len(moniker) == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain must have a moniker")
+				return errorsmod.Wrap(types.ErrMissingData, "WRKChain must have a moniker")
 			}
 
 			if len(wrkchainName) == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain must have a name")
+				return errorsmod.Wrap(types.ErrMissingData, "WRKChain must have a name")
 			}
 
 			params, err := queryClient.Params(
@@ -148,7 +148,7 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 			// used for getting fees and checking wrkchain
 			queryClient := types.NewQueryClient(clientCtx)
 
-			height, _ := cmd.Flags().GetUint64(FlagHeight)
+			height, _ := cmd.Flags().GetUint64(FlagWcHeight)
 			blockHash, _ := cmd.Flags().GetString(FlagBlockHash)
 			parentHash, _ := cmd.Flags().GetString(FlagParentHash)
 			hash1, _ := cmd.Flags().GetString(FlagHash1)
@@ -162,15 +162,15 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 			}
 
 			if wrkchainId == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
 			}
 
 			if len(blockHash) == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain block must have a Hash submitted")
+				return errorsmod.Wrap(types.ErrMissingData, "WRKChain block must have a Hash submitted")
 			}
 
 			if height == 0 {
-				return sdkerrors.Wrap(types.ErrMissingData, "WRKChain block hash submission must be for height > 0")
+				return errorsmod.Wrap(types.ErrMissingData, "WRKChain block hash submission must be for height > 0")
 			}
 
 			params, err := queryClient.Params(
@@ -195,7 +195,7 @@ $ %s tx %s record 1 --wc_height=26 --block_hash="d04b98f48e8" --parent_hash="f8b
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().Uint64(FlagHeight, 0, "WRKChain block's height/block number")
+	cmd.Flags().Uint64(FlagWcHeight, 0, "WRKChain block's height/block number")
 	cmd.Flags().String(FlagBlockHash, "", "WRKChain block's header (main) hash")
 	cmd.Flags().String(FlagParentHash, "", "(optional) WRKChain block's parent hash")
 	cmd.Flags().String(FlagHash1, "", "(optional) Additional WRKChain hash - e.g. State Merkle Root")
@@ -239,7 +239,7 @@ $ %s tx %s purchase_storage 1 100
 			}
 
 			if wrkchainId == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "wrkchain_id must be > 0")
 			}
 
 			numToPurchase, err := strconv.Atoi(args[1])
@@ -249,7 +249,7 @@ $ %s tx %s purchase_storage 1 100
 			}
 
 			if numToPurchase == 0 {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "num_slots must be > 0")
+				return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "num_slots must be > 0")
 			}
 
 			params, err := queryClient.Params(

@@ -1,26 +1,25 @@
 package keeper_test
 
 import (
-	simapp "github.com/unification-com/mainchain/app"
 	"testing"
 	"time"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	"github.com/stretchr/testify/require"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
 func TestSetGetBeaconTimestamp(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 
 	numToRecord := uint64(1000)
 
 	for _, addr := range testAddrs {
-		name := simapp.GenerateRandomString(20)
-		moniker := simapp.GenerateRandomString(12)
+		name := simapphelpers.GenerateRandomString(20)
+		moniker := simapphelpers.GenerateRandomString(12)
 
 		expectedB := types.Beacon{}
 		expectedB.Owner = addr.String()
@@ -33,7 +32,7 @@ func TestSetGetBeaconTimestamp(t *testing.T) {
 		for tsID := uint64(1); tsID <= numToRecord; tsID++ {
 			beaconTimestamp := types.BeaconTimestamp{}
 			beaconTimestamp.TimestampId = tsID
-			beaconTimestamp.Hash = simapp.GenerateRandomString(32)
+			beaconTimestamp.Hash = simapphelpers.GenerateRandomString(32)
 			beaconTimestamp.SubmitTime = uint64(time.Now().Unix())
 
 			err := app.BeaconKeeper.SetBeaconTimestamp(ctx, bID, beaconTimestamp)
@@ -47,14 +46,14 @@ func TestSetGetBeaconTimestamp(t *testing.T) {
 }
 
 func TestGetBeaconTimestamp(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(100)
 
 	for _, addr := range testAddrs {
-		name := simapp.GenerateRandomString(20)
-		moniker := simapp.GenerateRandomString(12)
+		name := simapphelpers.GenerateRandomString(20)
+		moniker := simapphelpers.GenerateRandomString(12)
 
 		expectedB := types.Beacon{}
 		expectedB.Owner = addr.String()
@@ -69,7 +68,7 @@ func TestGetBeaconTimestamp(t *testing.T) {
 
 		for tsID := uint64(1); tsID <= numToRecord; tsID++ {
 			subTime := uint64(time.Now().Unix())
-			hash := simapp.GenerateRandomString(32)
+			hash := simapphelpers.GenerateRandomString(32)
 
 			timestamp := types.BeaconTimestamp{}
 			timestamp.TimestampId = tsID
@@ -92,15 +91,15 @@ func TestGetBeaconTimestamp(t *testing.T) {
 }
 
 func TestIsAuthorisedToRecord(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 
-	unauthorisedAddrs := simapp.GenerateRandomTestAccounts(1)
+	unauthorisedAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	for _, addr := range testAddrs {
-		name := simapp.GenerateRandomString(20)
-		moniker := simapp.GenerateRandomString(12)
+		name := simapphelpers.GenerateRandomString(20)
+		moniker := simapphelpers.GenerateRandomString(12)
 
 		expectedB := types.Beacon{}
 		expectedB.Owner = addr.String()
@@ -119,15 +118,15 @@ func TestIsAuthorisedToRecord(t *testing.T) {
 }
 
 func TestRecordBeaconTimestamps(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	numToRecord := uint64(1000)
 	recordLimit := uint64(200)
 
-	name := simapp.GenerateRandomString(128)
-	moniker := simapp.GenerateRandomString(64)
+	name := simapphelpers.GenerateRandomString(128)
+	moniker := simapphelpers.GenerateRandomString(64)
 
 	expectedB := types.Beacon{}
 	expectedB.Owner = testAddrs[0].String()
@@ -143,7 +142,7 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 
 	for tsID := uint64(1); tsID <= numToRecord; tsID++ {
 		subTime := uint64(time.Now().Unix())
-		hash := simapp.GenerateRandomString(32)
+		hash := simapphelpers.GenerateRandomString(32)
 
 		expectedTs := types.BeaconTimestamp{}
 		expectedTs.TimestampId = tsID
@@ -190,14 +189,14 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 }
 
 func TestIncreaseInStateStorage(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	recordLimitIncrease := uint64(200)
 
-	name := simapp.GenerateRandomString(128)
-	moniker := simapp.GenerateRandomString(64)
+	name := simapphelpers.GenerateRandomString(128)
+	moniker := simapphelpers.GenerateRandomString(64)
 
 	expectedB := types.Beacon{}
 	expectedB.Owner = testAddrs[0].String()
@@ -209,27 +208,27 @@ func TestIncreaseInStateStorage(t *testing.T) {
 
 	beacon, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.InStateLimit == types.DefaultStorageLimit)
+	require.True(t, beacon.InStateLimit == simapphelpers.SimTestDefaultStorageLimit)
 
 	err = app.BeaconKeeper.IncreaseInStateStorage(ctx, bID, recordLimitIncrease)
 	require.NoError(t, err)
 
 	beacon, found = app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.InStateLimit == types.DefaultStorageLimit+recordLimitIncrease)
+	require.True(t, beacon.InStateLimit == simapphelpers.SimTestDefaultStorageLimit+recordLimitIncrease)
 }
 
 func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	numToRecord := uint64(500)
 	recordLimit := uint64(100)
 	increaseAmount := uint64(50)
 
-	name := simapp.GenerateRandomString(128)
-	moniker := simapp.GenerateRandomString(64)
+	name := simapphelpers.GenerateRandomString(128)
+	moniker := simapphelpers.GenerateRandomString(64)
 
 	expectedB := types.Beacon{}
 	expectedB.Owner = testAddrs[0].String()
@@ -245,7 +244,7 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 
 	// record initial timestamps
 	for i := uint64(1); i <= numToRecord; i++ {
-		hash := simapp.GenerateRandomString(32)
+		hash := simapphelpers.GenerateRandomString(32)
 		subTime := uint64(time.Now().Unix())
 		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
 		require.NoError(t, err)
@@ -266,7 +265,7 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 
 	// record new timestamps
 	for i := uint64(1); i <= numToRecord; i++ {
-		hash := simapp.GenerateRandomString(32)
+		hash := simapphelpers.GenerateRandomString(32)
 		subTime := uint64(time.Now().Unix())
 		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
 		require.NoError(t, err)

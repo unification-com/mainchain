@@ -7,25 +7,6 @@
   },
   "apis": [
     {
-      "url": "./tmp-swagger-gen/mainchain/enterprise/v1/query.swagger.json",
-      "tags": {
-        "rename": {
-          "Query": "Enterprise"
-        }
-      },
-      "operationIds": {
-        "rename": {
-          "Params": "EnterpriseParams",
-          "TotalSupply": "EnterpriseTotalSupply",
-          "SupplyOf": "EnterpriseSupplyOf"
-        }
-      },"paths": {
-      "exclude": [
-        "^/cosmos/bank/.*"
-      ]
-    }
-    },
-    {
       "url": "./tmp-swagger-gen/mainchain/beacon/v1/query.swagger.json",
       "tags": {
         "rename": {
@@ -39,15 +20,17 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/mainchain/wrkchain/v1/query.swagger.json",
+      "url": "./tmp-swagger-gen/mainchain/enterprise/v1/query.swagger.json",
       "tags": {
         "rename": {
-          "Query": "WrkChain"
+          "Query": "Enterprise"
         }
       },
       "operationIds": {
         "rename": {
-          "Params": "WrkchainParams"
+          "Params": "EnterpriseParams",
+          "TotalSupply": "EnterpriseTotalSupply",
+          "SupplyOf": "EnterpriseSupplyOf"
         }
       }
     },
@@ -61,6 +44,19 @@
       "operationIds": {
         "rename": {
           "Params": "StreamParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/mainchain/wrkchain/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "WrkChain"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "WrkchainParams"
         }
       }
     },
@@ -104,15 +100,45 @@
       }
     },
     {
+      "url": "./tmp-swagger-gen/cosmos/base/node/v1beta1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Base"
+        }
+      }
+    },
+    {
       "url": "./tmp-swagger-gen/cosmos/base/tendermint/v1beta1/query.swagger.json",
       "tags": {
         "rename": {
           "Query": "Base"
         }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/circuit/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Circuit"
+        }
       },
       "operationIds": {
         "rename": {
-          "Params": "BaseParams"
+          "Account": "CircuitAccount",
+          "Accounts": "CircuitAccounts"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/consensus/v1/query.swagger.json",
+      "tags": {
+        "rename": {
+          "Query": "Consensus"
+        }
+      },
+      "operationIds": {
+        "rename": {
+          "Params": "ConsensusParams"
         }
       }
     },
@@ -200,19 +226,6 @@
           "Params": "GroupParams",
           "Proposal": "GroupProposal",
           "TallyResult": "GroupTallyResult"
-        }
-      }
-    },
-    {
-      "url": "./tmp-swagger-gen/cosmos/params/v1beta1/query.swagger.json",
-      "tags": {
-        "rename": {
-          "Query": "Params"
-        }
-      },
-      "operationIds": {
-        "rename": {
-          "Params": "Params"
         }
       }
     },

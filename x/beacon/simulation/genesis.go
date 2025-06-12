@@ -32,42 +32,44 @@ func RandomizedGenState(simState *module.SimulationState) {
 	var maxStorageLimit uint64
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, BeaconStartingId, &startId, simState.Rand,
+		BeaconStartingId,
+		&startId,
+		simState.Rand,
 		func(r *rand.Rand) {
 			startId = uint64(simtypes.RandIntBetween(r, 1, 100))
 		},
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, BeaconFeeRegister, &feeRegister, simState.Rand,
+		BeaconFeeRegister, &feeRegister, simState.Rand,
 		func(r *rand.Rand) {
 			feeRegister = uint64(simtypes.RandIntBetween(r, 1, 10))
 		},
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, BeaconFeeRecord, &feeRecord, simState.Rand,
+		BeaconFeeRecord, &feeRecord, simState.Rand,
 		func(r *rand.Rand) {
 			feeRecord = uint64(simtypes.RandIntBetween(r, 1, 10))
 		},
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, BeaconFeePurchaseStorage, &feePurchaseStorage, simState.Rand,
+		BeaconFeePurchaseStorage, &feePurchaseStorage, simState.Rand,
 		func(r *rand.Rand) {
 			feePurchaseStorage = uint64(simtypes.RandIntBetween(r, 1, 10))
 		},
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, BeaconDefaultStorageLimit, &defaultStorageLimit, simState.Rand,
+		BeaconDefaultStorageLimit, &defaultStorageLimit, simState.Rand,
 		func(r *rand.Rand) {
 			defaultStorageLimit = uint64(simtypes.RandIntBetween(r, 5, 10))
 		},
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, BeaconMaxStorageLimit, &maxStorageLimit, simState.Rand,
+		BeaconMaxStorageLimit, &maxStorageLimit, simState.Rand,
 		func(r *rand.Rand) {
 			maxStorageLimit = uint64(simtypes.RandIntBetween(r, 10, 20))
 		},

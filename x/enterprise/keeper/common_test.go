@@ -1,11 +1,12 @@
 package keeper_test
 
 import (
-	"github.com/cometbft/cometbft/crypto/ed25519"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"math/rand"
 
-	simapp "github.com/unification-com/mainchain/app"
+	"github.com/cometbft/cometbft/crypto/ed25519"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -36,7 +37,7 @@ func RandomDecision() types.PurchaseOrderStatus {
 }
 
 func RandomStatus() types.PurchaseOrderStatus {
-	rnd := simapp.RandInBetween(1, 5)
+	rnd := simapphelpers.RandInBetween(1, 5)
 	switch rnd {
 	case 1:
 		return types.StatusRaised

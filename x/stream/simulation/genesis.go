@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	mathmod "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/unification-com/mainchain/x/stream/types"
@@ -18,18 +17,18 @@ const (
 )
 
 // GenValidatorFee randomized ValidatorFee
-func GenValidatorFee(r *rand.Rand) math.LegacyDec {
+func GenValidatorFee(r *rand.Rand) mathmod.LegacyDec {
 	// 0 to 50%
-	return sdk.NewDecWithPrec(int64(r.Intn(24)), 2)
+	return mathmod.LegacyNewDecWithPrec(int64(r.Intn(24)), 2)
 }
 
 // RandomizedGenState generates a random GenesisState for the stream module.
 func RandomizedGenState(simState *module.SimulationState) {
 	var streams []types.StreamExport
 
-	var validatorFee sdk.Dec
+	var validatorFee mathmod.LegacyDec
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, ValidatorFee, &validatorFee, simState.Rand,
+		ValidatorFee, &validatorFee, simState.Rand,
 		func(r *rand.Rand) { validatorFee = GenValidatorFee(r) },
 	)
 

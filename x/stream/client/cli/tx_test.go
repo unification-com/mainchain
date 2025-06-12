@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	mathmod "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
@@ -18,12 +19,13 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdCreateStream()
 	cmd.SetOutput(io.Discard)
+	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", mathmod.NewInt(10))).String()),
 		fmt.Sprintf("--%s=test-chain", flags.FlagChainID),
 	}
 
@@ -44,7 +46,7 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 			},
 			accounts[1].Address,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(1000)),
+			sdk.NewCoin("stake", mathmod.NewInt(1000)),
 			"10",
 			extraArgs,
 			false,
@@ -56,7 +58,7 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 			},
 			sdk.AccAddress{},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(1000)),
+			sdk.NewCoin("stake", mathmod.NewInt(1000)),
 			"10",
 			extraArgs,
 			true,
@@ -80,7 +82,7 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 			},
 			accounts[1].Address,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(1000)),
+			sdk.NewCoin("stake", mathmod.NewInt(1000)),
 			"ten",
 			extraArgs,
 			true,
@@ -92,7 +94,7 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 			},
 			accounts[1].Address,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(10)),
+			sdk.NewCoin("stake", mathmod.NewInt(10)),
 			"10",
 			extraArgs,
 			true,
@@ -104,7 +106,7 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 			},
 			accounts[0].Address,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(10000)),
+			sdk.NewCoin("stake", mathmod.NewInt(10000)),
 			"10",
 			extraArgs,
 			true,
@@ -116,7 +118,7 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 			},
 			accounts[1].Address,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(0)),
+			sdk.NewCoin("stake", mathmod.NewInt(0)),
 			"10",
 			extraArgs,
 			true,
@@ -128,7 +130,7 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 			},
 			accounts[1].Address,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(1000)),
+			sdk.NewCoin("stake", mathmod.NewInt(1000)),
 			"0",
 			extraArgs,
 			true,
@@ -159,12 +161,13 @@ func (s *CLITestSuite) TestClaimStreamTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdClaimStream()
 	cmd.SetOutput(io.Discard)
+	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", mathmod.NewInt(10))).String()),
 		fmt.Sprintf("--%s=test-chain", flags.FlagChainID),
 	}
 
@@ -222,12 +225,13 @@ func (s *CLITestSuite) TestTopUpDepositTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdTopUpDeposit()
 	cmd.SetOutput(io.Discard)
+	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", mathmod.NewInt(10))).String()),
 		fmt.Sprintf("--%s=test-chain", flags.FlagChainID),
 	}
 
@@ -247,7 +251,7 @@ func (s *CLITestSuite) TestTopUpDepositTxCmd() {
 			},
 			accounts[1].Address,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(1000)),
+			sdk.NewCoin("stake", mathmod.NewInt(1000)),
 			extraArgs,
 			false,
 		},
@@ -258,7 +262,7 @@ func (s *CLITestSuite) TestTopUpDepositTxCmd() {
 			},
 			sdk.AccAddress{},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(1000)),
+			sdk.NewCoin("stake", mathmod.NewInt(1000)),
 			extraArgs,
 			true,
 		},
@@ -280,7 +284,7 @@ func (s *CLITestSuite) TestTopUpDepositTxCmd() {
 			},
 			accounts[0].Address,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, "key-0"),
-			sdk.NewCoin("stake", sdk.NewInt(0)),
+			sdk.NewCoin("stake", mathmod.NewInt(0)),
 			extraArgs,
 			true,
 		},
@@ -310,12 +314,13 @@ func (s *CLITestSuite) TestUpdateFlowRateTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdUpdateFlowRate()
 	cmd.SetOutput(io.Discard)
+	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", mathmod.NewInt(10))).String()),
 		fmt.Sprintf("--%s=test-chain", flags.FlagChainID),
 	}
 
@@ -398,12 +403,13 @@ func (s *CLITestSuite) TestCancelStreamTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdCancelStream()
 	cmd.SetOutput(io.Discard)
+	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin("photon", mathmod.NewInt(10))).String()),
 		fmt.Sprintf("--%s=test-chain", flags.FlagChainID),
 	}
 

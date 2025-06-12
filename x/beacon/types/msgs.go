@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -37,40 +38,27 @@ func (msg MsgRegisterBeacon) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRegisterBeacon) Type() string { return RegisterAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRegisterBeacon) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 
 	if len(msg.Moniker) == 0 || len(msg.Name) == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "moniker and name cannot be empty")
+		return errorsmod.Wrap(ErrMissingData, "moniker and name cannot be empty")
 	}
 
 	if len(msg.Name) > 128 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
 	}
 
 	if len(msg.Moniker) > 64 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
 	}
 
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgRegisterBeacon) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgRegisterBeacon) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
 }
 
 // --- Record a BEACON timestamp hash Msg ---
@@ -96,40 +84,27 @@ func (msg MsgRecordBeaconTimestamp) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRecordBeaconTimestamp) Type() string { return RecordAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 	if msg.BeaconId == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
+		return errorsmod.Wrap(ErrMissingData, "id must be greater than zero")
 	}
 	if len(msg.Hash) == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "hash cannot be empty")
+		return errorsmod.Wrap(ErrMissingData, "hash cannot be empty")
 	}
 	if msg.SubmitTime == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "submit time cannot be zero")
+		return errorsmod.Wrap(ErrMissingData, "submit time cannot be zero")
 	}
 	if len(msg.Hash) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "hash too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "hash too big. 66 character limit")
 	}
 
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgRecordBeaconTimestamp) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgRecordBeaconTimestamp) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
 }
 
 // --- Purchase state storage Msg ---
@@ -153,54 +128,29 @@ func (msg MsgPurchaseBeaconStateStorage) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgPurchaseBeaconStateStorage) Type() string { return PurchaseStorageAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgPurchaseBeaconStateStorage) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 	if msg.BeaconId == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
+		return errorsmod.Wrap(ErrMissingData, "id must be greater than zero")
 	}
 	if msg.Number == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "number cannot be zero")
+		return errorsmod.Wrap(ErrMissingData, "number cannot be zero")
 	}
 
 	return nil
 }
 
-// GetSignBytes encodes the message for signing
-func (msg MsgPurchaseBeaconStateStorage) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgPurchaseBeaconStateStorage) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
-}
-
 // --- Modify Params Msg Type ---
-
-// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
-// the expected signer needs to sign.
-func (m MsgUpdateParams) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
-// GetSigners returns the expected signers for a MsgUpdateParams message.
-func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrap(err, "invalid authority address")
+		return errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if err := m.Params.Validate(); err != nil {

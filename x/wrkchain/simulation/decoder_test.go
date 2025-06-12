@@ -2,7 +2,6 @@ package simulation_test
 
 import (
 	"fmt"
-	simapp "github.com/unification-com/mainchain/app"
 	"testing"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	"github.com/stretchr/testify/require"
 
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/wrkchain/simulation"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
@@ -21,7 +21,7 @@ var (
 )
 
 func TestDecodeStore(t *testing.T) {
-	testApp := simapp.Setup(t, false)
+	testApp := simapphelpers.Setup(t)
 	cdc := testApp.AppCodec()
 	dec := simulation.NewDecodeStore(cdc)
 

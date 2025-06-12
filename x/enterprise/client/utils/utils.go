@@ -1,6 +1,6 @@
 package utils
 
-//NormalisePurchaseOrderStatus - normalise user specified purchase order status
+// NormalisePurchaseOrderStatus - normalise user specified purchase order status
 func NormalisePurchaseOrderStatus(status string) string {
 	switch status {
 	case "Accept", "accept", "Accepted", "accepted":

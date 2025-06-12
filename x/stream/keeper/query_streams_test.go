@@ -16,7 +16,7 @@ func (s *KeeperTestSuite) TestQueryStreams() {
 	tCtx = tCtx.WithBlockTime(nowTime)
 
 	for i := int64(1); i <= 10; i++ {
-		deposit := sdk.NewInt64Coin("stake", 1000)
+		deposit := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
 		_, err := s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[i-1], s.addrs[i], deposit, 1)
 		s.Require().NoError(err)
 		_, err = s.app.StreamKeeper.AddDeposit(tCtx, s.addrs[i-1], s.addrs[i], deposit)
@@ -29,7 +29,7 @@ func (s *KeeperTestSuite) TestQueryStreams() {
 				Receiver: s.addrs[0].String(),
 				Sender:   s.addrs[1].String(),
 				Stream: &types.Stream{
-					Deposit:         sdk.NewInt64Coin("stake", 1000),
+					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
 					LastOutflowTime: nowTime,
 					DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
@@ -40,7 +40,7 @@ func (s *KeeperTestSuite) TestQueryStreams() {
 				Receiver: s.addrs[1].String(),
 				Sender:   s.addrs[2].String(),
 				Stream: &types.Stream{
-					Deposit:         sdk.NewInt64Coin("stake", 1000),
+					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
 					LastOutflowTime: nowTime,
 					DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
@@ -86,7 +86,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 			sender:   successSender,
 			receiver: successReceiver,
 			flowRate: 1,
-			deposit:  sdk.NewInt64Coin("stake", 1000),
+			deposit:  sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 			query: &types.QueryStreamByReceiverSenderRequest{
 				SenderAddr:   successSender.String(),
 				ReceiverAddr: successReceiver.String(),
@@ -96,7 +96,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 					Receiver: successReceiver.String(),
 					Sender:   successSender.String(),
 					Stream: &types.Stream{
-						Deposit:         sdk.NewInt64Coin("stake", 1000),
+						Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 						FlowRate:        1,
 						LastOutflowTime: nowTime,
 						DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
@@ -204,7 +204,7 @@ func (s *KeeperTestSuite) TestQueryStreamReceiverSenderCurrentFlow() {
 			sender:      successSender,
 			receiver:    successReceiver,
 			flowRate:    1,
-			deposit:     sdk.NewInt64Coin("stake", 1000),
+			deposit:     sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 			queryFuture: 0,
 			query: &types.QueryStreamReceiverSenderCurrentFlowRequest{
 				SenderAddr:   successSender.String(),
@@ -317,7 +317,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForReceiver_Success() {
 	tCtx = tCtx.WithBlockTime(nowTime)
 
 	for i := int64(1); i <= 10; i++ {
-		deposit := sdk.NewInt64Coin("stake", 1000)
+		deposit := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
 		receiverAddr := s.addrs[i-1]
 		if i < 4 {
 			receiverAddr = s.addrs[0]
@@ -334,7 +334,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForReceiver_Success() {
 				Receiver: s.addrs[0].String(),
 				Sender:   s.addrs[1].String(),
 				Stream: &types.Stream{
-					Deposit:         sdk.NewInt64Coin("stake", 1000),
+					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
 					LastOutflowTime: nowTime,
 					DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
@@ -345,7 +345,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForReceiver_Success() {
 				Receiver: s.addrs[0].String(),
 				Sender:   s.addrs[2].String(),
 				Stream: &types.Stream{
-					Deposit:         sdk.NewInt64Coin("stake", 1000),
+					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
 					LastOutflowTime: nowTime,
 					DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
@@ -356,7 +356,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForReceiver_Success() {
 				Receiver: s.addrs[0].String(),
 				Sender:   s.addrs[3].String(),
 				Stream: &types.Stream{
-					Deposit:         sdk.NewInt64Coin("stake", 1000),
+					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
 					LastOutflowTime: nowTime,
 					DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
@@ -427,7 +427,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForSender_Success() {
 	nowTime := time.Unix(time.Now().Unix(), 0).UTC()
 	tCtx = tCtx.WithBlockTime(nowTime)
 
-	deposit := sdk.NewInt64Coin("stake", 1000)
+	deposit := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
 	qSender := s.addrs[0]
 	// first three for results, sender = s.addrs[0]
 	_, _ = s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[1], qSender, deposit, 1)
@@ -453,7 +453,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForSender_Success() {
 				Receiver: s.addrs[1].String(),
 				Sender:   qSender.String(),
 				Stream: &types.Stream{
-					Deposit:         sdk.NewInt64Coin("stake", 1000),
+					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
 					LastOutflowTime: nowTime,
 					DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
@@ -464,7 +464,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForSender_Success() {
 				Receiver: s.addrs[2].String(),
 				Sender:   qSender.String(),
 				Stream: &types.Stream{
-					Deposit:         sdk.NewInt64Coin("stake", 1000),
+					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
 					LastOutflowTime: nowTime,
 					DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
@@ -475,7 +475,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForSender_Success() {
 				Receiver: s.addrs[3].String(),
 				Sender:   qSender.String(),
 				Stream: &types.Stream{
-					Deposit:         sdk.NewInt64Coin("stake", 1000),
+					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
 					LastOutflowTime: nowTime,
 					DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),

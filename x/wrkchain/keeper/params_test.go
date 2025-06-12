@@ -1,20 +1,20 @@
 package keeper_test
 
 import (
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	simapp "github.com/unification-com/mainchain/app"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
-var testParams = types.NewParams(24, 2, 2, simapp.TestDenomination, 100, 200)
+var testParams = types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 100, 200)
 
 func TestSetGetParams(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -29,8 +29,8 @@ func TestSetGetParams(t *testing.T) {
 }
 
 func TestGetParamDenom(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -40,8 +40,8 @@ func TestGetParamDenom(t *testing.T) {
 }
 
 func TestGetParamRegistrationFee(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -51,8 +51,8 @@ func TestGetParamRegistrationFee(t *testing.T) {
 }
 
 func TestGetParamRecordFee(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -62,8 +62,8 @@ func TestGetParamRecordFee(t *testing.T) {
 }
 
 func TestGetParamPurchaseStorageFee(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -73,8 +73,8 @@ func TestGetParamPurchaseStorageFee(t *testing.T) {
 }
 
 func TestGetParamDefaultStorageLimit(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -84,8 +84,8 @@ func TestGetParamDefaultStorageLimit(t *testing.T) {
 }
 
 func TestGetParamMaxStorageLimit(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -95,8 +95,8 @@ func TestGetParamMaxStorageLimit(t *testing.T) {
 }
 
 func TestGetZeroFeeAsCoin(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -108,8 +108,8 @@ func TestGetZeroFeeAsCoin(t *testing.T) {
 }
 
 func TestGetRegistrationFeeAsCoin(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -121,8 +121,8 @@ func TestGetRegistrationFeeAsCoin(t *testing.T) {
 }
 
 func TestGetRecordFeeAsCoin(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -134,8 +134,8 @@ func TestGetRecordFeeAsCoin(t *testing.T) {
 }
 
 func TestGetPurchaseStorageFeeAsCoin(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -147,8 +147,8 @@ func TestGetPurchaseStorageFeeAsCoin(t *testing.T) {
 }
 
 func TestGetZeroFeeAsCoins(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -156,12 +156,12 @@ func TestGetZeroFeeAsCoins(t *testing.T) {
 
 	paramCoin := sdk.Coins{sdk.NewInt64Coin(testParams.Denom, 0)}
 
-	require.True(t, ret.IsEqual(paramCoin))
+	require.True(t, ret.Equal(paramCoin))
 }
 
 func TestGetRegistrationFeeAsCoins(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -169,12 +169,12 @@ func TestGetRegistrationFeeAsCoins(t *testing.T) {
 
 	paramCoin := sdk.Coins{sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeeRegister))}
 
-	require.True(t, ret.IsEqual(paramCoin))
+	require.True(t, ret.Equal(paramCoin))
 }
 
 func TestGetRecordFeeAsCoins(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -182,12 +182,12 @@ func TestGetRecordFeeAsCoins(t *testing.T) {
 
 	paramCoin := sdk.Coins{sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeeRecord))}
 
-	require.True(t, ret.IsEqual(paramCoin))
+	require.True(t, ret.Equal(paramCoin))
 }
 
 func TestGetPurchaseStorageFeeAsCoins(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
 
 	app.WrkchainKeeper.SetParams(ctx, testParams)
 
@@ -195,5 +195,5 @@ func TestGetPurchaseStorageFeeAsCoins(t *testing.T) {
 
 	paramCoin := sdk.Coins{sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeePurchaseStorage))}
 
-	require.True(t, ret.IsEqual(paramCoin))
+	require.True(t, ret.Equal(paramCoin))
 }

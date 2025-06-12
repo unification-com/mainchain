@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -39,47 +40,34 @@ func (msg MsgRegisterWrkChain) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRegisterWrkChain) Type() string { return RegisterAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRegisterWrkChain) ValidateBasic() error {
 	ownerAddr, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 
 	if ownerAddr.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner)
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner)
 	}
 	if len(msg.Moniker) == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "Moniker cannot be empty")
+		return errorsmod.Wrap(ErrMissingData, "Moniker cannot be empty")
 	}
 
 	if len(msg.Name) > 128 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "name too big. 128 character limit")
 	}
 
 	if len(msg.Moniker) > 64 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "moniker too big. 64 character limit")
 	}
 
 	if len(msg.GenesisHash) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "genesis hash too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "genesis hash too big. 66 character limit")
 	}
 
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgRegisterWrkChain) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgRegisterWrkChain) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
 }
 
 // --- Record a WRKChain Block hash Msg ---
@@ -113,56 +101,43 @@ func (msg MsgRecordWrkChainBlock) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRecordWrkChainBlock) Type() string { return RecordAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgRecordWrkChainBlock) ValidateBasic() error {
 	ownerAddr, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 
 	if ownerAddr.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner)
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, msg.Owner)
 	}
 	if msg.WrkchainId == 0 {
-		return sdkerrors.Wrap(ErrInvalidData, "ID must be greater than zero")
+		return errorsmod.Wrap(ErrInvalidData, "ID must be greater than zero")
 	}
 	if len(msg.BlockHash) == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "BlockHash cannot be empty")
+		return errorsmod.Wrap(ErrMissingData, "BlockHash cannot be empty")
 	}
 	if msg.Height == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "Height cannot be zero")
+		return errorsmod.Wrap(ErrMissingData, "Height cannot be zero")
 	}
 	if len(msg.BlockHash) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "block hash too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "block hash too big. 66 character limit")
 	}
 	if len(msg.ParentHash) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "parent hash too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "parent hash too big. 66 character limit")
 	}
 	if len(msg.Hash1) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "hash1 too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "hash1 too big. 66 character limit")
 	}
 	if len(msg.Hash2) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "hash2 too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "hash2 too big. 66 character limit")
 	}
 	if len(msg.Hash3) > 66 {
-		return sdkerrors.Wrap(ErrContentTooLarge, "hash3 too big. 66 character limit")
+		return errorsmod.Wrap(ErrContentTooLarge, "hash3 too big. 66 character limit")
 	}
 
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgRecordWrkChainBlock) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgRecordWrkChainBlock) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
 }
 
 // --- Purchase state storage Msg ---
@@ -186,54 +161,29 @@ func (msg MsgPurchaseWrkChainStateStorage) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgPurchaseWrkChainStateStorage) Type() string { return PurchaseStorageAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgPurchaseWrkChainStateStorage) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "Invalid owner address (%s)", err)
 	}
 	if msg.WrkchainId == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "id must be greater than zero")
+		return errorsmod.Wrap(ErrMissingData, "id must be greater than zero")
 	}
 	if msg.Number == 0 {
-		return sdkerrors.Wrap(ErrMissingData, "number cannot be zero")
+		return errorsmod.Wrap(ErrMissingData, "number cannot be zero")
 	}
 
 	return nil
 }
 
-// GetSignBytes encodes the message for signing
-func (msg MsgPurchaseWrkChainStateStorage) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgPurchaseWrkChainStateStorage) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{owner}
-}
-
 // --- Modify Params Msg Type ---
-
-// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
-// the expected signer needs to sign.
-func (m MsgUpdateParams) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
-// GetSigners returns the expected signers for a MsgUpdateParams message.
-func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrap(err, "invalid authority address")
+		return errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if err := m.Params.Validate(); err != nil {

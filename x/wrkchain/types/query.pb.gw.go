@@ -127,15 +127,15 @@ func request_Query_WrkChainBlock_0(ctx context.Context, marshaler runtime.Marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wrkchain_id", err)
 	}
 
-	val, ok = pathParams["height"]
+	val, ok = pathParams["wc_height"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "height")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "wc_height")
 	}
 
-	protoReq.Height, err = runtime.Uint64(val)
+	protoReq.WcHeight, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "height", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wc_height", err)
 	}
 
 	msg, err := client.WrkChainBlock(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -165,15 +165,15 @@ func local_request_Query_WrkChainBlock_0(ctx context.Context, marshaler runtime.
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wrkchain_id", err)
 	}
 
-	val, ok = pathParams["height"]
+	val, ok = pathParams["wc_height"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "height")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "wc_height")
 	}
 
-	protoReq.Height, err = runtime.Uint64(val)
+	protoReq.WcHeight, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "height", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wc_height", err)
 	}
 
 	msg, err := server.WrkChainBlock(ctx, &protoReq)
@@ -541,7 +541,7 @@ var (
 
 	pattern_Query_WrkChain_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 1, 1, 0, 4, 1, 5, 3}, []string{"mainchain", "wrkchain", "v1", "wrkchain_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_WrkChainBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 1, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"mainchain", "wrkchain", "v1", "wrkchain_id", "block", "height"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_WrkChainBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 1, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"mainchain", "wrkchain", "v1", "wrkchain_id", "block", "wc_height"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_WrkChainsFiltered_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"mainchain", "wrkchain", "v1", "wrkchains"}, "", runtime.AssumeColonVerbOpt(false)))
 

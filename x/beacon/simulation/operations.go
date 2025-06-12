@@ -11,6 +11,7 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/unification-com/mainchain/x/beacon/keeper"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
@@ -43,19 +44,19 @@ func WeightedOperations(
 		weightMsgPurchaseBeaconStateStorage int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRegisterBeacon, &weightMsgRegisterBeacon, nil,
+	appParams.GetOrGenerate(OpWeightMsgRegisterBeacon, &weightMsgRegisterBeacon, nil,
 		func(_ *rand.Rand) {
 			weightMsgRegisterBeacon = DefaultMsgRegisterBeacon
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRecordBeaconTimestamp, &weightMsgRecordBeaconTimestamp, nil,
+	appParams.GetOrGenerate(OpWeightMsgRecordBeaconTimestamp, &weightMsgRecordBeaconTimestamp, nil,
 		func(_ *rand.Rand) {
 			weightMsgRecordBeaconTimestamp = DefaultMsgRecordBeaconTimestamp
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgPurchaseBeaconStateStorage, &weightMsgPurchaseBeaconStateStorage, nil,
+	appParams.GetOrGenerate(OpWeightMsgPurchaseBeaconStateStorage, &weightMsgPurchaseBeaconStateStorage, nil,
 		func(_ *rand.Rand) {
 			weightMsgPurchaseBeaconStateStorage = DefaultMsgPurchaseBeaconStateStorage
 		},
@@ -130,7 +131,7 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}
@@ -196,7 +197,7 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}
@@ -274,7 +275,7 @@ func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper,
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}

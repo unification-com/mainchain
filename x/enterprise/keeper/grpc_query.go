@@ -2,13 +2,14 @@ package keeper
 
 import (
 	"context"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"strings"
+
+	"cosmossdk.io/store/prefix"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"strings"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -111,61 +112,6 @@ func (q Keeper) TotalLocked(c context.Context, req *types.QueryTotalLockedReques
 	amount := q.GetTotalLockedUnd(ctx)
 
 	return &types.QueryTotalLockedResponse{Amount: amount}, nil
-}
-
-func (q Keeper) TotalUnlocked(c context.Context, req *types.QueryTotalUnlockedRequest) (*types.QueryTotalUnlockedResponse, error) {
-
-	ctx := sdk.UnwrapSDKContext(c)
-	amount := q.GetTotalUnLockedUnd(ctx)
-
-	return &types.QueryTotalUnlockedResponse{Amount: amount}, nil
-}
-
-func (q Keeper) EnterpriseSupply(c context.Context, req *types.QueryEnterpriseSupplyRequest) (*types.QueryEnterpriseSupplyResponse, error) {
-
-	ctx := sdk.UnwrapSDKContext(c)
-	totalSupply := q.GetEnterpriseSupplyIncludingLockedUnd(ctx)
-
-	return &types.QueryEnterpriseSupplyResponse{Supply: totalSupply}, nil
-}
-
-// TotalSupply Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
-// with locked eFUND removed from total for nund
-func (q Keeper) TotalSupply(c context.Context, req *types.QueryTotalSupplyRequest) (*types.QueryTotalSupplyResponse, error) {
-
-	ctx := sdk.UnwrapSDKContext(c)
-	totalSupply, pageResp, err := q.GetTotalSupplyWithLockedNundRemoved(ctx, req.Pagination)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	return &types.QueryTotalSupplyResponse{Supply: totalSupply, Pagination: pageResp}, nil
-}
-
-func (q Keeper) TotalSupplyOverwrite(c context.Context, req *types.QueryTotalSupplyRequest) (*types.QueryTotalSupplyResponse, error) {
-	return q.TotalSupply(c, req)
-}
-
-// SupplyOf Should be used in place of /cosmos/bank/v1beta1/supply to get true total supply,
-// with locked eFUND removed from total for nund
-func (q Keeper) SupplyOf(c context.Context, req *types.QuerySupplyOfRequest) (*types.QuerySupplyOfResponse, error) {
-
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	if req.Denom == "" {
-		return nil, status.Error(codes.InvalidArgument, "invalid denom")
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-	supply := q.GetSupplyOfWithLockedNundRemoved(ctx, req.Denom)
-
-	return &types.QuerySupplyOfResponse{Amount: supply}, nil
-}
-
-func (q Keeper) SupplyOfOverwrite(c context.Context, req *types.QuerySupplyOfRequest) (*types.QuerySupplyOfResponse, error) {
-	return q.SupplyOf(c, req)
 }
 
 func (q Keeper) Whitelist(c context.Context, req *types.QueryWhitelistRequest) (*types.QueryWhitelistResponse, error) {

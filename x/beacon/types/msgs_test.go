@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/cometbft/cometbft/crypto/ed25519"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -18,14 +20,6 @@ func TestMsgRegisterBeacon_Type(t *testing.T) {
 	require.Equal(t, RegisterAction, msg.Type())
 }
 
-func TestMsgRegisterBeacon_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgRegisterBeacon{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgRecordBeaconTimestamp_Route(t *testing.T) {
 	msg := MsgRecordBeaconTimestamp{}
 	require.Equal(t, ModuleName, msg.Route())
@@ -36,14 +30,6 @@ func TestMsgRecordBeaconTimestamp_Type(t *testing.T) {
 	require.Equal(t, RecordAction, msg.Type())
 }
 
-func TestMsgRecordBeaconTimestamp_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgRecordBeaconTimestamp{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgPurchaseBeaconStateStorage_Route(t *testing.T) {
 	msg := MsgPurchaseBeaconStateStorage{}
 	require.Equal(t, ModuleName, msg.Route())
@@ -52,14 +38,6 @@ func TestMsgPurchaseBeaconStateStorage_Route(t *testing.T) {
 func TestMsgPurchaseBeaconStateStorage_Type(t *testing.T) {
 	msg := MsgPurchaseBeaconStateStorage{}
 	require.Equal(t, PurchaseStorageAction, msg.Type())
-}
-
-func TestMsgPurchaseBeaconStateStorage_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgPurchaseBeaconStateStorage{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
 }
 
 func TestMsgRegisterBeacon(t *testing.T) {
@@ -166,4 +144,34 @@ func TestMsgPurchaseBeaconStateStorage(t *testing.T) {
 			require.Error(t, msg.ValidateBasic(), "test: %v", i)
 		}
 	}
+}
+
+func TestMsgRegisterBeaconGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgRegisterBeacon("testbeacon", "testbeaconname", addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"beacon/MsgRegisterBeacon","value":{"moniker":"testbeacon","name":"testbeaconname","owner":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgPurchaseBeaconStateStorageGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgPurchaseBeaconStateStorage(1, 1000, addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"beacon/MsgPurchaseBeaconStateStorage","value":{"beacon_id":"1","number":"1000","owner":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgRecordBeaconTimestampGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgRecordBeaconTimestamp(1, "abc123", 1000, addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"beacon/MsgRecordBeaconTimestamp","value":{"beacon_id":"1","hash":"abc123","owner":"cosmos1v9jxgu33kfsgr5","submit_time":"1000"}}`
+	require.Equal(t, expected, string(res))
 }

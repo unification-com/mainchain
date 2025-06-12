@@ -3,10 +3,12 @@ package keeper_test
 import (
 	gocontext "context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	simapp "github.com/unification-com/mainchain/app"
-	"github.com/unification-com/mainchain/x/wrkchain/types"
 	"time"
+
+	"github.com/cosmos/cosmos-sdk/types/query"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
 func (s *KeeperTestSuite) TestGRPCQueryParams() {
@@ -125,9 +127,9 @@ func (s *KeeperTestSuite) TestGRPCQueryWrkChainsFiltered() {
 				// create 5 test wrkchains
 				for i := 0; i < 5; i++ {
 
-					moniker := simapp.GenerateRandomString(12)
-					name := simapp.GenerateRandomString(24)
-					gHash := simapp.GenerateRandomString(64)
+					moniker := simapphelpers.GenerateRandomString(12)
+					name := simapphelpers.GenerateRandomString(24)
+					gHash := simapphelpers.GenerateRandomString(64)
 
 					wcId, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, gHash, "tm", addrs[0])
 					s.Require().NoError(err)
@@ -251,21 +253,21 @@ func (s *KeeperTestSuite) TestGRPCQueryWrkchainBlock() {
 		{
 			"zero block height request",
 			func() {
-				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, Height: 0}
+				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, WcHeight: 0}
 			},
 			false,
 		},
 		{
 			"valid request",
 			func() {
-				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, Height: 1}
+				req = &types.QueryWrkChainBlockRequest{WrkchainId: 1, WcHeight: 1}
 
 				wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, "moniker", "name", "ghash", "tm", addrs[0])
 				s.Require().NoError(err)
 				s.Require().Equal(uint64(1), wcID)
 
 				expectedBlock := types.WrkChainBlock{
-					Blockhash: simapp.GenerateRandomString(32),
+					Blockhash: simapphelpers.GenerateRandomString(32),
 					SubTime:   uint64(time.Now().Unix()),
 					Height:    1,
 				}
@@ -343,10 +345,10 @@ func (s *KeeperTestSuite) TestGRPCQueryWrkChainStorage() {
 				expRes = types.QueryWrkChainStorageResponse{
 					WrkchainId:     wcId,
 					Owner:          addrs[0].String(),
-					CurrentLimit:   types.DefaultStorageLimit,
+					CurrentLimit:   simapphelpers.SimTestDefaultStorageLimit,
 					CurrentUsed:    1,
-					Max:            types.DefaultMaxStorageLimit,
-					MaxPurchasable: types.DefaultMaxStorageLimit - types.DefaultStorageLimit,
+					Max:            simapphelpers.SimTestDefaultMaxStorageLimit,
+					MaxPurchasable: simapphelpers.SimTestDefaultMaxStorageLimit - simapphelpers.SimTestDefaultStorageLimit,
 				}
 
 			},

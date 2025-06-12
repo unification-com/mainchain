@@ -19,12 +19,12 @@ builds:
       - windows
     goarch:
       - amd64
+      - arm64
     ldflags:
       - -X github.com/cosmos/cosmos-sdk/version.Name=UndMainchain
       - -X github.com/cosmos/cosmos-sdk/version.AppName=und
       - -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{.FullCommit}}
-      - -X github.com/tendermint/tendermint/version.TMCoreSemVer={{.Env.TM_CORE_SEM_VERSION}}
       - -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo"
     flags:
       - -mod=readonly
@@ -38,7 +38,7 @@ archives:
     builds:
       - und
     name_template: >- 
-      {{ .Binary }}_v{{ .Version }}_{{ .Os }}_{{- if eq .Arch "amd64" }}x86_64{{ end }}
+      {{ .Binary }}_v{{ .Version }}_{{ .Os }}_{{- if eq .Arch "amd64" }}x86_64{{ end }}{{- if eq .Arch "arm64" }}arm64{{ end }}
     format: tar.gz
 
 checksum:

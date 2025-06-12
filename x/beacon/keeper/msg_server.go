@@ -3,13 +3,14 @@ package keeper
 import (
 	"context"
 	"fmt"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"strconv"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
@@ -34,15 +35,15 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 	}
 
 	if len(msg.Name) > 128 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit")
 	}
 
 	if len(msg.Moniker) > 64 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit")
 	}
 
 	if len(msg.Moniker) == 0 {
-		return nil, sdkerrors.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
+		return nil, errorsmod.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
 	}
 
 	beacon := types.Beacon{
@@ -83,16 +84,24 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		return nil, accErr
 	}
 
+	if msg.BeaconId == 0 {
+		return nil, errorsmod.Wrap(types.ErrMissingData, "id must be greater than zero")
+	}
+
+	if len(msg.Hash) == 0 {
+		return nil, errorsmod.Wrap(types.ErrMissingData, "hash cannot be empty")
+	}
+
 	if len(msg.Hash) > 66 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit")
 	}
 
 	if !k.IsBeaconRegistered(ctx, msg.BeaconId) { // Checks if the BEACON is registered
-		return nil, sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
+		return nil, errorsmod.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
 	}
 
 	if !k.IsAuthorisedToRecord(ctx, msg.BeaconId, ownerAddr) {
-		return nil, sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon")
+		return nil, errorsmod.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon")
 	}
 
 	subtime := msg.SubmitTime
@@ -136,18 +145,22 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 		return nil, accErr
 	}
 
+	if msg.BeaconId == 0 {
+		return nil, errorsmod.Wrap(types.ErrMissingData, "id must be greater than zero")
+	}
+
 	if msg.Number == 0 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
 	}
 
 	_, found := k.GetBeacon(ctx, msg.BeaconId)
 
 	if !found { // Checks if the BEACON is registered
-		return nil, sdkerrors.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
+		return nil, errorsmod.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
 	}
 
 	if !k.IsAuthorisedToRecord(ctx, msg.BeaconId, ownerAddr) {
-		return nil, sdkerrors.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon")
+		return nil, errorsmod.Wrap(types.ErrNotBeaconOwner, "you are not the owner of this beacon")
 	}
 
 	beaconStorage, _ := k.GetBeaconStorageLimit(ctx, msg.BeaconId)
@@ -157,7 +170,7 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 	beaconStorageAfter := beaconStorage.InStateLimit + msg.Number
 
 	if beaconStorageAfter > maxParam {
-		return nil, sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", beaconStorageAfter, maxParam))
+		return nil, errorsmod.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", beaconStorageAfter, maxParam))
 	}
 
 	err := k.IncreaseInStateStorage(ctx, msg.BeaconId, msg.Number)
@@ -191,7 +204,7 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 
 func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if k.authority != req.Authority {
-		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
+		return nil, errorsmod.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)

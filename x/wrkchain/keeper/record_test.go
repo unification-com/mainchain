@@ -1,28 +1,29 @@
 package keeper_test
 
 import (
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"testing"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	simapp "github.com/unification-com/mainchain/app"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
-	"testing"
-	"time"
 )
 
 // Tests for Highest WRKChain ID
 
 func TestSetGetWrkChainBlock(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(100)
 
 	for _, addr := range testAddrs {
-		name := simapp.GenerateRandomString(128)
-		moniker := simapp.GenerateRandomString(64)
-		genesisHash := simapp.GenerateRandomString(66)
+		name := simapphelpers.GenerateRandomString(128)
+		moniker := simapphelpers.GenerateRandomString(64)
+		genesisHash := simapphelpers.GenerateRandomString(66)
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -30,11 +31,11 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 		for h := uint64(1); h <= numToRecord; h++ {
 			block := types.WrkChainBlock{}
 			block.Height = h
-			block.Blockhash = simapp.GenerateRandomString(66)
-			block.Parenthash = simapp.GenerateRandomString(66)
-			block.Hash1 = simapp.GenerateRandomString(66)
-			block.Hash2 = simapp.GenerateRandomString(66)
-			block.Hash3 = simapp.GenerateRandomString(66)
+			block.Blockhash = simapphelpers.GenerateRandomString(66)
+			block.Parenthash = simapphelpers.GenerateRandomString(66)
+			block.Hash1 = simapphelpers.GenerateRandomString(66)
+			block.Hash2 = simapphelpers.GenerateRandomString(66)
+			block.Hash3 = simapphelpers.GenerateRandomString(66)
 			block.SubTime = uint64(time.Now().Unix())
 
 			err := app.WrkchainKeeper.SetWrkChainBlock(ctx, wcID, block)
@@ -48,15 +49,15 @@ func TestSetGetWrkChainBlock(t *testing.T) {
 }
 
 func TestIsWrkChainBlockRecorded(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(100)
 
 	for _, addr := range testAddrs {
-		name := simapp.GenerateRandomString(128)
-		moniker := simapp.GenerateRandomString(64)
-		genesisHash := simapp.GenerateRandomString(66)
+		name := simapphelpers.GenerateRandomString(128)
+		moniker := simapphelpers.GenerateRandomString(64)
+		genesisHash := simapphelpers.GenerateRandomString(66)
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -64,11 +65,11 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 		for h := uint64(1); h <= numToRecord; h++ {
 			block := types.WrkChainBlock{}
 			block.Height = h
-			block.Blockhash = simapp.GenerateRandomString(66)
-			block.Parenthash = simapp.GenerateRandomString(66)
-			block.Hash1 = simapp.GenerateRandomString(66)
-			block.Hash2 = simapp.GenerateRandomString(66)
-			block.Hash3 = simapp.GenerateRandomString(66)
+			block.Blockhash = simapphelpers.GenerateRandomString(66)
+			block.Parenthash = simapphelpers.GenerateRandomString(66)
+			block.Hash1 = simapphelpers.GenerateRandomString(66)
+			block.Hash2 = simapphelpers.GenerateRandomString(66)
+			block.Hash3 = simapphelpers.GenerateRandomString(66)
 			block.SubTime = uint64(time.Now().Unix())
 
 			err := app.WrkchainKeeper.SetWrkChainBlock(ctx, wcID, block)
@@ -81,16 +82,16 @@ func TestIsWrkChainBlockRecorded(t *testing.T) {
 }
 
 func TestGetWrkChainBlockHashes(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 
 	numToRecord := uint64(1000)
 
 	for _, addr := range testAddrs {
-		name := simapp.GenerateRandomString(128)
-		moniker := simapp.GenerateRandomString(64)
-		genesisHash := simapp.GenerateRandomString(66)
+		name := simapphelpers.GenerateRandomString(128)
+		moniker := simapphelpers.GenerateRandomString(64)
+		genesisHash := simapphelpers.GenerateRandomString(66)
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -100,11 +101,11 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 		for h := uint64(1); h <= numToRecord; h++ {
 			block := types.WrkChainBlock{}
 			block.Height = h
-			block.Blockhash = simapp.GenerateRandomString(66)
-			block.Parenthash = simapp.GenerateRandomString(66)
-			block.Hash1 = simapp.GenerateRandomString(66)
-			block.Hash2 = simapp.GenerateRandomString(66)
-			block.Hash3 = simapp.GenerateRandomString(66)
+			block.Blockhash = simapphelpers.GenerateRandomString(66)
+			block.Parenthash = simapphelpers.GenerateRandomString(66)
+			block.Hash1 = simapphelpers.GenerateRandomString(66)
+			block.Hash2 = simapphelpers.GenerateRandomString(66)
+			block.Hash3 = simapphelpers.GenerateRandomString(66)
 			block.SubTime = uint64(time.Now().Unix())
 
 			testBlocks = append(testBlocks, block)
@@ -123,18 +124,18 @@ func TestGetWrkChainBlockHashes(t *testing.T) {
 }
 
 func TestIsAuthorisedToRecord(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 
 	privK := ed25519.GenPrivKey()
 	pubKey := privK.PubKey()
 	unauthorisedAddr := sdk.AccAddress(pubKey.Address())
 
 	for _, addr := range testAddrs {
-		name := simapp.GenerateRandomString(128)
-		moniker := simapp.GenerateRandomString(64)
-		genesisHash := simapp.GenerateRandomString(66)
+		name := simapphelpers.GenerateRandomString(128)
+		moniker := simapphelpers.GenerateRandomString(64)
+		genesisHash := simapphelpers.GenerateRandomString(66)
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
@@ -148,17 +149,17 @@ func TestIsAuthorisedToRecord(t *testing.T) {
 }
 
 func TestRecordWrkchainHashes(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(10)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(10)
 	numToRecord := uint64(1000)
 	recordLimit := uint64(200)
 	startHeight := uint64(24)
 	endHeight := startHeight + numToRecord
 
-	name := simapp.GenerateRandomString(128)
-	moniker := simapp.GenerateRandomString(64)
-	genesisHash := simapp.GenerateRandomString(66)
+	name := simapphelpers.GenerateRandomString(128)
+	moniker := simapphelpers.GenerateRandomString(64)
+	genesisHash := simapphelpers.GenerateRandomString(66)
 
 	wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", testAddrs[0])
 	require.NoError(t, err)
@@ -170,11 +171,11 @@ func TestRecordWrkchainHashes(t *testing.T) {
 	for h := startHeight; h < endHeight; h++ {
 		expectedBlock := types.WrkChainBlock{}
 		expectedBlock.Height = h
-		expectedBlock.Blockhash = simapp.GenerateRandomString(66)
-		expectedBlock.Parenthash = simapp.GenerateRandomString(66)
-		expectedBlock.Hash1 = simapp.GenerateRandomString(66)
-		expectedBlock.Hash2 = simapp.GenerateRandomString(66)
-		expectedBlock.Hash3 = simapp.GenerateRandomString(66)
+		expectedBlock.Blockhash = simapphelpers.GenerateRandomString(66)
+		expectedBlock.Parenthash = simapphelpers.GenerateRandomString(66)
+		expectedBlock.Hash1 = simapphelpers.GenerateRandomString(66)
+		expectedBlock.Hash2 = simapphelpers.GenerateRandomString(66)
+		expectedBlock.Hash3 = simapphelpers.GenerateRandomString(66)
 		expectedBlock.SubTime = uint64(time.Now().Unix())
 
 		_, err := app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcID, h, expectedBlock.Blockhash, expectedBlock.Parenthash, expectedBlock.Hash1, expectedBlock.Hash2, expectedBlock.Hash3)
@@ -217,9 +218,9 @@ func TestRecordWrkchainHashes(t *testing.T) {
 }
 
 func TestIncreaseInStateStorage(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	recordLimitIncrease := uint64(200)
 
@@ -228,20 +229,20 @@ func TestIncreaseInStateStorage(t *testing.T) {
 
 	wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit)
+	require.True(t, wcSt.InStateLimit == simapphelpers.SimTestDefaultStorageLimit)
 
 	err = app.WrkchainKeeper.IncreaseInStateStorage(ctx, wcId, recordLimitIncrease)
 	require.NoError(t, err)
 
 	wcSt, found = app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcId)
 	require.True(t, found)
-	require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit+recordLimitIncrease)
+	require.True(t, wcSt.InStateLimit == simapphelpers.SimTestDefaultStorageLimit+recordLimitIncrease)
 }
 
 func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	numToRecord := uint64(500)
 	recordLimit := uint64(100)
@@ -256,7 +257,7 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 
 	// record initial hashes
 	for i := uint64(1); i <= numToRecord; i++ {
-		hash := simapp.GenerateRandomString(32)
+		hash := simapphelpers.GenerateRandomString(32)
 		deletedHeight, err := app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcId, i, hash, "", "", "", "")
 		require.NoError(t, err)
 
@@ -289,7 +290,7 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 
 	// record new timestamps
 	for i := numToRecord + 1; i <= numToRecord+numToRecord; i++ {
-		hash := simapp.GenerateRandomString(32)
+		hash := simapphelpers.GenerateRandomString(32)
 		deletedHeight, err := app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcId, i, hash, "", "", "", "")
 		require.NoError(t, err)
 
@@ -307,9 +308,9 @@ func TestIncreaseInStateStorageWithBlockHashRecording(t *testing.T) {
 }
 
 func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	heightsToRecord := [10]uint64{1, 3, 4, 8, 11, 24, 33, 34, 40, 50}
 	expectedDeleteds := [10]uint64{0, 0, 0, 0, 0, 1, 3, 4, 8, 11}
@@ -334,7 +335,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
 		expectedHighest := expectedHighests[i]
 		expectedNumBlock := expectedNumBlocks[i]
 
-		hash := simapp.GenerateRandomString(32)
+		hash := simapphelpers.GenerateRandomString(32)
 		deletedHeight, err := app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcId, heightToRecord, hash, "", "", "", "")
 		require.NoError(t, err)
 
@@ -380,9 +381,9 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOld(t *testing.T) {
 }
 
 func TestAsymmetricRecordNewWrkchainHashesAndDeleteOldWithIncrease(t *testing.T) {
-	app := simapp.Setup(t, false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-	testAddrs := simapp.GenerateRandomTestAccounts(1)
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
 
 	// add 15 wrkchain blocks with asymmetric heights
 	heightsToRecord := [15]uint64{1, 3, 4, 8, 11, 24, 33, 34, 40, 50, 55, 69, 78, 99, 108}
@@ -466,7 +467,7 @@ func TestAsymmetricRecordNewWrkchainHashesAndDeleteOldWithIncrease(t *testing.T)
 			require.NoError(t, err)
 		}
 
-		hash := simapp.GenerateRandomString(32)
+		hash := simapphelpers.GenerateRandomString(32)
 		deletedHeight, err := app.WrkchainKeeper.RecordNewWrkchainHashes(ctx, wcId, heightToRecord, hash, "", "", "", "")
 		require.NoError(t, err)
 

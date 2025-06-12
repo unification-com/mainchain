@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	mathmod "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
@@ -33,14 +34,14 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "valid genesis state and params",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(1, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(1, 2),
 				},
 				Streams: []types.StreamExport{
 					{
 						Sender:   "und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy",
 						Receiver: "und100aex49fh53r7mpeghdq6e645epp6r9qyqk5jq",
 						Stream: types.Stream{
-							Deposit:         sdk.NewCoin("nund", sdk.NewIntFromUint64(100000000)),
+							Deposit:         sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(100000000)),
 							FlowRate:        123,
 							LastOutflowTime: time.Now(),
 							DepositZeroTime: time.Now(),
@@ -51,7 +52,7 @@ func TestGenesisState_Validate(t *testing.T) {
 						Sender:   "und100aex49fh53r7mpeghdq6e645epp6r9qyqk5jq",
 						Receiver: "und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy",
 						Stream: types.Stream{
-							Deposit:         sdk.NewCoin("nund", sdk.NewIntFromUint64(200000000)),
+							Deposit:         sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(200000000)),
 							FlowRate:        321,
 							LastOutflowTime: time.Now(),
 							DepositZeroTime: time.Now(),
@@ -66,7 +67,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid: empty genesis state",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: sdk.Dec{},
+					ValidatorFee: mathmod.LegacyDec{},
 				},
 				Streams: []types.StreamExport{},
 			},
@@ -76,7 +77,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid: genesis state fee > 100%",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(101, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(101, 2),
 				},
 				Streams: []types.StreamExport{},
 			},
@@ -86,7 +87,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid: genesis state fee < 0%",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					ValidatorFee: sdk.NewDecWithPrec(-1, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(-1, 2),
 				},
 				Streams: []types.StreamExport{},
 			},

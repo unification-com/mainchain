@@ -2,16 +2,16 @@ package simulation_test
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/types/kv"
-	"github.com/stretchr/testify/require"
-	simapp "github.com/unification-com/mainchain/app"
-	"github.com/unification-com/mainchain/x/enterprise/simulation"
-	"github.com/unification-com/mainchain/x/enterprise/types"
 	"testing"
 
 	"github.com/cometbft/cometbft/crypto/ed25519"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/kv"
+	"github.com/stretchr/testify/require"
+
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	"github.com/unification-com/mainchain/x/enterprise/simulation"
+	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
 var (
@@ -20,11 +20,11 @@ var (
 )
 
 func TestDecodeStore(t *testing.T) {
-	testApp := simapp.Setup(t, false)
+	testApp := simapphelpers.Setup(t)
 	cdc := testApp.AppCodec()
 	dec := simulation.NewDecodeStore(cdc)
 
-	denom := simapp.TestDenomination
+	denom := sdk.DefaultBondDenom
 
 	purchaseOrder, err := types.NewEnterpriseUndPurchaseOrder(1, delAddr1.String(), sdk.NewInt64Coin(denom, 100000000),
 		types.StatusRaised, 1234, 5678)

@@ -1,12 +1,15 @@
 package types_test
 
 import (
+	"testing"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	simapp "github.com/unification-com/mainchain/app"
+
 	"github.com/unification-com/mainchain/x/enterprise/types"
-	"testing"
 )
 
 func TestMsgUndPurchaseOrder_Route(t *testing.T) {
@@ -19,14 +22,6 @@ func TestMsgUndPurchaseOrder_Type(t *testing.T) {
 	require.Equal(t, types.PurchaseAction, msg.Type())
 }
 
-func TestMsgUndPurchaseOrder_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgUndPurchaseOrder{Purchaser: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgProcessUndPurchaseOrder_Route(t *testing.T) {
 	msg := types.MsgProcessUndPurchaseOrder{}
 	require.Equal(t, types.ModuleName, msg.Route())
@@ -35,14 +30,6 @@ func TestMsgProcessUndPurchaseOrder_Route(t *testing.T) {
 func TestMsgProcessUndPurchaseOrder_Type(t *testing.T) {
 	msg := types.MsgProcessUndPurchaseOrder{}
 	require.Equal(t, types.ProcessAction, msg.Type())
-}
-
-func TestMsgProcessUndPurchaseOrder_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgProcessUndPurchaseOrder{Signer: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
 }
 
 func TestMsgWhitelistAddress_Route(t *testing.T) {
@@ -55,14 +42,6 @@ func TestMsgWhitelistAddress_Type(t *testing.T) {
 	require.Equal(t, types.WhitelistAddressAction, msg.Type())
 }
 
-func TestMsgWhitelistAddress_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := types.MsgWhitelistAddress{Signer: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgUndPurchaseOrder_Validate(t *testing.T) {
 	tests := []struct {
 		amount     sdk.Coin
@@ -70,22 +49,22 @@ func TestMsgUndPurchaseOrder_Validate(t *testing.T) {
 		expectPass bool
 	}{
 		{
-			sdk.NewInt64Coin(simapp.TestDenomination, 1),
+			sdk.NewInt64Coin(sdk.DefaultBondDenom, 1),
 			sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String(),
 			true,
 		},
 		{
-			sdk.NewInt64Coin(simapp.TestDenomination, 0),
+			sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 			sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String(),
 			false,
 		},
 		{
-			sdk.NewInt64Coin(simapp.TestDenomination, 1),
+			sdk.NewInt64Coin(sdk.DefaultBondDenom, 1),
 			"rubbish",
 			false,
 		},
 		{
-			sdk.NewInt64Coin(simapp.TestDenomination, 0),
+			sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
 			"rubbish",
 			false,
 		},
@@ -199,4 +178,36 @@ func TestMsgWhitelistAddress_Validate(t *testing.T) {
 			require.Error(t, msg.ValidateBasic(), "test: %v", i)
 		}
 	}
+}
+
+func TestMsgUndPurchaseOrderGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	amount := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
+	msg := types.NewMsgUndPurchaseOrder(addr, amount)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"enterprise/MsgUndPurchaseOrder","value":{"amount":{"amount":"1000","denom":"stake"},"purchaser":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgProcessUndPurchaseOrderGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := types.NewMsgProcessUndPurchaseOrder(1, 1, addr)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"enterprise/MsgProcessUndPurchaseOrder","value":{"decision":1,"purchase_order_id":"1","signer":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgWhitelistAddressGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	wl := sdk.AccAddress("addr2")
+	msg := types.NewMsgWhitelistAddress(wl, 1, addr)
+	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"enterprise/MsgWhitelistAddress","value":{"action":1,"address":"cosmos1v9jxgu3jc697dt","signer":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
 }

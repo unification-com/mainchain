@@ -4,34 +4,41 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/unification-com/mainchain/x/enterprise/exported"
 
-	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/spf13/cobra"
-
+	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
 
+	"github.com/unification-com/mainchain/x/enterprise/client/cli"
+	"github.com/unification-com/mainchain/x/enterprise/exported"
 	"github.com/unification-com/mainchain/x/enterprise/keeper"
 	"github.com/unification-com/mainchain/x/enterprise/simulation"
 	"github.com/unification-com/mainchain/x/enterprise/types"
-
-	"github.com/unification-com/mainchain/x/enterprise/client/cli"
 )
 
 const (
-	consensusVersion uint64 = 3
+	consensusVersion uint64 = 4
 )
 
 var (
-	_ module.AppModule           = AppModule{}
-	_ module.AppModuleBasic      = AppModuleBasic{}
-	_ module.AppModuleSimulation = AppModule{}
+	_ module.AppModuleBasic      = (*AppModuleBasic)(nil)
+	_ module.AppModuleSimulation = (*AppModule)(nil)
+	_ module.HasConsensusVersion = (*AppModule)(nil)
+	_ module.HasGenesisBasics    = (*AppModule)(nil)
+	_ module.HasGenesis          = (*AppModule)(nil)
+	_ module.HasName             = (*AppModule)(nil)
+	//_ module.HasInvariants       = (*AppModule)(nil) // ToDo - Invariants no longer required.
+	_ module.HasServices     = (*AppModule)(nil)
+	_ module.HasProposalMsgs = (*AppModule)(nil)
+
+	_ appmodule.AppModule       = (*AppModule)(nil)
+	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
 )
 
 // AppModuleBasic defines the basic application module used by the enterprise module.
@@ -70,14 +77,10 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
 
+// GetTxCmd ToDo - possibly migrate to autocli
 // GetTxCmd returns the root tx command for the enterprise module.
 func (AppModuleBasic) GetTxCmd() *cobra.Command {
 	return cli.GetTxCmd()
-}
-
-// GetQueryCmd returns the root query command for the enterprise module.
-func (AppModuleBasic) GetQueryCmd() *cobra.Command {
-	return cli.GetQueryCmd()
 }
 
 // RegisterInterfaces registers interfaces and implementations of the enterprise module.
@@ -114,15 +117,21 @@ func NewAppModule(
 	}
 }
 
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (am AppModule) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (am AppModule) IsAppModule() {}
+
 // Name returns the enterprise module's name.
 func (AppModule) Name() string {
 	return types.ModuleName
 }
 
-// RegisterInvariants performs a no-op.
-func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
-	keeper.RegisterInvariants(ir, am.keeper)
-}
+//// RegisterInvariants performs a no-op.
+//func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
+//	keeper.RegisterInvariants(ir, am.keeper)
+//}
 
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
@@ -133,18 +142,23 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	//m := keeper.NewMigrator(am.keeper)
 	//cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2)
 
-	m := keeper.NewMigrator(am.keeper, am.legacySubspace)
-	if err := cfg.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
-		panic(fmt.Sprintf("failed to migrate x/%s from version 2 to 3: %v", types.ModuleName, err))
-	}
+	//m := keeper.NewMigrator(am.keeper, am.legacySubspace)
+	//if err := cfg.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
+	//	panic(fmt.Sprintf("failed to migrate x/%s from version 2 to 3: %v", types.ModuleName, err))
+	//}
+
+	// Note: although consensus version is now 4, there is no in-state migration.
+	// The only change is that nund will be burned for the module account
+	m := keeper.NewMigrator(am.keeper, am.accountKeeper)
+	cfg.RegisterMigration(types.ModuleName, 3, m.Migrate3to4)
 }
 
 // InitGenesis performs genesis initialization for the enterprise module. It returns
 // no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) {
 	var genesisState types.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
-	return InitGenesis(ctx, am.keeper, am.bankKeeper, am.accountKeeper, genesisState)
+	InitGenesis(ctx, am.keeper, am.bankKeeper, am.accountKeeper, genesisState)
 }
 
 // ExportGenesis returns the exported genesis state as raw bytes for the enterprise
@@ -158,14 +172,8 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 func (AppModule) ConsensusVersion() uint64 { return consensusVersion }
 
 // BeginBlock returns the begin blocker for the enterprise module.
-func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	BeginBlocker(ctx, am.keeper)
-}
-
-// EndBlock returns the end blocker for the enterprise module. It returns no validator
-// updates.
-func (AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	return []abci.ValidatorUpdate{}
+func (am AppModule) BeginBlock(ctx context.Context) error {
+	return BeginBlocker(ctx, am.keeper)
 }
 
 //____________________________________________________________________________
@@ -183,7 +191,7 @@ func (AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Weight
 }
 
 // RegisterStoreDecoder registers a decoder for enterprise module's types
-func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {
 	sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 

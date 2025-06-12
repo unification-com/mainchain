@@ -1,8 +1,8 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
@@ -44,6 +44,7 @@ func (msg MsgCreateStream) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgCreateStream) Type() string { return CreateStreamAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgCreateStream) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Sender)
@@ -56,38 +57,24 @@ func (msg MsgCreateStream) ValidateBasic() error {
 	}
 
 	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
-		return sdkerrors.Wrap(ErrInvalidData, "deposit must be > zero")
+		return errorsmod.Wrap(ErrInvalidData, "deposit must be > zero")
 	}
 
 	if msg.FlowRate < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "flow rate must be > zero")
+		return errorsmod.Wrap(ErrInvalidData, "flow rate must be > zero")
 	}
 
 	if msg.Sender == msg.Receiver {
-		return sdkerrors.Wrap(ErrInvalidData, "receiver cannot be same as sender")
+		return errorsmod.Wrap(ErrInvalidData, "receiver cannot be same as sender")
 	}
 
 	duration := CalculateDuration(msg.Deposit, msg.FlowRate)
 
 	if duration < 60 {
-		return sdkerrors.Wrap(ErrInvalidData, "calculated duration too short. Must be > 1 minute")
+		return errorsmod.Wrap(ErrInvalidData, "calculated duration too short. Must be > 1 minute")
 	}
 
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgCreateStream) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgCreateStream) GetSigners() []sdk.AccAddress {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{sender}
 }
 
 // --- Claim Stream By sender & receiver Msg ---
@@ -108,6 +95,7 @@ func (msg MsgClaimStream) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgClaimStream) Type() string { return ClaimStreamAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgClaimStream) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Receiver)
@@ -121,20 +109,6 @@ func (msg MsgClaimStream) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgClaimStream) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgClaimStream) GetSigners() []sdk.AccAddress {
-	receiver, err := sdk.AccAddressFromBech32(msg.Receiver)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{receiver}
 }
 
 // --- Top up Deposit Msg ---
@@ -157,6 +131,7 @@ func (msg MsgTopUpDeposit) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgTopUpDeposit) Type() string { return TopUpDepositAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgTopUpDeposit) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Sender)
@@ -170,24 +145,10 @@ func (msg MsgTopUpDeposit) ValidateBasic() error {
 	}
 
 	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
-		return sdkerrors.Wrap(ErrInvalidData, "deposit must be > zero")
+		return errorsmod.Wrap(ErrInvalidData, "deposit must be > zero")
 	}
 
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgTopUpDeposit) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgTopUpDeposit) GetSigners() []sdk.AccAddress {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{sender}
 }
 
 // --- Update Flow Rate Msg ---
@@ -210,6 +171,7 @@ func (msg MsgUpdateFlowRate) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgUpdateFlowRate) Type() string { return UpdateFlowRateAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgUpdateFlowRate) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Sender)
@@ -223,24 +185,10 @@ func (msg MsgUpdateFlowRate) ValidateBasic() error {
 	}
 
 	if msg.FlowRate < 1 {
-		return sdkerrors.Wrap(ErrInvalidData, "flow rate must be > zero")
+		return errorsmod.Wrap(ErrInvalidData, "flow rate must be > zero")
 	}
 
 	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgUpdateFlowRate) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgUpdateFlowRate) GetSigners() []sdk.AccAddress {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{sender}
 }
 
 // --- Cancel Stream Msg ---
@@ -261,6 +209,7 @@ func (msg MsgCancelStream) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgCancelStream) Type() string { return CancelStreamAction }
 
+// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
 // ValidateBasic runs stateless checks on the message
 func (msg MsgCancelStream) ValidateBasic() error {
 	_, accErr := sdk.AccAddressFromBech32(msg.Sender)
@@ -276,38 +225,12 @@ func (msg MsgCancelStream) ValidateBasic() error {
 	return nil
 }
 
-// GetSignBytes encodes the message for signing
-func (msg MsgCancelStream) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgCancelStream) GetSigners() []sdk.AccAddress {
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{sender}
-}
-
 // --- Modify Params Msg Type ---
-
-// GetSignBytes returns the raw bytes for a MsgUpdateParams message that
-// the expected signer needs to sign.
-func (m MsgUpdateParams) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
-}
-
-// GetSigners returns the expected signers for a MsgUpdateParams message.
-func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
-}
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateParams) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return sdkerrors.Wrap(err, "invalid authority address")
+		return errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if err := m.Params.Validate(); err != nil {

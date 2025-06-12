@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	abci "github.com/cometbft/cometbft/abci/types"
+	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -19,9 +19,21 @@ import (
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 
+// ConsensusVer defines the current x/stream module consensus version.
+const ConsensusVer = 1
+
 var (
-	_ module.AppModule      = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModuleBasic      = (*AppModuleBasic)(nil)
+	_ module.AppModuleSimulation = (*AppModule)(nil)
+	_ module.HasConsensusVersion = (*AppModule)(nil)
+	_ module.HasGenesisBasics    = (*AppModule)(nil)
+	_ module.HasGenesis          = (*AppModule)(nil)
+	_ module.HasName             = (*AppModule)(nil)
+	_ module.HasInvariants       = (*AppModule)(nil)
+	_ module.HasServices         = (*AppModule)(nil)
+	_ module.HasProposalMsgs     = (*AppModule)(nil)
+
+	_ appmodule.AppModule = (*AppModule)(nil)
 )
 
 // ----------------------------------------------------------------------------
@@ -69,14 +81,10 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 	}
 }
 
+// GetTxCmd ToDo - possibly migrate to autocli
 // GetTxCmd returns the root Tx command for the module. The subcommands of this root command are used by end-users to generate new transactions containing messages defined in the module
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 	return cli.GetTxCmd()
-}
-
-// GetQueryCmd returns the root query command for the module. The subcommands of this root command are used by end-users to generate new queries to the subset of the state defined by the module
-func (AppModuleBasic) GetQueryCmd() *cobra.Command {
-	return cli.GetQueryCmd(types.StoreKey)
 }
 
 // ----------------------------------------------------------------------------
@@ -106,6 +114,12 @@ func NewAppModule(
 	}
 }
 
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (am AppModule) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (am AppModule) IsAppModule() {}
+
 // RegisterServices registers a gRPC query service to respond to the module-specific gRPC queries
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
@@ -118,13 +132,11 @@ func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
 }
 
 // InitGenesis performs the module's genesis initialization. It returns no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) {
 	var genState types.GenesisState
 	// Initialize global index to index in genesis state
 	cdc.MustUnmarshalJSON(gs, &genState)
 	am.keeper.InitGenesis(ctx, &genState)
-
-	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the module's exported genesis state as raw JSON bytes.
@@ -134,12 +146,6 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 // ConsensusVersion is a sequence number for state-breaking change of the module. It should be incremented on each consensus-breaking change introduced by the module. To avoid wrong/empty versions, the initial version should be set to 1
-func (AppModule) ConsensusVersion() uint64 { return 1 }
-
-// BeginBlock contains the logic that is automatically triggered at the beginning of each block
-func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
-
-// EndBlock contains the logic that is automatically triggered at the end of each block
-func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	return []abci.ValidatorUpdate{}
+func (AppModule) ConsensusVersion() uint64 {
+	return ConsensusVer
 }

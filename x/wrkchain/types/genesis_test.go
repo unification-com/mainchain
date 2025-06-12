@@ -2,10 +2,11 @@ package types
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestEqualStartingWrkChainID(t *testing.T) {
@@ -83,7 +84,7 @@ func TestValidateGenesis(t *testing.T) {
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())
 
-	state3.RegisteredWrkchains[0].Wrkchain.Type = "tendermint"
+	state3.RegisteredWrkchains[0].Wrkchain.BaseType = "tendermint"
 	expectedErr = fmt.Errorf("invalid Beacon: InStateLimit: 0. Error: Missing InStateLimit")
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())

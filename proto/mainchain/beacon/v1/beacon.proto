@@ -1,12 +1,14 @@
 syntax = "proto3";
 package mainchain.beacon.v1;
 
+import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/unification-com/mainchain/x/beacon/types";
 
 // Beacon holds metadata about a registered beacon
 message Beacon {
+  option (amino.name) = "beacon/v1/Beacon";
   // beacon_id is the id of the beacon
   uint64 beacon_id = 1;
   // moniker is the readable id of the beacon
@@ -27,6 +29,7 @@ message Beacon {
 
 // BeaconStorageLimit holds tata about the beacon's current in-state storage limit
 message BeaconStorageLimit {
+  option (amino.name) = "beacon/v1/BeaconStorageLimit";
   // beacon_id is the id of the beacon
   uint64 beacon_id = 1;
   // in_state_limit is the current maximum number of timestmamps that will be held in state for the beacon
@@ -35,6 +38,7 @@ message BeaconStorageLimit {
 
 // BeaconTimestamp holds each hash submitted to a registered beacon
 message BeaconTimestamp {
+  option (amino.name) = "beacon/v1/BeaconTimestamp";
   // timestamp_id is the id of the timestamp
   uint64 timestamp_id = 1;
   // submit_time is the unix epoch of the timestamp's record time
@@ -45,6 +49,7 @@ message BeaconTimestamp {
 
 // Params defines the parameters for the beacon module.
 message Params {
+  option (amino.name) = "beacon/v1/Params";
   // fee_register is the cost to register a beacon
   uint64 fee_register = 1;
   // fee_record is the cost to record a single timestamp

@@ -23,7 +23,7 @@ func TestDecodeStore(t *testing.T) {
 	now := time.Now().UTC()
 
 	newStream := types.Stream{
-		Deposit:         sdk.NewInt64Coin("stake", 1000),
+		Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 		FlowRate:        1,
 		LastOutflowTime: now,
 		DepositZeroTime: now,

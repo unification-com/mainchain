@@ -8,17 +8,16 @@ import (
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	"github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	simapp "github.com/unification-com/mainchain/app"
 	"github.com/unification-com/mainchain/cmd/und/cmd"
 )
 
 func TestInitCmd(t *testing.T) {
-	rootCmd, _ := cmd.NewRootCmd()
+	rootCmd := cmd.NewRootCmd()
 	rootCmd.SetArgs([]string{
 		"init",        // Test the init cmd
 		"simapp-test", // Moniker
 		fmt.Sprintf("--%s=%s", cli.FlagOverwrite, "true"), // Overwrite genesis.json, in case it already exists
 	})
 
-	require.NoError(t, svrcmd.Execute(rootCmd, "und", simapp.DefaultNodeHome))
+	require.NoError(t, svrcmd.Execute(rootCmd, "", "/tmp/.und_mainchain_test"))
 }

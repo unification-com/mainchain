@@ -2,6 +2,8 @@ package simulation
 
 import (
 	"errors"
+	"math/rand"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -9,9 +11,9 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
-	"math/rand"
 )
 
 const (
@@ -42,19 +44,19 @@ func WeightedOperations(
 		weightMsgPurchaseWrkChainStateStorage int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRegisterWrkChain, &weightMsgRegisterWrkChain, nil,
+	appParams.GetOrGenerate(OpWeightMsgRegisterWrkChain, &weightMsgRegisterWrkChain, nil,
 		func(_ *rand.Rand) {
 			weightMsgRegisterWrkChain = DefaultMsgRegisterWrkChain
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgRecordWrkChainBlock, &weightMsgRecordWrkChainBlock, nil,
+	appParams.GetOrGenerate(OpWeightMsgRecordWrkChainBlock, &weightMsgRecordWrkChainBlock, nil,
 		func(_ *rand.Rand) {
 			weightMsgRecordWrkChainBlock = DefaultMsgRecordWrkChainBlock
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgPurchaseWrkChainStateStorage, &weightMsgPurchaseWrkChainStateStorage, nil,
+	appParams.GetOrGenerate(OpWeightMsgPurchaseWrkChainStateStorage, &weightMsgPurchaseWrkChainStateStorage, nil,
 		func(_ *rand.Rand) {
 			weightMsgPurchaseWrkChainStateStorage = DefaultMsgPurchaseWrkChainStateStorage
 		},
@@ -131,7 +133,7 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}
@@ -210,7 +212,7 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}
@@ -288,7 +290,7 @@ func SimulateMsgPurchaseWrkChainStateStorage(k keeper.Keeper, bk types.BankKeepe
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		return opMsg, nil, nil
 	}

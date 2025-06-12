@@ -3,6 +3,7 @@ package simulation
 import (
 	"math/rand"
 
+	mathmod "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -44,31 +45,31 @@ func WeightedOperations(
 		weightMsgCancelStream   int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreateStream, &weightMsgCreateStream, nil,
+	appParams.GetOrGenerate(OpWeightMsgCreateStream, &weightMsgCreateStream, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateStream = DefaultWeightMsgCreateStream
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgClaimStream, &weightMsgClaimStream, nil,
+	appParams.GetOrGenerate(OpWeightMsgClaimStream, &weightMsgClaimStream, nil,
 		func(_ *rand.Rand) {
 			weightMsgClaimStream = DefaultWeightMsgClaimStream
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgTopUpDeposit, &weightMsgTopUpDeposit, nil,
+	appParams.GetOrGenerate(OpWeightMsgTopUpDeposit, &weightMsgTopUpDeposit, nil,
 		func(_ *rand.Rand) {
 			weightMsgTopUpDeposit = DefaultWeightMsgTopUpDeposit
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateFlowRate, &weightMsgUpdateFlowRate, nil,
+	appParams.GetOrGenerate(OpWeightMsgUpdateFlowRate, &weightMsgUpdateFlowRate, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateFlowRate = DefaultWeightMsgUpdateFlowRate
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCancelStream, &weightMsgCancelStream, nil,
+	appParams.GetOrGenerate(OpWeightMsgCancelStream, &weightMsgCancelStream, nil,
 		func(_ *rand.Rand) {
 			weightMsgCancelStream = DefaultWeightMsgCancelStream
 		},
@@ -121,6 +122,7 @@ func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 
 		senderAccount := ak.GetAccount(ctx, sender.Address)
 
+		// ToDO - Spendable... no longer implemented in x/bank
 		spendable := bk.SpendableCoin(ctx, senderAccount.GetAddress(), sdk.DefaultBondDenom)
 
 		depositAmnt, err := simtypes.RandPositiveInt(r, spendable.Amount)
@@ -129,15 +131,15 @@ func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, types.CreateStreamAction, err.Error()), nil, nil
 		}
 
-		if depositAmnt.LT(sdk.NewIntFromUint64(60)) {
+		if depositAmnt.LT(mathmod.NewIntFromUint64(60)) {
 			return simtypes.NoOpMsg(types.ModuleName, types.CreateStreamAction, "depositAmnt too small"), nil, nil
 		}
 
 		deposit := sdk.NewCoin(sdk.DefaultBondDenom, depositAmnt)
 
-		maxFlowRate := deposit.Amount.Quo(sdk.NewIntFromUint64(60))
+		maxFlowRate := deposit.Amount.Quo(mathmod.NewIntFromUint64(60))
 
-		if maxFlowRate.LTE(sdk.NewIntFromUint64(1)) {
+		if maxFlowRate.LTE(mathmod.NewIntFromUint64(1)) {
 			return simtypes.NoOpMsg(types.ModuleName, types.CreateStreamAction, "maxFlowRate too low"), nil, nil
 		}
 
@@ -184,7 +186,7 @@ func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -236,7 +238,6 @@ func SimulateMsgClaimStream(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 			TxGen:         moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:           nil,
 			Msg:           msg,
-			MsgType:       msg.Type(),
 			Context:       ctx,
 			SimAccount:    simAccount,
 			AccountKeeper: ak,
@@ -289,7 +290,7 @@ func SimulateMsgTopUpDeposit(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, types.TopUpDepositAction, err.Error()), nil, nil
 		}
 
-		if depositAmnt.LT(sdk.NewIntFromUint64(60)) {
+		if depositAmnt.LT(mathmod.NewIntFromUint64(60)) {
 			return simtypes.NoOpMsg(types.ModuleName, types.TopUpDepositAction, "depositAmnt too small"), nil, nil
 		}
 
@@ -335,7 +336,7 @@ func SimulateMsgTopUpDeposit(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 
@@ -395,7 +396,6 @@ func SimulateMsgUpdateFlowRate(ak types.AccountKeeper, bk types.BankKeeper, k ke
 			TxGen:         moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:           nil,
 			Msg:           msg,
-			MsgType:       msg.Type(),
 			Context:       ctx,
 			SimAccount:    simAccount,
 			AccountKeeper: ak,
@@ -446,7 +446,6 @@ func SimulateMsgCancelStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			TxGen:         moduletestutil.MakeTestEncodingConfig().TxConfig,
 			Cdc:           nil,
 			Msg:           msg,
-			MsgType:       msg.Type(),
 			Context:       ctx,
 			SimAccount:    simAccount,
 			AccountKeeper: ak,

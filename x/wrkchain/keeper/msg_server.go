@@ -3,12 +3,12 @@ package keeper
 import (
 	"context"
 	"fmt"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"strconv"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
@@ -34,15 +34,15 @@ func (k msgServer) RegisterWrkChain(goCtx context.Context, msg *types.MsgRegiste
 	}
 
 	if len(msg.Name) > 128 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "name too big. 128 character limit")
 	}
 
 	if len(msg.Moniker) > 64 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "moniker too big. 64 character limit")
 	}
 
 	if len(msg.Moniker) == 0 {
-		return nil, sdkerrors.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker")
+		return nil, errorsmod.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker")
 	}
 
 	wrkchainId, err := k.RegisterNewWrkChain(ctx, msg.Moniker, msg.Name, msg.GenesisHash, msg.BaseType, ownerAddr) // register the WrkChain
@@ -80,35 +80,35 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 	}
 
 	if msg.Height == 0 {
-		return nil, sdkerrors.Wrap(types.ErrInvalidData, "height must be > 0")
+		return nil, errorsmod.Wrap(types.ErrInvalidData, "height must be > 0")
 	}
 
 	if len(msg.BlockHash) > 66 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "block hash too big. 66 character limit")
 	}
 	if len(msg.ParentHash) > 66 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "parent hash too big. 66 character limit")
 	}
 	if len(msg.Hash1) > 66 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "hash1 too big. 66 character limit")
 	}
 	if len(msg.Hash2) > 66 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "hash2 too big. 66 character limit")
 	}
 	if len(msg.Hash3) > 66 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "hash3 too big. 66 character limit")
 	}
 
 	if !k.IsWrkChainRegistered(ctx, msg.WrkchainId) { // Checks if the WrkChain is already registered
-		return nil, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet") // If not, throw an error
+		return nil, errorsmod.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet") // If not, throw an error
 	}
 
 	if !k.IsAuthorisedToRecord(ctx, msg.WrkchainId, ownerAddr) {
-		return nil, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain")
+		return nil, errorsmod.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain")
 	}
 
 	if !k.QuickCheckHeightIsNew(ctx, msg.WrkchainId, msg.Height) {
-		return nil, sdkerrors.Wrap(types.ErrNewHeightMustBeHigher, "wrkchain block hashes height must be > last height recorded")
+		return nil, errorsmod.Wrap(types.ErrNewHeightMustBeHigher, "wrkchain block hashes height must be > last height recorded")
 	}
 
 	deletedHeight, err := k.RecordNewWrkchainHashes(ctx, msg.WrkchainId, msg.Height, msg.BlockHash, msg.ParentHash, msg.Hash1, msg.Hash2, msg.Hash3)
@@ -149,18 +149,22 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 		return nil, accErr
 	}
 
+	if msg.WrkchainId == 0 {
+		return nil, errorsmod.Wrap(types.ErrWrkChainDoesNotExist, "id must be greater than zero")
+	}
+
 	if msg.Number == 0 {
-		return nil, sdkerrors.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "cannot purchase zero")
 	}
 
 	_, found := k.GetWrkChain(ctx, msg.WrkchainId)
 
 	if !found { // Checks if the WrkChain is registered
-		return nil, sdkerrors.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet") // If not, throw an error
+		return nil, errorsmod.Wrap(types.ErrWrkChainDoesNotExist, "wrkchain has not been registered yet") // If not, throw an error
 	}
 
 	if !k.IsAuthorisedToRecord(ctx, msg.WrkchainId, ownerAddr) {
-		return nil, sdkerrors.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain")
+		return nil, errorsmod.Wrap(types.ErrNotWrkChainOwner, "you are not the owner of this wrkchain")
 	}
 
 	wrkchainStorage, _ := k.GetWrkChainStorageLimit(ctx, msg.WrkchainId)
@@ -170,7 +174,7 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 	wrkchainStorageAfter := wrkchainStorage.InStateLimit + msg.Number
 
 	if wrkchainStorageAfter > maxParam {
-		return nil, sdkerrors.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", wrkchainStorageAfter, maxParam))
+		return nil, errorsmod.Wrap(types.ErrExceedsMaxStorage, fmt.Sprintf("%d will exceed max storage of %d", wrkchainStorageAfter, maxParam))
 	}
 
 	err := k.IncreaseInStateStorage(ctx, msg.WrkchainId, msg.Number)
@@ -204,7 +208,7 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 
 func (k msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if k.authority != req.Authority {
-		return nil, sdkerrors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
+		return nil, errorsmod.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", k.authority, req.Authority)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)

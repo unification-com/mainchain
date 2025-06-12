@@ -1,9 +1,11 @@
 package types_test
 
 import (
-	"github.com/stretchr/testify/require"
-	"github.com/unification-com/mainchain/x/enterprise/types"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
 func TestRaisedQueueStoreKey(t *testing.T) {

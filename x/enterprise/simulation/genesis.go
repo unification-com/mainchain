@@ -3,12 +3,13 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"math/rand"
 	"strings"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
@@ -35,14 +36,14 @@ func RandomizedGenState(simState *module.SimulationState) {
 	var minAccepts uint64
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, EnterpriseMinAccepts, &minAccepts, simState.Rand,
+		EnterpriseMinAccepts, &minAccepts, simState.Rand,
 		func(r *rand.Rand) {
 			minAccepts = uint64(simtypes.RandIntBetween(r, 1, 3))
 		},
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, EnterpriseSignerAddress, &entAddress, simState.Rand,
+		EnterpriseSignerAddress, &entAddress, simState.Rand,
 		func(r *rand.Rand) {
 			entAddresses := make([]string, minAccepts)
 			i := uint64(0)
@@ -59,7 +60,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, EnterpriseDecisionTimeLimit, &decisionLimit, simState.Rand,
+		EnterpriseDecisionTimeLimit, &decisionLimit, simState.Rand,
 		func(r *rand.Rand) {
 			decisionLimit = uint64(simtypes.RandIntBetween(r, 9000, 15000))
 		},

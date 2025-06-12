@@ -1,7 +1,7 @@
 package types
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 )
 
 const (
@@ -25,18 +25,18 @@ const (
 )
 
 var (
-	ErrInvalidGenesis               = sdkerrors.Register(ModuleName, CodeInvalidGenesis, "invalid genesis")
-	ErrWrkChainDoesNotExist         = sdkerrors.Register(ModuleName, CodeWrkChainDoesNotExist, "wrkchain does not exist")
-	ErrNotWrkChainOwner             = sdkerrors.Register(ModuleName, CodeNotWrkChainOwner, "not wrkchain owner")
-	ErrWrkChainAlreadyRegistered    = sdkerrors.Register(ModuleName, CodeWrkChainAlreadyRegistered, "wrkchain already registered")
-	ErrMissingData                  = sdkerrors.Register(ModuleName, CodeMissingData, "missing data")
-	ErrInvalidData                  = sdkerrors.Register(ModuleName, CodeInvalidData, "invalid data")
-	ErrWrkChainBlockAlreadyRecorded = sdkerrors.Register(ModuleName, CodeWrkChainBlockAlreadyRecorded, "wrkchain hashes already recorded")
-	ErrInsufficientWrkChainFee      = sdkerrors.Register(ModuleName, CodeWrkChainInsufficientFee, "insufficient wrkchain fee")
-	ErrTooMuchWrkChainFee           = sdkerrors.Register(ModuleName, CodeWrkChainTooMuchFee, "too much wrkchain fee")
-	ErrFeePayerNotOwner             = sdkerrors.Register(ModuleName, CodeWrkChainFeePayerNotOwner, "fee payer not wrkchain owner")
-	ErrIncorrectFeeDenomination     = sdkerrors.Register(ModuleName, CodeWrkChainIncorrectFeeDenom, "incorrect wrkchain fee doenomination")
-	ErrContentTooLarge              = sdkerrors.Register(ModuleName, CodeContentTooLarge, "msg content too large")
-	ErrExceedsMaxStorage            = sdkerrors.Register(ModuleName, CodeExceedsMaxStorage, "exceeds max storage")
-	ErrNewHeightMustBeHigher        = sdkerrors.Register(ModuleName, CodeNewHeightMustBeHigher, "invalid height")
+	ErrInvalidGenesis               = errorsmod.Register(ModuleName, CodeInvalidGenesis, "invalid genesis")
+	ErrWrkChainDoesNotExist         = errorsmod.Register(ModuleName, CodeWrkChainDoesNotExist, "wrkchain does not exist")
+	ErrNotWrkChainOwner             = errorsmod.Register(ModuleName, CodeNotWrkChainOwner, "not wrkchain owner")
+	ErrWrkChainAlreadyRegistered    = errorsmod.Register(ModuleName, CodeWrkChainAlreadyRegistered, "wrkchain already registered")
+	ErrMissingData                  = errorsmod.Register(ModuleName, CodeMissingData, "missing data")
+	ErrInvalidData                  = errorsmod.Register(ModuleName, CodeInvalidData, "invalid data")
+	ErrWrkChainBlockAlreadyRecorded = errorsmod.Register(ModuleName, CodeWrkChainBlockAlreadyRecorded, "wrkchain hashes already recorded")
+	ErrInsufficientWrkChainFee      = errorsmod.Register(ModuleName, CodeWrkChainInsufficientFee, "insufficient wrkchain fee")
+	ErrTooMuchWrkChainFee           = errorsmod.Register(ModuleName, CodeWrkChainTooMuchFee, "too much wrkchain fee")
+	ErrFeePayerNotOwner             = errorsmod.Register(ModuleName, CodeWrkChainFeePayerNotOwner, "fee payer not wrkchain owner")
+	ErrIncorrectFeeDenomination     = errorsmod.Register(ModuleName, CodeWrkChainIncorrectFeeDenom, "incorrect wrkchain fee doenomination")
+	ErrContentTooLarge              = errorsmod.Register(ModuleName, CodeContentTooLarge, "msg content too large")
+	ErrExceedsMaxStorage            = errorsmod.Register(ModuleName, CodeExceedsMaxStorage, "exceeds max storage")
+	ErrNewHeightMustBeHigher        = errorsmod.Register(ModuleName, CodeNewHeightMustBeHigher, "invalid height")
 )

@@ -2,16 +2,15 @@ package simulation_test
 
 import (
 	"fmt"
-	simapp "github.com/unification-com/mainchain/app"
 	"testing"
 	"time"
 
+	"github.com/cometbft/cometbft/crypto/ed25519"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/kv"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cometbft/cometbft/crypto/ed25519"
-	"github.com/cosmos/cosmos-sdk/types/kv"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/beacon/simulation"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
@@ -22,7 +21,7 @@ var (
 )
 
 func TestDecodeStore(t *testing.T) {
-	testApp := simapp.Setup(t, false)
+	testApp := simapphelpers.Setup(t)
 	cdc := testApp.AppCodec()
 	dec := simulation.NewDecodeStore(cdc)
 

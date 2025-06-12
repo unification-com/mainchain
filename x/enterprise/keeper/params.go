@@ -1,9 +1,11 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/unification-com/mainchain/x/enterprise/types"
 	"strings"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
 //__PARAMS______________________________________________________________

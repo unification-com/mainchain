@@ -1,6 +1,8 @@
 package types
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	"testing"
 
 	"github.com/cometbft/cometbft/crypto/ed25519"
@@ -18,14 +20,6 @@ func TestMsgRegisterWrkChain_Type(t *testing.T) {
 	require.Equal(t, "register_wrkchain", msg.Type())
 }
 
-func TestMsgRegisterWrkChain_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgRegisterWrkChain{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
-}
-
 func TestMsgRecordWrkChainBlock_Route(t *testing.T) {
 	msg := MsgRecordWrkChainBlock{}
 	require.Equal(t, ModuleName, msg.Route())
@@ -34,14 +28,6 @@ func TestMsgRecordWrkChainBlock_Route(t *testing.T) {
 func TestMsgRecordWrkChainBlock_Type(t *testing.T) {
 	msg := MsgRecordWrkChainBlock{}
 	require.Equal(t, "record_wrkchain_hash", msg.Type())
-}
-
-func TestMsgRecordWrkChainBlock_GetSigners(t *testing.T) {
-	privK2 := ed25519.GenPrivKey()
-	pubKey2 := privK2.PubKey()
-	ownerAddr := sdk.AccAddress(pubKey2.Address())
-	msg := MsgRecordWrkChainBlock{Owner: ownerAddr.String()}
-	require.True(t, msg.GetSigners()[0].Equals(ownerAddr))
 }
 
 func TestMsgRegisterWrkChain(t *testing.T) {
@@ -205,4 +191,34 @@ func TestMsgPurchaseWrkChainStateStorage(t *testing.T) {
 			require.Error(t, msg.ValidateBasic(), "test: %v", i)
 		}
 	}
+}
+
+func TestMsgRegisterWrkChainGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgRegisterWrkChain("testwrkchain", "abc123", "testwrkchainname", "cosmos", addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"wrkchain/MsgRegisterWrkChain","value":{"base_type":"cosmos","genesis_hash":"abc123","moniker":"testwrkchain","name":"testwrkchainname","owner":"cosmos1v9jxgu33kfsgr5"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgPurchaseBeaconStateStorageGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgPurchaseWrkChainStateStorage(1, 1000, addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"wrkchain/MsgPurchaseWrkChainStorage","value":{"number":"1000","owner":"cosmos1v9jxgu33kfsgr5","wrkchain_id":"1"}}`
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgRecordWrkChainBlockGetSignBytes(t *testing.T) {
+	addr := sdk.AccAddress("addr1")
+	msg := NewMsgRecordWrkChainBlock(1, 2, "blockhash", "parenthash", "hash1", "hash2", "hash3", addr)
+	pc := codec.NewProtoCodec(types.NewInterfaceRegistry())
+	res, err := pc.MarshalAminoJSON(msg)
+	require.NoError(t, err)
+	expected := `{"type":"wrkchain/MsgRecordWrkChainBlock","value":{"block_hash":"blockhash","hash1":"hash1","hash2":"hash2","hash3":"hash3","height":"2","owner":"cosmos1v9jxgu33kfsgr5","parent_hash":"parenthash","wrkchain_id":"1"}}`
+	require.Equal(t, expected, string(res))
 }

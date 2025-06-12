@@ -2,10 +2,11 @@ package types
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestEqualStartingBeaconID(t *testing.T) {

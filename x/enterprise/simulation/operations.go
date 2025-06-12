@@ -3,6 +3,9 @@ package simulation
 import (
 	"errors"
 	"fmt"
+	"math/rand"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -10,10 +13,9 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/unification-com/mainchain/x/enterprise/keeper"
 	"github.com/unification-com/mainchain/x/enterprise/types"
-	"math/rand"
-	"strings"
 )
 
 // Simulation operation weights constants
@@ -46,19 +48,19 @@ func WeightedOperations(
 		weightMsgWhitelistAddress        int
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUndPurchaseOrder, &weightMsgUndPurchaseOrder, nil,
+	appParams.GetOrGenerate(OpWeightMsgUndPurchaseOrder, &weightMsgUndPurchaseOrder, nil,
 		func(_ *rand.Rand) {
 			weightMsgUndPurchaseOrder = DefaultMsgUndPurchaseOrder
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgProcessUndPurchaseOrder, &weightMsgProcessUndPurchaseOrder, nil,
+	appParams.GetOrGenerate(OpWeightMsgProcessUndPurchaseOrder, &weightMsgProcessUndPurchaseOrder, nil,
 		func(_ *rand.Rand) {
 			weightMsgProcessUndPurchaseOrder = DefaultMsgProcessUndPurchaseOrder
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgWhitelistAddress, &weightMsgWhitelistAddress, nil,
+	appParams.GetOrGenerate(OpWeightMsgWhitelistAddress, &weightMsgWhitelistAddress, nil,
 		func(_ *rand.Rand) {
 			weightMsgWhitelistAddress = DefaultMsgWhitelistAddress
 		},
@@ -138,7 +140,7 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 		}
 
 		// submit the PO
-		opMsg := simtypes.NewOperationMsg(msg, true, "", nil)
+		opMsg := simtypes.NewOperationMsg(msg, true, "")
 
 		poId, err := k.GetHighestPurchaseOrderID(ctx)
 
@@ -239,7 +241,7 @@ func SimulateMsgWhitelistAddress(k keeper.Keeper, bk types.BankKeeper, ak types.
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, errors.New(res.Log)
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 
 	}
 }
@@ -317,7 +319,7 @@ func operationSimulateMsgProcessUndPurchaseOrder(k keeper.Keeper, bk types.BankK
 				nil
 		}
 
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }
 

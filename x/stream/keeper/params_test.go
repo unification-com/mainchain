@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	mathmod "cosmossdk.io/math"
 
 	"github.com/unification-com/mainchain/x/stream/types"
 )
@@ -15,28 +15,28 @@ func (s *KeeperTestSuite) TestParams() {
 		{
 			name: "set full valid params",
 			input: types.Params{
-				ValidatorFee: sdk.NewDecWithPrec(24, 2),
+				ValidatorFee: mathmod.LegacyNewDecWithPrec(24, 2),
 			},
 			expectErr: false,
 		},
 		{
 			name: "set invalid params > 100%",
 			input: types.Params{
-				ValidatorFee: sdk.NewDecWithPrec(101, 2),
+				ValidatorFee: mathmod.LegacyNewDecWithPrec(101, 2),
 			},
 			expectErr: true,
 		},
 		{
 			name: "set invalid params negative value",
 			input: types.Params{
-				ValidatorFee: sdk.NewDecWithPrec(-1, 2),
+				ValidatorFee: mathmod.LegacyNewDecWithPrec(-1, 2),
 			},
 			expectErr: true,
 		},
 		{
 			name: "set invalid params nil value",
 			input: types.Params{
-				ValidatorFee: sdk.Dec{},
+				ValidatorFee: mathmod.LegacyDec{},
 			},
 			expectErr: true,
 		},

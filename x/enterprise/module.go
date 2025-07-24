@@ -33,9 +33,8 @@ var (
 	_ module.HasGenesisBasics    = (*AppModule)(nil)
 	_ module.HasGenesis          = (*AppModule)(nil)
 	_ module.HasName             = (*AppModule)(nil)
-	//_ module.HasInvariants       = (*AppModule)(nil) // ToDo - Invariants no longer required.
-	_ module.HasServices     = (*AppModule)(nil)
-	_ module.HasProposalMsgs = (*AppModule)(nil)
+	_ module.HasServices         = (*AppModule)(nil)
+	_ module.HasProposalMsgs     = (*AppModule)(nil)
 
 	_ appmodule.AppModule       = (*AppModule)(nil)
 	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
@@ -127,11 +126,6 @@ func (am AppModule) IsAppModule() {}
 func (AppModule) Name() string {
 	return types.ModuleName
 }
-
-//// RegisterInvariants performs a no-op.
-//func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
-//	keeper.RegisterInvariants(ir, am.keeper)
-//}
 
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.

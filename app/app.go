@@ -649,6 +649,7 @@ func NewApp(
 			EnterpriseKeeper: app.EnterpriseKeeper,
 			WrkchainKeeper:   app.WrkchainKeeper,
 			BK:               app.BankKeeper,
+			CircuitKeeper:    &app.CircuitKeeper,
 		},
 	)
 	if err != nil {

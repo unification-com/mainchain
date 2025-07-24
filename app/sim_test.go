@@ -340,7 +340,6 @@ package app
 //	config.InitialBlockHeight = 1
 //	config.ExportParamsPath = ""
 //	config.OnOperation = false
-//	config.AllInvariants = false
 //	config.ChainID = SimAppChainID
 //
 //	numSeeds := 3

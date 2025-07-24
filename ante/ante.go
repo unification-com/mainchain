@@ -2,11 +2,12 @@ package ante
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	circuitante "cosmossdk.io/x/circuit/ante"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
-	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v10/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	beaconante "github.com/unification-com/mainchain/x/beacon/ante"
 	entante "github.com/unification-com/mainchain/x/enterprise/ante"
@@ -17,6 +18,7 @@ type HandlerOptions struct {
 	authante.HandlerOptions
 
 	BK               BankKeeper
+	CircuitKeeper    circuitante.CircuitBreaker
 	BeaconKeeper     beaconante.BeaconKeeper
 	EnterpriseKeeper entante.EnterpriseKeeper
 	IBCKeeper        *ibckeeper.Keeper
@@ -49,9 +51,13 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	if options.EnterpriseKeeper == nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "ibc keeper is required for AnteHandler")
 	}
+	if options.CircuitKeeper == nil {
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "circuit keeper is required for AnteHandler")
+	}
 
 	anteDecorators := []sdk.AnteDecorator{
 		authante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
+		circuitante.NewCircuitBreakerDecorator(options.CircuitKeeper),
 		authante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
 		authante.NewValidateBasicDecorator(),
 		authante.NewTxTimeoutHeightDecorator(),
@@ -65,7 +71,6 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		authante.NewValidateSigCountDecorator(options.AccountKeeper),
 		authante.NewSigGasConsumeDecorator(options.AccountKeeper, options.SigGasConsumer),
 		authante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
-		//NewFreezerDecorator(),
 		authante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCKeeper),
 	}

@@ -240,12 +240,6 @@
       "owners": []
     },
     "consensus": null,
-    "crisis": {
-      "constant_fee": {
-        "denom": "nund",
-        "amount": "1000"
-      }
-    },
     "distribution": {
       "params": {
         "community_tax": "0.020000000000000000",

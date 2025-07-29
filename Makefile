@@ -8,7 +8,7 @@ BINDIR ?= $(GOPATH)/bin
 DOCKER := $(shell which docker)
 #TM_CORE_SEM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::') # grab everything after the space in "github.com/cometbft/cometbft v0.34.7"
 COSMOS_SDK_SEM_VERSION := $(shell go list -m github.com/cosmos/cosmos-sdk | sed 's:.* ::') # used in Swagger dep download
-IBC_GO_SEM_VERSION := $(shell grep 'github.com/cosmos/ibc-go/v8' go.mod | sed 's:.* ::') # used in Swagger dep download
+IBC_GO_SEM_VERSION := $(shell grep 'github.com/cosmos/ibc-go/v10' go.mod | sed 's:.* ::') # used in Swagger dep download
 LATEST_RELEASE := $(shell curl --silent https://api.github.com/repos/unification-com/mainchain/releases/latest | grep -Po '"tag_name": \"\K.*?(?=\")')
 
 #export GO111MODULE = on

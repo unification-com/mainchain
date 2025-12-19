@@ -57,5 +57,4 @@ func SetAddressPrefixes() {
 	config.SetBech32PrefixForValidator(Bech32PrefixValAddr, Bech32PrefixValPub)
 	config.SetBech32PrefixForConsensusNode(Bech32PrefixConsAddr, Bech32PrefixConsPub)
 	config.SetCoinType(CoinType)
-	//config.Seal()
 }

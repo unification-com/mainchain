@@ -19,7 +19,6 @@ func (s *CLITestSuite) TestCreateStreamTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdCreateStream()
 	cmd.SetOutput(io.Discard)
-	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
@@ -161,7 +160,6 @@ func (s *CLITestSuite) TestClaimStreamTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdClaimStream()
 	cmd.SetOutput(io.Discard)
-	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
@@ -225,7 +223,6 @@ func (s *CLITestSuite) TestTopUpDepositTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdTopUpDeposit()
 	cmd.SetOutput(io.Discard)
-	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
@@ -314,7 +311,6 @@ func (s *CLITestSuite) TestUpdateFlowRateTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdUpdateFlowRate()
 	cmd.SetOutput(io.Discard)
-	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
@@ -403,7 +399,6 @@ func (s *CLITestSuite) TestCancelStreamTxCmd() {
 	accounts := testutil.CreateKeyringAccounts(s.T(), s.kr, 2)
 	cmd := cli.GetCmdCancelStream()
 	cmd.SetOutput(io.Discard)
-	flags.AddTxFlagsToCmd(cmd)
 
 	extraArgs := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),

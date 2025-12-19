@@ -131,8 +131,7 @@ check that new features are working as expected in a simulated live chain enviro
 being executed against the chain). The simulation will produce the specified number of blocks, using the specified
 number of operations (transactions) per block to simulate a full running chain environment.
 
-For example, the following command will simulate 500 blocks, each with 200 randomly generated transaction operations,
-checking for invariants every block.
+For example, the following command will simulate 500 blocks, each with 200 randomly generated transaction operations.
 
 The parameters used to generate the chain, along with the final chain state export and simulation statistics will be
 saved to the specified `ExportParamsPath`, `ExportStatePath` and `ExportStatsPath` paths respectively.
@@ -146,7 +145,6 @@ go test -mod=readonly ./app \
     -Commit=true \
     -Seed=24 \
     -Period=10 \
-    -PrintAllInvariants=true \
     -ExportParamsPath=/path/to/.simapp/params.json \
     -ExportStatePath=/path/to/.simapp/state.json \
     -ExportStatsPath=/path/to/.simapp/statistics.json \

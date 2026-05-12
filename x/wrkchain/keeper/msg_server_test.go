@@ -134,11 +134,12 @@ func (s *KeeperTestSuite) TestRegisterWrkChain() {
 
 func (s *KeeperTestSuite) TestRecordWrkChainBlock() {
 
-	_, _ = s.msgServer.RegisterWrkChain(s.ctx, &types.MsgRegisterWrkChain{
+	_, err := s.msgServer.RegisterWrkChain(s.ctx, &types.MsgRegisterWrkChain{
 		Owner:   s.addrs[0].String(),
 		Name:    "testname",
 		Moniker: "testmoniker",
 	})
+	s.Require().NoError(err)
 
 	testCases := []struct {
 		name        string
@@ -301,11 +302,12 @@ func (s *KeeperTestSuite) TestRecordWrkChainBlock() {
 
 func (s *KeeperTestSuite) TestPurchaseWrkChainStateStorage() {
 
-	_, _ = s.msgServer.RegisterWrkChain(s.ctx, &types.MsgRegisterWrkChain{
+	_, err := s.msgServer.RegisterWrkChain(s.ctx, &types.MsgRegisterWrkChain{
 		Owner:   s.addrs[0].String(),
 		Name:    "testname",
 		Moniker: "testmoniker",
 	})
+	s.Require().NoError(err)
 
 	testCases := []struct {
 		name        string

@@ -18,7 +18,7 @@ package app
 //	"github.com/spf13/viper"
 //	"github.com/stretchr/testify/require"
 //
-//	"cosmossdk.io/log"
+//	"cosmossdk.io/log/v2"
 //	"cosmossdk.io/store"
 //	storetypes "cosmossdk.io/store/types"
 //	"cosmossdk.io/x/feegrant"

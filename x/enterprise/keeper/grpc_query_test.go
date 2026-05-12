@@ -11,6 +11,100 @@ import (
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
 
+// TestGRPCQueryEnterpriseAccount covers the EnterpriseAccount gRPC handler
+// and the underlying GetEnterpriseUserAccount keeper method (both previously
+// at 0% coverage — TA-27).
+func (s *KeeperTestSuite) TestGRPCQueryEnterpriseAccount() {
+	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
+	denom := sdk.DefaultBondDenom
+
+	s.Run("empty request (nil via client surfaces as zero-value)", func() {
+		// Client-side nil is materialised as a zero-valued struct on the wire;
+		// Address is "" → InvalidArgument from the production guard.
+		_, err := queryClient.EnterpriseAccount(gocontext.Background(), &types.QueryEnterpriseAccountRequest{})
+		s.Require().Error(err)
+		s.Require().Contains(err.Error(), "invalid request")
+	})
+
+	s.Run("invalid bech32 address", func() {
+		_, err := queryClient.EnterpriseAccount(gocontext.Background(), &types.QueryEnterpriseAccountRequest{
+			Address: "not-a-valid-bech32-address",
+		})
+		s.Require().Error(err)
+	})
+
+	s.Run("nil request via direct keeper call", func() {
+		// The req == nil branch isn't reachable through the gRPC client (the
+		// wire layer materialises nil as the zero struct), but it's reachable
+		// when calling the QueryServer method directly. Cover it here.
+		_, err := app.EnterpriseKeeper.EnterpriseAccount(gocontext.Background(), nil)
+		s.Require().Error(err)
+		s.Require().Contains(err.Error(), "empty request")
+	})
+
+	s.Run("fresh address (no locked, no spent, has bank balance)", func() {
+		// addrs[0] was funded with 30000000 nund in SetupTest; no locked/spent.
+		freshAddr := addrs[0]
+		bankBalance := app.BankKeeper.GetBalance(ctx, freshAddr, denom)
+
+		resp, err := queryClient.EnterpriseAccount(gocontext.Background(), &types.QueryEnterpriseAccountRequest{
+			Address: freshAddr.String(),
+		})
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		s.Require().Equal(freshAddr.String(), resp.Account.Owner)
+		s.Require().True(resp.Account.GeneralSupply.IsEqual(bankBalance),
+			"GeneralSupply: expected %s, got %s", bankBalance, resp.Account.GeneralSupply)
+		s.Require().True(resp.Account.LockedEfund.IsEqual(sdk.NewInt64Coin(denom, 0)),
+			"LockedEfund must be zero for fresh address")
+		s.Require().True(resp.Account.SpentEfund.IsEqual(sdk.NewInt64Coin(denom, 0)),
+			"SpentEfund must be zero for fresh address")
+		// Spendable = bank + locked = bank + 0 = bank
+		s.Require().True(resp.Account.Spendable.IsEqual(bankBalance),
+			"Spendable: expected %s, got %s", bankBalance, resp.Account.Spendable)
+	})
+
+	s.Run("full view: locked + spent + bank balance", func() {
+		// Use a different address so previous sub-tests don't contaminate.
+		userAddr := addrs[1]
+		bankBalance := app.BankKeeper.GetBalance(ctx, userAddr, denom)
+
+		// Lock some eFUND.
+		lockedAmt := int64(5000)
+		err := app.EnterpriseKeeper.CreateAndLockEFUND(ctx, userAddr, sdk.NewInt64Coin(denom, lockedAmt))
+		s.Require().NoError(err)
+
+		// Record some spent eFUND directly (mimics what UnlockAndMintCoinsForFees
+		// does internally).
+		spentAmt := int64(1234)
+		err = app.EnterpriseKeeper.SetSpentEFUNDForAccount(ctx, types.SpentEFUND{
+			Owner:  userAddr.String(),
+			Amount: sdk.NewInt64Coin(denom, spentAmt),
+		})
+		s.Require().NoError(err)
+
+		resp, err := queryClient.EnterpriseAccount(gocontext.Background(), &types.QueryEnterpriseAccountRequest{
+			Address: userAddr.String(),
+		})
+		s.Require().NoError(err)
+
+		expLocked := sdk.NewInt64Coin(denom, lockedAmt)
+		expSpent := sdk.NewInt64Coin(denom, spentAmt)
+		expSpendable := bankBalance.Add(expLocked)
+
+		s.Require().Equal(userAddr.String(), resp.Account.Owner)
+		s.Require().True(resp.Account.GeneralSupply.IsEqual(bankBalance),
+			"GeneralSupply: expected %s, got %s", bankBalance, resp.Account.GeneralSupply)
+		s.Require().True(resp.Account.LockedEfund.IsEqual(expLocked),
+			"LockedEfund: expected %s, got %s", expLocked, resp.Account.LockedEfund)
+		s.Require().True(resp.Account.SpentEfund.IsEqual(expSpent),
+			"SpentEfund: expected %s, got %s", expSpent, resp.Account.SpentEfund)
+		s.Require().True(resp.Account.Spendable.IsEqual(expSpendable),
+			"Spendable (bank+locked): expected %s, got %s", expSpendable, resp.Account.Spendable)
+	})
+}
+
 func (s *KeeperTestSuite) TestGRPCQueryParams() {
 	app, ctx, queryClient, addrs := s.app, s.ctx, s.queryClient, s.addrs
 

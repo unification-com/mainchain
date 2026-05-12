@@ -33,11 +33,6 @@ func WRKChainEqual(wcA types.WrkChain, wcB types.WrkChain) bool {
 	return wcA == wcB
 }
 
-// ParamsEqual checks params are equal
-func ParamsEqual(paramsA, paramsB types.Params) bool {
-	return paramsA == paramsB
-}
-
 // WRKChainBlockEqual checks if two WRKChainBlocks are equal
 func WRKChainBlockEqual(bA, bB types.WrkChainBlock) bool {
 	return bA == bB

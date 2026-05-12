@@ -45,11 +45,6 @@ func BeaconEqual(wcA types.Beacon, wcB types.Beacon) bool {
 	return wcA == wcB
 }
 
-// // ParamsEqual checks params are equal
-func ParamsEqual(paramsA, paramsB types.Params) bool {
-	return paramsA == paramsB
-}
-
 // BeaconTimestampEqual checks if two BeaconTimestamps are equal
 func BeaconTimestampEqual(lA, lB types.BeaconTimestamp) bool {
 	return lA == lB

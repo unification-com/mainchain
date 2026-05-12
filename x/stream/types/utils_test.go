@@ -308,13 +308,12 @@ func TestCalculateValidatorFee(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(tt *testing.T) {
 			finalClaimCoin, valFeeCoin := types.CalculateValidatorFee(tc.valFee, tc.amountToClaim)
-			if tc.expectedFinalClaimCoin.Amount.IsZero() {
-				require.True(t, finalClaimCoin.IsZero())
-			} else {
-				require.Equal(t, tc.expectedFinalClaimCoin, finalClaimCoin, "finalClaimCoin ")
-			}
-			require.Equal(t, tc.expectedValFeeCoin, valFeeCoin, "valFeeCoin")
-			require.Equal(t, tc.amountToClaim, finalClaimCoin.Add(valFeeCoin), "total")
+			require.True(t, tc.expectedFinalClaimCoin.IsEqual(finalClaimCoin),
+				"finalClaimCoin: expected %s, got %s", tc.expectedFinalClaimCoin, finalClaimCoin)
+			require.True(t, tc.expectedValFeeCoin.IsEqual(valFeeCoin),
+				"valFeeCoin: expected %s, got %s", tc.expectedValFeeCoin, valFeeCoin)
+			require.True(t, tc.amountToClaim.IsEqual(finalClaimCoin.Add(valFeeCoin)),
+				"total: expected %s, got %s", tc.amountToClaim, finalClaimCoin.Add(valFeeCoin))
 		})
 	}
 }

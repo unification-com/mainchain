@@ -89,17 +89,17 @@ $ %s tx %s create und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 777000000000nund 29
 // GetCmdClaimStreamById is the CLI command for claiming funds held in a stream
 func GetCmdClaimStream() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "claim [sender_Addr]",
-		Short: "Claim funds held in a stream by stream sender address",
+		Use:   "claim [sender_Addr] [denom]",
+		Short: "Claim funds held in a stream by stream sender address and denom",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Claim funds held in a stream by sender address
+			fmt.Sprintf(`Claim funds held in a stream by sender address and denom
 Example:
-$ %s tx %s claim und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy --from t1
+$ %s tx %s claim und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy nund --from t1
 `,
 				version.AppName, types.ModuleName,
 			),
 		),
-		Args: cobra.ExactArgs(1),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -113,7 +113,7 @@ $ %s tx %s claim und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy --from t1
 				return err
 			}
 
-			msg := types.NewMsgClaimStream(receiver, sender)
+			msg := types.NewMsgClaimStream(receiver, sender, args[1])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -172,17 +172,17 @@ $ %s tx %s topup und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 100000000000nund --f
 // GetCmdUpdateFlowRate is the CLI command for updating the flow rate of a stream
 func GetCmdUpdateFlowRate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-flow [receiver_addr] [new_flow_rate]",
+		Use:   "update-flow [receiver_addr] [new_flow_rate] [denom]",
 		Short: "Change the flow rate of a stream",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Change the flow rate of a stream
 Example:
-$ %s tx %s update-flow und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 246973 --from t1
+$ %s tx %s update-flow und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 246973 nund --from t1
 `,
 				version.AppName, types.ModuleName,
 			),
 		),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -201,7 +201,7 @@ $ %s tx %s update-flow und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 246973 --from 
 				return err
 			}
 
-			msg := types.NewMsgUpdateFlowRate(receiver, sender, flowRate)
+			msg := types.NewMsgUpdateFlowRate(receiver, sender, flowRate, args[2])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -216,17 +216,17 @@ $ %s tx %s update-flow und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 246973 --from 
 // GetCmdCancelStream is the CLI command for cancelling a stream
 func GetCmdCancelStream() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cancel [receiver_addr]",
+		Use:   "cancel [receiver_addr] [denom]",
 		Short: "Cancel a stream",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Cancel a stream
 Example:
-$ %s tx %s cancel und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy --from t1
+$ %s tx %s cancel und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy nund --from t1
 `,
 				version.AppName, types.ModuleName,
 			),
 		),
-		Args: cobra.ExactArgs(1),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -240,7 +240,7 @@ $ %s tx %s cancel und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy --from t1
 				return err
 			}
 
-			msg := types.NewMsgCancelStream(receiver, sender)
+			msg := types.NewMsgCancelStream(receiver, sender, args[1])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

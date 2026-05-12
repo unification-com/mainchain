@@ -19,6 +19,9 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState *types.GenesisState) {
 
 	k.SetParams(ctx, genState.Params)
 
+	// detect duplicate (sender, receiver, denom) triples in the genesis input.
+	seen := make(map[string]struct{})
+
 	for _, stream := range genState.Streams {
 
 		senderAddr, err := sdk.AccAddressFromBech32(stream.Sender)
@@ -31,7 +34,15 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState *types.GenesisState) {
 			panic(err)
 		}
 
-		err = k.SetStream(ctx, receiverAddr, senderAddr, stream.Stream)
+		denom := stream.Stream.Deposit.Denom
+
+		key := stream.Sender + "|" + stream.Receiver + "|" + denom
+		if _, dup := seen[key]; dup {
+			panic(fmt.Sprintf("duplicate stream in genesis for (sender=%s, receiver=%s, denom=%s)", stream.Sender, stream.Receiver, denom))
+		}
+		seen[key] = struct{}{}
+
+		err = k.SetStream(ctx, receiverAddr, senderAddr, denom, stream.Stream)
 
 		if err != nil {
 			panic(err)
@@ -55,7 +66,7 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	params := k.GetParams(ctx)
 	var streams []types.StreamExport
 
-	k.IterateAllStreams(ctx, func(receiverAddr, senderAddr sdk.AccAddress, stream types.Stream) bool {
+	k.IterateAllStreams(ctx, func(receiverAddr, senderAddr sdk.AccAddress, _ string, stream types.Stream) bool {
 		streams = append(streams,
 			types.StreamExport{
 				Receiver: receiverAddr.String(),

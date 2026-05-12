@@ -9,6 +9,7 @@ const (
 
 	AttributeKeyStreamSender        = "sender"
 	AttributeKeyStreamReceiver      = "receiver"
+	AttributeKeyStreamDenom         = "denom"
 	AttributeKeyFlowRate            = "flow_rate"
 	AttributeKeyAmountDeposited     = "amount_deposited"
 	AttributeKeyDepositDuration     = "deposit_duration"

@@ -89,6 +89,7 @@ func TestMsgClaimStream_ValidateBasic(t *testing.T) {
 		msg := types.NewMsgClaimStream(
 			tc.receiver,
 			tc.sender,
+			sdk.DefaultBondDenom,
 		)
 
 		if tc.expectPass {
@@ -169,6 +170,7 @@ func TestMsgUpdateFlowRate_ValidateBasic(t *testing.T) {
 			tc.receiver,
 			tc.sender,
 			tc.flowRate,
+			sdk.DefaultBondDenom,
 		)
 
 		if tc.expectPass {
@@ -206,6 +208,7 @@ func TestMsgCancelStream_ValidateBasic(t *testing.T) {
 		msg := types.NewMsgCancelStream(
 			tc.receiver,
 			tc.sender,
+			sdk.DefaultBondDenom,
 		)
 
 		if tc.expectPass {
@@ -304,11 +307,11 @@ func TestMsgCreateStreamGetSignBytes(t *testing.T) {
 func TestMsgClaimStreamGetSignBytes(t *testing.T) {
 	sender := sdk.AccAddress("addr1")
 	receiver := sdk.AccAddress("addr2")
-	msg := types.NewMsgClaimStream(receiver, sender)
+	msg := types.NewMsgClaimStream(receiver, sender, sdk.DefaultBondDenom)
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"stream/MsgClaimStream","value":{"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	expected := `{"type":"stream/MsgClaimStream","value":{"denom":"nund","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -327,21 +330,21 @@ func TestMsgTopUpDepositGetSignBytes(t *testing.T) {
 func TestMsgUpdateFlowRateGetSignBytes(t *testing.T) {
 	sender := sdk.AccAddress("addr1")
 	receiver := sdk.AccAddress("addr2")
-	msg := types.NewMsgUpdateFlowRate(receiver, sender, 1)
+	msg := types.NewMsgUpdateFlowRate(receiver, sender, 1, sdk.DefaultBondDenom)
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"stream/MsgUpdateFlowRate","value":{"flow_rate":"1","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	expected := `{"type":"stream/MsgUpdateFlowRate","value":{"denom":"nund","flow_rate":"1","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
 	require.Equal(t, expected, string(res))
 }
 
 func TestMsgCancelStreamGetSignBytes(t *testing.T) {
 	sender := sdk.AccAddress("addr1")
 	receiver := sdk.AccAddress("addr2")
-	msg := types.NewMsgCancelStream(receiver, sender)
+	msg := types.NewMsgCancelStream(receiver, sender, sdk.DefaultBondDenom)
 	pc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	res, err := pc.MarshalAminoJSON(msg)
 	require.NoError(t, err)
-	expected := `{"type":"stream/MsgCancelStream","value":{"receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
+	expected := `{"type":"stream/MsgCancelStream","value":{"denom":"nund","receiver":"und1v9jxgu3jylfr2w","sender":"und1v9jxgu332vu4y3"}}`
 	require.Equal(t, expected, string(res))
 }

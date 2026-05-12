@@ -82,10 +82,12 @@ func (msg MsgCreateStream) ValidateBasic() error {
 // NewMsgClaimStream is a constructor function for MsgClaimStream
 func NewMsgClaimStream(
 	receiver sdk.AccAddress,
-	sender sdk.AccAddress) *MsgClaimStream {
+	sender sdk.AccAddress,
+	denom string) *MsgClaimStream {
 	return &MsgClaimStream{
 		Receiver: receiver.String(),
 		Sender:   sender.String(),
+		Denom:    denom,
 	}
 }
 
@@ -106,6 +108,10 @@ func (msg MsgClaimStream) ValidateBasic() error {
 	_, accErr = sdk.AccAddressFromBech32(msg.Sender)
 	if accErr != nil {
 		return accErr
+	}
+
+	if err := sdk.ValidateDenom(msg.Denom); err != nil {
+		return errorsmod.Wrap(ErrInvalidData, err.Error())
 	}
 
 	return nil
@@ -157,11 +163,13 @@ func (msg MsgTopUpDeposit) ValidateBasic() error {
 func NewMsgUpdateFlowRate(
 	receiver, sender sdk.AccAddress,
 	flowRate int64,
+	denom string,
 ) *MsgUpdateFlowRate {
 	return &MsgUpdateFlowRate{
 		Receiver: receiver.String(),
 		Sender:   sender.String(),
 		FlowRate: flowRate,
+		Denom:    denom,
 	}
 }
 
@@ -188,6 +196,10 @@ func (msg MsgUpdateFlowRate) ValidateBasic() error {
 		return errorsmod.Wrap(ErrInvalidData, "flow rate must be > zero")
 	}
 
+	if err := sdk.ValidateDenom(msg.Denom); err != nil {
+		return errorsmod.Wrap(ErrInvalidData, err.Error())
+	}
+
 	return nil
 }
 
@@ -196,10 +208,12 @@ func (msg MsgUpdateFlowRate) ValidateBasic() error {
 // NewMsgCancelStream is a constructor function for MsgCancelStream
 func NewMsgCancelStream(
 	reciever,
-	sender sdk.AccAddress) *MsgCancelStream {
+	sender sdk.AccAddress,
+	denom string) *MsgCancelStream {
 	return &MsgCancelStream{
 		Receiver: reciever.String(),
 		Sender:   sender.String(),
+		Denom:    denom,
 	}
 }
 
@@ -220,6 +234,10 @@ func (msg MsgCancelStream) ValidateBasic() error {
 	_, accErr = sdk.AccAddressFromBech32(msg.Receiver)
 	if accErr != nil {
 		return accErr
+	}
+
+	if err := sdk.ValidateDenom(msg.Denom); err != nil {
+		return errorsmod.Wrap(ErrInvalidData, err.Error())
 	}
 
 	return nil

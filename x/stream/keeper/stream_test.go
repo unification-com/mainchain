@@ -11,7 +11,7 @@ import (
 )
 
 func (s *KeeperTestSuite) TestIsStream() {
-	ok := s.app.StreamKeeper.IsStream(s.ctx, s.addrs[1], s.addrs[0])
+	ok := s.app.StreamKeeper.IsStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().False(ok)
 
 	nowTime := s.ctx.BlockTime()
@@ -24,16 +24,16 @@ func (s *KeeperTestSuite) TestIsStream() {
 		Cancellable:     true,
 	}
 
-	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], expStream)
+	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom, expStream)
 	s.Require().NoError(err)
 
-	ok = s.app.StreamKeeper.IsStream(s.ctx, s.addrs[1], s.addrs[0])
+	ok = s.app.StreamKeeper.IsStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().True(ok)
 }
 
 func (s *KeeperTestSuite) TestSetGetStream() {
 
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().False(ok)
 	s.Require().Equal(types.Stream{}, stream)
 
@@ -47,10 +47,10 @@ func (s *KeeperTestSuite) TestSetGetStream() {
 		Cancellable:     true,
 	}
 
-	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], expStream)
+	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom, expStream)
 	s.Require().NoError(err)
 
-	stream, ok = s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok = s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 
 	s.Require().True(ok)
 	s.Require().Equal(expStream.Deposit, stream.Deposit)
@@ -108,7 +108,7 @@ func (s *KeeperTestSuite) TestCreateNewStream_BasicSuccess() {
 	// should emit create_stream event
 	s.Require().True(hasCreateStreamEvent)
 
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 
 	s.Require().True(ok)
 	s.Require().Equal(expStream.Deposit, stream.Deposit)
@@ -132,10 +132,10 @@ func (s *KeeperTestSuite) TestDeleteStream() {
 		receiver := s.addrs[i+1]
 		_, err := s.app.StreamKeeper.CreateNewStream(s.ctx, receiver, sender, sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000), 123)
 		s.Require().NoError(err)
-		_, ok := s.app.StreamKeeper.GetStream(s.ctx, receiver, sender)
+		_, ok := s.app.StreamKeeper.GetStream(s.ctx, receiver, sender, sdk.DefaultBondDenom)
 		s.Require().True(ok)
-		s.app.StreamKeeper.DeleteStream(s.ctx, receiver, sender)
-		_, ok = s.app.StreamKeeper.GetStream(s.ctx, receiver, sender)
+		s.app.StreamKeeper.DeleteStream(s.ctx, receiver, sender, sdk.DefaultBondDenom)
+		_, ok = s.app.StreamKeeper.GetStream(s.ctx, receiver, sender, sdk.DefaultBondDenom)
 		s.Require().False(ok)
 	}
 }
@@ -153,7 +153,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Basic_Success() {
 	}
 
 	// set stream
-	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], expStream)
+	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom, expStream)
 	s.Require().NoError(err)
 
 	// Add Deposit to stream
@@ -206,7 +206,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Basic_Success() {
 	s.Require().True(hasEvent)
 
 	// get stream from keeper
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	// should now be 1000stake
 	s.Require().Equal(sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(1000)), stream.Deposit)
 	// Deposit of 1000, flow rate of 100/s, should have deposit zero time of now + 10s
@@ -284,7 +284,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingNotExpired() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			// deposit zero time is in the queryFuture, so just use SetStream instead of create & add deposit combo
-			err := s.app.StreamKeeper.SetStream(tCtx, tc.receiver, tc.sender, tc.stream)
+			err := s.app.StreamKeeper.SetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom, tc.stream)
 			s.Require().NoError(err, "SetStream NoError test name %s", tc.name)
 			ok, err := s.app.StreamKeeper.AddDeposit(tCtx, tc.receiver, tc.sender, tc.deposit)
 			s.Require().True(ok, "AddDeposit True test name %s", tc.name)
@@ -300,7 +300,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingNotExpired() {
 			}
 			s.Require().False(hasEvent)
 
-			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok, "GetStream True test name %s", tc.name)
 			s.Require().Equal(tc.expDeposit, stream.Deposit, "GetStream Deposit Equal test name %s", tc.name)
 			s.Require().Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
@@ -413,14 +413,14 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingExpired() {
 			}
 
 			// check stream
-			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok)
 			s.Require().Equal(tc.initialDeposit, stream.Deposit)
 
 			// set times etc.
 			stream.LastOutflowTime = tc.stream.LastOutflowTime
 			stream.DepositZeroTime = tc.stream.DepositZeroTime
-			err = s.app.StreamKeeper.SetStream(tCtx, tc.receiver, tc.sender, stream)
+			err = s.app.StreamKeeper.SetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom, stream)
 			s.Require().NoError(err, "SetStream NoError test name %s", tc.name)
 
 			// top up with new deposit
@@ -443,7 +443,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Success_TopUpExistingExpired() {
 			}
 
 			// final check
-			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok, "GetStream True test name %s", tc.name)
 			s.Require().Equal(tc.expDeposit, stream.Deposit, "GetStream Deposit Equal test name %s", tc.name)
 			s.Require().Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
@@ -474,14 +474,14 @@ func (s *KeeperTestSuite) TestAddDeposit_ZeroFlowRate() {
 		Cancellable:     true,
 	}
 
-	err := s.app.StreamKeeper.SetStream(tCtx, rec1, sen1, str1Set)
+	err := s.app.StreamKeeper.SetStream(tCtx, rec1, sen1, sdk.DefaultBondDenom, str1Set)
 	s.Require().NoError(err)
 
 	ok, err := s.app.StreamKeeper.AddDeposit(tCtx, rec1, sen1, sdk.NewInt64Coin(sdk.DefaultBondDenom, 10000))
 	s.Require().NoError(err)
 	s.Require().True(ok)
 
-	str1, ok := s.app.StreamKeeper.GetStream(tCtx, rec1, sen1)
+	str1, ok := s.app.StreamKeeper.GetStream(tCtx, rec1, sen1, sdk.DefaultBondDenom)
 	s.Require().True(ok)
 
 	s.Require().Equal(int64(0), str1.FlowRate)
@@ -623,7 +623,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Scenarios() {
 			s.Require().NoError(err, "initialDeposit AddDeposit NoError test name %s", tc.name)
 
 			// check stream
-			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			// should be in the queryFuture from the creation time
 			expInitialDepZeroTime := time.Unix(blockTimeCreate.Unix()+tc.expInitialDepZeroTime, 0).UTC()
 			s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
@@ -680,7 +680,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Scenarios() {
 
 			// check results
 			expDepZeroTime := time.Unix(nowTime.Unix()+tc.expNewDepZeroTime, 0).UTC()
-			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
 			s.Require().Equal(tc.expNewDeposit, stream.Deposit, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
 			s.Require().Equal(expDepZeroTime, stream.DepositZeroTime, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
@@ -694,7 +694,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_StreamNotExist() {
 	s.Require().ErrorContains(err, "stream does not exist")
 
 	// double check
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().False(ok)
 	s.Require().Equal(types.Stream{}, stream)
 }
@@ -712,7 +712,7 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_InsufficientBalance() {
 	}
 
 	// set stream
-	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], expStream)
+	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom, expStream)
 	s.Require().NoError(err)
 
 	// deposit more than sender's balance
@@ -738,13 +738,14 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_Denom_Mismatch() {
 	}
 
 	// set stream
-	err := s.app.StreamKeeper.SetStream(s.ctx, newAccs[1], newAccs[0], expStream)
+	err := s.app.StreamKeeper.SetStream(s.ctx, newAccs[1], newAccs[0], sdk.DefaultBondDenom, expStream)
 	s.Require().NoError(err)
 
-	// deposit more than sender's balance
+	// AddDeposit to a denom for which no stream exists. Under v2 (denom is part of the key)
+	// this is "stream does not exist" rather than v1's "denom mismatch".
 	ok, err := s.app.StreamKeeper.AddDeposit(s.ctx, newAccs[1], newAccs[0], sdk.NewCoin("notstake", mathmod.NewIntFromUint64(10000)))
 	s.Require().False(ok)
-	s.Require().ErrorContains(err, "top up denom does not match stream denom")
+	s.Require().ErrorContains(err, "stream does not exist")
 
 }
 
@@ -765,13 +766,13 @@ func (s *KeeperTestSuite) TestAddDeposit_Fail_Cancelled() {
 	s.Require().NoError(err)
 	s.Require().True(ok)
 
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender)
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().True(ok)
 
-	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender)
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().NoError(err)
 
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender)
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().False(ok)
 
 	ok, err = s.app.StreamKeeper.AddDeposit(tCtx, receiver, sender, deposit)
@@ -798,7 +799,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success() {
 	s.Require().NoError(err)
 
 	// Set new flow rate
-	err = s.app.StreamKeeper.SetNewFlowRate(tCtx, s.addrs[1], s.addrs[0], 24)
+	err = s.app.StreamKeeper.SetNewFlowRate(tCtx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom, 24)
 	s.Require().NoError(err)
 
 	// check events ar emitted
@@ -850,7 +851,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success() {
 	s.Require().True(hasEvent)
 
 	// get stream from keeper
-	stream, ok := s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().True(ok)
 	// should now be 1000stake
 	s.Require().Equal(int64(24), stream.FlowRate)
@@ -946,12 +947,12 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Success_ExistingNotExpired() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			err := s.app.StreamKeeper.SetStream(tCtx, tc.receiver, tc.sender, tc.stream)
+			err := s.app.StreamKeeper.SetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom, tc.stream)
 			s.Require().NoError(err, "SetStream NoError test name %s", tc.name)
-			err = s.app.StreamKeeper.SetNewFlowRate(tCtx, tc.receiver, tc.sender, tc.newFlowRate)
+			err = s.app.StreamKeeper.SetNewFlowRate(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom, tc.newFlowRate)
 			s.Require().NoError(err, "AddDeposit NoError test name %s", tc.name)
 
-			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok, "GetStream True test name %s", tc.name)
 			s.Require().Equal(tc.expDepositZeroTime, stream.DepositZeroTime, "GetStream DepositZeroTime Equal test name %s", tc.name)
 			s.Require().Equal(tc.newFlowRate, stream.FlowRate, "GetStream FlowRate Equal test name %s", tc.name)
@@ -1137,7 +1138,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			}
 
 			// check stream
-			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			// should be in the queryFuture from the creation time
 			expInitialDepZeroTime := time.Unix(blockTimeCreate.Unix()+tc.expInitialDepZeroTime, 0).UTC()
 			s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
@@ -1149,7 +1150,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 			tCtx = tCtx.WithBlockTime(nowTime).WithBlockHeight(2)
 
 			// set new flow rate
-			err = s.app.StreamKeeper.SetNewFlowRate(tCtx, tc.receiver, tc.sender, tc.newFlowRate)
+			err = s.app.StreamKeeper.SetNewFlowRate(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom, tc.newFlowRate)
 			s.Require().NoError(err, "newFlowRate SetNewFlowRate NoError test name %s", tc.name)
 
 			events := tCtx.EventManager().Events()
@@ -1194,7 +1195,7 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 
 			// check results
 			expDepZeroTime := time.Unix(nowTime.Unix()+tc.expNewDepZeroTime, 0).UTC()
-			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
 			s.Require().Equal(tc.newFlowRate, stream.FlowRate, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
 			s.Require().Equal(expDepZeroTime, stream.DepositZeroTime, "tc.expNewDeposit Equal stream.Deposit test name %s", tc.name)
@@ -1203,11 +1204,11 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Scenarios() {
 }
 
 func (s *KeeperTestSuite) TestSetNewFlowRate_Fail() {
-	err := s.app.StreamKeeper.SetNewFlowRate(s.ctx, s.addrs[1], s.addrs[0], 24)
+	err := s.app.StreamKeeper.SetNewFlowRate(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom, 24)
 	s.Require().ErrorContains(err, "stream does not exist")
 
 	// double check
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().False(ok)
 	s.Require().Equal(types.Stream{}, stream)
 }
@@ -1229,16 +1230,16 @@ func (s *KeeperTestSuite) TestSetNewFlowRate_Fail_Cancelled() {
 	s.Require().NoError(err)
 	s.Require().True(ok)
 
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender)
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().True(ok)
 
-	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender)
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().NoError(err)
 
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender)
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().False(ok)
 
-	err = s.app.StreamKeeper.SetNewFlowRate(tCtx, receiver, sender, 321)
+	err = s.app.StreamKeeper.SetNewFlowRate(tCtx, receiver, sender, sdk.DefaultBondDenom, 321)
 	s.Require().ErrorContains(err, "stream does not exist")
 }
 
@@ -1269,7 +1270,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 	tCtx = tCtx.WithBlockTime(future).WithBlockHeight(2)
 
 	// claim
-	amntClaimed, valFeeSent, totalClaim, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[1], s.addrs[0])
+	amntClaimed, valFeeSent, totalClaim, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().NoError(err)
 	s.Require().Equal(sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(495)), amntClaimed, "amntClaimed")
 	s.Require().Equal(sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(5)), valFeeSent, "valFeeSent")
@@ -1324,7 +1325,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Success() {
 	s.Require().True(hasEvent)
 
 	// check stream in keeper
-	stream, ok := s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().True(ok)
 	s.Require().Equal(sdk.NewCoin(sdk.DefaultBondDenom, mathmod.NewIntFromUint64(500)), stream.Deposit, "stream.Deposit")
 }
@@ -1465,14 +1466,14 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			}
 
 			// check stream
-			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
 
 			// set block time to now
 			tCtx = tCtx.WithBlockTime(nowTime).WithBlockHeight(2)
 
 			// claim
-			receiverAmount, valFee, claimTotal, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, tc.receiver, tc.sender)
+			receiverAmount, valFee, claimTotal, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().NoError(err, "ClaimFromStream NoError test name %s", tc.name)
 			s.Require().Equal(tc.expReceiverAmount, receiverAmount, "ClaimFromStream receiverAmount test name %s", tc.name)
 			s.Require().Equal(tc.expValFee, valFee, "ClaimFromStream valFee test name %s", tc.name)
@@ -1530,7 +1531,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 			}
 
 			// check results
-			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
 			s.Require().Equal(tc.expRemainDeposit, stream.Deposit, "tc.expRemainDeposit Equal stream.Deposit test name %s", tc.name)
 		})
@@ -1538,7 +1539,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Scenarios() {
 }
 
 func (s *KeeperTestSuite) TestClaimFromStream_Fail_NotExist() {
-	c, v, t, d, err := s.app.StreamKeeper.ClaimFromStream(s.ctx, s.addrs[1], s.addrs[0])
+	c, v, t, d, err := s.app.StreamKeeper.ClaimFromStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().ErrorContains(err, "stream does not exist")
 	s.Require().Equal(sdk.Coin{}, c)
 	s.Require().Equal(sdk.Coin{}, v)
@@ -1546,7 +1547,7 @@ func (s *KeeperTestSuite) TestClaimFromStream_Fail_NotExist() {
 	s.Require().Equal(sdk.Coin{}, d)
 
 	// double check
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().False(ok)
 	s.Require().Equal(types.Stream{}, stream)
 }
@@ -1578,9 +1579,9 @@ func (s *KeeperTestSuite) TestClaimFromStream_Fail_NoDeposit() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			err := s.app.StreamKeeper.SetStream(s.ctx, tc.receiver, tc.sender, tc.stream)
+			err := s.app.StreamKeeper.SetStream(s.ctx, tc.receiver, tc.sender, sdk.DefaultBondDenom, tc.stream)
 			s.Require().NoError(err, "SetStream NoError test name %s", tc.name)
-			c, v, t, d, err := s.app.StreamKeeper.ClaimFromStream(s.ctx, tc.receiver, tc.sender)
+			c, v, t, d, err := s.app.StreamKeeper.ClaimFromStream(s.ctx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().ErrorContains(err, "stream deposit is zero")
 			s.Require().Equal(sdk.Coin{}, c)
 			s.Require().Equal(sdk.Coin{}, v)
@@ -1607,16 +1608,16 @@ func (s *KeeperTestSuite) TestClaimFromStream_Fail_Cancelled() {
 	s.Require().NoError(err)
 	s.Require().True(ok)
 
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender)
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().True(ok)
 
-	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender)
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().NoError(err)
 
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender)
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().False(ok)
 
-	receiverAmount, valFee, claimTotal, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, receiver, sender)
+	receiverAmount, valFee, claimTotal, remainingDeposit, err := s.app.StreamKeeper.ClaimFromStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().ErrorContains(err, "stream does not exist")
 	s.Require().Equal(sdk.Coin{}, receiverAmount)
 	s.Require().Equal(sdk.Coin{}, valFee)
@@ -1650,7 +1651,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Success() {
 	tCtx = tCtx.WithBlockTime(future).WithBlockHeight(2)
 
 	// claim
-	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, s.addrs[1], s.addrs[0])
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().NoError(err)
 
 	// check event emission
@@ -1714,7 +1715,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Success() {
 	s.Require().True(hasClaimEvent)
 
 	// check stream deleted from keeper
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0])
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().False(ok)
 }
 
@@ -1850,14 +1851,14 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			}
 
 			// check stream
-			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok := s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().True(ok, "GetStream ok NoError test name %s", tc.name)
 
 			cancelTime := time.Unix(nowTime.Unix()+tc.cancelTimeOffset, 0).UTC()
 			tCtx = tCtx.WithBlockTime(cancelTime).WithBlockHeight(blockNum)
 
 			// cancel
-			err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, tc.receiver, tc.sender)
+			err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().NoError(err)
 
 			events := tCtx.EventManager().Events()
@@ -1946,7 +1947,7 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 			s.Require().True(hasCancelEvent)
 
 			// check stream deleted
-			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender)
+			stream, ok = s.app.StreamKeeper.GetStream(tCtx, tc.receiver, tc.sender, sdk.DefaultBondDenom)
 			s.Require().False(ok, "GetStream ok NoError test name %s", tc.name)
 			// should empty
 			s.Require().Equal(types.Stream{}, stream, "empty stream returned test name %s", tc.name)
@@ -1955,11 +1956,11 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Scenarios() {
 }
 
 func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Fail_NotExist() {
-	err := s.app.StreamKeeper.CancelStreamBySenderReceiver(s.ctx, s.addrs[1], s.addrs[0])
+	err := s.app.StreamKeeper.CancelStreamBySenderReceiver(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().ErrorContains(err, "stream does not exist")
 
 	// double check
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().False(ok)
 	s.Require().Equal(types.Stream{}, stream)
 }
@@ -1975,14 +1976,14 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Fail_NotCancellable()
 		Cancellable:     false,
 	}
 
-	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], expStream)
+	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom, expStream)
 	s.Require().NoError(err)
 
-	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(s.ctx, s.addrs[1], s.addrs[0])
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().ErrorContains(err, "cannot be cancelled")
 
 	// double check
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().True(ok)
 	s.Require().Equal(expStream, stream)
 }
@@ -2004,16 +2005,16 @@ func (s *KeeperTestSuite) TestCancelStreamBySenderReceiver_Fail_Cancelled() {
 	s.Require().NoError(err)
 	s.Require().True(ok)
 
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender)
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().True(ok)
 
-	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender)
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().NoError(err)
 
-	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender)
+	_, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().False(ok)
 
-	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender)
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender, sdk.DefaultBondDenom)
 	s.Require().ErrorContains(err, "stream does not exist")
 }
 
@@ -2043,7 +2044,7 @@ func (s *KeeperTestSuite) TestGetTotalDeposits() {
 
 	// claim - not expired
 	for i := int64(1); i <= 10; i++ {
-		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[i-1], s.addrs[i])
+		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[i-1], s.addrs[i], sdk.DefaultBondDenom)
 		s.Require().NoError(err)
 	}
 
@@ -2057,7 +2058,7 @@ func (s *KeeperTestSuite) TestGetTotalDeposits() {
 
 	// claim - expired
 	for i := int64(1); i <= 10; i++ {
-		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[i-1], s.addrs[i])
+		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[i-1], s.addrs[i], sdk.DefaultBondDenom)
 		s.Require().NoError(err)
 	}
 
@@ -2078,12 +2079,12 @@ func (s *KeeperTestSuite) TestIterateAllStreams() {
 		deposit := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000*i)
 		_, err := s.app.StreamKeeper.CreateNewStream(tCtx, s.addrs[i-1], s.addrs[i], deposit, i)
 		s.Require().NoError(err)
-		stream, _ := s.app.StreamKeeper.GetStream(tCtx, s.addrs[i-1], s.addrs[i])
+		stream, _ := s.app.StreamKeeper.GetStream(tCtx, s.addrs[i-1], s.addrs[i], sdk.DefaultBondDenom)
 		streams[s.addrs[i-1].String()] = map[string]types.Stream{}
 		streams[s.addrs[i-1].String()][s.addrs[i].String()] = stream
 	}
 
-	s.app.StreamKeeper.IterateAllStreams(tCtx, func(receiverAddr, senderAddr sdk.AccAddress, stream types.Stream) bool {
+	s.app.StreamKeeper.IterateAllStreams(tCtx, func(receiverAddr, senderAddr sdk.AccAddress, _ string, stream types.Stream) bool {
 
 		expectedStream, exists := streams[receiverAddr.String()][senderAddr.String()]
 		s.Require().True(exists)
@@ -2122,18 +2123,84 @@ func (s *KeeperTestSuite) TestMultipleDenoms() {
 	for i := 0; i < len(newAccs)-1; i += 1 {
 		sender := newAccs[i]
 		receiver := newAccs[i+1]
-		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, receiver, sender)
+		denom := sdk.DefaultBondDenom
+		if i%3 == 0 {
+			denom = "testdenom"
+		}
+		_, _, _, _, err := s.app.StreamKeeper.ClaimFromStream(tCtx, receiver, sender, denom)
 		s.Require().NoError(err)
 	}
 
 	future := time.Unix(nowTime.Unix()+1000, 0).UTC()
 	tCtx = tCtx.WithBlockTime(future).WithBlockHeight(3)
 
-	s.app.StreamKeeper.IterateAllStreams(tCtx, func(receiverAddr, senderAddr sdk.AccAddress, stream types.Stream) bool {
+	s.app.StreamKeeper.IterateAllStreams(tCtx, func(receiverAddr, senderAddr sdk.AccAddress, _ string, stream types.Stream) bool {
 		totalDeposits = totalDeposits.Add(stream.Deposit)
 		return false
 	})
 
 	mAccTotal := s.app.StreamKeeper.GetStreamModuleAccountBalances(tCtx)
 	s.Require().Equal(totalDeposits, mAccTotal)
+}
+
+// TestSamePairTwoDenoms validates that the same (sender, receiver) pair can hold two
+// concurrent streams (one per denom) and that operations on one denom do not affect
+// the other. This is the core invariant introduced by the v2 key change.
+func (s *KeeperTestSuite) TestSamePairTwoDenoms() {
+	newAccs := simapphelpers.AddTestAddrsWithExtraNonBondCoin(s.app, s.ctx, 2,
+		mathmod.NewIntFromUint64(10000000),
+		sdk.NewInt64Coin("testdenom", 1000000))
+
+	tCtx := s.ctx
+	nowTime := time.Unix(time.Now().Unix(), 0).UTC()
+	tCtx = tCtx.WithBlockTime(nowTime).WithBlockHeight(1)
+
+	sender := newAccs[0]
+	receiver := newAccs[1]
+
+	// Create + deposit two streams between the SAME pair, different denoms.
+	depA := sdk.NewInt64Coin(sdk.DefaultBondDenom, 60000)
+	depB := sdk.NewInt64Coin("testdenom", 90000)
+
+	_, err := s.app.StreamKeeper.CreateNewStream(tCtx, receiver, sender, depA, 100)
+	s.Require().NoError(err)
+	_, err = s.app.StreamKeeper.AddDeposit(tCtx, receiver, sender, depA)
+	s.Require().NoError(err)
+
+	_, err = s.app.StreamKeeper.CreateNewStream(tCtx, receiver, sender, depB, 150)
+	s.Require().NoError(err)
+	_, err = s.app.StreamKeeper.AddDeposit(tCtx, receiver, sender, depB)
+	s.Require().NoError(err)
+
+	// Both streams exist independently.
+	s.Require().True(s.app.StreamKeeper.IsStream(tCtx, receiver, sender, sdk.DefaultBondDenom))
+	s.Require().True(s.app.StreamKeeper.IsStream(tCtx, receiver, sender, "testdenom"))
+
+	streamA, ok := s.app.StreamKeeper.GetStream(tCtx, receiver, sender, sdk.DefaultBondDenom)
+	s.Require().True(ok)
+	s.Require().Equal(depA.Denom, streamA.Deposit.Denom)
+	s.Require().Equal(int64(100), streamA.FlowRate)
+
+	streamB, ok := s.app.StreamKeeper.GetStream(tCtx, receiver, sender, "testdenom")
+	s.Require().True(ok)
+	s.Require().Equal(depB.Denom, streamB.Deposit.Denom)
+	s.Require().Equal(int64(150), streamB.FlowRate)
+
+	// Cancelling one denom leaves the other untouched.
+	tCtx = tCtx.WithBlockTime(nowTime.Add(time.Second * 10)).WithBlockHeight(2)
+	err = s.app.StreamKeeper.CancelStreamBySenderReceiver(tCtx, receiver, sender, sdk.DefaultBondDenom)
+	s.Require().NoError(err)
+
+	s.Require().False(s.app.StreamKeeper.IsStream(tCtx, receiver, sender, sdk.DefaultBondDenom),
+		"cancelled denom must be gone")
+	s.Require().True(s.app.StreamKeeper.IsStream(tCtx, receiver, sender, "testdenom"),
+		"the other denom's stream must survive")
+
+	// Claiming the surviving stream still works and the FlowRate is the one we set, not bled-over.
+	_, _, _, _, err = s.app.StreamKeeper.ClaimFromStream(tCtx, receiver, sender, "testdenom")
+	s.Require().NoError(err)
+
+	streamB, ok = s.app.StreamKeeper.GetStream(tCtx, receiver, sender, "testdenom")
+	s.Require().True(ok)
+	s.Require().Equal("testdenom", streamB.Deposit.Denom)
 }

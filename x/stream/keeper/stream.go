@@ -20,23 +20,23 @@ func (k Keeper) GetTotalDeposits(ctx sdk.Context) sdk.Coins {
 }
 
 // SetStream Sets the stream
-func (k Keeper) SetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, stream types.Stream) error {
+func (k Keeper) SetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, denom string, stream types.Stream) error {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.GetStreamKey(receiverAddr, senderAddr), k.cdc.MustMarshal(&stream))
+	store.Set(types.GetStreamKey(receiverAddr, senderAddr, denom), k.cdc.MustMarshal(&stream))
 
 	return nil
 }
 
 // IsStream Checks if the stream is present in the store or not
-func (k Keeper) IsStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) bool {
+func (k Keeper) IsStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, denom string) bool {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.GetStreamKey(receiverAddr, senderAddr))
+	return store.Has(types.GetStreamKey(receiverAddr, senderAddr, denom))
 }
 
 // GetStream Gets the stream data
-func (k Keeper) GetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) (types.Stream, bool) {
+func (k Keeper) GetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, denom string) (types.Stream, bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetStreamKey(receiverAddr, senderAddr))
+	bz := store.Get(types.GetStreamKey(receiverAddr, senderAddr, denom))
 	if bz == nil {
 		// return a new empty stream struct
 		return types.Stream{}, false
@@ -46,25 +46,25 @@ func (k Keeper) GetStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddre
 	return stream, true
 }
 
-func (k Keeper) DeleteStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) {
-	if !k.IsStream(ctx, receiverAddr, senderAddr) {
+func (k Keeper) DeleteStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, denom string) {
+	if !k.IsStream(ctx, receiverAddr, senderAddr, denom) {
 		return
 	}
 	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.GetStreamKey(receiverAddr, senderAddr))
+	store.Delete(types.GetStreamKey(receiverAddr, senderAddr, denom))
 }
 
 // IterateAllStreams iterates over all the Streams of all accounts
 // that are provided to a callback. If true is returned from the
 // callback, iteration is halted. Potentially expensive, and only intended
 // for use during genesis export etc.
-func (k Keeper) IterateAllStreams(ctx sdk.Context, cb func(sdk.AccAddress, sdk.AccAddress, types.Stream) bool) {
+func (k Keeper) IterateAllStreams(ctx sdk.Context, cb func(sdk.AccAddress, sdk.AccAddress, string, types.Stream) bool) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := storetypes.KVStorePrefixIterator(store, types.StreamKeyPrefix)
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		receiverAddr, senderAddr := types.AddressesFromStreamKey(iterator.Key())
+		receiverAddr, senderAddr, denom := types.AddressesFromStreamKey(iterator.Key())
 
 		var stream types.Stream
 		err := k.cdc.Unmarshal(iterator.Value(), &stream)
@@ -73,14 +73,14 @@ func (k Keeper) IterateAllStreams(ctx sdk.Context, cb func(sdk.AccAddress, sdk.A
 			panic(err)
 		}
 
-		if cb(receiverAddr, senderAddr, stream) {
+		if cb(receiverAddr, senderAddr, denom, stream) {
 			break
 		}
 	}
 }
 
-func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) (sdk.Coin, sdk.Coin, sdk.Coin, sdk.Coin, error) {
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, denom string) (sdk.Coin, sdk.Coin, sdk.Coin, sdk.Coin, error) {
+	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr, denom)
 	params := k.GetParams(ctx)
 
 	if !ok {
@@ -129,7 +129,7 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 	// 6. update & save stream
 	stream.Deposit = remainingDeposit
 	stream.LastOutflowTime = nowTime
-	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
+	err := k.SetStream(ctx, receiverAddr, senderAddr, denom, stream)
 
 	if err != nil {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, sdk.Coin{}, err
@@ -140,6 +140,7 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 			types.EventTypeClaimStreamAction,
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamDenom, denom),
 			sdk.NewAttribute(types.AttributeKeyClaimTotal, claimTotal.String()),
 			sdk.NewAttribute(types.AttributeKeyClaimAmountReceived, receiverAmount.String()),
 			sdk.NewAttribute(types.AttributeKeyClaimValidatorFee, valFee.String()),
@@ -152,12 +153,14 @@ func (k Keeper) ClaimFromStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 
 func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, topUpDeposit sdk.Coin) (bool, error) {
 
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr, topUpDeposit.Denom)
 
 	if !ok {
-		return false, errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
+		return false, errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s, denom %s", senderAddr.String(), receiverAddr.String(), topUpDeposit.Denom)
 	}
 
+	// Denom is part of the key now, so a mismatch here would be a programming error.
+	// Belt-and-braces.
 	if topUpDeposit.Denom != stream.Deposit.Denom {
 		return false, errorsmod.Wrapf(types.ErrInvalidData, "top up denom does not match stream denom. stream: %s, top up %s", stream.Deposit.Denom, topUpDeposit.Denom)
 	}
@@ -174,13 +177,13 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 		// remaining payment to the receiver wallet, effectively creating a new stream
 		if stream.Deposit.Amount.GT(mathmod.NewIntFromUint64(0)) {
 			// only if stream has deposit
-			_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+			_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr, topUpDeposit.Denom)
 			if err != nil {
 				return false, err
 			}
 			// refresh stream data, since deposits and total streamed may have changed
 			// after claim stream call
-			stream, _ = k.GetStream(ctx, receiverAddr, senderAddr)
+			stream, _ = k.GetStream(ctx, receiverAddr, senderAddr, topUpDeposit.Denom)
 		}
 
 		// stream expired or new. Calculate from now
@@ -203,7 +206,7 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	stream.Deposit = newDeposit
 	stream.DepositZeroTime = depositZeroTime
 
-	err = k.SetStream(ctx, receiverAddr, senderAddr, stream)
+	err = k.SetStream(ctx, receiverAddr, senderAddr, topUpDeposit.Denom, stream)
 
 	if err != nil {
 		return false, err
@@ -214,6 +217,7 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 			types.EventTypeDepositToStream,
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamDenom, topUpDeposit.Denom),
 			sdk.NewAttribute(types.AttributeKeyAmountDeposited, topUpDeposit.String()),
 			sdk.NewAttribute(types.AttributeKeyDepositDuration, strconv.FormatInt(durationExtension, 10)),
 			sdk.NewAttribute(types.AttributeKeyDepositZeroTime, depositZeroTime.String()),
@@ -224,11 +228,11 @@ func (k Keeper) AddDeposit(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddr
 	return true, nil
 }
 
-func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, newFlowRate int64) error {
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, denom string, newFlowRate int64) error {
+	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr, denom)
 
 	if !ok {
-		return errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
+		return errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s, denom %s", senderAddr.String(), receiverAddr.String(), denom)
 	}
 
 	// for event emission
@@ -244,13 +248,13 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	// Check if the stream still has deposit value.
 	if stream.Deposit.Amount.GT(mathmod.NewIntFromUint64(0)) {
 		// still has deposit. Claim unpaid deposits with the old flow rate first
-		_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+		_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr, denom)
 		if err != nil {
 			return err
 		}
 
 		// refresh stream data
-		stream, _ = k.GetStream(ctx, receiverAddr, senderAddr)
+		stream, _ = k.GetStream(ctx, receiverAddr, senderAddr, denom)
 
 		// Calculate new duration & deposit zero time based on new flow rate & remaining deposit.
 		// Calculation is from "now", since the Claim function has been called
@@ -264,7 +268,7 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	stream.FlowRate = newFlowRate
 	stream.DepositZeroTime = depositZeroTime
 
-	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
+	err := k.SetStream(ctx, receiverAddr, senderAddr, denom, stream)
 
 	if err != nil {
 		return err
@@ -275,6 +279,7 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 			types.EventTypeUpdateFlowRate,
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamDenom, denom),
 			sdk.NewAttribute(types.AttributeKeyOldFlowRate, strconv.FormatInt(oldFlowRate, 10)),
 			sdk.NewAttribute(types.AttributeKeyNewFlowRate, strconv.FormatInt(newFlowRate, 10)),
 			sdk.NewAttribute(types.AttributeKeyDepositDuration, strconv.FormatInt(duration, 10)),
@@ -286,12 +291,12 @@ func (k Keeper) SetNewFlowRate(ctx sdk.Context, receiverAddr, senderAddr sdk.Acc
 	return nil
 }
 
-func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress) error {
+func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, denom string) error {
 
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr, denom)
 
 	if !ok {
-		return errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s", senderAddr.String(), receiverAddr.String())
+		return errorsmod.Wrapf(types.ErrStreamDoesNotExist, "sender: %s, receiver %s, denom %s", senderAddr.String(), receiverAddr.String(), denom)
 	}
 
 	if !stream.Cancellable {
@@ -300,12 +305,12 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 
 	// claim any outstanding flow
 	if stream.Deposit.Amount.GT(mathmod.NewIntFromUint64(0)) {
-		_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+		_, _, _, _, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr, denom)
 		if err != nil {
 			return err
 		}
 		// refresh stream data
-		stream, _ = k.GetStream(ctx, receiverAddr, senderAddr)
+		stream, _ = k.GetStream(ctx, receiverAddr, senderAddr, denom)
 	}
 
 	refundCoin := stream.Deposit
@@ -318,13 +323,14 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 	}
 
 	// Delete from store
-	k.DeleteStream(ctx, receiverAddr, senderAddr)
+	k.DeleteStream(ctx, receiverAddr, senderAddr, denom)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeStreamCancelled,
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamDenom, denom),
 			sdk.NewAttribute(types.AttributeKeyRefundAmount, refundCoin.String()),
 		),
 	)
@@ -332,12 +338,12 @@ func (k Keeper) CancelStreamBySenderReceiver(ctx sdk.Context, receiverAddr, send
 	return nil
 }
 
-// CreateNewStream creates a new "empty" stream for a sender/receiver pair.
+// CreateNewStream creates a new "empty" stream for a (sender, receiver, deposit.Denom) triple.
 // Deposit and Deposit Zero Time are handled by the AddDeposit function.
 // The value passed in the deposit var is only used to determine the denomination of the deposit.
 func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.AccAddress, deposit sdk.Coin, flowRate int64) (types.Stream, error) {
 
-	if k.IsStream(ctx, receiverAddr, senderAddr) {
+	if k.IsStream(ctx, receiverAddr, senderAddr, deposit.Denom) {
 		return types.Stream{}, errorsmod.Wrap(types.ErrStreamExists, "stream exists")
 	}
 
@@ -351,7 +357,7 @@ func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 		Cancellable:     true,                  // default to true for now. Eventually, using eFUND will set to false
 	}
 
-	err := k.SetStream(ctx, receiverAddr, senderAddr, stream)
+	err := k.SetStream(ctx, receiverAddr, senderAddr, deposit.Denom, stream)
 
 	if err != nil {
 		return types.Stream{}, err
@@ -362,6 +368,7 @@ func (k Keeper) CreateNewStream(ctx sdk.Context, receiverAddr, senderAddr sdk.Ac
 			types.EventTypeCreateStreamAction,
 			sdk.NewAttribute(types.AttributeKeyStreamSender, senderAddr.String()),
 			sdk.NewAttribute(types.AttributeKeyStreamReceiver, receiverAddr.String()),
+			sdk.NewAttribute(types.AttributeKeyStreamDenom, deposit.Denom),
 			sdk.NewAttribute(types.AttributeKeyFlowRate, strconv.FormatInt(flowRate, 10)),
 		),
 	)

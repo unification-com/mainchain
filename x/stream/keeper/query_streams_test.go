@@ -28,6 +28,7 @@ func (s *KeeperTestSuite) TestQueryStreams() {
 			{
 				Receiver: s.addrs[0].String(),
 				Sender:   s.addrs[1].String(),
+				Denom:    sdk.DefaultBondDenom,
 				Stream: &types.Stream{
 					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
@@ -39,6 +40,7 @@ func (s *KeeperTestSuite) TestQueryStreams() {
 			{
 				Receiver: s.addrs[1].String(),
 				Sender:   s.addrs[2].String(),
+				Denom:    sdk.DefaultBondDenom,
 				Stream: &types.Stream{
 					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
@@ -90,6 +92,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 			query: &types.QueryStreamByReceiverSenderRequest{
 				SenderAddr:   successSender.String(),
 				ReceiverAddr: successReceiver.String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp: &types.QueryStreamByReceiverSenderResponse{
 				Stream: types.StreamResult{
@@ -102,6 +105,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 						DepositZeroTime: time.Unix(nowTime.Unix()+1000, 0).UTC(),
 						Cancellable:     true,
 					},
+					Denom:    sdk.DefaultBondDenom,
 				},
 			},
 			expErr:    false,
@@ -112,6 +116,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 			query: &types.QueryStreamByReceiverSenderRequest{
 				SenderAddr:   "rubbish",
 				ReceiverAddr: s.addrs[0].String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -122,6 +127,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 			query: &types.QueryStreamByReceiverSenderRequest{
 				SenderAddr:   "",
 				ReceiverAddr: s.addrs[0].String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -132,6 +138,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 			query: &types.QueryStreamByReceiverSenderRequest{
 				SenderAddr:   s.addrs[0].String(),
 				ReceiverAddr: "rubbish",
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -142,6 +149,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 			query: &types.QueryStreamByReceiverSenderRequest{
 				SenderAddr:   s.addrs[0].String(),
 				ReceiverAddr: "",
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -152,6 +160,7 @@ func (s *KeeperTestSuite) TestQueryStreamByReceiverSender() {
 			query: &types.QueryStreamByReceiverSenderRequest{
 				SenderAddr:   s.addrs[7].String(),
 				ReceiverAddr: s.addrs[9].String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -209,6 +218,7 @@ func (s *KeeperTestSuite) TestQueryStreamReceiverSenderCurrentFlow() {
 			query: &types.QueryStreamReceiverSenderCurrentFlowRequest{
 				SenderAddr:   successSender.String(),
 				ReceiverAddr: successReceiver.String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp: &types.QueryStreamReceiverSenderCurrentFlowResponse{
 				ConfiguredFlowRate: 1,
@@ -223,6 +233,7 @@ func (s *KeeperTestSuite) TestQueryStreamReceiverSenderCurrentFlow() {
 			query: &types.QueryStreamReceiverSenderCurrentFlowRequest{
 				SenderAddr:   successSender.String(),
 				ReceiverAddr: successReceiver.String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp: &types.QueryStreamReceiverSenderCurrentFlowResponse{
 				ConfiguredFlowRate: 1,
@@ -237,6 +248,7 @@ func (s *KeeperTestSuite) TestQueryStreamReceiverSenderCurrentFlow() {
 			query: &types.QueryStreamReceiverSenderCurrentFlowRequest{
 				SenderAddr:   "rubbish",
 				ReceiverAddr: s.addrs[0].String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -248,6 +260,7 @@ func (s *KeeperTestSuite) TestQueryStreamReceiverSenderCurrentFlow() {
 			query: &types.QueryStreamReceiverSenderCurrentFlowRequest{
 				SenderAddr:   "",
 				ReceiverAddr: s.addrs[0].String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -259,6 +272,7 @@ func (s *KeeperTestSuite) TestQueryStreamReceiverSenderCurrentFlow() {
 			query: &types.QueryStreamReceiverSenderCurrentFlowRequest{
 				SenderAddr:   s.addrs[0].String(),
 				ReceiverAddr: "rubbish",
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -270,6 +284,7 @@ func (s *KeeperTestSuite) TestQueryStreamReceiverSenderCurrentFlow() {
 			query: &types.QueryStreamReceiverSenderCurrentFlowRequest{
 				SenderAddr:   s.addrs[0].String(),
 				ReceiverAddr: "",
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -281,6 +296,7 @@ func (s *KeeperTestSuite) TestQueryStreamReceiverSenderCurrentFlow() {
 			query: &types.QueryStreamReceiverSenderCurrentFlowRequest{
 				SenderAddr:   s.addrs[7].String(),
 				ReceiverAddr: s.addrs[9].String(),
+				Denom:        sdk.DefaultBondDenom,
 			},
 			expResp:   nil,
 			expErr:    true,
@@ -333,6 +349,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForReceiver_Success() {
 			{
 				Receiver: s.addrs[0].String(),
 				Sender:   s.addrs[1].String(),
+				Denom:    sdk.DefaultBondDenom,
 				Stream: &types.Stream{
 					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
@@ -344,6 +361,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForReceiver_Success() {
 			{
 				Receiver: s.addrs[0].String(),
 				Sender:   s.addrs[2].String(),
+				Denom:    sdk.DefaultBondDenom,
 				Stream: &types.Stream{
 					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
@@ -355,6 +373,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForReceiver_Success() {
 			{
 				Receiver: s.addrs[0].String(),
 				Sender:   s.addrs[3].String(),
+				Denom:    sdk.DefaultBondDenom,
 				Stream: &types.Stream{
 					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
@@ -452,6 +471,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForSender_Success() {
 			{
 				Receiver: s.addrs[1].String(),
 				Sender:   qSender.String(),
+				Denom:    sdk.DefaultBondDenom,
 				Stream: &types.Stream{
 					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
@@ -463,6 +483,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForSender_Success() {
 			{
 				Receiver: s.addrs[2].String(),
 				Sender:   qSender.String(),
+				Denom:    sdk.DefaultBondDenom,
 				Stream: &types.Stream{
 					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,
@@ -474,6 +495,7 @@ func (s *KeeperTestSuite) TestQueryAllStreamsForSender_Success() {
 			{
 				Receiver: s.addrs[3].String(),
 				Sender:   qSender.String(),
+				Denom:    sdk.DefaultBondDenom,
 				Stream: &types.Stream{
 					Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
 					FlowRate:        1,

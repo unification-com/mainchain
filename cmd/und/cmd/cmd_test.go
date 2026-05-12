@@ -19,5 +19,5 @@ func TestInitCmd(t *testing.T) {
 		fmt.Sprintf("--%s=%s", cli.FlagOverwrite, "true"), // Overwrite genesis.json, in case it already exists
 	})
 
-	require.NoError(t, svrcmd.Execute(rootCmd, "", "/tmp/.und_mainchain_test"))
+	require.NoError(t, svrcmd.Execute(rootCmd, "", t.TempDir()))
 }

@@ -12,22 +12,22 @@ func TestWrkChainKey(t *testing.T) {
 	// key wrkchain
 	wcID := uint64(24)
 	key := WrkChainKey(wcID)
-	require.True(t, len(key[1:]) == 8)
+	require.Equal(t, len(key[1:]), 8)
 	require.True(t, bytes.Equal(key[:1], RegisteredWrkChainPrefix))
 	wcBz := key[1:]
 	wcFromBz := GetWrkChainIDFromBytes(wcBz)
-	require.True(t, wcFromBz == wcID)
+	require.Equal(t, wcFromBz, wcID)
 	require.True(t, bytes.Equal(wcBz, GetWrkChainIDBytes(wcID)))
 }
 
 func TestWrkChainAllBlocksKey(t *testing.T) {
 	wcID := uint64(24)
 	key := WrkChainAllBlocksKey(wcID)
-	require.True(t, len(key[1:]) == 8)
+	require.Equal(t, len(key[1:]), 8)
 	require.True(t, bytes.Equal(key[:1], RecordedWrkChainBlockHashPrefix))
 	wcBz := key[1:]
 	wcFromBz := GetWrkChainIDFromBytes(wcBz)
-	require.True(t, wcFromBz == wcID)
+	require.Equal(t, wcFromBz, wcID)
 	require.True(t, bytes.Equal(wcBz, GetWrkChainIDBytes(wcID)))
 
 }
@@ -36,7 +36,7 @@ func TestWrkChainBlockKey(t *testing.T) {
 	wcID := uint64(24)
 	height := uint64(12345)
 	key := WrkChainBlockKey(wcID, height)
-	require.True(t, len(key[1:]) == 16)
+	require.Equal(t, len(key[1:]), 16)
 	require.True(t, bytes.Equal(key[:1], RecordedWrkChainBlockHashPrefix))
 
 	wcIDbz := key[1:9]
@@ -45,17 +45,17 @@ func TestWrkChainBlockKey(t *testing.T) {
 	wcIdFromBz := binary.BigEndian.Uint64(wcIDbz)
 	heightFromBz := binary.BigEndian.Uint64(heightBz)
 
-	require.True(t, wcIdFromBz == wcID)
-	require.True(t, heightFromBz == height)
+	require.Equal(t, wcIdFromBz, wcID)
+	require.Equal(t, heightFromBz, height)
 }
 
 func TestWrkChainStorageLimitKey(t *testing.T) {
 	wcID := uint64(24)
 	key := WrkChainStorageLimitKey(wcID)
-	require.True(t, len(key[1:]) == 8)
+	require.Equal(t, len(key[1:]), 8)
 	require.True(t, bytes.Equal(key[:1], WrkChainStorageLimitPrefix))
 	wcBz := key[1:]
 	wcFromBz := GetWrkChainIDFromBytes(wcBz)
-	require.True(t, wcFromBz == wcID)
+	require.Equal(t, wcFromBz, wcID)
 	require.True(t, bytes.Equal(wcBz, GetWrkChainIDBytes(wcID)))
 }

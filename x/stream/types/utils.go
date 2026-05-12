@@ -34,8 +34,6 @@ func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint6
 	switch period {
 	case StreamPeriodUnspecified:
 		baseDuration = 1
-	default:
-		baseDuration = 1
 	case StreamPeriodSecond:
 		baseDuration = 1
 	case StreamPeriodMinute:
@@ -50,6 +48,9 @@ func CalculateFlowRateForCoin(coin sdk.Coin, period StreamPeriod, duration uint6
 		baseDuration = 2628000 // (365 / 12) * 24 * 60 * 60 = 30.416666667 * 24 * 60 * 60
 	case StreamPeriodYear:
 		baseDuration = 31536000
+	default:
+		// unrecognised period — fall back to seconds (1)
+		baseDuration = 1
 	}
 
 	totalDuration = baseDuration * duration

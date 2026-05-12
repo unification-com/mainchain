@@ -20,7 +20,7 @@ func TestEqualStartingBeaconID(t *testing.T) {
 
 	state2.StartingBeaconId = 1
 	require.Equal(t, state1, state2)
-	require.True(t, state1.StartingBeaconId == state2.StartingBeaconId)
+	require.Equal(t, state1.StartingBeaconId, state2.StartingBeaconId)
 }
 
 func TestDefaultGenesisState(t *testing.T) {

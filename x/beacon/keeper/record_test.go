@@ -82,7 +82,8 @@ func TestGetBeaconTimestamp(t *testing.T) {
 		}
 
 		allTimestamps := app.BeaconKeeper.GetAllBeaconTimestamps(ctx, bID)
-		require.True(t, len(allTimestamps) == int(numToRecord) && len(allTimestamps) == len(testTimestamps))
+		require.Equal(t, int(numToRecord), len(allTimestamps))
+		require.Equal(t, len(testTimestamps), len(allTimestamps))
 
 		for i := 0; i < int(numToRecord); i++ {
 			require.True(t, BeaconTimestampEqual(allTimestamps[i], testTimestamps[i]))
@@ -151,7 +152,7 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 
 		retTsID, deletedTsId, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
 		require.NoError(t, err)
-		require.True(t, retTsID == expectedTs.TimestampId)
+		require.Equal(t, retTsID, expectedTs.TimestampId)
 
 		timestampDb, found := app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsID)
 		require.True(t, found)
@@ -169,8 +170,8 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 
 	beacon, found := app.BeaconKeeper.GetBeacon(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.NumInState == recordLimit)
-	require.True(t, beacon.FirstIdInState == numToRecord-recordLimit+1)
+	require.Equal(t, beacon.NumInState, recordLimit)
+	require.Equal(t, beacon.FirstIdInState, numToRecord-recordLimit+1)
 
 	// should still be in state
 	tsCount := uint64(0)
@@ -179,7 +180,7 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 		require.True(t, found)
 		tsCount++
 	}
-	require.True(t, tsCount == recordLimit)
+	require.Equal(t, tsCount, recordLimit)
 
 	// should no longer be in state
 	for tsId := uint64(1); tsId <= recordLimit; tsId++ {
@@ -208,14 +209,14 @@ func TestIncreaseInStateStorage(t *testing.T) {
 
 	beacon, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.InStateLimit == simapphelpers.SimTestDefaultStorageLimit)
+	require.Equal(t, beacon.InStateLimit, simapphelpers.SimTestDefaultStorageLimit)
 
 	err = app.BeaconKeeper.IncreaseInStateStorage(ctx, bID, recordLimitIncrease)
 	require.NoError(t, err)
 
 	beacon, found = app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.InStateLimit == simapphelpers.SimTestDefaultStorageLimit+recordLimitIncrease)
+	require.Equal(t, beacon.InStateLimit, simapphelpers.SimTestDefaultStorageLimit+recordLimitIncrease)
 }
 
 func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
@@ -253,15 +254,15 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 	// sanity check
 	beacon, found := app.BeaconKeeper.GetBeacon(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.NumInState == recordLimit)
-	require.True(t, beacon.FirstIdInState == numToRecord-recordLimit+1)
+	require.Equal(t, beacon.NumInState, recordLimit)
+	require.Equal(t, beacon.FirstIdInState, numToRecord-recordLimit+1)
 
 	// increase storage capacity
 	err = app.BeaconKeeper.IncreaseInStateStorage(ctx, bID, increaseAmount)
 	require.NoError(t, err)
 	beaconStorage, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beaconStorage.InStateLimit == recordLimit+increaseAmount)
+	require.Equal(t, beaconStorage.InStateLimit, recordLimit+increaseAmount)
 
 	// record new timestamps
 	for i := uint64(1); i <= numToRecord; i++ {
@@ -274,6 +275,6 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 	// check final result
 	beacon, found = app.BeaconKeeper.GetBeacon(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.NumInState == recordLimit+increaseAmount)
-	require.True(t, beacon.FirstIdInState == (numToRecord*2)-recordLimit-increaseAmount+1)
+	require.Equal(t, beacon.NumInState, recordLimit+increaseAmount)
+	require.Equal(t, beacon.FirstIdInState, (numToRecord*2)-recordLimit-increaseAmount+1)
 }

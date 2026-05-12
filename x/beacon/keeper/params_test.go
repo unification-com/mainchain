@@ -20,12 +20,12 @@ func TestSetGetParams(t *testing.T) {
 
 	paramsDb := app.BeaconKeeper.GetParams(ctx)
 
-	require.True(t, paramsDb.FeeRegister == testParams.FeeRegister)
-	require.True(t, paramsDb.FeeRecord == testParams.FeeRecord)
-	require.True(t, paramsDb.FeePurchaseStorage == testParams.FeePurchaseStorage)
-	require.True(t, paramsDb.Denom == testParams.Denom)
-	require.True(t, paramsDb.DefaultStorageLimit == testParams.DefaultStorageLimit)
-	require.True(t, paramsDb.MaxStorageLimit == testParams.MaxStorageLimit)
+	require.Equal(t, paramsDb.FeeRegister, testParams.FeeRegister)
+	require.Equal(t, paramsDb.FeeRecord, testParams.FeeRecord)
+	require.Equal(t, paramsDb.FeePurchaseStorage, testParams.FeePurchaseStorage)
+	require.Equal(t, paramsDb.Denom, testParams.Denom)
+	require.Equal(t, paramsDb.DefaultStorageLimit, testParams.DefaultStorageLimit)
+	require.Equal(t, paramsDb.MaxStorageLimit, testParams.MaxStorageLimit)
 }
 
 func TestGetParamDenom(t *testing.T) {

@@ -3,7 +3,6 @@ package keeper_test
 import (
 	"encoding/hex"
 	"math/rand"
-	"time"
 
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
@@ -18,7 +17,7 @@ const (
 
 var (
 	TestAddrs  = createRandomAccounts(10)
-	seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	seededRand = rand.New(rand.NewSource(1))
 )
 
 func createRandomAccounts(accNum int) []sdk.AccAddress {
@@ -44,11 +43,6 @@ func newPubKey(pk string) (res crypto.PubKey) {
 // BeaconEqual checks if two Beacons are equal
 func BeaconEqual(wcA types.Beacon, wcB types.Beacon) bool {
 	return wcA == wcB
-}
-
-// // ParamsEqual checks params are equal
-func ParamsEqual(paramsA, paramsB types.Params) bool {
-	return paramsA == paramsB
 }
 
 // BeaconTimestampEqual checks if two BeaconTimestamps are equal

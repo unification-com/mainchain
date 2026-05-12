@@ -65,7 +65,11 @@ func TestCalculateFlowRateForCoin(t *testing.T) {
 		{"9", sdk.NewInt64Coin("testdenom", 4584000000000), types.StreamPeriodMonth, 1, 2628000, 1744292},
 		{"10", sdk.NewInt64Coin("testdenom", 0), types.StreamPeriodMonth, 1, 2628000, 0},
 		{"11", sdk.NewInt64Coin("testdenom", 2332323424), types.StreamPeriodMonth, 0, 0, 0},
-		{"11", sdk.NewInt64Coin("testdenom", 0), types.StreamPeriodMonth, 0, 0, 0},
+		{"12", sdk.NewInt64Coin("testdenom", 0), types.StreamPeriodMonth, 0, 0, 0},
+		// Unspecified explicit enum value — should fall through to baseDuration=1
+		{"13-unspecified", sdk.NewInt64Coin("testdenom", 1000), types.StreamPeriodUnspecified, 1, 1, 1000},
+		// Unrecognised enum value — should hit the default branch (baseDuration=1)
+		{"14-unrecognised", sdk.NewInt64Coin("testdenom", 1000), types.StreamPeriod(99), 1, 1, 1000},
 	}
 
 	for _, tc := range testCases {
@@ -308,13 +312,12 @@ func TestCalculateValidatorFee(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(tt *testing.T) {
 			finalClaimCoin, valFeeCoin := types.CalculateValidatorFee(tc.valFee, tc.amountToClaim)
-			if tc.expectedFinalClaimCoin.Amount.IsZero() {
-				require.True(t, finalClaimCoin.IsZero())
-			} else {
-				require.Equal(t, tc.expectedFinalClaimCoin, finalClaimCoin, "finalClaimCoin ")
-			}
-			require.Equal(t, tc.expectedValFeeCoin, valFeeCoin, "valFeeCoin")
-			require.Equal(t, tc.amountToClaim, finalClaimCoin.Add(valFeeCoin), "total")
+			require.True(t, tc.expectedFinalClaimCoin.IsEqual(finalClaimCoin),
+				"finalClaimCoin: expected %s, got %s", tc.expectedFinalClaimCoin, finalClaimCoin)
+			require.True(t, tc.expectedValFeeCoin.IsEqual(valFeeCoin),
+				"valFeeCoin: expected %s, got %s", tc.expectedValFeeCoin, valFeeCoin)
+			require.True(t, tc.amountToClaim.IsEqual(finalClaimCoin.Add(valFeeCoin)),
+				"total: expected %s, got %s", tc.amountToClaim, finalClaimCoin.Add(valFeeCoin))
 		})
 	}
 }

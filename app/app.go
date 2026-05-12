@@ -559,7 +559,6 @@ func NewApp(
 		group.ModuleName,
 		consensusparamtypes.ModuleName,
 		circuittypes.ModuleName,
-		enttypes.ModuleName,
 		beacontypes.ModuleName,
 		wrkchaintypes.ModuleName,
 		streamtypes.ModuleName,

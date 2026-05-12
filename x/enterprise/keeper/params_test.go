@@ -21,6 +21,6 @@ func TestSetGetParams(t *testing.T) {
 
 	paramsDb := app.EnterpriseKeeper.GetParams(ctx)
 
-	require.True(t, params == paramsDb)
-	require.True(t, paramsDb.Denom == denom)
+	require.Equal(t, params, paramsDb)
+	require.Equal(t, denom, paramsDb.Denom)
 }

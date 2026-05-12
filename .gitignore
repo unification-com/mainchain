@@ -25,3 +25,7 @@ tests/testdata
 
 # Graphviz
 dependency-graph.png
+
+docs/planning
+CLAUDE.md
+.claude

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
-	"time"
 
 	errorsmod "cosmossdk.io/errors"
 	mathmod "cosmossdk.io/math"
@@ -36,7 +35,7 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -71,7 +70,7 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -156,7 +155,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -240,7 +239,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -319,7 +318,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -414,7 +413,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -516,7 +515,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 }
 
 func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -602,7 +601,7 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -692,7 +691,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 }
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()

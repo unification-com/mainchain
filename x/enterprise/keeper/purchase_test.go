@@ -20,7 +20,7 @@ func TestSetGetHighestPurchaseOrderID(t *testing.T) {
 		app.EnterpriseKeeper.SetHighestPurchaseOrderID(ctx, i)
 		poID, err := app.EnterpriseKeeper.GetHighestPurchaseOrderID(ctx)
 		require.NoError(t, err)
-		require.True(t, poID == i)
+		require.Equal(t, poID, i)
 	}
 }
 
@@ -57,20 +57,20 @@ func TestSetGetPurchaseOrder(t *testing.T) {
 
 		poDb, found := app.EnterpriseKeeper.GetPurchaseOrder(ctx, i)
 		require.True(t, found)
-		require.True(t, po.Id == poDb.Id)
-		require.True(t, po.RaiseTime == poDb.RaiseTime)
-		require.True(t, po.Amount.String() == poDb.Amount.String())
-		require.True(t, po.Purchaser == poDb.Purchaser)
+		require.Equal(t, po.Id, poDb.Id)
+		require.Equal(t, po.RaiseTime, poDb.RaiseTime)
+		require.Equal(t, po.Amount.String(), poDb.Amount.String())
+		require.Equal(t, po.Purchaser, poDb.Purchaser)
 
 		poStatus := app.EnterpriseKeeper.GetPurchaseOrderStatus(ctx, i)
-		require.True(t, poStatus == status)
+		require.Equal(t, poStatus, status)
 
 		poFrom := app.EnterpriseKeeper.GetPurchaseOrderPurchaser(ctx, i)
-		require.True(t, poFrom.String() == purchaser.String())
+		require.Equal(t, poFrom.String(), purchaser.String())
 
 		poAmount := app.EnterpriseKeeper.GetPurchaseOrderAmount(ctx, i)
-		require.True(t, poAmount.Denom == sdk.DefaultBondDenom)
-		require.True(t, poAmount.Amount.Int64() == int64(i))
+		require.Equal(t, poAmount.Denom, sdk.DefaultBondDenom)
+		require.Equal(t, poAmount.Amount.Int64(), int64(i))
 	}
 
 }
@@ -99,7 +99,7 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 
 		poID, err := app.EnterpriseKeeper.RaiseNewPurchaseOrder(ctx, expectedPo)
 		require.NoError(t, err)
-		require.True(t, poID == expectedPo.Id)
+		require.Equal(t, poID, expectedPo.Id)
 
 		poExists := app.EnterpriseKeeper.PurchaseOrderExists(ctx, poID)
 		require.True(t, poExists)
@@ -107,11 +107,11 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 		poDb, found := app.EnterpriseKeeper.GetPurchaseOrder(ctx, poID)
 		require.True(t, found)
 
-		require.True(t, poDb.Id == expectedPo.Id)
-		require.True(t, poDb.Status == types.StatusRaised)
-		require.True(t, poDb.Purchaser == from.String())
-		require.True(t, poDb.Amount.Denom == sdk.DefaultBondDenom)
-		require.True(t, poDb.Amount.Amount.Int64() == amt)
+		require.Equal(t, poDb.Id, expectedPo.Id)
+		require.Equal(t, poDb.Status, types.StatusRaised)
+		require.Equal(t, poDb.Purchaser, from.String())
+		require.Equal(t, poDb.Amount.Denom, sdk.DefaultBondDenom)
+		require.Equal(t, poDb.Amount.Amount.Int64(), amt)
 		require.True(t, poDb.Amount.IsEqual(expectedPo.Amount))
 
 		i = i + 1
@@ -136,7 +136,7 @@ func TestHighestPurchaseOrderIdAfterRaise(t *testing.T) {
 
 		nextID, _ := app.EnterpriseKeeper.GetHighestPurchaseOrderID(ctx)
 		expectedNextID := i + 1
-		require.True(t, nextID == expectedNextID)
+		require.Equal(t, nextID, expectedNextID)
 	}
 }
 
@@ -160,7 +160,8 @@ func TestPurchaseOrderExistsAfterRaise(t *testing.T) {
 
 		poDb, found := app.EnterpriseKeeper.GetPurchaseOrder(ctx, poID)
 		require.True(t, found)
-		require.True(t, poDb.Id == poID && poDb.Id == i)
+		require.Equal(t, poID, poDb.Id)
+		require.Equal(t, i, poDb.Id)
 	}
 }
 
@@ -200,7 +201,7 @@ func TestProcessPurchaseOrderAfterRaise(t *testing.T) {
 
 		for _, d := range poDb.Decisions {
 			if d.Signer == entSignerAddr.String() {
-				require.True(t, d.Decision == decision)
+				require.Equal(t, d.Decision, decision)
 			}
 		}
 	}
@@ -259,7 +260,7 @@ func TestRaisedQueueIterator(t *testing.T) {
 
 	raisedPos := app.EnterpriseKeeper.GetAllRaisedPurchaseOrders(ctx)
 
-	require.True(t, len(raisedPos) == len(toAdd))
+	require.Equal(t, len(raisedPos), len(toAdd))
 
 	for _, poId := range toAdd {
 		require.True(t, isInList(raisedPos, poId))
@@ -298,7 +299,7 @@ func TestAcceptedQueueIterator(t *testing.T) {
 
 	acceptedPos := app.EnterpriseKeeper.GetAllAcceptedPurchaseOrders(ctx)
 
-	require.True(t, len(acceptedPos) == len(toAdd))
+	require.Equal(t, len(acceptedPos), len(toAdd))
 
 	for _, poId := range toAdd {
 		require.True(t, isInList(acceptedPos, poId))

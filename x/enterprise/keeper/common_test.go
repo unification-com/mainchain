@@ -20,14 +20,6 @@ func createRandomAccounts(accNum int) []sdk.AccAddress {
 	return testAddrs
 }
 
-func ParamsEqual(paramsA, paramsB types.Params) bool {
-	return paramsA == paramsB
-}
-
-func LockedUndEqual(lA, lB types.LockedUnd) bool {
-	return lA == lB
-}
-
 func RandomDecision() types.PurchaseOrderStatus {
 	rnd := rand.Intn(100)
 	if rnd >= 50 {

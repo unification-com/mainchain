@@ -20,7 +20,7 @@ func TestDecodeStore(t *testing.T) {
 
 	dec := simulation.NewDecodeStore(encCfg.Codec)
 
-	now := time.Now().UTC()
+	now := time.Unix(1700000000, 0).UTC()
 
 	newStream := types.Stream{
 		Deposit:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),

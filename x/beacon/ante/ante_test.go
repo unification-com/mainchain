@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
-	"time"
 
 	errorsmod "cosmossdk.io/errors"
 	mathmod "cosmossdk.io/math"
@@ -41,7 +40,7 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -78,13 +77,11 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -180,7 +177,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -266,7 +263,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -349,7 +346,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -391,9 +388,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt1 := int64(actualRecFeeAmt)
@@ -408,9 +403,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx1, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// PurchaseStorageAction
 	numToPurchase := uint64(10)
@@ -426,9 +419,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx2, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
@@ -445,7 +436,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -494,9 +485,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt1 := int64(actualRecFeeAmt)
@@ -511,9 +500,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx1, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// PurchaseStorageAction
 	numToPurchase := uint64(10)
@@ -529,9 +516,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx2, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
@@ -548,7 +533,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 }
 
 func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -632,7 +617,7 @@ func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -720,7 +705,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 }
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -791,7 +776,7 @@ func GenTx(
 	sigs := make([]signing.SignatureV2, len(signers))
 
 	// create a random length memo
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	memo := simulation.RandStringOfLength(r, simulation.RandIntBetween(r, 0, 100))
 	signMode, err := authsigning.APISignModeToInternal(gen.SignModeHandler().DefaultMode())
 	if err != nil {

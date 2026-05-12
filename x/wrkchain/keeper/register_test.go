@@ -25,7 +25,7 @@ func TestSetGetHighestWRKChainID(t *testing.T) {
 		app.WrkchainKeeper.SetHighestWrkChainID(ctx, i)
 		wcID, err := app.WrkchainKeeper.GetHighestWrkChainID(ctx)
 		require.NoError(t, err)
-		require.True(t, wcID == i)
+		require.Equal(t, wcID, i)
 	}
 }
 
@@ -76,11 +76,11 @@ func TestSetGetWrkChain(t *testing.T) {
 		require.True(t, WRKChainEqual(wcDb, wc))
 
 		wcDbOwner := app.WrkchainKeeper.GetWrkChainOwner(ctx, wcID)
-		require.True(t, wcDbOwner.String() == addr.String())
+		require.Equal(t, wcDbOwner.String(), addr.String())
 
 		wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
 		require.True(t, found)
-		require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit)
+		require.Equal(t, wcSt.InStateLimit, types.DefaultStorageLimit)
 
 		wcID = wcID + 1
 	}
@@ -112,7 +112,7 @@ func TestRegisterWrkChain(t *testing.T) {
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
-		require.True(t, wcID == expectedWc.WrkchainId)
+		require.Equal(t, wcID, expectedWc.WrkchainId)
 
 		isRegistered := app.WrkchainKeeper.IsWrkChainRegistered(ctx, wcID)
 		require.True(t, isRegistered)
@@ -125,11 +125,11 @@ func TestRegisterWrkChain(t *testing.T) {
 		require.True(t, WRKChainEqual(wcDb, expectedWc))
 
 		wcDbOwner := app.WrkchainKeeper.GetWrkChainOwner(ctx, wcID)
-		require.True(t, wcDbOwner.String() == addr.String())
+		require.Equal(t, wcDbOwner.String(), addr.String())
 
 		wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
 		require.True(t, found)
-		require.True(t, wcSt.InStateLimit == simapphelpers.SimTestDefaultStorageLimit)
+		require.Equal(t, wcSt.InStateLimit, simapphelpers.SimTestDefaultStorageLimit)
 
 		i = i + 1
 	}
@@ -151,7 +151,7 @@ func TestHighestWrkChainIdAfterRegister(t *testing.T) {
 
 		nextID, _ := app.WrkchainKeeper.GetHighestWrkChainID(ctx)
 		expectedNextID := wcID + 1
-		require.True(t, nextID == expectedNextID)
+		require.Equal(t, nextID, expectedNextID)
 	}
 }
 
@@ -196,12 +196,12 @@ func TestGetWrkChainFilter(t *testing.T) {
 	}
 
 	results := app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
-	require.True(t, len(results) == numToReg)
+	require.Equal(t, len(results), numToReg)
 
 	params = types.QueryWrkChainsFilteredRequest{
 		Moniker: lastMoniker,
 	}
 
 	results = app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
-	require.True(t, len(results) == 1)
+	require.Equal(t, len(results), 1)
 }

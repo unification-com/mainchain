@@ -20,7 +20,7 @@ func TestEqualStartingWrkChainID(t *testing.T) {
 
 	state2.StartingWrkchainId = 1
 	require.Equal(t, state1, state2)
-	require.True(t, state1.StartingWrkchainId == state2.StartingWrkchainId)
+	require.Equal(t, state1.StartingWrkchainId, state2.StartingWrkchainId)
 }
 
 func TestNewGenesisState(t *testing.T) {

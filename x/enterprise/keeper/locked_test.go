@@ -27,8 +27,8 @@ func TestSetGetTotalLockedUnd(t *testing.T) {
 	lockedDb := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
 
 	require.True(t, lockedDb.IsEqual(locked))
-	require.True(t, lockedDb.Denom == denom)
-	require.True(t, lockedDb.Amount.Int64() == amount)
+	require.Equal(t, lockedDb.Denom, denom)
+	require.Equal(t, lockedDb.Amount.Int64(), amount)
 }
 
 func TestSetGetLockedUndForAccount(t *testing.T) {
@@ -51,7 +51,7 @@ func TestSetGetLockedUndForAccount(t *testing.T) {
 
 		lockedDb := app.EnterpriseKeeper.GetLockedUndForAccount(ctx, addr)
 
-		require.True(t, locked.Owner == lockedDb.Owner)
+		require.Equal(t, locked.Owner, lockedDb.Owner)
 		require.True(t, lockedDb.Amount.IsEqual(locked.Amount))
 
 		lockedDbAmount := app.EnterpriseKeeper.GetLockedUndAmountForAccount(ctx, addr)
@@ -221,7 +221,7 @@ func TestUnlockCoinsForFeesAndUsedCounter(t *testing.T) {
 
 		usedDb := app.EnterpriseKeeper.GetSpentEFUNDForAccount(ctx, addr)
 		require.True(t, usedDb.Amount.IsEqual(toUnlock))
-		require.True(t, usedDb.Owner == addr.String())
+		require.Equal(t, usedDb.Owner, addr.String())
 	}
 
 	expectedTotalUsedCoin := sdk.NewInt64Coin(sdk.DefaultBondDenom, totalUsed)
@@ -327,7 +327,7 @@ func TestUnlockCoinsForFeesAndUsedCounterWithHalfFunds(t *testing.T) {
 		usedDb := app.EnterpriseKeeper.GetSpentEFUNDForAccount(ctx, addr)
 		// fee is 2x what was minted. Only minted should count
 		require.True(t, usedDb.Amount.IsEqual(toMint))
-		require.True(t, usedDb.Owner == addr.String())
+		require.Equal(t, usedDb.Owner, addr.String())
 	}
 
 	expectedTotalUsedCoin := sdk.NewInt64Coin(sdk.DefaultBondDenom, totalUsed)

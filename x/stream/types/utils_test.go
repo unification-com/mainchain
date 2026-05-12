@@ -65,7 +65,11 @@ func TestCalculateFlowRateForCoin(t *testing.T) {
 		{"9", sdk.NewInt64Coin("testdenom", 4584000000000), types.StreamPeriodMonth, 1, 2628000, 1744292},
 		{"10", sdk.NewInt64Coin("testdenom", 0), types.StreamPeriodMonth, 1, 2628000, 0},
 		{"11", sdk.NewInt64Coin("testdenom", 2332323424), types.StreamPeriodMonth, 0, 0, 0},
-		{"11", sdk.NewInt64Coin("testdenom", 0), types.StreamPeriodMonth, 0, 0, 0},
+		{"12", sdk.NewInt64Coin("testdenom", 0), types.StreamPeriodMonth, 0, 0, 0},
+		// Unspecified explicit enum value — should fall through to baseDuration=1
+		{"13-unspecified", sdk.NewInt64Coin("testdenom", 1000), types.StreamPeriodUnspecified, 1, 1, 1000},
+		// Unrecognised enum value — should hit the default branch (baseDuration=1)
+		{"14-unrecognised", sdk.NewInt64Coin("testdenom", 1000), types.StreamPeriod(99), 1, 1, 1000},
 	}
 
 	for _, tc := range testCases {

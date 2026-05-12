@@ -161,7 +161,6 @@ func setup() (*undapp.App, undapp.GenesisState) {
 	fundApp := undapp.NewApp(
 		log.NewNopLogger(),
 		db,
-		nil,
 		true,
 		appOptions,
 	)
@@ -270,11 +269,11 @@ func NewTestNetworkFixture() network.TestFixture {
 	}
 	defer os.RemoveAll(dir)
 
-	app := undapp.NewApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, simtestutil.NewAppOptionsWithFlagHome(dir))
+	app := undapp.NewApp(log.NewNopLogger(), dbm.NewMemDB(), true, simtestutil.NewAppOptionsWithFlagHome(dir))
 
 	appCtr := func(val network.ValidatorI) servertypes.Application {
 		return undapp.NewApp(
-			val.GetCtx().Logger, dbm.NewMemDB(), nil, true,
+			val.GetCtx().Logger, dbm.NewMemDB(), true,
 			simtestutil.NewAppOptionsWithFlagHome(val.GetCtx().Config.RootDir),
 			bam.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			bam.SetMinGasPrices(val.GetAppConfig().MinGasPrices),

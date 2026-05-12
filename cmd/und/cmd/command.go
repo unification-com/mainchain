@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"io"
 
 	"cosmossdk.io/log/v2"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
@@ -179,12 +178,11 @@ type appCreator struct{}
 func (a appCreator) newApp(
 	logger log.Logger,
 	db dbm.DB,
-	traceStore io.Writer,
 	appOpts servertypes.AppOptions,
 ) servertypes.Application {
 	baseappOptions := server.DefaultBaseappOptions(appOpts)
 	return app.NewApp(
-		logger, db, traceStore, true,
+		logger, db, true,
 		appOpts,
 		baseappOptions...,
 	)
@@ -194,7 +192,6 @@ func (a appCreator) newApp(
 func (a appCreator) appExport(
 	logger log.Logger,
 	db dbm.DB,
-	traceStore io.Writer,
 	height int64,
 	forZeroHeight bool,
 	jailAllowedAddrs []string,
@@ -212,13 +209,13 @@ func (a appCreator) appExport(
 
 	var simApp *app.App
 	if height != -1 {
-		simApp = app.NewApp(logger, db, traceStore, false, appOpts)
+		simApp = app.NewApp(logger, db, false, appOpts)
 
 		if err := simApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		simApp = app.NewApp(logger, db, traceStore, true, appOpts)
+		simApp = app.NewApp(logger, db, true, appOpts)
 	}
 
 	return simApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)

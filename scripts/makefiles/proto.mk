@@ -12,11 +12,12 @@ proto-all: proto-format proto-lint proto-gen
 # NOTE: when using rootless docker, this will fail. Before running, run:
 #   chmod 777 proto proto/buf.lock
 # After running, the generated tree under ./github.com/ and the refreshed
-# proto/buf.lock are owned by an unprivileged sub-UID. Reclaim them without
-# sudo by chowning from inside a root container (rootless docker maps
-# in-container uid 0 to your host uid):
-#   docker run --rm -v $(CURDIR):/workspace --workdir /workspace --user 0:0 \
-#     alpine sh -c "chown 0:0 proto/buf.lock && chown -R 0:0 github.com"
+# proto/buf.lock may be owned by an unprivileged sub-UID. Reclaim them
+# from inside a root container; `stat -c %u:%g /workspace` reads the
+# bind-mount's apparent ownership which matches the invoking host user
+# under both rootless and rootful docker:
+#   docker run --rm -v $(CURDIR):/workspace --user 0:0 alpine sh -c \
+#     'OWN=$(stat -c "%u:%g" /workspace); chown "$OWN" /workspace/proto/buf.lock && chown -R "$OWN" /workspace/github.com'
 #   cp -r github.com/unification-com/mainchain/* ./
 #   rm -rf github.com
 #   chmod 755 proto && chmod 644 proto/buf.lock

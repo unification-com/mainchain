@@ -230,6 +230,76 @@ func TestUnlockCoinsForFeesAndUsedCounter(t *testing.T) {
 	require.True(t, totalUsedDb.IsEqual(expectedTotalUsedCoin))
 }
 
+func TestUnlockAndMintCoinsForFeesInsufficientFunds(t *testing.T) {
+	// Branch C of UnlockAndMintCoinsForFees: locked + spendable < fee.
+	// Expected behaviour: function returns nil silently, with NO state change.
+	// The intent is to let the downstream DeductFeeDecorator reject the tx with a
+	// proper "insufficient fee" error; the enterprise keeper should not partially
+	// mint/unlock when the resulting balance still wouldn't cover the fee.
+
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+
+	// Random accounts have zero bank balance — guarantees spendable = 0.
+	testAddresses := simapphelpers.GenerateRandomTestAccounts(10)
+
+	denom := sdk.DefaultBondDenom
+	lockedAmount := int64(100)
+	feeAmount := int64(1000) // > locked (100) + spendable (0)
+
+	totalSupplyBefore := app.BankKeeper.GetSupply(ctx, denom)
+	totalLockedBefore := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
+	totalSpentBefore := app.EnterpriseKeeper.GetTotalSpentEFUND(ctx)
+
+	for _, addr := range testAddresses {
+		// Lock a small amount — insufficient on its own to cover the fee.
+		toLock := sdk.NewInt64Coin(denom, lockedAmount)
+		err := app.EnterpriseKeeper.CreateAndLockEFUND(ctx, addr, toLock)
+		require.NoError(t, err)
+
+		balanceBefore := app.BankKeeper.GetBalance(ctx, addr, denom)
+		require.True(t, balanceBefore.IsZero(), "test setup requires zero spendable balance")
+
+		lockedBefore := app.EnterpriseKeeper.GetLockedUndForAccount(ctx, addr)
+		spentBefore := app.EnterpriseKeeper.GetSpentEFUNDForAccount(ctx, addr)
+
+		// Fee exceeds locked + spendable. Branch C: no-op return.
+		fee := sdk.NewCoins(sdk.NewInt64Coin(denom, feeAmount))
+		err = app.EnterpriseKeeper.UnlockAndMintCoinsForFees(ctx, addr, fee)
+		require.NoError(t, err, "Branch C should return nil silently")
+
+		// Per-account state must be unchanged.
+		lockedAfter := app.EnterpriseKeeper.GetLockedUndForAccount(ctx, addr)
+		require.True(t, lockedAfter.Amount.IsEqual(lockedBefore.Amount),
+			"locked unchanged: before %s, after %s", lockedBefore.Amount, lockedAfter.Amount)
+
+		spentAfter := app.EnterpriseKeeper.GetSpentEFUNDForAccount(ctx, addr)
+		require.True(t, spentAfter.Amount.IsEqual(spentBefore.Amount),
+			"spent unchanged: before %s, after %s", spentBefore.Amount, spentAfter.Amount)
+
+		balanceAfter := app.BankKeeper.GetBalance(ctx, addr, denom)
+		require.True(t, balanceAfter.IsEqual(balanceBefore),
+			"bank balance unchanged: before %s, after %s", balanceBefore, balanceAfter)
+	}
+
+	// Module-wide totals: total locked should have grown by 10 * 100 = 1000
+	// (from the CreateAndLockEFUND calls), but total spent and total supply
+	// should be unchanged.
+	expectedTotalLocked := totalLockedBefore.Add(sdk.NewInt64Coin(denom, lockedAmount*int64(len(testAddresses))))
+	totalLockedAfter := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
+	require.True(t, totalLockedAfter.IsEqual(expectedTotalLocked),
+		"total locked: expected %s, got %s", expectedTotalLocked, totalLockedAfter)
+
+	totalSpentAfter := app.EnterpriseKeeper.GetTotalSpentEFUND(ctx)
+	require.True(t, totalSpentAfter.IsEqual(totalSpentBefore),
+		"total spent must NOT change in Branch C: before %s, after %s", totalSpentBefore, totalSpentAfter)
+
+	// Critically: no minting must have happened.
+	totalSupplyAfter := app.BankKeeper.GetSupply(ctx, denom)
+	require.True(t, totalSupplyAfter.IsEqual(totalSupplyBefore),
+		"total supply must NOT change in Branch C (no minting): before %s, after %s", totalSupplyBefore, totalSupplyAfter)
+}
+
 func TestUnlockCoinsForFeesAndUsedCounterWithHalfFunds(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)

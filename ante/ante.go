@@ -48,7 +48,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	if options.EnterpriseKeeper == nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "enterprise keeper is required for AnteHandler")
 	}
-	if options.EnterpriseKeeper == nil {
+	if options.IBCKeeper == nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "ibc keeper is required for AnteHandler")
 	}
 	if options.CircuitKeeper == nil {

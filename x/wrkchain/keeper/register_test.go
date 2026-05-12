@@ -4,9 +4,14 @@ import (
 	"testing"
 	"time"
 
+	storetypes "cosmossdk.io/store/types"
+	"github.com/cosmos/cosmos-sdk/testutil"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/require"
 
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	"github.com/unification-com/mainchain/x/wrkchain"
+	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
@@ -24,13 +29,17 @@ func TestSetGetHighestWRKChainID(t *testing.T) {
 	}
 }
 
-//func TestSetGetHighestBeaconIDNotSet(t *testing.T) {
-//	app := simapp.Setup(t, true)
-//	ctx := app.BaseApp.NewContext(true)
-//
-//	_, err := app.WrkchainKeeper.GetHighestWrkChainID(ctx)
-//	require.Error(t, err)
-//}
+func TestSetGetHighestWrkChainIDNotSet(t *testing.T) {
+	encCfg := moduletestutil.MakeTestEncodingConfig(wrkchain.AppModuleBasic{})
+	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
+	tKey := storetypes.NewTransientStoreKey("transient_test")
+	ctx := testutil.DefaultContext(storeKey, tKey)
+
+	k := keeper.NewKeeper(storeKey, encCfg.Codec, "authority")
+
+	_, err := k.GetHighestWrkChainID(ctx)
+	require.Error(t, err)
+}
 
 // Tests for Get/Set WRKChains
 

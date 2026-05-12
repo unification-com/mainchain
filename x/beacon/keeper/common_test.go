@@ -3,7 +3,6 @@ package keeper_test
 import (
 	"encoding/hex"
 	"math/rand"
-	"time"
 
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
@@ -18,7 +17,7 @@ const (
 
 var (
 	TestAddrs  = createRandomAccounts(10)
-	seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	seededRand = rand.New(rand.NewSource(1))
 )
 
 func createRandomAccounts(accNum int) []sdk.AccAddress {

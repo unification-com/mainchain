@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
-	"time"
 
 	errorsmod "cosmossdk.io/errors"
 	mathmod "cosmossdk.io/math"
@@ -41,7 +40,7 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -84,7 +83,7 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -180,7 +179,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -266,7 +265,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -349,7 +348,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -445,7 +444,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -548,7 +547,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 }
 
 func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -632,7 +631,7 @@ func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -720,7 +719,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 }
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -791,7 +790,7 @@ func GenTx(
 	sigs := make([]signing.SignatureV2, len(signers))
 
 	// create a random length memo
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	memo := simulation.RandStringOfLength(r, simulation.RandIntBetween(r, 0, 100))
 	signMode, err := authsigning.APISignModeToInternal(gen.SignModeHandler().DefaultMode())
 	if err != nil {

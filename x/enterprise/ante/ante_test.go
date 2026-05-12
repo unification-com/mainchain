@@ -3,7 +3,6 @@ package ante_test
 import (
 	"math/rand"
 	"testing"
-	"time"
 
 	mathmod "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -75,7 +74,7 @@ func (s *AnteTestSuite) SetupTest() {
 
 func (s *AnteTestSuite) TestAnteHandler() {
 
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 
 	testCases := []struct {
 		name           string
@@ -230,7 +229,7 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCheckLockedUndDecoratorModuleAndSupplyMinting(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -279,7 +278,7 @@ func TestCheckLockedUndDecoratorModuleAndSupplyMinting(t *testing.T) {
 }
 
 func TestOnlyMintsAmountLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -329,7 +328,7 @@ func TestOnlyMintsAmountLocked(t *testing.T) {
 }
 
 func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -365,7 +364,7 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 }
 
 func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -400,7 +399,7 @@ func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
 }
 
 func TestNoMintingIfInsufficientBalanceAndLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()

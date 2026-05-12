@@ -78,6 +78,8 @@ message MsgClaimStream {
   string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // receiver is the wallet making the claim
   string receiver = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // denom identifies which of the streams between (sender, receiver) to claim from
+  string denom = 3;
 }
 
 message MsgClaimStreamResponse {
@@ -135,6 +137,8 @@ message MsgUpdateFlowRate{
   string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // flow_rate is the rate of nund per second
   int64 flow_rate = 3;
+  // denom identifies which of the streams between (sender, receiver) to update
+  string denom = 4;
 }
 
 // MsgUpdateFlowRateResponse is the response for MsgUpdateFlowRate
@@ -155,6 +159,8 @@ message MsgCancelStream {
   string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // sender is the wallet cancelling
   string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // denom identifies which of the streams between (sender, receiver) to cancel
+  string denom = 3;
 }
 
 // MsgCancelStreamResponse

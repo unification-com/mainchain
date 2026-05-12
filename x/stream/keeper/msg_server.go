@@ -45,12 +45,12 @@ func (k msgServer) CreateStream(goCtx context.Context, msg *types.MsgCreateStrea
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "sender and receiver cannot be same address")
 	}
 
-	if k.IsStream(ctx, receiverAddr, senderAddr) {
-		return nil, errorsmod.Wrap(types.ErrStreamExists, "use update stream msg to modify existing stream")
-	}
-
 	if msg.Deposit.IsNil() || msg.Deposit.IsNegative() || msg.Deposit.IsZero() {
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "deposit must be > zero")
+	}
+
+	if k.IsStream(ctx, receiverAddr, senderAddr, msg.Deposit.Denom) {
+		return nil, errorsmod.Wrap(types.ErrStreamExists, "use update stream msg to modify existing stream")
 	}
 
 	if msg.FlowRate <= 0 {
@@ -87,7 +87,7 @@ func (k msgServer) CreateStream(goCtx context.Context, msg *types.MsgCreateStrea
 
 }
 
-// ClaimStream claims from a stream using sender and receiver as inputs
+// ClaimStream claims from a stream using sender, receiver and denom as inputs
 func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream) (*types.MsgClaimStreamResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	senderAddr, accErr := sdk.AccAddressFromBech32(msg.Sender)
@@ -99,13 +99,17 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 		return nil, accErr
 	}
 
-	ok := k.IsStream(ctx, receiverAddr, senderAddr)
+	if err := sdk.ValidateDenom(msg.Denom); err != nil {
+		return nil, errorsmod.Wrap(types.ErrInvalidData, err.Error())
+	}
+
+	ok := k.IsStream(ctx, receiverAddr, senderAddr, msg.Denom)
 
 	if !ok {
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
-	finalClaimCoin, valFeeCoin, totalClaimValue, remainingDeposit, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr)
+	finalClaimCoin, valFeeCoin, totalClaimValue, remainingDeposit, err := k.ClaimFromStream(ctx, receiverAddr, senderAddr, msg.Denom)
 
 	if err != nil {
 		return nil, err
@@ -119,7 +123,10 @@ func (k msgServer) ClaimStream(goCtx context.Context, msg *types.MsgClaimStream)
 	}, nil
 }
 
-// TopUpDeposit adds more deposit to a stream
+// TopUpDeposit adds more deposit to a stream. The denom is carried inside msg.Deposit;
+// if no stream exists for (sender, receiver, msg.Deposit.Denom), the call errors with
+// "stream not found" rather than the old "denom mismatch" — under multi-denom, an absent
+// stream for a denom is genuinely not-found rather than a mismatched-denom condition.
 func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposit) (*types.MsgTopUpDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -137,14 +144,8 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "deposit must be > zero")
 	}
 
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
-
-	if !ok {
+	if !k.IsStream(ctx, receiverAddr, senderAddr, msg.Deposit.Denom) {
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
-	}
-
-	if msg.Deposit.Denom != stream.Deposit.Denom {
-		return nil, errorsmod.Wrapf(types.ErrInvalidData, "top up denom does not match stream denom. stream: %s, top up %s", stream.Deposit.Denom, msg.Deposit.Denom)
 	}
 
 	// Add the requested deposit
@@ -155,7 +156,7 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 	}
 
 	// get updated stream data
-	stream, _ = k.GetStream(ctx, receiverAddr, senderAddr)
+	stream, _ := k.GetStream(ctx, receiverAddr, senderAddr, msg.Deposit.Denom)
 
 	return &types.MsgTopUpDepositResponse{
 		DepositAmount:   msg.Deposit,
@@ -165,7 +166,7 @@ func (k msgServer) TopUpDeposit(goCtx context.Context, msg *types.MsgTopUpDeposi
 
 }
 
-// UpdateFlowRate creates a new stream
+// UpdateFlowRate updates the flow rate on a stream identified by (sender, receiver, denom)
 func (k msgServer) UpdateFlowRate(goCtx context.Context, msg *types.MsgUpdateFlowRate) (*types.MsgUpdateFlowRateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -183,12 +184,16 @@ func (k msgServer) UpdateFlowRate(goCtx context.Context, msg *types.MsgUpdateFlo
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "flow rate must be > zero")
 	}
 
-	if !k.IsStream(ctx, receiverAddr, senderAddr) {
+	if err := sdk.ValidateDenom(msg.Denom); err != nil {
+		return nil, errorsmod.Wrap(types.ErrInvalidData, err.Error())
+	}
+
+	if !k.IsStream(ctx, receiverAddr, senderAddr, msg.Denom) {
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
 	}
 
 	// update the flow rate
-	err := k.SetNewFlowRate(ctx, receiverAddr, senderAddr, msg.FlowRate)
+	err := k.SetNewFlowRate(ctx, receiverAddr, senderAddr, msg.Denom, msg.FlowRate)
 
 	if err != nil {
 		return nil, err
@@ -212,7 +217,11 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 		return nil, accErr
 	}
 
-	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr)
+	if err := sdk.ValidateDenom(msg.Denom); err != nil {
+		return nil, errorsmod.Wrap(types.ErrInvalidData, err.Error())
+	}
+
+	stream, ok := k.GetStream(ctx, receiverAddr, senderAddr, msg.Denom)
 
 	if !ok {
 		return nil, errorsmod.Wrap(types.ErrInvalidData, "stream not found")
@@ -223,7 +232,7 @@ func (k msgServer) CancelStream(goCtx context.Context, msg *types.MsgCancelStrea
 	}
 
 	// cancel stream
-	err := k.CancelStreamBySenderReceiver(ctx, receiverAddr, senderAddr)
+	err := k.CancelStreamBySenderReceiver(ctx, receiverAddr, senderAddr, msg.Denom)
 
 	if err != nil {
 		return nil, err

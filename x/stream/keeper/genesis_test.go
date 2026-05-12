@@ -21,7 +21,7 @@ func (s *KeeperTestSuite) TestImportExportGenesis() {
 
 		// simulate some claims etc.
 		tCtx = tCtx.WithBlockTime(nowTime)
-		_, _, _, _, err = s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[i-1], s.addrs[i])
+		_, _, _, _, err = s.app.StreamKeeper.ClaimFromStream(tCtx, s.addrs[i-1], s.addrs[i], sdk.DefaultBondDenom)
 		s.Require().NoError(err)
 	}
 

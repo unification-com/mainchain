@@ -16,11 +16,12 @@ import (
 
 	"github.com/unification-com/mainchain/x/stream/client/cli"
 	"github.com/unification-com/mainchain/x/stream/keeper"
+	v2 "github.com/unification-com/mainchain/x/stream/migrations/v2"
 	"github.com/unification-com/mainchain/x/stream/types"
 )
 
 // ConsensusVer defines the current x/stream module consensus version.
-const ConsensusVer = 1
+const ConsensusVer = 2
 
 var (
 	_ module.AppModuleBasic      = (*AppModuleBasic)(nil)
@@ -123,6 +124,12 @@ func (am AppModule) IsAppModule() {}
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+
+	if err := cfg.RegisterMigration(types.ModuleName, 1, func(ctx sdk.Context) error {
+		return v2.MigrateStore(ctx, am.keeper.GetStoreKey(), am.keeper.Cdc())
+	}); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/%s from version 1 to 2: %v", types.ModuleName, err))
+	}
 }
 
 // InitGenesis performs the module's genesis initialization. It returns no validator updates.

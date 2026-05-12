@@ -23,12 +23,18 @@ func TestAddressFromStreamsStore(t *testing.T) {
 	senderAddrLen := len(senderAddr)
 	require.Equal(t, 20, senderAddrLen)
 
-	key := types.GetStreamKey(receiverAddr, senderAddr)
+	denom := sdk.DefaultBondDenom
+	key := types.GetStreamKey(receiverAddr, senderAddr, denom)
 
-	require.Len(t, key, len(types.StreamKeyPrefix)+len(address.MustLengthPrefix(receiverAddr))+len(address.MustLengthPrefix(senderAddr)))
+	expectedLen := len(types.StreamKeyPrefix) +
+		len(address.MustLengthPrefix(receiverAddr)) +
+		len(address.MustLengthPrefix(senderAddr)) +
+		1 + len(denom) // 1-byte length prefix + raw denom
+	require.Len(t, key, expectedLen)
 
-	r, s := types.AddressesFromStreamKey(key)
+	r, s, d := types.AddressesFromStreamKey(key)
 
 	require.Equal(t, receiverAddr, r)
 	require.Equal(t, senderAddr, s)
+	require.Equal(t, denom, d)
 }

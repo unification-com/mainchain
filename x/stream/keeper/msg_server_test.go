@@ -294,6 +294,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			claim: &types.MsgClaimStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: &types.MsgClaimStreamResponse{
 				TotalClaimed:     sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000),
@@ -310,6 +311,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			claim: &types.MsgClaimStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: "rubbish",
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -321,6 +323,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			claim: &types.MsgClaimStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: "",
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -332,6 +335,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			claim: &types.MsgClaimStream{
 				Sender:   "rubbish",
 				Receiver: s.addrs[1].String(),
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -343,6 +347,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			claim: &types.MsgClaimStream{
 				Sender:   "",
 				Receiver: s.addrs[1].String(),
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -354,6 +359,7 @@ func (s *KeeperTestSuite) TestMsgServerClaimStream() {
 			claim: &types.MsgClaimStream{
 				Sender:   s.addrs[8].String(), // created earlier
 				Receiver: s.addrs[9].String(),
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -422,7 +428,9 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			expErrMsg: "",
 		},
 		{
-			name: "invalid topup - denom mistmatch",
+			// Under v2, topping up a denom for which no stream exists is "stream not found"
+			// rather than v1's "denom mismatch" — denom is part of the key.
+			name: "invalid topup - no stream for that denom",
 			create: &types.MsgCreateStream{
 				Sender:   s.addrs[2].String(),
 				Receiver: s.addrs[3].String(),
@@ -436,7 +444,7 @@ func (s *KeeperTestSuite) TestMsgServerTopUpDeposit() {
 			},
 			expResult: nil,
 			expectErr: true,
-			expErrMsg: "top up denom does not match stream denom",
+			expErrMsg: "stream not found",
 		},
 		{
 			name:   "invalid topup - bad sender address",
@@ -573,6 +581,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
 				FlowRate: 2,
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: &types.MsgUpdateFlowRateResponse{
 				FlowRate: 2,
@@ -587,6 +596,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				Sender:   "rubbish",
 				Receiver: s.addrs[1].String(),
 				FlowRate: 2,
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -599,6 +609,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				Sender:   "",
 				Receiver: s.addrs[1].String(),
 				FlowRate: 2,
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -611,6 +622,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				Sender:   s.addrs[1].String(),
 				Receiver: "rubbish",
 				FlowRate: 2,
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -623,6 +635,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				Sender:   s.addrs[1].String(),
 				Receiver: "",
 				FlowRate: 2,
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -635,6 +648,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
 				FlowRate: 0,
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -647,6 +661,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
 				FlowRate: -1,
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -659,6 +674,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateFlowRate() {
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[9].String(),
 				FlowRate: 2,
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -714,6 +730,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			cancel: &types.MsgCancelStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[1].String(),
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: &types.MsgCancelStreamResponse{},
 			expectErr: false,
@@ -725,6 +742,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			cancel: &types.MsgCancelStream{
 				Sender:   "rubbish",
 				Receiver: s.addrs[1].String(),
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -736,6 +754,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			cancel: &types.MsgCancelStream{
 				Sender:   "",
 				Receiver: s.addrs[1].String(),
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -747,6 +766,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			cancel: &types.MsgCancelStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: "rubbish",
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -758,6 +778,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			cancel: &types.MsgCancelStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: "",
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -769,6 +790,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream() {
 			cancel: &types.MsgCancelStream{
 				Sender:   s.addrs[0].String(),
 				Receiver: s.addrs[9].String(),
+				Denom:    sdk.DefaultBondDenom,
 			},
 			expResult: nil,
 			expectErr: true,
@@ -812,12 +834,13 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream_Fail_NotCancellable() {
 		Cancellable:     false,
 	}
 
-	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], expStream)
+	err := s.app.StreamKeeper.SetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom, expStream)
 	s.Require().NoError(err)
 
 	cancelMsg := &types.MsgCancelStream{
 		Sender:   s.addrs[0].String(),
 		Receiver: s.addrs[1].String(),
+		Denom:    sdk.DefaultBondDenom,
 	}
 
 	resp, err := s.msgServer.CancelStream(s.ctx, cancelMsg)
@@ -825,7 +848,7 @@ func (s *KeeperTestSuite) TestMsgServerCancelStream_Fail_NotCancellable() {
 	s.Require().ErrorContains(err, "cannot be cancelled")
 
 	// double check
-	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0])
+	stream, ok := s.app.StreamKeeper.GetStream(s.ctx, s.addrs[1], s.addrs[0], sdk.DefaultBondDenom)
 	s.Require().True(ok)
 	s.Require().Equal(expStream, stream)
 }

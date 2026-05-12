@@ -62,6 +62,11 @@ func (k Keeper) Cdc() codec.BinaryCodec {
 	return k.cdc
 }
 
+// GetStoreKey returns the module's store key. Used by migration handlers.
+func (k Keeper) GetStoreKey() storetypes.StoreKey {
+	return k.storeKey
+}
+
 // GetStreamModuleAccount returns the stream ModuleAccount
 func (k Keeper) GetStreamModuleAccount(ctx sdk.Context) authtypes.ModuleAccountI {
 	return k.accKeeper.GetModuleAccount(ctx, types.ModuleName)

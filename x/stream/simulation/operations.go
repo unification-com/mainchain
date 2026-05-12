@@ -111,7 +111,7 @@ func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, types.CreateStreamAction, "sender and receiver cannot be same"), nil, nil
 		}
 
-		if k.IsStream(ctx, receiver.Address, sender.Address) {
+		if k.IsStream(ctx, receiver.Address, sender.Address, sdk.DefaultBondDenom) {
 			return simtypes.NoOpMsg(types.ModuleName, types.CreateStreamAction, "stream exists"), nil, nil
 		}
 
@@ -204,7 +204,7 @@ func SimulateMsgClaimStream(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 		for i := 0; i < maxTries; i += 1 {
 			sen, _ := simtypes.RandomAcc(r, accs)
 			rec, _ := simtypes.RandomAcc(r, accs)
-			if k.IsStream(ctx, rec.Address, sen.Address) {
+			if k.IsStream(ctx, rec.Address, sen.Address, sdk.DefaultBondDenom) {
 				haveStream = true
 				sender = sen
 				receiver = rec
@@ -216,7 +216,7 @@ func SimulateMsgClaimStream(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 			return simtypes.NoOpMsg(types.ModuleName, types.ClaimStreamAction, "suitable stream not found"), nil, nil
 		}
 
-		stream, _ := k.GetStream(ctx, receiver.Address, sender.Address)
+		stream, _ := k.GetStream(ctx, receiver.Address, sender.Address, sdk.DefaultBondDenom)
 
 		nowTime := ctx.BlockTime()
 		claimTotal, _ := types.CalculateAmountToClaim(nowTime, stream.DepositZeroTime, stream.LastOutflowTime, stream.Deposit, stream.FlowRate)
@@ -230,7 +230,7 @@ func SimulateMsgClaimStream(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 			return simtypes.NoOpMsg(types.ModuleName, types.ClaimStreamAction, "account private key is nil"), nil, nil // skip
 		}
 
-		msg := types.NewMsgClaimStream(receiver.Address, sender.Address)
+		msg := types.NewMsgClaimStream(receiver.Address, sender.Address, sdk.DefaultBondDenom)
 
 		txCtx := simulation.OperationInput{
 			R:             r,
@@ -263,7 +263,7 @@ func SimulateMsgTopUpDeposit(ak types.AccountKeeper, bk types.BankKeeper, k keep
 		for i := 0; i < maxTries; i += 1 {
 			sen, _ := simtypes.RandomAcc(r, accs)
 			rec, _ := simtypes.RandomAcc(r, accs)
-			if k.IsStream(ctx, rec.Address, sen.Address) {
+			if k.IsStream(ctx, rec.Address, sen.Address, sdk.DefaultBondDenom) {
 				haveStream = true
 				sender = sen
 				receiver = rec
@@ -354,7 +354,7 @@ func SimulateMsgUpdateFlowRate(ak types.AccountKeeper, bk types.BankKeeper, k ke
 		for i := 0; i < maxTries; i += 1 {
 			sen, _ := simtypes.RandomAcc(r, accs)
 			rec, _ := simtypes.RandomAcc(r, accs)
-			if k.IsStream(ctx, rec.Address, sen.Address) {
+			if k.IsStream(ctx, rec.Address, sen.Address, sdk.DefaultBondDenom) {
 				haveStream = true
 				sender = sen
 				receiver = rec
@@ -366,7 +366,7 @@ func SimulateMsgUpdateFlowRate(ak types.AccountKeeper, bk types.BankKeeper, k ke
 			return simtypes.NoOpMsg(types.ModuleName, types.UpdateFlowRateAction, "suitable stream not found"), nil, nil
 		}
 
-		stream, _ := k.GetStream(ctx, receiver.Address, sender.Address)
+		stream, _ := k.GetStream(ctx, receiver.Address, sender.Address, sdk.DefaultBondDenom)
 
 		simAccount, _ := simtypes.FindAccount(accs, sender.Address)
 		if simAccount.PrivKey == nil {
@@ -388,7 +388,7 @@ func SimulateMsgUpdateFlowRate(ak types.AccountKeeper, bk types.BankKeeper, k ke
 			return simtypes.NoOpMsg(types.ModuleName, types.UpdateFlowRateAction, "new flow must be greater than zero"), nil, nil
 		}
 
-		msg := types.NewMsgUpdateFlowRate(receiver.Address, sender.Address, newFlow)
+		msg := types.NewMsgUpdateFlowRate(receiver.Address, sender.Address, newFlow, sdk.DefaultBondDenom)
 
 		txCtx := simulation.OperationInput{
 			R:             r,
@@ -421,7 +421,7 @@ func SimulateMsgCancelStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 		for i := 0; i < maxTries; i += 1 {
 			sen, _ := simtypes.RandomAcc(r, accs)
 			rec, _ := simtypes.RandomAcc(r, accs)
-			if k.IsStream(ctx, rec.Address, sen.Address) {
+			if k.IsStream(ctx, rec.Address, sen.Address, sdk.DefaultBondDenom) {
 				haveStream = true
 				sender = sen
 				receiver = rec
@@ -438,7 +438,7 @@ func SimulateMsgCancelStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, types.CancelStreamAction, "account private key is nil"), nil, nil // skip
 		}
 
-		msg := types.NewMsgCancelStream(receiver.Address, sender.Address)
+		msg := types.NewMsgCancelStream(receiver.Address, sender.Address, sdk.DefaultBondDenom)
 
 		txCtx := simulation.OperationInput{
 			R:             r,

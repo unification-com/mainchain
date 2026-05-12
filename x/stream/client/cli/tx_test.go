@@ -205,7 +205,7 @@ func (s *CLITestSuite) TestClaimStreamTxCmd() {
 			ctx := svrcmd.CreateExecuteContext(context.Background())
 
 			cmd.SetContext(ctx)
-			cmd.SetArgs(append([]string{tc.senderAddr.String(), tc.from}, tc.extraArgs...))
+			cmd.SetArgs(append([]string{tc.senderAddr.String(), sdk.DefaultBondDenom, tc.from}, tc.extraArgs...))
 
 			s.Require().NoError(client.SetCmdClientContextHandler(tc.ctxGen(), cmd))
 
@@ -381,7 +381,7 @@ func (s *CLITestSuite) TestUpdateFlowRateTxCmd() {
 			ctx := svrcmd.CreateExecuteContext(context.Background())
 
 			cmd.SetContext(ctx)
-			cmd.SetArgs(append([]string{tc.receiverAddr.String(), tc.flowRate, tc.from}, tc.extraArgs...))
+			cmd.SetArgs(append([]string{tc.receiverAddr.String(), tc.flowRate, sdk.DefaultBondDenom, tc.from}, tc.extraArgs...))
 
 			s.Require().NoError(client.SetCmdClientContextHandler(tc.ctxGen(), cmd))
 
@@ -444,7 +444,7 @@ func (s *CLITestSuite) TestCancelStreamTxCmd() {
 			ctx := svrcmd.CreateExecuteContext(context.Background())
 
 			cmd.SetContext(ctx)
-			cmd.SetArgs(append([]string{tc.receiverAddr.String(), tc.from}, tc.extraArgs...))
+			cmd.SetArgs(append([]string{tc.receiverAddr.String(), sdk.DefaultBondDenom, tc.from}, tc.extraArgs...))
 
 			s.Require().NoError(client.SetCmdClientContextHandler(tc.ctxGen(), cmd))
 

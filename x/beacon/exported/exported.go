@@ -2,7 +2,6 @@ package exported
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
@@ -40,14 +39,3 @@ func CheckIsBeaconTx(tx sdk.Tx) bool {
 	return false
 }
 
-type (
-	ParamSet = paramtypes.ParamSet
-
-	// Subspace defines an interface that implements the legacy x/params Subspace
-	// type.
-	//
-	// NOTE: This is used solely for migration of x/params managed parameters.
-	Subspace interface {
-		GetParamSet(ctx sdk.Context, ps ParamSet)
-	}
-)

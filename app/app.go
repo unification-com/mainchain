@@ -457,9 +457,9 @@ func NewApp(
 		ibctm.NewAppModule(tmLightClientModule),
 		solomachine.NewAppModule(smLightClientModule),
 
-		enterprise.NewAppModule(appCodec, app.EnterpriseKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(enttypes.ModuleName)),
-		beacon.NewAppModule(appCodec, app.BeaconKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(beacontypes.ModuleName)),
-		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper, app.GetSubspace(wrkchaintypes.ModuleName)),
+		enterprise.NewAppModule(appCodec, app.EnterpriseKeeper, app.BankKeeper, app.AccountKeeper),
+		beacon.NewAppModule(appCodec, app.BeaconKeeper, app.BankKeeper, app.AccountKeeper),
+		wrkchain.NewAppModule(appCodec, app.WrkchainKeeper, app.BankKeeper, app.AccountKeeper),
 		stream.NewAppModule(appCodec, app.StreamKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 

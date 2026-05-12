@@ -16,7 +16,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/unification-com/mainchain/x/enterprise/client/cli"
-	"github.com/unification-com/mainchain/x/enterprise/exported"
 	"github.com/unification-com/mainchain/x/enterprise/keeper"
 	"github.com/unification-com/mainchain/x/enterprise/simulation"
 	"github.com/unification-com/mainchain/x/enterprise/types"
@@ -73,7 +72,9 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the enterprise module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
+	}
 }
 
 // GetTxCmd ToDo - possibly migrate to autocli
@@ -93,10 +94,9 @@ func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) 
 type AppModule struct {
 	AppModuleBasic
 
-	keeper         keeper.Keeper
-	bankKeeper     types.BankKeeper
-	accountKeeper  types.AccountKeeper
-	legacySubspace exported.Subspace
+	keeper        keeper.Keeper
+	bankKeeper    types.BankKeeper
+	accountKeeper types.AccountKeeper
 }
 
 // NewAppModule creates a new AppModule object
@@ -105,14 +105,12 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	bankKeeper types.BankKeeper,
 	accountKeeper types.AccountKeeper,
-	ss exported.Subspace,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         keeper,
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
-		legacySubspace: ss,
 	}
 }
 

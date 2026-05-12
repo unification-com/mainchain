@@ -2,7 +2,7 @@
 ###                                Protobuf                                 ###
 ###############################################################################
 
-protoVer=0.14.0
+protoVer=0.18.1
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 #protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace --user $(shell id -u):$(shell id -g) $(protoImageName)
@@ -10,12 +10,17 @@ protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace --use
 proto-all: proto-format proto-lint proto-gen
 
 # NOTE: when using rootless docker, this will fail. Before running, run:
-#   chmod 777 proto/buf.lock
-#   mkdir github.com && chmod 777 github.com
-# After running, run:
-#   sudo chown -R $(id -u):$(id -g) github.com
+#   chmod 777 proto proto/buf.lock
+# After running, the generated tree under ./github.com/ and the refreshed
+# proto/buf.lock may be owned by an unprivileged sub-UID. Reclaim them
+# from inside a root container; `stat -c %u:%g /workspace` reads the
+# bind-mount's apparent ownership which matches the invoking host user
+# under both rootless and rootful docker:
+#   docker run --rm -v $(CURDIR):/workspace --user 0:0 alpine sh -c \
+#     'OWN=$(stat -c "%u:%g" /workspace); chown "$OWN" /workspace/proto/buf.lock && chown -R "$OWN" /workspace/github.com'
 #   cp -r github.com/unification-com/mainchain/* ./
 #   rm -rf github.com
+#   chmod 755 proto && chmod 644 proto/buf.lock
 proto-gen:
 	@echo "Generating Protobuf files"
 	@chmod 777 proto/buf.lock

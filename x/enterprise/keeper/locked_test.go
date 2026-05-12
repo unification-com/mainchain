@@ -31,36 +31,6 @@ func TestSetGetTotalLockedUnd(t *testing.T) {
 	require.True(t, lockedDb.Amount.Int64() == amount)
 }
 
-//func TestGetTotalUnlocked(t *testing.T) {
-//	app := simapphelpers.Setup(t)
-//	ctx := app.BaseApp.NewContext(false)
-//	simapphelpers.AddTestAddrs(app, ctx, 1, mathmod.NewInt(20000))
-//
-//	denom := sdk.DefaultBondDenom
-//	amount := int64(1000)
-//	locked := sdk.NewInt64Coin(denom, amount)
-//
-//	err := app.EnterpriseKeeper.SetTotalLockedUnd(ctx, locked)
-//	require.NoError(t, err)
-//
-//	totUnlocked := app.EnterpriseKeeper.GetTotalUnLockedUnd(ctx)
-//	totalSupply := app.BankKeeper.GetSupply(ctx, denom)
-//
-//	diff := totalSupply.Sub(totUnlocked)
-//
-//	require.Equal(t, locked, diff)
-//}
-
-//func TestGetTotalUndSupply(t *testing.T) {
-//	app := simapphelpers.Setup(t)
-//	ctx := app.BaseApp.NewContext(false)
-//	simapphelpers.AddTestAddrs(app, ctx, 1, mathmod.NewInt(20000))
-//
-//	totalSupply := app.BankKeeper.GetSupply(ctx, sdk.DefaultBondDenom)
-//	totalSupplyFromEnt := app.EnterpriseKeeper.GetTotalUndSupply(ctx)
-//	require.Equal(t, totalSupply, totalSupplyFromEnt)
-//}
-
 func TestSetGetLockedUndForAccount(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)

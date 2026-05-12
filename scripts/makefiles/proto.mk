@@ -10,12 +10,16 @@ protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace --use
 proto-all: proto-format proto-lint proto-gen
 
 # NOTE: when using rootless docker, this will fail. Before running, run:
-#   chmod 777 proto/buf.lock
-#   mkdir github.com && chmod 777 github.com
-# After running, run:
-#   sudo chown -R $(id -u):$(id -g) github.com
+#   chmod 777 proto proto/buf.lock
+# After running, the generated tree under ./github.com/ and the refreshed
+# proto/buf.lock are owned by an unprivileged sub-UID. Reclaim them without
+# sudo by chowning from inside a root container (rootless docker maps
+# in-container uid 0 to your host uid):
+#   docker run --rm -v $(CURDIR):/workspace --workdir /workspace --user 0:0 \
+#     alpine sh -c "chown 0:0 proto/buf.lock && chown -R 0:0 github.com"
 #   cp -r github.com/unification-com/mainchain/* ./
 #   rm -rf github.com
+#   chmod 755 proto && chmod 644 proto/buf.lock
 proto-gen:
 	@echo "Generating Protobuf files"
 	@chmod 777 proto/buf.lock

@@ -3,7 +3,6 @@ package keeper_test
 import (
 	gocontext "context"
 	"fmt"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -82,7 +81,7 @@ func (s *KeeperTestSuite) TestGRPCQueryEnterpriseUndPurchaseOrder() {
 					Purchaser:      addrs[0].String(),
 					Amount:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 100),
 					Status:         types.StatusRaised,
-					RaiseTime:      uint64(time.Now().Unix()),
+					RaiseTime:      uint64(1700000000),
 					CompletionTime: 0,
 					Decisions:      nil,
 				}

@@ -77,9 +77,7 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
@@ -390,9 +388,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt1 := int64(actualRecFeeAmt)
@@ -407,9 +403,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx1, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// PurchaseStorageAction
 	numToPurchase := uint64(10)
@@ -425,9 +419,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx2, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
@@ -493,9 +485,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt1 := int64(actualRecFeeAmt)
@@ -510,9 +500,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx1, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// PurchaseStorageAction
 	numToPurchase := uint64(10)
@@ -528,9 +516,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx2, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2

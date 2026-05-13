@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/testutil/simsx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -16,7 +17,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/unification-com/mainchain/x/enterprise/client/cli"
-	"github.com/unification-com/mainchain/x/enterprise/exported"
 	"github.com/unification-com/mainchain/x/enterprise/keeper"
 	"github.com/unification-com/mainchain/x/enterprise/simulation"
 	"github.com/unification-com/mainchain/x/enterprise/types"
@@ -73,7 +73,9 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the enterprise module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
+	}
 }
 
 // GetTxCmd ToDo - possibly migrate to autocli
@@ -93,10 +95,9 @@ func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) 
 type AppModule struct {
 	AppModuleBasic
 
-	keeper         keeper.Keeper
-	bankKeeper     types.BankKeeper
-	accountKeeper  types.AccountKeeper
-	legacySubspace exported.Subspace
+	keeper        keeper.Keeper
+	bankKeeper    types.BankKeeper
+	accountKeeper types.AccountKeeper
 }
 
 // NewAppModule creates a new AppModule object
@@ -105,14 +106,12 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	bankKeeper types.BankKeeper,
 	accountKeeper types.AccountKeeper,
-	ss exported.Subspace,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         keeper,
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
-		legacySubspace: ss,
 	}
 }
 
@@ -176,10 +175,21 @@ func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {
 	sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
-// WeightedOperations doesn't return any enterprise module operation.
+// WeightedOperations is the legacy simsx back-compat path; ignored when
+// WeightedOperationsX is also implemented (which it is, below).
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
+		simState.AppParams, simState.Cdc, simState.TxConfig,
 		am.keeper, am.bankKeeper, am.accountKeeper,
 	)
+}
+
+// WeightedOperationsX registers the enterprise module's sim msg factories with simsx.
+// The "process PO" path is intentionally NOT registered as a top-level op — it's
+// scheduled per-signer as future ops by MsgUndPurchaseOrderFactory.
+func (am AppModule) WeightedOperationsX(weights simsx.WeightSource, reg simsx.Registry) {
+	reg.Add(weights.Get(simulation.OpWeightMsgWhitelistAddress, simulation.DefaultMsgWhitelistAddress),
+		simulation.MsgWhitelistAddressFactory(am.keeper))
+	reg.Add(weights.Get(simulation.OpWeightMsgUndPurchaseOrder, simulation.DefaultMsgUndPurchaseOrder),
+		simulation.MsgUndPurchaseOrderFactory(am.keeper))
 }

@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
@@ -12,6 +13,32 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
+
+// safeWithdrawDelegationRewards wraps DistrKeeper.WithdrawDelegationRewards with
+// a panic recovery. The underlying call can panic from inside SDK distribution
+// math (CalculateDelegationRewards's "final stake greater than current stake"
+// sanity check) when accumulated slash-period history diverges from the
+// validator's current stake by more than the built-in margin of error
+// (~3 × LegacySmallestDec). The SDK's own simapp has the same vulnerability;
+// the panic is rare on mainnet but trivially reproducible under simulated
+// state with deep slash histories.
+//
+// Recovering and continuing is safe: any unwithdrawn rewards stay in the
+// validator's outstanding_rewards and are swept to the community pool by the
+// AfterValidatorCreated hook later in prepForZeroHeightGenesis.
+func (app *App) safeWithdrawDelegationRewards(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
+	defer func() {
+		if r := recover(); r != nil {
+			app.Logger().Warn(
+				"WithdrawDelegationRewards recovered from SDK distribution panic; rewards will sweep to community pool via scraps",
+				"delegator", delAddr.String(),
+				"validator", valAddr.String(),
+				"recover", fmt.Sprintf("%v", r),
+			)
+		}
+	}()
+	_, _ = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
+}
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
@@ -99,7 +126,7 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		if err != nil {
 			panic(err)
 		}
-		_, _ = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
+		app.safeWithdrawDelegationRewards(ctx, delAddr, valAddr)
 	}
 
 	// clear validator slash events

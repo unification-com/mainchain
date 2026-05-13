@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/testutil/simsx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -16,7 +17,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/unification-com/mainchain/x/wrkchain/client/cli"
-	"github.com/unification-com/mainchain/x/wrkchain/exported"
 	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/simulation"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
@@ -67,7 +67,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 	return types.ValidateGenesis(data)
 }
 
-// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the auth module.
+// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the wrkchain module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
 		panic(err)
@@ -75,22 +75,21 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 }
 
 // GetTxCmd ToDo - possibly migrate to autocli
-// GetTxCmd returns the root tx command for the auth module.
+// GetTxCmd returns the root tx command for the wrkchain module.
 func (AppModuleBasic) GetTxCmd() *cobra.Command {
 	return cli.GetTxCmd()
 }
 
-// RegisterInterfaces registers interfaces and implementations of the auth module.
+// RegisterInterfaces registers interfaces and implementations of the wrkchain module.
 func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	types.RegisterInterfaces(registry)
 }
 
 type AppModule struct {
 	AppModuleBasic
-	keeper         keeper.Keeper
-	bankKeeper     types.BankKeeper
-	accountKeeper  types.AccountKeeper
-	legacySubspace exported.Subspace
+	keeper        keeper.Keeper
+	bankKeeper    types.BankKeeper
+	accountKeeper types.AccountKeeper
 }
 
 // NewAppModule creates a new AppModule Object
@@ -99,14 +98,12 @@ func NewAppModule(
 	k keeper.Keeper,
 	bankKeeper types.BankKeeper,
 	accountKeeper types.AccountKeeper,
-	ss exported.Subspace,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         k,
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
-		legacySubspace: ss,
 	}
 }
 
@@ -126,13 +123,13 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 
-	m := keeper.NewMigrator(am.keeper, am.legacySubspace)
+	m := keeper.NewMigrator(am.keeper)
 	if err := cfg.RegisterMigration(types.ModuleName, 3, m.Migrate3to4); err != nil {
 		panic(fmt.Sprintf("failed to migrate x/%s from version 3 to 4: %v", types.ModuleName, err))
 	}
 }
 
-// InitGenesis performs genesis initialization for the auth module. It returns
+// InitGenesis performs genesis initialization for the wrkchain module. It returns
 // no validator updates.
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) {
 	var genesisState types.GenesisState
@@ -140,7 +137,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 	InitGenesis(ctx, am.keeper, genesisState)
 }
 
-// ExportGenesis returns the exported genesis state as raw bytes for the auth
+// ExportGenesis returns the exported genesis state as raw bytes for the wrkchain
 // module.
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	gs := ExportGenesis(ctx, am.keeper)
@@ -154,7 +151,7 @@ func (AppModule) ConsensusVersion() uint64 { return consensusVersion }
 
 // AppModuleSimulation functions
 
-// GenerateGenesisState creates a randomized GenState of the auth module
+// GenerateGenesisState creates a randomized GenState of the wrkchain module
 func (am AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
 }
@@ -164,15 +161,26 @@ func (AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Weight
 	return simulation.ProposalMsgs()
 }
 
-// RegisterStoreDecoder registers a decoder for auth module's types
+// RegisterStoreDecoder registers a decoder for wrkchain module's types
 func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {
 	sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
-// WeightedOperations doesn't return any auth module operation.
+// WeightedOperations is the legacy simsx back-compat path; ignored when
+// WeightedOperationsX is also implemented (which it is, below).
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
+		simState.AppParams, simState.Cdc, simState.TxConfig,
 		am.keeper, am.bankKeeper, am.accountKeeper,
 	)
+}
+
+// WeightedOperationsX registers the wrkchain module's sim msg factories with simsx.
+func (am AppModule) WeightedOperationsX(weights simsx.WeightSource, reg simsx.Registry) {
+	reg.Add(weights.Get(simulation.OpWeightMsgRegisterWrkChain, simulation.DefaultMsgRegisterWrkChain),
+		simulation.MsgRegisterWrkChainFactory(am.keeper))
+	reg.Add(weights.Get(simulation.OpWeightMsgRecordWrkChainBlock, simulation.DefaultMsgRecordWrkChainBlock),
+		simulation.MsgRecordWrkChainBlockFactory(am.keeper))
+	reg.Add(weights.Get(simulation.OpWeightMsgPurchaseWrkChainStateStorage, simulation.DefaultMsgPurchaseWrkChainStateStorage),
+		simulation.MsgPurchaseWrkChainStateStorageFactory(am.keeper))
 }

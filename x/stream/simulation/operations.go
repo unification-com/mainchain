@@ -5,10 +5,10 @@ import (
 
 	mathmod "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -25,15 +25,20 @@ const (
 	OpWeightMsgTopUpDeposit            = "op_weight_msg_top_up_deposit"
 	OpWeightMsgUpdateFlowRate          = "op_weight_msg_update_flow_rate"
 	OpWeightMsgCancelStream            = "op_weight_msg_cancel_stream"
-	DefaultWeightMsgCreateStream   int = 100
-	DefaultWeightMsgClaimStream    int = 100
-	DefaultWeightMsgTopUpDeposit   int = 100
-	DefaultWeightMsgUpdateFlowRate int = 100
-	DefaultWeightMsgCancelStream   int = 50
+	// NOTE: stream weights are tentative — Mainchain doesn't currently use multi-denom
+	// streams in production, and these defaults will be re-tuned when the stream module
+	// is extracted into its own Go package for wider distribution. Keep the relative
+	// ordering (Create > Claim > TopUp ≈ UpdateFlowRate > Cancel) and leave room for
+	// stream-heavy and stream-light sim modes via -Params overrides.
+	DefaultWeightMsgCreateStream   int = 40
+	DefaultWeightMsgClaimStream    int = 30
+	DefaultWeightMsgTopUpDeposit   int = 20
+	DefaultWeightMsgUpdateFlowRate int = 20
+	DefaultWeightMsgCancelStream   int = 15
 )
 
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	appParams simtypes.AppParams, cdc codec.JSONCodec, txGen client.TxConfig,
 	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 ) simulation.WeightedOperations {
 
@@ -78,29 +83,29 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateStream,
-			SimulateMsgCreateStream(ak, bk, k),
+			SimulateMsgCreateStream(txGen, ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateStream,
-			SimulateMsgClaimStream(ak, bk, k),
+			SimulateMsgClaimStream(txGen, ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateStream,
-			SimulateMsgTopUpDeposit(ak, bk, k),
+			SimulateMsgTopUpDeposit(txGen, ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateStream,
-			SimulateMsgUpdateFlowRate(ak, bk, k),
+			SimulateMsgUpdateFlowRate(txGen, ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateStream,
-			SimulateMsgCancelStream(ak, bk, k),
+			SimulateMsgCancelStream(txGen, ak, bk, k),
 		),
 	}
 }
 
 // SimulateMsgCreateStream generates MsgCreateStream with random values.
-func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgCreateStream(txGen client.TxConfig, ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -162,8 +167,6 @@ func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, types.CreateStreamAction, "not enough for fees"), nil, nil
 		}
 
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
-
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -191,7 +194,7 @@ func SimulateMsgCreateStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 }
 
 // SimulateMsgClaimStream generates MsgClaimStream with random values.
-func SimulateMsgClaimStream(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgClaimStream(txGen client.TxConfig, ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -235,7 +238,7 @@ func SimulateMsgClaimStream(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 		txCtx := simulation.OperationInput{
 			R:             r,
 			App:           app,
-			TxGen:         moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:         txGen,
 			Cdc:           nil,
 			Msg:           msg,
 			Context:       ctx,
@@ -250,7 +253,7 @@ func SimulateMsgClaimStream(ak types.AccountKeeper, bk types.BankKeeper, k keepe
 }
 
 // SimulateMsgTopUpDeposit generates MsgTopUpDeposit with random values.
-func SimulateMsgTopUpDeposit(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgTopUpDeposit(txGen client.TxConfig, ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -312,8 +315,6 @@ func SimulateMsgTopUpDeposit(ak types.AccountKeeper, bk types.BankKeeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, types.TopUpDepositAction, "not enough for fees"), nil, nil
 		}
 
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
-
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -341,7 +342,7 @@ func SimulateMsgTopUpDeposit(ak types.AccountKeeper, bk types.BankKeeper, k keep
 }
 
 // SimulateMsgUpdateFlowRate generates MsgUpdateFlowRate with random values.
-func SimulateMsgUpdateFlowRate(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgUpdateFlowRate(txGen client.TxConfig, ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -393,7 +394,7 @@ func SimulateMsgUpdateFlowRate(ak types.AccountKeeper, bk types.BankKeeper, k ke
 		txCtx := simulation.OperationInput{
 			R:             r,
 			App:           app,
-			TxGen:         moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:         txGen,
 			Cdc:           nil,
 			Msg:           msg,
 			Context:       ctx,
@@ -408,7 +409,7 @@ func SimulateMsgUpdateFlowRate(ak types.AccountKeeper, bk types.BankKeeper, k ke
 }
 
 // SimulateMsgCancelStream generates MsgCancelStream with random values.
-func SimulateMsgCancelStream(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgCancelStream(txGen client.TxConfig, ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -443,7 +444,7 @@ func SimulateMsgCancelStream(ak types.AccountKeeper, bk types.BankKeeper, k keep
 		txCtx := simulation.OperationInput{
 			R:             r,
 			App:           app,
-			TxGen:         moduletestutil.MakeTestEncodingConfig().TxConfig,
+			TxGen:         txGen,
 			Cdc:           nil,
 			Msg:           msg,
 			Context:       ctx,

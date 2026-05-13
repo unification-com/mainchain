@@ -5,10 +5,10 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -22,19 +22,12 @@ const (
 	OpWeightMsgPurchaseWrkChainStateStorage = "op_weight_msg_wrkchain_purchase_storage"
 
 	DefaultMsgRegisterWrkChain             = 10
-	DefaultMsgRecordWrkChainBlock          = 30
-	DefaultMsgPurchaseWrkChainStateStorage = 5
+	DefaultMsgRecordWrkChainBlock          = 50
+	DefaultMsgPurchaseWrkChainStateStorage = 15
 )
 
-//func WeightedOperations(
-//	appParams simtypes.AppParams, cdc codec.JSONCodec,
-//	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
-//) simulation.WeightedOperations {
-//	return nil
-//}
-
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	appParams simtypes.AppParams, cdc codec.JSONCodec, txGen client.TxConfig,
 	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 ) simulation.WeightedOperations {
 
@@ -65,15 +58,15 @@ func WeightedOperations(
 	wEntOps := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgRegisterWrkChain,
-			SimulateMsgRegisterWrkChain(k, bk, ak),
+			SimulateMsgRegisterWrkChain(txGen, k, bk, ak),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgRecordWrkChainBlock,
-			SimulateMsgRecordWrkChainBlock(k, bk, ak),
+			SimulateMsgRecordWrkChainBlock(txGen, k, bk, ak),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgPurchaseWrkChainStateStorage,
-			SimulateMsgPurchaseWrkChainStateStorage(k, bk, ak),
+			SimulateMsgPurchaseWrkChainStateStorage(txGen, k, bk, ak),
 		),
 	}
 
@@ -81,7 +74,7 @@ func WeightedOperations(
 
 }
 
-func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+func SimulateMsgRegisterWrkChain(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
@@ -107,8 +100,6 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 		baseType := simtypes.RandStringOfLength(r, 5)
 
 		msg := types.NewMsgRegisterWrkChain(moniker, genesisHash, name, baseType, account.GetAddress())
-
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
@@ -139,7 +130,7 @@ func SimulateMsgRegisterWrkChain(k keeper.Keeper, bk types.BankKeeper, ak types.
 	}
 }
 
-func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+func SimulateMsgRecordWrkChainBlock(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
@@ -187,8 +178,6 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 
 		msg := types.NewMsgRecordWrkChainBlock(wrkChain.WrkchainId, height, hash, ph, h1, h2, h3, account.GetAddress())
 
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
-
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -218,7 +207,7 @@ func SimulateMsgRecordWrkChainBlock(k keeper.Keeper, bk types.BankKeeper, ak typ
 	}
 }
 
-func SimulateMsgPurchaseWrkChainStateStorage(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+func SimulateMsgPurchaseWrkChainStateStorage(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
@@ -264,8 +253,6 @@ func SimulateMsgPurchaseWrkChainStateStorage(k keeper.Keeper, bk types.BankKeepe
 		}
 
 		msg := types.NewMsgPurchaseWrkChainStateStorage(wrkchain.WrkchainId, randNumToPurchase, account.GetAddress())
-
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
 		tx, err := simtestutil.GenSignedMockTx(
 			r,

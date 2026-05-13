@@ -3,21 +3,18 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/unification-com/mainchain/x/wrkchain/exported"
 	v4 "github.com/unification-com/mainchain/x/wrkchain/migrations/v4"
 )
 
 // Migrator is a struct for handling in-place store migrations.
 type Migrator struct {
-	keeper         Keeper
-	legacySubspace exported.Subspace
+	keeper Keeper
 }
 
 // NewMigrator returns a new Migrator.
-func NewMigrator(k Keeper, ss exported.Subspace) Migrator {
+func NewMigrator(k Keeper) Migrator {
 	return Migrator{
-		keeper:         k,
-		legacySubspace: ss,
+		keeper: k,
 	}
 }
 

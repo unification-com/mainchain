@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -24,21 +24,14 @@ const (
 	OpWeightMsgProcessUndPurchaseOrder = "op_weight_msg_proc_ent_po"
 	OpWeightMsgWhitelistAddress        = "op_weight_msg_ent_whitelist"
 
-	DefaultMsgUndPurchaseOrder        = 20
+	DefaultMsgUndPurchaseOrder        = 15
 	DefaultMsgProcessUndPurchaseOrder = 20
-	DefaultMsgWhitelistAddress        = 20
+	DefaultMsgWhitelistAddress        = 30
 )
-
-//func WeightedOperations(
-//	appParams simtypes.AppParams, cdc codec.JSONCodec,
-//	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
-//) simulation.WeightedOperations {
-//	return nil
-//}
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	appParams simtypes.AppParams, cdc codec.JSONCodec, txGen client.TxConfig,
 	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 ) simulation.WeightedOperations {
 
@@ -69,22 +62,22 @@ func WeightedOperations(
 	wEntOps := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgWhitelistAddress,
-			SimulateMsgWhitelistAddress(k, bk, ak),
+			SimulateMsgWhitelistAddress(txGen, k, bk, ak),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUndPurchaseOrder,
-			SimulateMsgUndPurchaseOrder(k, bk, ak),
+			SimulateMsgUndPurchaseOrder(txGen, k, bk, ak),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgProcessUndPurchaseOrder,
-			SimulateMsgProcessUndPurchaseOrder(k, bk, ak),
+			SimulateMsgProcessUndPurchaseOrder(txGen, k, bk, ak),
 		),
 	}
 
 	return wEntOps
 }
 
-func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+func SimulateMsgUndPurchaseOrder(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
@@ -114,8 +107,6 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 		randAmt := int64(simtypes.RandIntBetween(r, 1000, 1000000))
 
 		msg := types.NewMsgUndPurchaseOrder(account.GetAddress(), sdk.NewInt64Coin(sdk.DefaultBondDenom, randAmt))
-
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
@@ -172,7 +163,7 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 			signer, _ := sdk.AccAddressFromBech32(entSignerArray[i])
 			fops[i] = simtypes.FutureOperation{
 				BlockHeight: int(whenDecide),
-				Op:          operationSimulateMsgProcessUndPurchaseOrder(k, bk, ak, signer, int64(poId-1)),
+				Op:          operationSimulateMsgProcessUndPurchaseOrder(txGen, k, bk, ak, signer, int64(poId-1)),
 			}
 		}
 
@@ -180,7 +171,7 @@ func SimulateMsgUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.
 	}
 }
 
-func SimulateMsgWhitelistAddress(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+func SimulateMsgWhitelistAddress(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
@@ -217,8 +208,6 @@ func SimulateMsgWhitelistAddress(k keeper.Keeper, bk types.BankKeeper, ak types.
 
 		msg := types.NewMsgWhitelistAddress(accToWhitelist.Address, wlAction, enSignerAccount.Address)
 
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
-
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -246,7 +235,7 @@ func SimulateMsgWhitelistAddress(k keeper.Keeper, bk types.BankKeeper, ak types.
 	}
 }
 
-func operationSimulateMsgProcessUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
+func operationSimulateMsgProcessUndPurchaseOrder(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 	signer sdk.AccAddress, poId int64) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
@@ -292,8 +281,6 @@ func operationSimulateMsgProcessUndPurchaseOrder(k keeper.Keeper, bk types.BankK
 
 		msg := types.NewMsgProcessUndPurchaseOrder(po.Id, decision, enSignerAccount.Address)
 
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
-
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -323,8 +310,8 @@ func operationSimulateMsgProcessUndPurchaseOrder(k keeper.Keeper, bk types.BankK
 	}
 }
 
-func SimulateMsgProcessUndPurchaseOrder(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
-	return operationSimulateMsgProcessUndPurchaseOrder(k, bk, ak, sdk.AccAddress{}, -1)
+func SimulateMsgProcessUndPurchaseOrder(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+	return operationSimulateMsgProcessUndPurchaseOrder(txGen, k, bk, ak, sdk.AccAddress{}, -1)
 }
 
 func getRandomEntSignerAcc(r *rand.Rand, k keeper.Keeper,

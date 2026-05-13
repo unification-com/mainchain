@@ -113,17 +113,18 @@ func newImportApp(t testing.TB, chainID string) *App {
 	return NewApp(log.NewNopLogger(), dbm.NewMemDB(), true, appOpts, baseapp.SetChainID(chainID))
 }
 
-// TestFullAppSimulation runs the simulator end-to-end. With no `-Seed=N` flag,
-// simsx iterates its 38 default seeds in parallel; pass `-Seed=N` to run a single
-// seed against a fixed value (e.g. for reproducing a failure).
+// TestFullAppSimulation runs the simulator end-to-end against a single seed.
+// Defaults to simcli.DefaultSeedValue (42); override with `-Seed=N` to reproduce
+// a failure or explore a specific path. Seed-space exploration is the job of
+// FuzzFullAppSimulation; cross-run determinism is the job of TestAppStateDeterminism.
+//
+// Single-seed by design — a multi-seed variant on the same large NumBlocks would
+// run 38 parallel sims under simsx.Run's default seed set, which exhausts memory
+// on a developer machine for NumBlocks ≥ 500.
 func TestFullAppSimulation(t *testing.T) {
 	cfg := simcli.NewConfigFromFlags()
-	if cfg.Seed != simcli.DefaultSeedValue {
-		cfg.ChainID = simsx.SimAppChainID
-		simsx.RunWithSeed(t, cfg, NewApp, setupStateFactory, cfg.Seed, nil)
-		return
-	}
-	simsx.Run(t, NewApp, setupStateFactory)
+	cfg.ChainID = simsx.SimAppChainID
+	simsx.RunWithSeed(t, cfg, NewApp, setupStateFactory, cfg.Seed, nil)
 }
 
 // TestAppImportExport runs a simulation, exports genesis from the resulting app,
@@ -157,12 +158,8 @@ func TestAppImportExport(t *testing.T) {
 	}
 
 	cfg := simcli.NewConfigFromFlags()
-	if cfg.Seed != simcli.DefaultSeedValue {
-		cfg.ChainID = simsx.SimAppChainID
-		simsx.RunWithSeed(t, cfg, NewApp, setupStateFactory, cfg.Seed, nil, importExport)
-		return
-	}
-	simsx.Run(t, NewApp, setupStateFactory, importExport)
+	cfg.ChainID = simsx.SimAppChainID
+	simsx.RunWithSeed(t, cfg, NewApp, setupStateFactory, cfg.Seed, nil, importExport)
 }
 
 // TestAppSimulationAfterImport runs a simulation, exports the resulting genesis,
@@ -196,11 +193,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(tb, err)
 	}
 
-	if cfg.Seed != simcli.DefaultSeedValue {
-		simsx.RunWithSeed(t, cfg, NewApp, setupStateFactory, cfg.Seed, nil, afterImport)
-		return
-	}
-	simsx.Run(t, NewApp, setupStateFactory, afterImport)
+	simsx.RunWithSeed(t, cfg, NewApp, setupStateFactory, cfg.Seed, nil, afterImport)
 }
 
 // TestAppStateDeterminism runs the same seed multiple times and asserts the final

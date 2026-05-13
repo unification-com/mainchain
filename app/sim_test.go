@@ -238,3 +238,23 @@ func TestAppStateDeterminism(t *testing.T) {
 		}
 	}
 }
+
+// FuzzFullAppSimulation runs the simulator under Go's native fuzz framework.
+// Each iteration takes a seed (int64) and msg-payload fuzz bytes; both are
+// forwarded to simsx.RunWithSeed. The seed corpus below gives the fuzzer
+// known-good starting points; mutation explores neighbouring space.
+//
+// Keep NumBlocks/BlockSize small via CLI flags so individual iterations
+// complete in seconds — fuzz value is in seed exploration, not sim depth.
+// `make test-sim-fuzz` sets sensible flags.
+func FuzzFullAppSimulation(f *testing.F) {
+	f.Add(int64(1), []byte{})
+	f.Add(int64(42), []byte{})
+	f.Add(int64(99), []byte{})
+
+	f.Fuzz(func(t *testing.T, seed int64, fuzzSeed []byte) {
+		cfg := simcli.NewConfigFromFlags()
+		cfg.ChainID = simsx.SimAppChainID
+		simsx.RunWithSeed(t, cfg, NewApp, setupStateFactory, seed, fuzzSeed)
+	})
+}

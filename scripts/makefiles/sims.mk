@@ -71,6 +71,14 @@ test-sim-simple:
 		-ExportStatePath=$(HOME)/.und_simapp/state.json \
 		-ExportStatsPath=$(HOME)/.und_simapp/statistics.json
 
+SIM_FUZZ_TIME ?= 5m
+
+test-sim-fuzz:
+	@echo "Running application fuzz for numBlocks=2, blockSize=20 (fuzztime=$(SIM_FUZZ_TIME))."
+	@go test -mod=readonly -tags=sims -timeout=60m -fuzztime=$(SIM_FUZZ_TIME) \
+		-run=^$$ -fuzz=^FuzzFullAppSimulation$$ $(SIMAPP) \
+		-NumBlocks=2 -BlockSize=20
+
 .PHONY: \
 	test-sim-nondeterminism \
 	test-sim-custom-genesis-fast \
@@ -81,4 +89,5 @@ test-sim-simple:
 	test-sim-multi-seed-short \
 	test-sim-benchmark \
 	test-sim-profile \
-	test-sim-simple
+	test-sim-simple \
+	test-sim-fuzz

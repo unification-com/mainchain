@@ -174,14 +174,12 @@ func TestAppSimulationAfterImport(t *testing.T) {
 
 	afterImport := func(tb testing.TB, simApp simsx.TestInstance[*App], accs []simtypes.Account) {
 		app := simApp.App
-		// Use height-preserving export rather than forZeroHeight=true. The latter
-		// goes through prepForZeroHeightGenesis which invokes the SDK distribution
-		// keeper's reward-withdrawal-per-delegation flow against simulated slash
-		// history; an SDK invariant inside CalculateDelegationRewards
-		// ("final stake greater than current stake") panics under sim state on
-		// some seeds. Height-preserving export covers the canonical upgrade-flow
-		// path operators actually use. The zero-height path needs a separate fix.
-		exported, err := app.ExportAppStateAndValidators(false, []string{}, []string{})
+		// Zero-height export. The underlying SDK distribution math can panic
+		// under deep simulated slash histories; app/export.go wraps the per-
+		// delegation reward withdrawal in safeWithdrawDelegationRewards which
+		// recovers + logs and lets the unwithdrawn amount sweep to the community
+		// pool via the AfterValidatorCreated scraps hook.
+		exported, err := app.ExportAppStateAndValidators(true, []string{}, []string{})
 		require.NoError(tb, err)
 
 		newApp := newImportApp(tb, simApp.Cfg.ChainID)

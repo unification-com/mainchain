@@ -22,8 +22,8 @@ const (
 	OpWeightMsgPurchaseWrkChainStateStorage = "op_weight_msg_wrkchain_purchase_storage"
 
 	DefaultMsgRegisterWrkChain             = 10
-	DefaultMsgRecordWrkChainBlock          = 30
-	DefaultMsgPurchaseWrkChainStateStorage = 5
+	DefaultMsgRecordWrkChainBlock          = 50
+	DefaultMsgPurchaseWrkChainStateStorage = 15
 )
 
 func WeightedOperations(

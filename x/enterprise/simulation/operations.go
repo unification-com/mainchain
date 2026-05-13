@@ -24,9 +24,9 @@ const (
 	OpWeightMsgProcessUndPurchaseOrder = "op_weight_msg_proc_ent_po"
 	OpWeightMsgWhitelistAddress        = "op_weight_msg_ent_whitelist"
 
-	DefaultMsgUndPurchaseOrder        = 20
+	DefaultMsgUndPurchaseOrder        = 15
 	DefaultMsgProcessUndPurchaseOrder = 20
-	DefaultMsgWhitelistAddress        = 20
+	DefaultMsgWhitelistAddress        = 30
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights

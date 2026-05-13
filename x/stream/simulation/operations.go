@@ -25,11 +25,16 @@ const (
 	OpWeightMsgTopUpDeposit            = "op_weight_msg_top_up_deposit"
 	OpWeightMsgUpdateFlowRate          = "op_weight_msg_update_flow_rate"
 	OpWeightMsgCancelStream            = "op_weight_msg_cancel_stream"
-	DefaultWeightMsgCreateStream   int = 100
-	DefaultWeightMsgClaimStream    int = 100
-	DefaultWeightMsgTopUpDeposit   int = 100
-	DefaultWeightMsgUpdateFlowRate int = 100
-	DefaultWeightMsgCancelStream   int = 50
+	// NOTE: stream weights are tentative — Mainchain doesn't currently use multi-denom
+	// streams in production, and these defaults will be re-tuned when the stream module
+	// is extracted into its own Go package for wider distribution. Keep the relative
+	// ordering (Create > Claim > TopUp ≈ UpdateFlowRate > Cancel) and leave room for
+	// stream-heavy and stream-light sim modes via -Params overrides.
+	DefaultWeightMsgCreateStream   int = 40
+	DefaultWeightMsgClaimStream    int = 30
+	DefaultWeightMsgTopUpDeposit   int = 20
+	DefaultWeightMsgUpdateFlowRate int = 20
+	DefaultWeightMsgCancelStream   int = 15
 )
 
 func WeightedOperations(

@@ -22,8 +22,8 @@ const (
 	OpWeightMsgPurchaseBeaconStateStorage = "op_weight_msg_beacon_purchase_storage"
 
 	DefaultMsgRegisterBeacon             = 10
-	DefaultMsgRecordBeaconTimestamp      = 30
-	DefaultMsgPurchaseBeaconStateStorage = 5
+	DefaultMsgRecordBeaconTimestamp      = 50
+	DefaultMsgPurchaseBeaconStateStorage = 15
 )
 
 func WeightedOperations(

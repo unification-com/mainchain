@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/testutil/simsx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -165,10 +166,21 @@ func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {
 	sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
-// WeightedOperations returns the simulation operations registered by the wrkchain module.
+// WeightedOperations is the legacy simsx back-compat path; ignored when
+// WeightedOperationsX is also implemented (which it is, below).
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc, simState.TxConfig,
 		am.keeper, am.bankKeeper, am.accountKeeper,
 	)
+}
+
+// WeightedOperationsX registers the wrkchain module's sim msg factories with simsx.
+func (am AppModule) WeightedOperationsX(weights simsx.WeightSource, reg simsx.Registry) {
+	reg.Add(weights.Get(simulation.OpWeightMsgRegisterWrkChain, simulation.DefaultMsgRegisterWrkChain),
+		simulation.MsgRegisterWrkChainFactory(am.keeper))
+	reg.Add(weights.Get(simulation.OpWeightMsgRecordWrkChainBlock, simulation.DefaultMsgRecordWrkChainBlock),
+		simulation.MsgRecordWrkChainBlockFactory(am.keeper))
+	reg.Add(weights.Get(simulation.OpWeightMsgPurchaseWrkChainStateStorage, simulation.DefaultMsgPurchaseWrkChainStateStorage),
+		simulation.MsgPurchaseWrkChainStateStorageFactory(am.keeper))
 }

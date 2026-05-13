@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/testutil/simsx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -161,10 +162,23 @@ func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {
 	sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
-// WeightedOperations returns the simulation operations registered by the beacon module.
+// WeightedOperations is the legacy simsx back-compat path. simsx ignores this
+// method on any module that also implements WeightedOperationsX, but we keep it
+// for symmetry with the SDK transition pattern and for any tooling that still
+// reads the legacy interface.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc, simState.TxConfig,
 		am.keeper, am.bankKeeper, am.accountKeeper,
 	)
+}
+
+// WeightedOperationsX registers the beacon module's sim msg factories with simsx.
+func (am AppModule) WeightedOperationsX(weights simsx.WeightSource, reg simsx.Registry) {
+	reg.Add(weights.Get(simulation.OpWeightMsgRegisterBeacon, simulation.DefaultMsgRegisterBeacon),
+		simulation.MsgRegisterBeaconFactory(am.keeper))
+	reg.Add(weights.Get(simulation.OpWeightMsgRecordBeaconTimestamp, simulation.DefaultMsgRecordBeaconTimestamp),
+		simulation.MsgRecordBeaconTimestampFactory(am.keeper))
+	reg.Add(weights.Get(simulation.OpWeightMsgPurchaseBeaconStateStorage, simulation.DefaultMsgPurchaseBeaconStateStorage),
+		simulation.MsgPurchaseBeaconStateStorageFactory(am.keeper))
 }

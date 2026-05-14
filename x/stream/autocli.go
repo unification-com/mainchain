@@ -91,8 +91,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				},
 			},
 		},
-		// Note - we're still using func (AppModuleBasic) GetTxCmd() *cobra.Command in module.go for Tx commands
-		// this is here just for an example for future use
 		Tx: &autocliv1.ServiceCommandDescriptor{
 			Service: streamv1.Msg_ServiceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
@@ -109,11 +107,55 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
+					RpcMethod: "ClaimStream",
+					Use:       "claim [sender] [denom] --from [receiver]",
+					Short:     "claim funds held in a stream by sender address and denom",
+					Long:      "claim funds held in a stream, identified by the sender wallet and the stream denom",
+					Example:   fmt.Sprintf("$ %s tx stream claim und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy nund --from mykey", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "sender"},
+						{ProtoField: "denom"},
+					},
+				},
+				{
+					RpcMethod: "TopUpDeposit",
+					Use:       "topup [receiver] [deposit] --from [sender]",
+					Short:     "top up the deposit on an existing stream",
+					Long:      "top up the deposit on an existing stream between you and the given receiver. The denom is taken from the deposit coin",
+					Example:   fmt.Sprintf("$ %s tx stream topup und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 100000000000nund --from mykey", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "receiver"},
+						{ProtoField: "deposit"},
+					},
+				},
+				{
+					RpcMethod: "UpdateFlowRate",
+					Use:       "update-flow [receiver] [flow_rate] [denom] --from [sender]",
+					Short:     "change the flow rate of an existing stream",
+					Long:      "change the flow rate of an existing stream between you and the given receiver, for the specified denom",
+					Example:   fmt.Sprintf("$ %s tx stream update-flow und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy 246973 nund --from mykey", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "receiver"},
+						{ProtoField: "flow_rate"},
+						{ProtoField: "denom"},
+					},
+				},
+				{
+					RpcMethod: "CancelStream",
+					Use:       "cancel [receiver] [denom] --from [sender]",
+					Short:     "cancel an existing stream",
+					Long:      "cancel an existing stream between you and the given receiver, for the specified denom",
+					Example:   fmt.Sprintf("$ %s tx stream cancel und173qnkw458p646fahmd53xa45vqqvga7kyu6ryy nund --from mykey", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "receiver"},
+						{ProtoField: "denom"},
+					},
+				},
+				{
 					RpcMethod: "UpdateParams",
 					Skip:      true, // skipped because authority gated
 				},
 			},
-			EnhanceCustomCommand: false, // use custom commands only until v0.51
 		},
 	}
 }

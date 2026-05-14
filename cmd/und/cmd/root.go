@@ -100,6 +100,8 @@ func NewRootCmd() *cobra.Command {
 		panic(err)
 	}
 
+	installLegacyFlagAliases(rootCmd)
+
 	return rootCmd
 }
 

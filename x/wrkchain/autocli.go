@@ -62,19 +62,36 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				},
 			},
 		},
-		// Note - we're still using func (AppModuleBasic) GetTxCmd() *cobra.Command in module.go for Tx commands
-		// this is here just for an example for future use
 		Tx: &autocliv1.ServiceCommandDescriptor{
 			Service: wrkchainv1.Msg_ServiceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
+					RpcMethod: "RegisterWrkChain",
+					Use:       "register --from [owner]",
+					Short:     "register a new WRKChain",
+					Long:      "register a new WRKChain, to enable WRKChain block hash submissions.\nThe legacy --base / --genesis flag spellings are still accepted as aliases for --base-type / --genesis-hash and print a deprecation notice.",
+					Example:   fmt.Sprintf(`$ %s tx wrkchain register --moniker MyWrkChain --genesis-hash d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa --name "My WRKChain" --base-type geth --from mykey`, version.AppName),
+				},
+				{
 					RpcMethod: "RecordWrkChainBlock",
 					Use:       "record [wrkchain_id] --from [owner]",
 					Short:     "record a WrkChain's block hashes",
-					Long:      "record a WrkChain's block hash along with optional additional hashes such as parent block hash",
-					Example:   fmt.Sprintf("$ %s tx wrkchain record 1 --wc_height 24 --block_hash d04b98f48e8 --parent_hash f8bcc15c6ae --from mykey", version.AppName),
+					Long:      "record a WrkChain's block hash along with optional additional hashes such as parent block hash.\nThe legacy --wc_height / --block_hash / --parent_hash flag spellings are still accepted as aliases and print a deprecation notice.",
+					Example:   fmt.Sprintf("$ %s tx wrkchain record 1 --height 24 --block-hash d04b98f48e8 --parent-hash f8bcc15c6ae --from mykey", version.AppName),
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "wrkchain_id"},
+					},
+				},
+				{
+					RpcMethod: "PurchaseWrkChainStateStorage",
+					Use:       "purchase-storage [wrkchain_id] [number] --from [owner]",
+					Alias:     []string{"purchase_storage"},
+					Short:     "purchase more in-state storage for a WrkChain",
+					Long:      "purchase more in-state storage for a WrkChain, allowing more block hashes to be kept in-state",
+					Example:   fmt.Sprintf("$ %s tx wrkchain purchase-storage 1 100 --from mykey", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "wrkchain_id"},
+						{ProtoField: "number"},
 					},
 				},
 				{
@@ -82,7 +99,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Skip:      true, // skipped because authority gated
 				},
 			},
-			EnhanceCustomCommand: false, // use custom commands only until v0.51
 		},
 	}
 }

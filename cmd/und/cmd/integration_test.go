@@ -68,6 +68,61 @@ func TestAutocliPurchaseStorageAlias_OnLiveRootCmd(t *testing.T) {
 	}
 }
 
+// TestCompatShims_OnLiveRootCmd asserts the autocli compat shims are
+// actually attached to the live autocli-generated cmds: invoking PreRunE
+// on `tx beacon record` (with no --submit-time) fills the flag from the
+// process clock; invoking PreRunE on `tx enterprise process` rewrites
+// args[1] from accept→accepted.
+func TestCompatShims_OnLiveRootCmd(t *testing.T) {
+	rootCmd := cmd.NewRootCmd()
+
+	t.Run("beacon record submit-time default fills", func(t *testing.T) {
+		record := findCmdByPath(t, rootCmd, "tx beacon record")
+		require.NotNil(t, record.PreRunE,
+			"compat shim must be attached as PreRunE on tx beacon record")
+		require.NoError(t, record.ParseFlags([]string{"--hash", "abc"}))
+		require.NoError(t, record.PreRunE(record, []string{"1"}))
+		got, err := record.Flags().GetUint64("submit-time")
+		require.NoError(t, err)
+		require.NotZero(t, got,
+			"submit-time must be populated from the process clock when omitted")
+	})
+
+	t.Run("beacon record submit-time explicit preserved", func(t *testing.T) {
+		// Re-build to get a fresh flagset.
+		root2 := cmd.NewRootCmd()
+		record := findCmdByPath(t, root2, "tx beacon record")
+		require.NoError(t, record.ParseFlags([]string{"--submit-time", "42", "--hash", "abc"}))
+		require.NoError(t, record.PreRunE(record, []string{"1"}))
+		got, err := record.Flags().GetUint64("submit-time")
+		require.NoError(t, err)
+		require.Equal(t, uint64(42), got)
+	})
+
+	t.Run("enterprise process accept→accepted", func(t *testing.T) {
+		process := findCmdByPath(t, rootCmd, "tx enterprise process")
+		require.NotNil(t, process.PreRunE,
+			"compat shim must be attached as PreRunE on tx enterprise process")
+		args := []string{"42", "accept"}
+		require.NoError(t, process.PreRunE(process, args))
+		require.Equal(t, "accepted", args[1])
+	})
+
+	t.Run("enterprise process reject→rejected", func(t *testing.T) {
+		process := findCmdByPath(t, rootCmd, "tx enterprise process")
+		args := []string{"42", "reject"}
+		require.NoError(t, process.PreRunE(process, args))
+		require.Equal(t, "rejected", args[1])
+	})
+
+	t.Run("enterprise process accepted passes through", func(t *testing.T) {
+		process := findCmdByPath(t, rootCmd, "tx enterprise process")
+		args := []string{"42", "accepted"}
+		require.NoError(t, process.PreRunE(process, args))
+		require.Equal(t, "accepted", args[1])
+	})
+}
+
 func findCmdByPath(t *testing.T, rootCmd *cobra.Command, path string) *cobra.Command {
 	t.Helper()
 	cur := rootCmd

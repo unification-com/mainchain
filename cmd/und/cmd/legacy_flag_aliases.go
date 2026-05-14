@@ -49,13 +49,24 @@ var legacyFlagWarnSink io.Writer = os.Stderr
 var legacyFlagWarnedOnce sync.Map // map[string]struct{}
 
 func warnLegacyFlagOnce(cmdPath, legacy, canonical string) {
-	key := cmdPath + " " + legacy
+	warnLegacyOnce(cmdPath, "flag --"+legacy, "--"+canonical)
+}
+
+// warnLegacyTokenOnce is the positional-argument counterpart of
+// warnLegacyFlagOnce: same one-shot semantics, but the message frames
+// the value as a token rather than a flag spelling.
+func warnLegacyTokenOnce(cmdPath, legacy, canonical string) {
+	warnLegacyOnce(cmdPath, "value '"+legacy+"'", "'"+canonical+"'")
+}
+
+func warnLegacyOnce(cmdPath, legacyLabel, canonicalLabel string) {
+	key := cmdPath + " " + legacyLabel
 	if _, loaded := legacyFlagWarnedOnce.LoadOrStore(key, struct{}{}); loaded {
 		return
 	}
 	fmt.Fprintf(legacyFlagWarnSink,
-		"und: flag --%s on `und %s` is deprecated; use --%s instead.\n",
-		legacy, cmdPath, canonical)
+		"und: %s on `und %s` is deprecated; use %s instead.\n",
+		legacyLabel, cmdPath, canonicalLabel)
 }
 
 // installLegacyFlagAliases walks rootCmd and installs a per-flagset

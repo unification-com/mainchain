@@ -75,8 +75,8 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "RecordBeaconTimestamp",
 					Use:       "record [beacon_id] --from [owner]",
 					Short:     "record a BEACON's timestamp hash",
-					Long:      "record a BEACON's timestamp hash along with a time submitted.\nNOTE: --submit-time is now required (and must be non-zero); the legacy default-to-now behaviour was dropped during the autocli migration. The legacy --subtime spelling is still accepted as an alias and prints a deprecation notice.",
-					Example:   fmt.Sprintf("$ %s tx beacon record 1 --hash d04b98f48e8 --submit-time 1234356 --from mykey", version.AppName),
+					Long:      "record a BEACON's timestamp hash along with a time submitted.\n--submit-time defaults to the current unix epoch when omitted; pass an explicit value to override.\nThe legacy --subtime spelling is still accepted as an alias and prints a deprecation notice.",
+					Example:   fmt.Sprintf("$ %s tx beacon record 1 --hash d04b98f48e8 --from mykey", version.AppName),
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "beacon_id"},
 					},

@@ -70,13 +70,13 @@ func warnLegacyOnce(cmdPath, legacyLabel, canonicalLabel string) {
 }
 
 // installLegacyFlagAliases walks rootCmd and installs a per-flagset
-// normalize function on every Tx subcommand that drifted during the
-// autocli migration. Each normalizer rewrites legacy flag spellings onto
+// normalise function on every Tx subcommand that drifted during the
+// autocli migration. Each normaliser rewrites legacy flag spellings onto
 // the canonical proto-derived name, so production scripts that pass
 // --subtime / --wc_height / --block_hash / --parent_hash / --base /
 // --genesis keep working unchanged. The legacy spelling is purely an
 // alias — pflag never registers it as its own flag, so help output and
-// tx-body serialization always see the canonical name.
+// tx-body serialisation always see the canonical name.
 //
 // The walker is best-effort: if autocli fails to produce a target cmd,
 // installation is skipped silently in production. The companion test

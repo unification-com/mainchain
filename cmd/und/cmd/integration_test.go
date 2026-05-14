@@ -43,7 +43,7 @@ func TestLegacyFlagAliases_OnLiveRootCmd(t *testing.T) {
 				c.path, c.canonical)
 			legacy := leaf.Flags().Lookup(c.legacy)
 			require.NotNil(t, legacy,
-				"%s: legacy spelling --%s did not normalize — install walker did not reach this cmd",
+				"%s: legacy spelling --%s did not normalise — install walker did not reach this cmd",
 				c.path, c.legacy)
 			require.Same(t, modern, legacy,
 				"%s: legacy --%s and canonical --%s resolved to different flags",

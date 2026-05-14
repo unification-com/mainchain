@@ -222,7 +222,7 @@ func TestInstallLegacyFlagAliases_ParseAcceptsLegacySpelling(t *testing.T) {
 
 // TestInstallLegacyFlagAliases_TopLevelRootCmd guards against accidental
 // regressions where the walker breaks if rootCmd already has a flagset
-// normalizer of its own (the cobra default is one that maps `.` → `-`).
+// normaliser of its own (the cobra default is one that maps `.` → `-`).
 func TestInstallLegacyFlagAliases_PreservesUnrelatedFlags(t *testing.T) {
 	resetLegacyFlagWarnerForTest()
 	prev := legacyFlagWarnSink
@@ -236,7 +236,7 @@ func TestInstallLegacyFlagAliases_PreservesUnrelatedFlags(t *testing.T) {
 	installLegacyFlagAliases(root)
 
 	require.NotNil(t, cmd.Flags().Lookup("unrelated"),
-		"unrelated flags must not be affected by the alias normalizer")
+		"unrelated flags must not be affected by the alias normaliser")
 	require.NotNil(t, cmd.Flags().Lookup("submit-time"))
 	require.NotNil(t, cmd.Flags().Lookup("subtime"))
 }

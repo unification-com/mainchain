@@ -454,7 +454,8 @@ type Params struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// validator_fee is the chain-wide fee validators will receive from stream payments. A percentage value from 0 to 1
+	// validator_fee is the chain-wide fee validators will receive from stream
+	// payments. A percentage value from 0 to 1
 	ValidatorFee string `protobuf:"bytes,1,opt,name=validator_fee,json=validatorFee,proto3" json:"validator_fee,omitempty"`
 }
 

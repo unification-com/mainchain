@@ -28,7 +28,8 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Params defines the parameters for the module.
 type Params struct {
-	// validator_fee is the chain-wide fee validators will receive from stream payments. A percentage value from 0 to 1
+	// validator_fee is the chain-wide fee validators will receive from stream
+	// payments. A percentage value from 0 to 1
 	ValidatorFee cosmossdk_io_math.LegacyDec `protobuf:"bytes,1,opt,name=validator_fee,json=validatorFee,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"validator_fee"`
 }
 

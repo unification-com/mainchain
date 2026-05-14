@@ -4378,7 +4378,8 @@ func (x *MsgRegisterWrkChainResponse) GetWrkchainId() uint64 {
 	return 0
 }
 
-// MsgRecordWrkChainBlock represents a message to submit a set of block hashes for a registered wrkchain
+// MsgRecordWrkChainBlock represents a message to submit a set of block hashes
+// for a registered wrkchain
 type MsgRecordWrkChainBlock struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4390,7 +4391,8 @@ type MsgRecordWrkChainBlock struct {
 	Height uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
 	// block_hash is the main block hash
 	BlockHash string `protobuf:"bytes,3,opt,name=block_hash,json=blockHash,proto3" json:"block_hash,omitempty"`
-	// parent_hash is an optional parent block hash for the given height/block number
+	// parent_hash is an optional parent block hash for the given height/block
+	// number
 	ParentHash string `protobuf:"bytes,4,opt,name=parent_hash,json=parentHash,proto3" json:"parent_hash,omitempty"`
 	// hash1 is an optional supplementary hash to be submitted, for example TxHash
 	Hash1 string `protobuf:"bytes,5,opt,name=hash1,proto3" json:"hash1,omitempty"`
@@ -4478,7 +4480,8 @@ func (x *MsgRecordWrkChainBlock) GetOwner() string {
 	return ""
 }
 
-// MsgRecordWrkChainBlockResponse defines the Msg/RecordWrkChainBlock response type.
+// MsgRecordWrkChainBlockResponse defines the Msg/RecordWrkChainBlock response
+// type.
 type MsgRecordWrkChainBlockResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4524,7 +4527,8 @@ func (x *MsgRecordWrkChainBlockResponse) GetHeight() uint64 {
 	return 0
 }
 
-// MsgPurchaseWrkChainStateStorage represents a message to purchase more wrkchain storage
+// MsgPurchaseWrkChainStateStorage represents a message to purchase more
+// wrkchain storage
 type MsgPurchaseWrkChainStateStorage struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4579,7 +4583,8 @@ func (x *MsgPurchaseWrkChainStateStorage) GetOwner() string {
 	return ""
 }
 
-// MsgPurchaseWrkChainStateStorageResponse defines the Msg/PurchaseWrkChainStateStorage response type.
+// MsgPurchaseWrkChainStateStorageResponse defines the
+// Msg/PurchaseWrkChainStateStorage response type.
 type MsgPurchaseWrkChainStateStorageResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4642,7 +4647,8 @@ type MsgUpdateParams struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
+	// authority is the address that controls the module (defaults to x/gov unless
+	// overwritten).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// params defines the x/wrkchain parameters to update.
 	//

@@ -118,11 +118,13 @@ func (m *MsgUndPurchaseOrderResponse) GetPurchaseOrderId() uint64 {
 	return 0
 }
 
-// MsgProcessUndPurchaseOrder represents a message to processed a raised purchase order
+// MsgProcessUndPurchaseOrder represents a message to processed a raised
+// purchase order
 type MsgProcessUndPurchaseOrder struct {
 	// purchase_order_id is the ID of the purchase order being raised
 	PurchaseOrderId uint64 `protobuf:"varint,1,opt,name=purchase_order_id,json=purchaseOrderId,proto3" json:"purchase_order_id,omitempty"`
-	// decision is an enumerated PurchaseOrderStatus representing, for example accepted/rejected
+	// decision is an enumerated PurchaseOrderStatus representing, for example
+	// accepted/rejected
 	Decision PurchaseOrderStatus `protobuf:"varint,2,opt,name=decision,proto3,enum=mainchain.enterprise.v1.PurchaseOrderStatus" json:"decision,omitempty"`
 	// signer is the address of the authorised decision maker
 	Signer string `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
@@ -161,7 +163,8 @@ func (m *MsgProcessUndPurchaseOrder) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgProcessUndPurchaseOrder proto.InternalMessageInfo
 
-// MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder response type.
+// MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder
+// response type.
 type MsgProcessUndPurchaseOrderResponse struct {
 }
 
@@ -198,8 +201,9 @@ func (m *MsgProcessUndPurchaseOrderResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgProcessUndPurchaseOrderResponse proto.InternalMessageInfo
 
-// MsgWhitelistAddress represents a message to processed an address whitelist action.
-// only addresses whitelisted by an authorised decision maker can raise new purchase orders
+// MsgWhitelistAddress represents a message to processed an address whitelist
+// action. only addresses whitelisted by an authorised decision maker can raise
+// new purchase orders
 type MsgWhitelistAddress struct {
 	// address is the address for which the action is being executed
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
@@ -283,7 +287,8 @@ var xxx_messageInfo_MsgWhitelistAddressResponse proto.InternalMessageInfo
 //
 // Since: cosmos-sdk 0.47
 type MsgUpdateParams struct {
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
+	// authority is the address that controls the module (defaults to x/gov unless
+	// overwritten).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// params defines the x/staking parameters to update.
 	//
@@ -453,7 +458,8 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// UndPurchaseOrder defines a method to create new purchase order.
 	UndPurchaseOrder(ctx context.Context, in *MsgUndPurchaseOrder, opts ...grpc.CallOption) (*MsgUndPurchaseOrderResponse, error)
-	// ProcessUndPurchaseOrder defines a method to process a decision on a purchase order.
+	// ProcessUndPurchaseOrder defines a method to process a decision on a
+	// purchase order.
 	ProcessUndPurchaseOrder(ctx context.Context, in *MsgProcessUndPurchaseOrder, opts ...grpc.CallOption) (*MsgProcessUndPurchaseOrderResponse, error)
 	// WhitelistAddress defines a method to execute a whitelist action.
 	WhitelistAddress(ctx context.Context, in *MsgWhitelistAddress, opts ...grpc.CallOption) (*MsgWhitelistAddressResponse, error)
@@ -511,7 +517,8 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 type MsgServer interface {
 	// UndPurchaseOrder defines a method to create new purchase order.
 	UndPurchaseOrder(context.Context, *MsgUndPurchaseOrder) (*MsgUndPurchaseOrderResponse, error)
-	// ProcessUndPurchaseOrder defines a method to process a decision on a purchase order.
+	// ProcessUndPurchaseOrder defines a method to process a decision on a
+	// purchase order.
 	ProcessUndPurchaseOrder(context.Context, *MsgProcessUndPurchaseOrder) (*MsgProcessUndPurchaseOrderResponse, error)
 	// WhitelistAddress defines a method to execute a whitelist action.
 	WhitelistAddress(context.Context, *MsgWhitelistAddress) (*MsgWhitelistAddressResponse, error)

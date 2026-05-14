@@ -4994,7 +4994,8 @@ func (x *QueryBeaconResponse) GetBeacon() *Beacon {
 	return nil
 }
 
-// QueryBeaconTimestampRequest is the request type for the Query/BeaconTimestamp RPC method
+// QueryBeaconTimestampRequest is the request type for the Query/BeaconTimestamp
+// RPC method
 type QueryBeaconTimestampRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5040,7 +5041,8 @@ func (x *QueryBeaconTimestampRequest) GetTimestampId() uint64 {
 	return 0
 }
 
-// QueryBeaconTimestampResponse is the response type for the Query/BeaconTimestamp RPC method
+// QueryBeaconTimestampResponse is the response type for the
+// Query/BeaconTimestamp RPC method
 type QueryBeaconTimestampResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5092,7 +5094,8 @@ func (x *QueryBeaconTimestampResponse) GetOwner() string {
 	return ""
 }
 
-// QueryBeaconsFilteredRequest is the request type for the Query/BeaconsFiltered RPC method
+// QueryBeaconsFilteredRequest is the request type for the Query/BeaconsFiltered
+// RPC method
 type QueryBeaconsFilteredRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5147,7 +5150,8 @@ func (x *QueryBeaconsFilteredRequest) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
-// QueryBeaconsFilteredResponse is the response type for the Query/BeaconsFiltered RPC method
+// QueryBeaconsFilteredResponse is the response type for the
+// Query/BeaconsFiltered RPC method
 type QueryBeaconsFilteredResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5192,7 +5196,8 @@ func (x *QueryBeaconsFilteredResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
-// QueryBeaconStorageRequest is the request type for the Query/BeaconStorage RPC method
+// QueryBeaconStorageRequest is the request type for the Query/BeaconStorage RPC
+// method
 type QueryBeaconStorageRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5229,7 +5234,8 @@ func (x *QueryBeaconStorageRequest) GetBeaconId() uint64 {
 	return 0
 }
 
-// QueryBeaconStorageResponse is the response type for the Query/BeaconStorage RPC method
+// QueryBeaconStorageResponse is the response type for the Query/BeaconStorage
+// RPC method
 type QueryBeaconStorageResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5241,9 +5247,11 @@ type QueryBeaconStorageResponse struct {
 	CurrentLimit uint64 `protobuf:"varint,3,opt,name=current_limit,json=currentLimit,proto3" json:"current_limit,omitempty"`
 	// current_used is the number of in-state slots currently used
 	CurrentUsed uint64 `protobuf:"varint,4,opt,name=current_used,json=currentUsed,proto3" json:"current_used,omitempty"`
-	// max is the maximum possible slots a beacon can have, as defined by the beacon module params
+	// max is the maximum possible slots a beacon can have, as defined by the
+	// beacon module params
 	Max uint64 `protobuf:"varint,5,opt,name=max,proto3" json:"max,omitempty"`
-	// max_purchasable is the maximum number a beacon can purchase without exceeding max
+	// max_purchasable is the maximum number a beacon can purchase without
+	// exceeding max
 	MaxPurchasable uint64 `protobuf:"varint,6,opt,name=max_purchasable,json=maxPurchasable,proto3" json:"max_purchasable,omitempty"`
 }
 

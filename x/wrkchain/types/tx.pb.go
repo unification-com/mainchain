@@ -124,7 +124,8 @@ func (m *MsgRegisterWrkChainResponse) GetWrkchainId() uint64 {
 	return 0
 }
 
-// MsgRecordWrkChainBlock represents a message to submit a set of block hashes for a registered wrkchain
+// MsgRecordWrkChainBlock represents a message to submit a set of block hashes
+// for a registered wrkchain
 type MsgRecordWrkChainBlock struct {
 	// wrkchain_id is the id of the wrkchain the hashes are being submitted for
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
@@ -132,7 +133,8 @@ type MsgRecordWrkChainBlock struct {
 	Height uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
 	// block_hash is the main block hash
 	BlockHash string `protobuf:"bytes,3,opt,name=block_hash,json=blockHash,proto3" json:"block_hash,omitempty"`
-	// parent_hash is an optional parent block hash for the given height/block number
+	// parent_hash is an optional parent block hash for the given height/block
+	// number
 	ParentHash string `protobuf:"bytes,4,opt,name=parent_hash,json=parentHash,proto3" json:"parent_hash,omitempty"`
 	// hash1 is an optional supplementary hash to be submitted, for example TxHash
 	Hash1 string `protobuf:"bytes,5,opt,name=hash1,proto3" json:"hash1,omitempty"`
@@ -177,7 +179,8 @@ func (m *MsgRecordWrkChainBlock) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRecordWrkChainBlock proto.InternalMessageInfo
 
-// MsgRecordWrkChainBlockResponse defines the Msg/RecordWrkChainBlock response type.
+// MsgRecordWrkChainBlockResponse defines the Msg/RecordWrkChainBlock response
+// type.
 type MsgRecordWrkChainBlockResponse struct {
 	// wrkchain_id is the id of the wrkchain
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
@@ -232,7 +235,8 @@ func (m *MsgRecordWrkChainBlockResponse) GetHeight() uint64 {
 	return 0
 }
 
-// MsgPurchaseWrkChainStateStorage represents a message to purchase more wrkchain storage
+// MsgPurchaseWrkChainStateStorage represents a message to purchase more
+// wrkchain storage
 type MsgPurchaseWrkChainStateStorage struct {
 	// wrkchain_id is the id of the wrkchain the storage is being purchased for
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
@@ -275,7 +279,8 @@ func (m *MsgPurchaseWrkChainStateStorage) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgPurchaseWrkChainStateStorage proto.InternalMessageInfo
 
-// MsgPurchaseWrkChainStateStorageResponse defines the Msg/PurchaseWrkChainStateStorage response type.
+// MsgPurchaseWrkChainStateStorageResponse defines the
+// Msg/PurchaseWrkChainStateStorage response type.
 type MsgPurchaseWrkChainStateStorageResponse struct {
 	// wrkchain_id is the id of the wrkchain the storage is being purchased for
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
@@ -345,7 +350,8 @@ func (m *MsgPurchaseWrkChainStateStorageResponse) GetNumCanPurchase() uint64 {
 //
 // Since: cosmos-sdk 0.47
 type MsgUpdateParams struct {
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
+	// authority is the address that controls the module (defaults to x/gov unless
+	// overwritten).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// params defines the x/wrkchain parameters to update.
 	//
@@ -520,9 +526,11 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// RegisterWrkChain defines a method to register a new wrkchain
 	RegisterWrkChain(ctx context.Context, in *MsgRegisterWrkChain, opts ...grpc.CallOption) (*MsgRegisterWrkChainResponse, error)
-	// RecordWrkChainBlock defines a method to record a block hash set for a registered wrkchain
+	// RecordWrkChainBlock defines a method to record a block hash set for a
+	// registered wrkchain
 	RecordWrkChainBlock(ctx context.Context, in *MsgRecordWrkChainBlock, opts ...grpc.CallOption) (*MsgRecordWrkChainBlockResponse, error)
-	// PurchaseWrkChainStateStorage defines the method to purchase more state storage
+	// PurchaseWrkChainStateStorage defines the method to purchase more state
+	// storage
 	PurchaseWrkChainStateStorage(ctx context.Context, in *MsgPurchaseWrkChainStateStorage, opts ...grpc.CallOption) (*MsgPurchaseWrkChainStateStorageResponse, error)
 	// UpdateParams defines an operation for updating the x/wrkchain module
 	// parameters.
@@ -578,9 +586,11 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 type MsgServer interface {
 	// RegisterWrkChain defines a method to register a new wrkchain
 	RegisterWrkChain(context.Context, *MsgRegisterWrkChain) (*MsgRegisterWrkChainResponse, error)
-	// RecordWrkChainBlock defines a method to record a block hash set for a registered wrkchain
+	// RecordWrkChainBlock defines a method to record a block hash set for a
+	// registered wrkchain
 	RecordWrkChainBlock(context.Context, *MsgRecordWrkChainBlock) (*MsgRecordWrkChainBlockResponse, error)
-	// PurchaseWrkChainStateStorage defines the method to purchase more state storage
+	// PurchaseWrkChainStateStorage defines the method to purchase more state
+	// storage
 	PurchaseWrkChainStateStorage(context.Context, *MsgPurchaseWrkChainStateStorage) (*MsgPurchaseWrkChainStateStorageResponse, error)
 	// UpdateParams defines an operation for updating the x/wrkchain module
 	// parameters.

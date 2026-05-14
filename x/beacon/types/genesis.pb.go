@@ -147,7 +147,8 @@ func (m *BeaconTimestampGenesisExport) GetH() string {
 	return ""
 }
 
-// BeaconExport holds genesis export data for a beacon, including submitted timestamps
+// BeaconExport holds genesis export data for a beacon, including submitted
+// timestamps
 type BeaconExport struct {
 	Beacon       Beacon                        `protobuf:"bytes,1,opt,name=beacon,proto3" json:"beacon"`
 	InStateLimit uint64                        `protobuf:"varint,2,opt,name=in_state_limit,json=inStateLimit,proto3" json:"in_state_limit,omitempty"`

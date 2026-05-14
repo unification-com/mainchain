@@ -2845,9 +2845,11 @@ type WrkChain struct {
 	BaseType string `protobuf:"bytes,5,opt,name=base_type,json=baseType,proto3" json:"base_type,omitempty"`
 	// lastblock is the current highest recorded height for the wrkchain
 	Lastblock uint64 `protobuf:"varint,6,opt,name=lastblock,proto3" json:"lastblock,omitempty"`
-	// num_blocks is the current number of block hashes stored in state for the wrkchain
+	// num_blocks is the current number of block hashes stored in state for the
+	// wrkchain
 	NumBlocks uint64 `protobuf:"varint,7,opt,name=num_blocks,json=numBlocks,proto3" json:"num_blocks,omitempty"`
-	// lowest_height is the lowest recorded height currently held in state for the wrkchain
+	// lowest_height is the lowest recorded height currently held in state for the
+	// wrkchain
 	LowestHeight uint64 `protobuf:"varint,8,opt,name=lowest_height,json=lowestHeight,proto3" json:"lowest_height,omitempty"`
 	// reg_time is the unix epoch of the wrkchain's registration time
 	RegTime uint64 `protobuf:"varint,9,opt,name=reg_time,json=regTime,proto3" json:"reg_time,omitempty"`
@@ -2945,7 +2947,8 @@ func (x *WrkChain) GetOwner() string {
 	return ""
 }
 
-// WrkChainStorageLimit holds tata about the wrkchain's current in-state storage limit
+// WrkChainStorageLimit holds tata about the wrkchain's current in-state storage
+// limit
 type WrkChainStorageLimit struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2953,7 +2956,8 @@ type WrkChainStorageLimit struct {
 
 	// wrkchain_id is the id of the wrkchain
 	WrkchainId uint64 `protobuf:"varint,1,opt,name=wrkchain_id,json=wrkchainId,proto3" json:"wrkchain_id,omitempty"`
-	// in_state_limit is the current maximum number of blocks that will be held in state for the wrkchain
+	// in_state_limit is the current maximum number of blocks that will be held in
+	// state for the wrkchain
 	InStateLimit uint64 `protobuf:"varint,2,opt,name=in_state_limit,json=inStateLimit,proto3" json:"in_state_limit,omitempty"`
 }
 
@@ -3001,7 +3005,8 @@ type WrkChainBlock struct {
 	Height uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
 	// blockhash is the block hash of the stored wrkchain block
 	Blockhash string `protobuf:"bytes,2,opt,name=blockhash,proto3" json:"blockhash,omitempty"`
-	// parenthash is the optional hash of the parent block of the stored wrkchain block hash
+	// parenthash is the optional hash of the parent block of the stored wrkchain
+	// block hash
 	Parenthash string `protobuf:"bytes,3,opt,name=parenthash,proto3" json:"parenthash,omitempty"`
 	// hash1 is an optional hash of any type of the stored wrkchain block hash
 	Hash1 string `protobuf:"bytes,4,opt,name=hash1,proto3" json:"hash1,omitempty"`
@@ -3092,13 +3097,16 @@ type Params struct {
 	FeeRegister uint64 `protobuf:"varint,1,opt,name=fee_register,json=feeRegister,proto3" json:"fee_register,omitempty"`
 	// fee_record is the cost to record a single wkrchain hash
 	FeeRecord uint64 `protobuf:"varint,2,opt,name=fee_record,json=feeRecord,proto3" json:"fee_record,omitempty"`
-	// fee_purchase_storage is the cost to purchase a single additional unit of in-state storage
+	// fee_purchase_storage is the cost to purchase a single additional unit of
+	// in-state storage
 	FeePurchaseStorage uint64 `protobuf:"varint,3,opt,name=fee_purchase_storage,json=feePurchaseStorage,proto3" json:"fee_purchase_storage,omitempty"`
 	// denom is the expected denomination to pay for fees, e.g. nund
 	Denom string `protobuf:"bytes,4,opt,name=denom,proto3" json:"denom,omitempty"`
-	// default_storage_limit is the default in-state storage limit for all new wkrchains
+	// default_storage_limit is the default in-state storage limit for all new
+	// wkrchains
 	DefaultStorageLimit uint64 `protobuf:"varint,5,opt,name=default_storage_limit,json=defaultStorageLimit,proto3" json:"default_storage_limit,omitempty"`
-	// max_storage_limit is the maximum in-state storage slots any one wkrchain can have
+	// max_storage_limit is the maximum in-state storage slots any one wkrchain
+	// can have
 	MaxStorageLimit uint64 `protobuf:"varint,6,opt,name=max_storage_limit,json=maxStorageLimit,proto3" json:"max_storage_limit,omitempty"`
 }
 

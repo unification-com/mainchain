@@ -41,7 +41,8 @@ type StreamResult struct {
 	Sender string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
 	// stream is the stream data
 	Stream *Stream `protobuf:"bytes,3,opt,name=stream,proto3" json:"stream,omitempty"`
-	// denom identifies the stream within the (sender, receiver) pair; equal to stream.deposit.denom
+	// denom identifies the stream within the (sender, receiver) pair; equal to
+	// stream.deposit.denom
 	Denom string `protobuf:"bytes,4,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
@@ -189,14 +190,17 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-// QueryCalculateFlowRateRequest is the request type for the Query/CalculateFlowRate RPC method
+// QueryCalculateFlowRateRequest is the request type for the
+// Query/CalculateFlowRate RPC method
 type QueryCalculateFlowRateRequest struct {
-	// coin is the coin to be used in the calculation, e.g. 10000000000nund. This is the total amount to be paid over
-	// the specified duration
+	// coin is the coin to be used in the calculation, e.g. 10000000000nund. This
+	// is the total amount to be paid over the specified duration
 	Coin string `protobuf:"bytes,1,opt,name=coin,proto3" json:"coin,omitempty"`
-	// period is the enumerated value of a period to be used in the calculation, e.g. month = 6
+	// period is the enumerated value of a period to be used in the calculation,
+	// e.g. month = 6
 	Period StreamPeriod `protobuf:"varint,2,opt,name=period,proto3,enum=mainchain.stream.v1.StreamPeriod" json:"period,omitempty"`
-	// duration is the number of periods to be used in the calculation, e.g. 2 = 2 months
+	// duration is the number of periods to be used in the calculation, e.g. 2 = 2
+	// months
 	Duration uint64 `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
 }
 
@@ -233,17 +237,22 @@ func (m *QueryCalculateFlowRateRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCalculateFlowRateRequest proto.InternalMessageInfo
 
-// QueryCalculateFlowRateResponse is the response type for the Query/CalculateFlowRate RPC method
+// QueryCalculateFlowRateResponse is the response type for the
+// Query/CalculateFlowRate RPC method
 type QueryCalculateFlowRateResponse struct {
 	// coin is the coin used in the calculation
 	Coin types.Coin `protobuf:"bytes,1,opt,name=coin,proto3" json:"coin"`
-	// period is the enumerated value of a period used in the calculation, e.g. month = 6
+	// period is the enumerated value of a period used in the calculation, e.g.
+	// month = 6
 	Period StreamPeriod `protobuf:"varint,2,opt,name=period,proto3,enum=mainchain.stream.v1.StreamPeriod" json:"period,omitempty"`
-	// duration is the number of periods used in the calculation, e.g. 2 = 2 months
+	// duration is the number of periods used in the calculation, e.g. 2 = 2
+	// months
 	Duration uint64 `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
-	// seconds is the calculated number of seconds for the stream (seconds in period * duration)
+	// seconds is the calculated number of seconds for the stream (seconds in
+	// period * duration)
 	Seconds uint64 `protobuf:"varint,4,opt,name=seconds,proto3" json:"seconds,omitempty"`
-	// flow_rate is the calculated rate of coins per second, in the lowest denomination - e.g. nund
+	// flow_rate is the calculated rate of coins per second, in the lowest
+	// denomination - e.g. nund
 	FlowRate int64 `protobuf:"varint,5,opt,name=flow_rate,json=flowRate,proto3" json:"flow_rate,omitempty"`
 }
 
@@ -415,7 +424,8 @@ func (m *QueryStreamsResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryAllStreamsForReceiverRequest is the request type for the Query/AllStreamsForReceiver RPC method
+// QueryAllStreamsForReceiverRequest is the request type for the
+// Query/AllStreamsForReceiver RPC method
 type QueryAllStreamsForReceiverRequest struct {
 	// receiver_addr is the receiver wallet address being queried
 	ReceiverAddr string `protobuf:"bytes,1,opt,name=receiver_addr,json=receiverAddr,proto3" json:"receiver_addr,omitempty"`
@@ -470,7 +480,8 @@ func (m *QueryAllStreamsForReceiverRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryAllStreamsForReceiverResponse is the response type for the Query/AllStreamsForReceiver RPC method
+// QueryAllStreamsForReceiverResponse is the response type for the
+// Query/AllStreamsForReceiver RPC method
 type QueryAllStreamsForReceiverResponse struct {
 	// receiver_addr is the receiver wallet address being queried
 	ReceiverAddr string `protobuf:"bytes,1,opt,name=receiver_addr,json=receiverAddr,proto3" json:"receiver_addr,omitempty"`
@@ -534,7 +545,8 @@ func (m *QueryAllStreamsForReceiverResponse) GetPagination() *query.PageResponse
 	return nil
 }
 
-// QueryStreamByReceiverSenderRequest is the request type for the Query/StreamByReceiverSender RPC method
+// QueryStreamByReceiverSenderRequest is the request type for the
+// Query/StreamByReceiverSender RPC method
 type QueryStreamByReceiverSenderRequest struct {
 	// receiver_addr is the receiver wallet address being queried
 	ReceiverAddr string `protobuf:"bytes,1,opt,name=receiver_addr,json=receiverAddr,proto3" json:"receiver_addr,omitempty"`
@@ -598,7 +610,8 @@ func (m *QueryStreamByReceiverSenderRequest) GetDenom() string {
 	return ""
 }
 
-// QueryStreamByReceiverSenderResponse is the response type for the Query/StreamByReceiverSender RPC method
+// QueryStreamByReceiverSenderResponse is the response type for the
+// Query/StreamByReceiverSender RPC method
 type QueryStreamByReceiverSenderResponse struct {
 	// stream is the StreamResult
 	Stream StreamResult `protobuf:"bytes,1,opt,name=stream,proto3" json:"stream"`
@@ -644,7 +657,8 @@ func (m *QueryStreamByReceiverSenderResponse) GetStream() StreamResult {
 	return StreamResult{}
 }
 
-// QueryStreamReceiverSenderCurrentFlowRequest is the request type for the Query/StreamReceiverSenderCurrentFlow RPC method
+// QueryStreamReceiverSenderCurrentFlowRequest is the request type for the
+// Query/StreamReceiverSenderCurrentFlow RPC method
 type QueryStreamReceiverSenderCurrentFlowRequest struct {
 	// receiver_addr is the receiver wallet address being queried
 	ReceiverAddr string `protobuf:"bytes,1,opt,name=receiver_addr,json=receiverAddr,proto3" json:"receiver_addr,omitempty"`
@@ -712,11 +726,13 @@ func (m *QueryStreamReceiverSenderCurrentFlowRequest) GetDenom() string {
 	return ""
 }
 
-// QueryStreamReceiverSenderCurrentFlowResponse is the response type for the Query/StreamReceiverSenderCurrentFlow RPC method
+// QueryStreamReceiverSenderCurrentFlowResponse is the response type for the
+// Query/StreamReceiverSenderCurrentFlow RPC method
 type QueryStreamReceiverSenderCurrentFlowResponse struct {
 	// configured_flow_rate is the flow rate configured in the stream
 	ConfiguredFlowRate int64 `protobuf:"varint,1,opt,name=configured_flow_rate,json=configuredFlowRate,proto3" json:"configured_flow_rate,omitempty"`
-	// current_flow_rate is the actual flow rate. This will be zero if the depositZeroTime has passed, or deposit is zero
+	// current_flow_rate is the actual flow rate. This will be zero if the
+	// depositZeroTime has passed, or deposit is zero
 	CurrentFlowRate int64 `protobuf:"varint,2,opt,name=current_flow_rate,json=currentFlowRate,proto3" json:"current_flow_rate,omitempty"`
 }
 
@@ -771,7 +787,8 @@ func (m *QueryStreamReceiverSenderCurrentFlowResponse) GetCurrentFlowRate() int6
 	return 0
 }
 
-// QueryAllStreamsForSenderRequest is the request type for the Query/AllStreamsForSender RPC method
+// QueryAllStreamsForSenderRequest is the request type for the
+// Query/AllStreamsForSender RPC method
 type QueryAllStreamsForSenderRequest struct {
 	// sender_addr is the receiver wallet address being queried
 	SenderAddr string `protobuf:"bytes,1,opt,name=sender_addr,json=senderAddr,proto3" json:"sender_addr,omitempty"`
@@ -826,7 +843,8 @@ func (m *QueryAllStreamsForSenderRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryAllStreamsForSenderResponse is the response type for the Query/AllStreamsForSender RPC method
+// QueryAllStreamsForSenderResponse is the response type for the
+// Query/AllStreamsForSender RPC method
 type QueryAllStreamsForSenderResponse struct {
 	// sender_addr is the receiver wallet address being queried
 	SenderAddr string `protobuf:"bytes,1,opt,name=sender_addr,json=senderAddr,proto3" json:"sender_addr,omitempty"`
@@ -890,7 +908,8 @@ func (m *QueryAllStreamsForSenderResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryAllStreamsByPairRequest is the request type for the Query/AllStreamsByPair RPC method
+// QueryAllStreamsByPairRequest is the request type for the
+// Query/AllStreamsByPair RPC method
 type QueryAllStreamsByPairRequest struct {
 	// receiver_addr is the receiver wallet address being queried
 	ReceiverAddr string `protobuf:"bytes,1,opt,name=receiver_addr,json=receiverAddr,proto3" json:"receiver_addr,omitempty"`
@@ -954,13 +973,15 @@ func (m *QueryAllStreamsByPairRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryAllStreamsByPairResponse is the response type for the Query/AllStreamsByPair RPC method
+// QueryAllStreamsByPairResponse is the response type for the
+// Query/AllStreamsByPair RPC method
 type QueryAllStreamsByPairResponse struct {
 	// receiver_addr is the receiver wallet address being queried
 	ReceiverAddr string `protobuf:"bytes,1,opt,name=receiver_addr,json=receiverAddr,proto3" json:"receiver_addr,omitempty"`
 	// sender_addr is the sender wallet address being queried
 	SenderAddr string `protobuf:"bytes,2,opt,name=sender_addr,json=senderAddr,proto3" json:"sender_addr,omitempty"`
-	// streams is the list of streams in the (sender, receiver) pair, one per denom
+	// streams is the list of streams in the (sender, receiver) pair, one per
+	// denom
 	Streams []*StreamResult `protobuf:"bytes,3,rep,name=streams,proto3" json:"streams,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,4,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -1141,19 +1162,23 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// CalculateFlowRate can be used to calculate a flow rate (coins per second) to be used when creating/updating a stream
+	// CalculateFlowRate can be used to calculate a flow rate (coins per second)
+	// to be used when creating/updating a stream
 	CalculateFlowRate(ctx context.Context, in *QueryCalculateFlowRateRequest, opts ...grpc.CallOption) (*QueryCalculateFlowRateResponse, error)
 	// Streams queries all Streams.
 	Streams(ctx context.Context, in *QueryStreamsRequest, opts ...grpc.CallOption) (*QueryStreamsResponse, error)
 	// AllStreamsForReceiver queries all Streams for a given receiver address
 	AllStreamsForReceiver(ctx context.Context, in *QueryAllStreamsForReceiverRequest, opts ...grpc.CallOption) (*QueryAllStreamsForReceiverResponse, error)
-	// StreamByReceiverSender queries a stream for a given receiver, sender and denom triple
+	// StreamByReceiverSender queries a stream for a given receiver, sender and
+	// denom triple
 	StreamByReceiverSender(ctx context.Context, in *QueryStreamByReceiverSenderRequest, opts ...grpc.CallOption) (*QueryStreamByReceiverSenderResponse, error)
-	// StreamReceiverSenderCurrentFlow queries a stream by the given receiver/sender/denom triple and returns the current flow data
+	// StreamReceiverSenderCurrentFlow queries a stream by the given
+	// receiver/sender/denom triple and returns the current flow data
 	StreamReceiverSenderCurrentFlow(ctx context.Context, in *QueryStreamReceiverSenderCurrentFlowRequest, opts ...grpc.CallOption) (*QueryStreamReceiverSenderCurrentFlowResponse, error)
 	// AllStreamsForSender queries all Streams for a given sender address
 	AllStreamsForSender(ctx context.Context, in *QueryAllStreamsForSenderRequest, opts ...grpc.CallOption) (*QueryAllStreamsForSenderResponse, error)
-	// AllStreamsByPair queries all Streams between a given (sender, receiver) pair across denoms
+	// AllStreamsByPair queries all Streams between a given (sender, receiver)
+	// pair across denoms
 	AllStreamsByPair(ctx context.Context, in *QueryAllStreamsByPairRequest, opts ...grpc.CallOption) (*QueryAllStreamsByPairResponse, error)
 }
 
@@ -1241,19 +1266,23 @@ func (c *queryClient) AllStreamsByPair(ctx context.Context, in *QueryAllStreamsB
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// CalculateFlowRate can be used to calculate a flow rate (coins per second) to be used when creating/updating a stream
+	// CalculateFlowRate can be used to calculate a flow rate (coins per second)
+	// to be used when creating/updating a stream
 	CalculateFlowRate(context.Context, *QueryCalculateFlowRateRequest) (*QueryCalculateFlowRateResponse, error)
 	// Streams queries all Streams.
 	Streams(context.Context, *QueryStreamsRequest) (*QueryStreamsResponse, error)
 	// AllStreamsForReceiver queries all Streams for a given receiver address
 	AllStreamsForReceiver(context.Context, *QueryAllStreamsForReceiverRequest) (*QueryAllStreamsForReceiverResponse, error)
-	// StreamByReceiverSender queries a stream for a given receiver, sender and denom triple
+	// StreamByReceiverSender queries a stream for a given receiver, sender and
+	// denom triple
 	StreamByReceiverSender(context.Context, *QueryStreamByReceiverSenderRequest) (*QueryStreamByReceiverSenderResponse, error)
-	// StreamReceiverSenderCurrentFlow queries a stream by the given receiver/sender/denom triple and returns the current flow data
+	// StreamReceiverSenderCurrentFlow queries a stream by the given
+	// receiver/sender/denom triple and returns the current flow data
 	StreamReceiverSenderCurrentFlow(context.Context, *QueryStreamReceiverSenderCurrentFlowRequest) (*QueryStreamReceiverSenderCurrentFlowResponse, error)
 	// AllStreamsForSender queries all Streams for a given sender address
 	AllStreamsForSender(context.Context, *QueryAllStreamsForSenderRequest) (*QueryAllStreamsForSenderResponse, error)
-	// AllStreamsByPair queries all Streams between a given (sender, receiver) pair across denoms
+	// AllStreamsByPair queries all Streams between a given (sender, receiver)
+	// pair across denoms
 	AllStreamsByPair(context.Context, *QueryAllStreamsByPairRequest) (*QueryAllStreamsByPairResponse, error)
 }
 

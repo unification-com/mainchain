@@ -18,7 +18,8 @@ service Msg {
   rpc UndPurchaseOrder(MsgUndPurchaseOrder)
       returns (MsgUndPurchaseOrderResponse);
 
-  // ProcessUndPurchaseOrder defines a method to process a decision on a purchase order.
+  // ProcessUndPurchaseOrder defines a method to process a decision on a
+  // purchase order.
   rpc ProcessUndPurchaseOrder(MsgProcessUndPurchaseOrder)
       returns (MsgProcessUndPurchaseOrderResponse);
 
@@ -41,7 +42,7 @@ message MsgUndPurchaseOrder {
   option (amino.name) = "enterprise/MsgUndPurchaseOrder";
 
   // purchaser is the address of the account raising the purchase order
-  string purchaser = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string purchaser = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   // amount is the amount of eFUND in nund
   cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
 }
@@ -49,7 +50,8 @@ message MsgUndPurchaseOrder {
 // MsgUndPurchaseOrderResponse defines the Msg/UndPurchaseOrder response type.
 message MsgUndPurchaseOrderResponse { uint64 purchase_order_id = 1; }
 
-// MsgProcessUndPurchaseOrder represents a message to processed a raised purchase order
+// MsgProcessUndPurchaseOrder represents a message to processed a raised
+// purchase order
 message MsgProcessUndPurchaseOrder {
   option (cosmos.msg.v1.signer) = "signer";
 
@@ -59,17 +61,20 @@ message MsgProcessUndPurchaseOrder {
 
   // purchase_order_id is the ID of the purchase order being raised
   uint64 purchase_order_id = 1;
-  // decision is an enumerated PurchaseOrderStatus representing, for example accepted/rejected
+  // decision is an enumerated PurchaseOrderStatus representing, for example
+  // accepted/rejected
   PurchaseOrderStatus decision = 2;
   // signer is the address of the authorised decision maker
-  string signer = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string signer = 3 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
-// MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder response type.
+// MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder
+// response type.
 message MsgProcessUndPurchaseOrderResponse {}
 
-// MsgWhitelistAddress represents a message to processed an address whitelist action.
-// only addresses whitelisted by an authorised decision maker can raise new purchase orders
+// MsgWhitelistAddress represents a message to processed an address whitelist
+// action. only addresses whitelisted by an authorised decision maker can raise
+// new purchase orders
 message MsgWhitelistAddress {
   option (cosmos.msg.v1.signer) = "signer";
 
@@ -78,29 +83,31 @@ message MsgWhitelistAddress {
   option (amino.name) = "enterprise/MsgWhitelistAddress";
 
   // address is the address for which the action is being executed
-  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   // signer is the address of the authorised decision maker
-  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string signer = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   // action is the action being executed, and is either add or remove.
   WhitelistAction action = 3;
 }
 
 // MsgWhitelistAddressResponse defines the Msg/WhitelistAddress response type.
-message MsgWhitelistAddressResponse{}
+message MsgWhitelistAddressResponse {}
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
 //
 // Since: cosmos-sdk 0.47
 message MsgUpdateParams {
   option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name)           = "mainchain/x/enterprise/MsgUpdateParams";
+  option (amino.name) = "mainchain/x/enterprise/MsgUpdateParams";
 
-  // authority is the address that controls the module (defaults to x/gov unless overwritten).
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // authority is the address that controls the module (defaults to x/gov unless
+  // overwritten).
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   // params defines the x/staking parameters to update.
   //
   // NOTE: All parameters must be supplied.
-  Params params = 2 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  Params params = 2
+      [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
 };
 
 // MsgUpdateParamsResponse defines the response structure for executing a

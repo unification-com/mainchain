@@ -101,8 +101,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				},
 			},
 		},
-		// Note - we're still using func (AppModuleBasic) GetTxCmd() *cobra.Command in module.go for Tx commands
-		// this is here just for an example for future use
 		Tx: &autocliv1.ServiceCommandDescriptor{
 			Service: enterprisev1.Msg_ServiceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
@@ -117,11 +115,32 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
+					RpcMethod: "ProcessUndPurchaseOrder",
+					Use:       "process [purchase_order_id] [decision] --from [signer]",
+					Short:     "process an eFUND purchase order (authorised signers only)",
+					Long:      "process an eFUND purchase order. decision is one of: status-accepted, status-rejected.\nShort spellings 'accept' / 'accepted' / 'reject' / 'rejected' are still accepted as aliases and print a deprecation notice.",
+					Example:   fmt.Sprintf("$ %s tx enterprise process 24 status-accepted --from ent\n$ %s tx enterprise process 24 status-rejected --from ent", version.AppName, version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "purchase_order_id"},
+						{ProtoField: "decision"},
+					},
+				},
+				{
+					RpcMethod: "WhitelistAddress",
+					Use:       "whitelist [action] [address] --from [signer]",
+					Short:     "add or remove an address from the eFUND purchase-order whitelist (authorised signers only)",
+					Long:      "add or remove an address from the enterprise purchase order whitelist. action is one of: add, remove.",
+					Example:   fmt.Sprintf("$ %s tx enterprise whitelist add und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --from ent\n$ %s tx enterprise whitelist remove und1x8pl6wzqf9atkm77ymc5vn5dnpl5xytmn200xy --from ent", version.AppName, version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "action"},
+						{ProtoField: "address"},
+					},
+				},
+				{
 					RpcMethod: "UpdateParams",
 					Skip:      true, // skipped because authority gated
 				},
 			},
-			EnhanceCustomCommand: false, // use custom commands only until v0.51
 		},
 	}
 }

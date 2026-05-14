@@ -100,6 +100,9 @@ func NewRootCmd() *cobra.Command {
 		panic(err)
 	}
 
+	installLegacyFlagAliases(rootCmd)
+	installAutocliCompatShims(rootCmd)
+
 	return rootCmd
 }
 

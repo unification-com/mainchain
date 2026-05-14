@@ -73,10 +73,21 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
+					RpcMethod: "AllStreamsByPair",
+					Use:       "streams-by-pair [receiver_addr] [sender_addr]",
+					Short:     "Query all streams (one per denom) for a receiver/sender pair",
+					Long:      "Query all streams between a receiver and sender across all denoms",
+					Example:   fmt.Sprintf("$ %s query stream streams-by-pair und1eq239sgefyzm4crl85nfyvt7kw83vrna3f0eed und1chknpc8nf2tmj5582vhlvphnjyekc9ypspx5ay", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "receiver_addr"},
+						{ProtoField: "sender_addr"},
+					},
+				},
+				{
 					RpcMethod: "Params",
 					Use:       "params",
-					Short:     "Query the current enterprise parameters information",
-					Long:      "Query values set as enterprise parameters.",
+					Short:     "Query the current stream module parameters",
+					Long:      "Query values set as stream module parameters.",
 				},
 			},
 		},

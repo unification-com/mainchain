@@ -116,20 +116,6 @@
       }
     },
     {
-      "url": "./tmp-swagger-gen/cosmos/circuit/v1/query.swagger.json",
-      "tags": {
-        "rename": {
-          "Query": "Circuit"
-        }
-      },
-      "operationIds": {
-        "rename": {
-          "Account": "CircuitAccount",
-          "Accounts": "CircuitAccounts"
-        }
-      }
-    },
-    {
       "url": "./tmp-swagger-gen/cosmos/consensus/v1/query.swagger.json",
       "tags": {
         "rename": {
@@ -211,21 +197,6 @@
           "Deposit": "GovV1Deposit",
           "Deposits": "GovV1Deposit",
           "TallyResult": "GovV1TallyResult"
-        }
-      }
-    },
-    {
-      "url": "./tmp-swagger-gen/cosmos/group/v1/query.swagger.json",
-      "tags": {
-        "rename": {
-          "Query": "Group"
-        }
-      },
-      "operationIds": {
-        "rename": {
-          "Params": "GroupParams",
-          "Proposal": "GroupProposal",
-          "TallyResult": "GroupTallyResult"
         }
       }
     },

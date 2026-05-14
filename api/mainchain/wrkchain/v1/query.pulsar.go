@@ -4994,7 +4994,8 @@ func (x *QueryWrkChainResponse) GetWrkchain() *WrkChain {
 	return nil
 }
 
-// QueryWrkChainBlockRequest is the request type for the Query/WrkChainBlock RPC method
+// QueryWrkChainBlockRequest is the request type for the Query/WrkChainBlock RPC
+// method
 type QueryWrkChainBlockRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5040,7 +5041,8 @@ func (x *QueryWrkChainBlockRequest) GetWcHeight() uint64 {
 	return 0
 }
 
-// QueryWrkChainBlockResponse is the response type for the Query/WrkChainBlock RPC method
+// QueryWrkChainBlockResponse is the response type for the Query/WrkChainBlock
+// RPC method
 type QueryWrkChainBlockResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5092,7 +5094,8 @@ func (x *QueryWrkChainBlockResponse) GetOwner() string {
 	return ""
 }
 
-// QueryWrkChainsFilteredRequest is the request type for the Query/WrkChainsFiltered RPC method
+// QueryWrkChainsFilteredRequest is the request type for the
+// Query/WrkChainsFiltered RPC method
 type QueryWrkChainsFilteredRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5147,7 +5150,8 @@ func (x *QueryWrkChainsFilteredRequest) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
-// QueryWrkChainsFilteredResponse is the response type for the Query/WrkChainsFiltered RPC method
+// QueryWrkChainsFilteredResponse is the response type for the
+// Query/WrkChainsFiltered RPC method
 type QueryWrkChainsFilteredResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5192,7 +5196,8 @@ func (x *QueryWrkChainsFilteredResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
-// QueryWrkChainStorageRequest is the request type for the Query/WrkChainStorage RPC method
+// QueryWrkChainStorageRequest is the request type for the Query/WrkChainStorage
+// RPC method
 type QueryWrkChainStorageRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5229,7 +5234,8 @@ func (x *QueryWrkChainStorageRequest) GetWrkchainId() uint64 {
 	return 0
 }
 
-// QueryWrkChainStorageResponse is the response type for the Query/WrkChainStorage RPC method
+// QueryWrkChainStorageResponse is the response type for the
+// Query/WrkChainStorage RPC method
 type QueryWrkChainStorageResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5241,9 +5247,11 @@ type QueryWrkChainStorageResponse struct {
 	CurrentLimit uint64 `protobuf:"varint,3,opt,name=current_limit,json=currentLimit,proto3" json:"current_limit,omitempty"`
 	// current_used is the number of in-state slots currently used
 	CurrentUsed uint64 `protobuf:"varint,4,opt,name=current_used,json=currentUsed,proto3" json:"current_used,omitempty"`
-	// max is the maximum possible slots a wrkchain can have, as defined by the wrkchain module params
+	// max is the maximum possible slots a wrkchain can have, as defined by the
+	// wrkchain module params
 	Max uint64 `protobuf:"varint,5,opt,name=max,proto3" json:"max,omitempty"`
-	// max_purchasable is the maximum number a wrkchain can purchase without exceeding max
+	// max_purchasable is the maximum number a wrkchain can purchase without
+	// exceeding max
 	MaxPurchasable uint64 `protobuf:"varint,6,opt,name=max_purchasable,json=maxPurchasable,proto3" json:"max_purchasable,omitempty"`
 }
 

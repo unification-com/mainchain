@@ -154,13 +154,15 @@ func (m *MsgCreateStreamResponse) GetFlowRate() int64 {
 	return 0
 }
 
-// MsgClaimStream claims pending payments form a stream using the sender and receiver addresses
+// MsgClaimStream claims pending payments form a stream using the sender and
+// receiver addresses
 type MsgClaimStream struct {
 	// sender is sender wallet of the stream being claimed
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// receiver is the wallet making the claim
 	Receiver string `protobuf:"bytes,2,opt,name=receiver,proto3" json:"receiver,omitempty"`
-	// denom identifies which of the streams between (sender, receiver) to claim from
+	// denom identifies which of the streams between (sender, receiver) to claim
+	// from
 	Denom string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
@@ -197,6 +199,9 @@ func (m *MsgClaimStream) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgClaimStream proto.InternalMessageInfo
 
+// MsgClaimStreamResponse is the response from a successful MsgClaimStream,
+// breaking down the claim into the receiver payment, validator fee, and the
+// remaining deposit left on the stream.
 type MsgClaimStreamResponse struct {
 	// total_claimed is the total value of the claim
 	TotalClaimed types.Coin `protobuf:"bytes,2,opt,name=total_claimed,json=totalClaimed,proto3" json:"total_claimed"`
@@ -318,7 +323,8 @@ type MsgTopUpDepositResponse struct {
 	DepositAmount types.Coin `protobuf:"bytes,2,opt,name=deposit_amount,json=depositAmount,proto3" json:"deposit_amount"`
 	// current_deposit is the total current deposit in the stream
 	CurrentDeposit types.Coin `protobuf:"bytes,3,opt,name=current_deposit,json=currentDeposit,proto3" json:"current_deposit"`
-	// deposit_zero_time is the timestamp for when the current deposited amount will run out
+	// deposit_zero_time is the timestamp for when the current deposited amount
+	// will run out
 	DepositZeroTime time.Time `protobuf:"bytes,4,opt,name=deposit_zero_time,json=depositZeroTime,proto3,stdtime" json:"deposit_zero_time" yaml:"deposit_zero_time"`
 }
 
@@ -551,7 +557,8 @@ var xxx_messageInfo_MsgCancelStreamResponse proto.InternalMessageInfo
 //
 // Since: cosmos-sdk 0.47
 type MsgUpdateParams struct {
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
+	// authority is the address that controls the module (defaults to x/gov unless
+	// overwritten).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// params defines the x/stream parameters to update.
 	//
@@ -741,7 +748,8 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// CreateStream defines a method to create a new stream
 	CreateStream(ctx context.Context, in *MsgCreateStream, opts ...grpc.CallOption) (*MsgCreateStreamResponse, error)
-	// ClaimStream defines a method for a receiver to claim from a stream using the sender and receiver
+	// ClaimStream defines a method for a receiver to claim from a stream using
+	// the sender and receiver
 	ClaimStream(ctx context.Context, in *MsgClaimStream, opts ...grpc.CallOption) (*MsgClaimStreamResponse, error)
 	// TopUpDeposit defines a method for senders to top up their streams
 	TopUpDeposit(ctx context.Context, in *MsgTopUpDeposit, opts ...grpc.CallOption) (*MsgTopUpDepositResponse, error)
@@ -821,7 +829,8 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 type MsgServer interface {
 	// CreateStream defines a method to create a new stream
 	CreateStream(context.Context, *MsgCreateStream) (*MsgCreateStreamResponse, error)
-	// ClaimStream defines a method for a receiver to claim from a stream using the sender and receiver
+	// ClaimStream defines a method for a receiver to claim from a stream using
+	// the sender and receiver
 	ClaimStream(context.Context, *MsgClaimStream) (*MsgClaimStreamResponse, error)
 	// TopUpDeposit defines a method for senders to top up their streams
 	TopUpDeposit(context.Context, *MsgTopUpDeposit) (*MsgTopUpDepositResponse, error)

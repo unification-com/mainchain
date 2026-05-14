@@ -120,7 +120,8 @@ func (m *MsgRegisterBeaconResponse) GetBeaconId() uint64 {
 	return 0
 }
 
-// MsgRecordBeaconTimestamp represents a message to record a timestamp for a registered beacon
+// MsgRecordBeaconTimestamp represents a message to record a timestamp for a
+// registered beacon
 type MsgRecordBeaconTimestamp struct {
 	// beacon_id is the id of the beacon the timestamp is being submitted for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
@@ -220,7 +221,8 @@ func (m *MsgRecordBeaconTimestampResponse) GetTimestampId() uint64 {
 	return 0
 }
 
-// MsgPurchaseBeaconStateStorage represents a message to purchase more beacon storage
+// MsgPurchaseBeaconStateStorage represents a message to purchase more beacon
+// storage
 type MsgPurchaseBeaconStateStorage struct {
 	// beacon_id is the id of the beacon the storage is being purchased for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
@@ -263,7 +265,8 @@ func (m *MsgPurchaseBeaconStateStorage) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgPurchaseBeaconStateStorage proto.InternalMessageInfo
 
-// MsgPurchaseBeaconStateStorageResponse defines the Msg/PurchaseBeaconStateStorage response type.
+// MsgPurchaseBeaconStateStorageResponse defines the
+// Msg/PurchaseBeaconStateStorage response type.
 type MsgPurchaseBeaconStateStorageResponse struct {
 	// beacon_id is the id of the beacon the storage is being purchased for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
@@ -331,7 +334,8 @@ func (m *MsgPurchaseBeaconStateStorageResponse) GetNumCanPurchase() uint64 {
 //
 // Since: cosmos-sdk 0.47
 type MsgUpdateParams struct {
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
+	// authority is the address that controls the module (defaults to x/gov unless
+	// overwritten).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// params defines the x/beacon parameters to update.
 	//
@@ -501,9 +505,11 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// RegisterBeacon defines a method to register a new beacon
 	RegisterBeacon(ctx context.Context, in *MsgRegisterBeacon, opts ...grpc.CallOption) (*MsgRegisterBeaconResponse, error)
-	// RecordBeaconTimestamp defines a method to record a timestamp for a registered beacon
+	// RecordBeaconTimestamp defines a method to record a timestamp for a
+	// registered beacon
 	RecordBeaconTimestamp(ctx context.Context, in *MsgRecordBeaconTimestamp, opts ...grpc.CallOption) (*MsgRecordBeaconTimestampResponse, error)
-	// PurchaseBeaconStateStorage defines the method to purchase more state storage
+	// PurchaseBeaconStateStorage defines the method to purchase more state
+	// storage
 	PurchaseBeaconStateStorage(ctx context.Context, in *MsgPurchaseBeaconStateStorage, opts ...grpc.CallOption) (*MsgPurchaseBeaconStateStorageResponse, error)
 	// UpdateParams defines an operation for updating the x/beacon module
 	// parameters.
@@ -559,9 +565,11 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 type MsgServer interface {
 	// RegisterBeacon defines a method to register a new beacon
 	RegisterBeacon(context.Context, *MsgRegisterBeacon) (*MsgRegisterBeaconResponse, error)
-	// RecordBeaconTimestamp defines a method to record a timestamp for a registered beacon
+	// RecordBeaconTimestamp defines a method to record a timestamp for a
+	// registered beacon
 	RecordBeaconTimestamp(context.Context, *MsgRecordBeaconTimestamp) (*MsgRecordBeaconTimestampResponse, error)
-	// PurchaseBeaconStateStorage defines the method to purchase more state storage
+	// PurchaseBeaconStateStorage defines the method to purchase more state
+	// storage
 	PurchaseBeaconStateStorage(context.Context, *MsgPurchaseBeaconStateStorage) (*MsgPurchaseBeaconStateStorageResponse, error)
 	// UpdateParams defines an operation for updating the x/beacon module
 	// parameters.

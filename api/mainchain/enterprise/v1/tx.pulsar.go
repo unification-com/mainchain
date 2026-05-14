@@ -3630,7 +3630,8 @@ func (x *MsgUndPurchaseOrderResponse) GetPurchaseOrderId() uint64 {
 	return 0
 }
 
-// MsgProcessUndPurchaseOrder represents a message to processed a raised purchase order
+// MsgProcessUndPurchaseOrder represents a message to processed a raised
+// purchase order
 type MsgProcessUndPurchaseOrder struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3638,7 +3639,8 @@ type MsgProcessUndPurchaseOrder struct {
 
 	// purchase_order_id is the ID of the purchase order being raised
 	PurchaseOrderId uint64 `protobuf:"varint,1,opt,name=purchase_order_id,json=purchaseOrderId,proto3" json:"purchase_order_id,omitempty"`
-	// decision is an enumerated PurchaseOrderStatus representing, for example accepted/rejected
+	// decision is an enumerated PurchaseOrderStatus representing, for example
+	// accepted/rejected
 	Decision PurchaseOrderStatus `protobuf:"varint,2,opt,name=decision,proto3,enum=mainchain.enterprise.v1.PurchaseOrderStatus" json:"decision,omitempty"`
 	// signer is the address of the authorised decision maker
 	Signer string `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
@@ -3685,7 +3687,8 @@ func (x *MsgProcessUndPurchaseOrder) GetSigner() string {
 	return ""
 }
 
-// MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder response type.
+// MsgProcessUndPurchaseOrderResponse defines the Msg/ProcessUndPurchaseOrder
+// response type.
 type MsgProcessUndPurchaseOrderResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3712,8 +3715,9 @@ func (*MsgProcessUndPurchaseOrderResponse) Descriptor() ([]byte, []int) {
 	return file_mainchain_enterprise_v1_tx_proto_rawDescGZIP(), []int{3}
 }
 
-// MsgWhitelistAddress represents a message to processed an address whitelist action.
-// only addresses whitelisted by an authorised decision maker can raise new purchase orders
+// MsgWhitelistAddress represents a message to processed an address whitelist
+// action. only addresses whitelisted by an authorised decision maker can raise
+// new purchase orders
 type MsgWhitelistAddress struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3803,7 +3807,8 @@ type MsgUpdateParams struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
+	// authority is the address that controls the module (defaults to x/gov unless
+	// overwritten).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// params defines the x/staking parameters to update.
 	//

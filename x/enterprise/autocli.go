@@ -28,7 +28,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "EnterpriseUndPurchaseOrder",
 					Use:       "order [purchase_order_id]",
 					Short:     "Query an eFUND Purchase Order for given ID",
-					Example:   fmt.Sprintf("$ %s query enterpise order 24", version.AppName),
+					Example:   fmt.Sprintf("$ %s query enterprise order 24", version.AppName),
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "purchase_order_id"},
 					},

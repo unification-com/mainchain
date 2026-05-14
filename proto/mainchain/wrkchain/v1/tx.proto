@@ -17,11 +17,13 @@ service Msg {
   rpc RegisterWrkChain(MsgRegisterWrkChain)
       returns (MsgRegisterWrkChainResponse);
 
-  // RecordWrkChainBlock defines a method to record a block hash set for a registered wrkchain
+  // RecordWrkChainBlock defines a method to record a block hash set for a
+  // registered wrkchain
   rpc RecordWrkChainBlock(MsgRecordWrkChainBlock)
       returns (MsgRecordWrkChainBlockResponse);
 
-  // PurchaseWrkChainStateStorage defines the method to purchase more state storage
+  // PurchaseWrkChainStateStorage defines the method to purchase more state
+  // storage
   rpc PurchaseWrkChainStateStorage(MsgPurchaseWrkChainStateStorage)
       returns (MsgPurchaseWrkChainStateStorageResponse);
 
@@ -48,7 +50,7 @@ message MsgRegisterWrkChain {
   // base_type is the type of wrkchain, e.g. geth, cosmos etc.
   string base_type = 4;
   // owner is the address of the owner of the wrkchain
-  string owner = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string owner = 5 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
 // MsgRegisterWrkChainResponse defines the Msg/RegisterWrkChain response type.
@@ -57,7 +59,8 @@ message MsgRegisterWrkChainResponse {
   uint64 wrkchain_id = 1;
 }
 
-// MsgRecordWrkChainBlock represents a message to submit a set of block hashes for a registered wrkchain
+// MsgRecordWrkChainBlock represents a message to submit a set of block hashes
+// for a registered wrkchain
 message MsgRecordWrkChainBlock {
   option (cosmos.msg.v1.signer) = "owner";
 
@@ -71,7 +74,8 @@ message MsgRecordWrkChainBlock {
   uint64 height = 2;
   // block_hash is the main block hash
   string block_hash = 3;
-  // parent_hash is an optional parent block hash for the given height/block number
+  // parent_hash is an optional parent block hash for the given height/block
+  // number
   string parent_hash = 4;
   // hash1 is an optional supplementary hash to be submitted, for example TxHash
   string hash1 = 5;
@@ -80,10 +84,11 @@ message MsgRecordWrkChainBlock {
   // hash3 is an optional supplementary hash to be submitted, for example TxHash
   string hash3 = 7;
   // owner is the address of the owner of the wrkchain
-  string owner = 8 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string owner = 8 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
-// MsgRecordWrkChainBlockResponse defines the Msg/RecordWrkChainBlock response type.
+// MsgRecordWrkChainBlockResponse defines the Msg/RecordWrkChainBlock response
+// type.
 message MsgRecordWrkChainBlockResponse {
   // wrkchain_id is the id of the wrkchain
   uint64 wrkchain_id = 1;
@@ -91,13 +96,16 @@ message MsgRecordWrkChainBlockResponse {
   uint64 height = 2;
 }
 
-// MsgPurchaseWrkChainStateStorage represents a message to purchase more wrkchain storage
+// MsgPurchaseWrkChainStateStorage represents a message to purchase more
+// wrkchain storage
 message MsgPurchaseWrkChainStateStorage {
   option (cosmos.msg.v1.signer) = "owner";
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-  option (amino.name) = "wrkchain/MsgPurchaseWrkChainStorage"; // Note: name shortened due to amino length restriction
+  option (amino.name) =
+      "wrkchain/MsgPurchaseWrkChainStorage"; // Note: name shortened due to
+                                             // amino length restriction
 
   // wrkchain_id is the id of the wrkchain the storage is being purchased for
   uint64 wrkchain_id = 1;
@@ -106,10 +114,11 @@ message MsgPurchaseWrkChainStateStorage {
   uint64 number = 2;
 
   // owner is the address of the owner of the wrkchain
-  string owner = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string owner = 3 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
-// MsgPurchaseWrkChainStateStorageResponse defines the Msg/PurchaseWrkChainStateStorage response type.
+// MsgPurchaseWrkChainStateStorageResponse defines the
+// Msg/PurchaseWrkChainStateStorage response type.
 message MsgPurchaseWrkChainStateStorageResponse {
   // wrkchain_id is the id of the wrkchain the storage is being purchased for
   uint64 wrkchain_id = 1;
@@ -124,14 +133,16 @@ message MsgPurchaseWrkChainStateStorageResponse {
 // Since: cosmos-sdk 0.47
 message MsgUpdateParams {
   option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name)           = "mainchain/x/wrkchain/MsgUpdateParams";
+  option (amino.name) = "mainchain/x/wrkchain/MsgUpdateParams";
 
-  // authority is the address that controls the module (defaults to x/gov unless overwritten).
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // authority is the address that controls the module (defaults to x/gov unless
+  // overwritten).
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   // params defines the x/wrkchain parameters to update.
   //
   // NOTE: All parameters must be supplied.
-  Params params = 2 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  Params params = 2
+      [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
 };
 
 // MsgUpdateParamsResponse defines the response structure for executing a

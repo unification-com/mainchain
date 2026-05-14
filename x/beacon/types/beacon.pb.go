@@ -32,11 +32,14 @@ type Beacon struct {
 	Moniker string `protobuf:"bytes,2,opt,name=moniker,proto3" json:"moniker,omitempty"`
 	// name is the human friendly name of the beacon
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	// last_timestamp_id is the current highest recorded timestamp id for the beacon
+	// last_timestamp_id is the current highest recorded timestamp id for the
+	// beacon
 	LastTimestampId uint64 `protobuf:"varint,4,opt,name=last_timestamp_id,json=lastTimestampId,proto3" json:"last_timestamp_id,omitempty"`
-	// first_id_in_state is the lowest recorded timestamp id currently held in state for the beacon
+	// first_id_in_state is the lowest recorded timestamp id currently held in
+	// state for the beacon
 	FirstIdInState uint64 `protobuf:"varint,5,opt,name=first_id_in_state,json=firstIdInState,proto3" json:"first_id_in_state,omitempty"`
-	// num_in_state is the current number of timestamps stored in state for the beacon
+	// num_in_state is the current number of timestamps stored in state for the
+	// beacon
 	NumInState uint64 `protobuf:"varint,6,opt,name=num_in_state,json=numInState,proto3" json:"num_in_state,omitempty"`
 	// reg_time is the unix epoch of the beacon's registration time
 	RegTime uint64 `protobuf:"varint,7,opt,name=reg_time,json=regTime,proto3" json:"reg_time,omitempty"`
@@ -133,11 +136,13 @@ func (m *Beacon) GetOwner() string {
 	return ""
 }
 
-// BeaconStorageLimit holds tata about the beacon's current in-state storage limit
+// BeaconStorageLimit holds tata about the beacon's current in-state storage
+// limit
 type BeaconStorageLimit struct {
 	// beacon_id is the id of the beacon
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
-	// in_state_limit is the current maximum number of timestmamps that will be held in state for the beacon
+	// in_state_limit is the current maximum number of timestmamps that will be
+	// held in state for the beacon
 	InStateLimit uint64 `protobuf:"varint,2,opt,name=in_state_limit,json=inStateLimit,proto3" json:"in_state_limit,omitempty"`
 }
 
@@ -258,13 +263,16 @@ type Params struct {
 	FeeRegister uint64 `protobuf:"varint,1,opt,name=fee_register,json=feeRegister,proto3" json:"fee_register,omitempty"`
 	// fee_record is the cost to record a single timestamp
 	FeeRecord uint64 `protobuf:"varint,2,opt,name=fee_record,json=feeRecord,proto3" json:"fee_record,omitempty"`
-	// fee_purchase_storage is the cost to purchase a single additional unit of in-state storage
+	// fee_purchase_storage is the cost to purchase a single additional unit of
+	// in-state storage
 	FeePurchaseStorage uint64 `protobuf:"varint,3,opt,name=fee_purchase_storage,json=feePurchaseStorage,proto3" json:"fee_purchase_storage,omitempty"`
 	// denom is the expected denomination to pay for fees, e.g. nund
 	Denom string `protobuf:"bytes,4,opt,name=denom,proto3" json:"denom,omitempty"`
-	// default_storage_limit is the default in-state storage limit for all new beacons
+	// default_storage_limit is the default in-state storage limit for all new
+	// beacons
 	DefaultStorageLimit uint64 `protobuf:"varint,5,opt,name=default_storage_limit,json=defaultStorageLimit,proto3" json:"default_storage_limit,omitempty"`
-	// max_storage_limit is the maximum in-state storage slots any one beacon can have
+	// max_storage_limit is the maximum in-state storage slots any one beacon can
+	// have
 	MaxStorageLimit uint64 `protobuf:"varint,6,opt,name=max_storage_limit,json=maxStorageLimit,proto3" json:"max_storage_limit,omitempty"`
 }
 

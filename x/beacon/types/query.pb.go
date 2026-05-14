@@ -204,7 +204,8 @@ func (m *QueryBeaconResponse) GetBeacon() *Beacon {
 	return nil
 }
 
-// QueryBeaconTimestampRequest is the request type for the Query/BeaconTimestamp RPC method
+// QueryBeaconTimestampRequest is the request type for the Query/BeaconTimestamp
+// RPC method
 type QueryBeaconTimestampRequest struct {
 	// beacon_id is the id of the beacon to query for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
@@ -259,7 +260,8 @@ func (m *QueryBeaconTimestampRequest) GetTimestampId() uint64 {
 	return 0
 }
 
-// QueryBeaconTimestampResponse is the response type for the Query/BeaconTimestamp RPC method
+// QueryBeaconTimestampResponse is the response type for the
+// Query/BeaconTimestamp RPC method
 type QueryBeaconTimestampResponse struct {
 	Timestamp *BeaconTimestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	BeaconId  uint64           `protobuf:"varint,2,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
@@ -320,7 +322,8 @@ func (m *QueryBeaconTimestampResponse) GetOwner() string {
 	return ""
 }
 
-// QueryBeaconsFilteredRequest is the request type for the Query/BeaconsFiltered RPC method
+// QueryBeaconsFilteredRequest is the request type for the Query/BeaconsFiltered
+// RPC method
 type QueryBeaconsFilteredRequest struct {
 	// moniker is the moniker of the beacon to search for
 	Moniker string `protobuf:"bytes,1,opt,name=moniker,proto3" json:"moniker,omitempty"`
@@ -363,7 +366,8 @@ func (m *QueryBeaconsFilteredRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBeaconsFilteredRequest proto.InternalMessageInfo
 
-// QueryBeaconsFilteredResponse is the response type for the Query/BeaconsFiltered RPC method
+// QueryBeaconsFilteredResponse is the response type for the
+// Query/BeaconsFiltered RPC method
 type QueryBeaconsFilteredResponse struct {
 	Beacons []Beacon `protobuf:"bytes,1,rep,name=beacons,proto3" json:"beacons"`
 	// pagination defines the pagination in the response.
@@ -417,7 +421,8 @@ func (m *QueryBeaconsFilteredResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryBeaconStorageRequest is the request type for the Query/BeaconStorage RPC method
+// QueryBeaconStorageRequest is the request type for the Query/BeaconStorage RPC
+// method
 type QueryBeaconStorageRequest struct {
 	// beacon_id is the id of the beacon to query for
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
@@ -463,7 +468,8 @@ func (m *QueryBeaconStorageRequest) GetBeaconId() uint64 {
 	return 0
 }
 
-// QueryBeaconStorageResponse is the response type for the Query/BeaconStorage RPC method
+// QueryBeaconStorageResponse is the response type for the Query/BeaconStorage
+// RPC method
 type QueryBeaconStorageResponse struct {
 	BeaconId uint64 `protobuf:"varint,1,opt,name=beacon_id,json=beaconId,proto3" json:"beacon_id,omitempty"`
 	Owner    string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
@@ -471,9 +477,11 @@ type QueryBeaconStorageResponse struct {
 	CurrentLimit uint64 `protobuf:"varint,3,opt,name=current_limit,json=currentLimit,proto3" json:"current_limit,omitempty"`
 	// current_used is the number of in-state slots currently used
 	CurrentUsed uint64 `protobuf:"varint,4,opt,name=current_used,json=currentUsed,proto3" json:"current_used,omitempty"`
-	// max is the maximum possible slots a beacon can have, as defined by the beacon module params
+	// max is the maximum possible slots a beacon can have, as defined by the
+	// beacon module params
 	Max uint64 `protobuf:"varint,5,opt,name=max,proto3" json:"max,omitempty"`
-	// max_purchasable is the maximum number a beacon can purchase without exceeding max
+	// max_purchasable is the maximum number a beacon can purchase without
+	// exceeding max
 	MaxPurchasable uint64 `protobuf:"varint,6,opt,name=max_purchasable,json=maxPurchasable,proto3" json:"max_purchasable,omitempty"`
 }
 

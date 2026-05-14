@@ -10,16 +10,16 @@ option go_package = "github.com/unification-com/mainchain/x/stream/types";
 
 // GenesisState defines the stream module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
-  repeated StreamExport streams = 2 [(gogoproto.nullable) = false];
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  repeated StreamExport streams = 2 [ (gogoproto.nullable) = false ];
 }
 
 // StreamExport holds genesis export data for a stream
 message StreamExport {
   // receiver is the wallet that will receive stream payments
-  string receiver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string receiver = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   // sender is the wallet making the update
-  string sender = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string sender = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   // stream is the stream data
-  Stream stream = 3 [(gogoproto.nullable) = false];
+  Stream stream = 3 [ (gogoproto.nullable) = false ];
 }

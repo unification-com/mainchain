@@ -11374,7 +11374,8 @@ func (x *QueryParamsResponse) GetParams() *Params {
 	return nil
 }
 
-// QueryEnterpriseUndPurchaseOrderRequest is the request type for the Query/EnterpriseUndPurchaseOrder RPC method.
+// QueryEnterpriseUndPurchaseOrderRequest is the request type for the
+// Query/EnterpriseUndPurchaseOrder RPC method.
 type QueryEnterpriseUndPurchaseOrderRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11411,7 +11412,8 @@ func (x *QueryEnterpriseUndPurchaseOrderRequest) GetPurchaseOrderId() uint64 {
 	return 0
 }
 
-// QueryEnterpriseUndPurchaseOrderResponse is the response type for the Query/EnterpriseUndPurchaseOrder RPC method.
+// QueryEnterpriseUndPurchaseOrderResponse is the response type for the
+// Query/EnterpriseUndPurchaseOrder RPC method.
 type QueryEnterpriseUndPurchaseOrderResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11447,8 +11449,8 @@ func (x *QueryEnterpriseUndPurchaseOrderResponse) GetPurchaseOrder() *Enterprise
 	return nil
 }
 
-// QueryEnterpriseUndPurchaseOrdersRequest is the request type for the Query/EnterpriseUndPurchaseOrders RPC
-// method
+// QueryEnterpriseUndPurchaseOrdersRequest is the request type for the
+// Query/EnterpriseUndPurchaseOrders RPC method
 type QueryEnterpriseUndPurchaseOrdersRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11500,8 +11502,8 @@ func (x *QueryEnterpriseUndPurchaseOrdersRequest) GetStatus() PurchaseOrderStatu
 	return PurchaseOrderStatus_STATUS_NIL
 }
 
-// QueryEnterpriseUndPurchaseOrdersResponse is the response type for the Query/EnterpriseUndPurchaseOrders RPC
-// method
+// QueryEnterpriseUndPurchaseOrdersResponse is the response type for the
+// Query/EnterpriseUndPurchaseOrders RPC method
 type QueryEnterpriseUndPurchaseOrdersResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11547,7 +11549,8 @@ func (x *QueryEnterpriseUndPurchaseOrdersResponse) GetPagination() *v1beta1.Page
 	return nil
 }
 
-// QueryLockedUndByAddressRequest is the request type for the Query/LockedUndByAddress RPC method
+// QueryLockedUndByAddressRequest is the request type for the
+// Query/LockedUndByAddress RPC method
 type QueryLockedUndByAddressRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11584,7 +11587,8 @@ func (x *QueryLockedUndByAddressRequest) GetOwner() string {
 	return ""
 }
 
-// QueryLockedUndByAddressResponse is the response type for the Query/LockedUndByAddress RPC method
+// QueryLockedUndByAddressResponse is the response type for the
+// Query/LockedUndByAddress RPC method
 type QueryLockedUndByAddressResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11620,7 +11624,8 @@ func (x *QueryLockedUndByAddressResponse) GetAmount() *v1beta11.Coin {
 	return nil
 }
 
-// QueryTotalLockedRequest is the request type for the Query/TotalLocked RPC method
+// QueryTotalLockedRequest is the request type for the Query/TotalLocked RPC
+// method
 type QueryTotalLockedRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11647,7 +11652,8 @@ func (*QueryTotalLockedRequest) Descriptor() ([]byte, []int) {
 	return file_mainchain_enterprise_v1_query_proto_rawDescGZIP(), []int{8}
 }
 
-// QueryTotalLockedResponse is the response type for the Query/TotalLocked RPC method
+// QueryTotalLockedResponse is the response type for the Query/TotalLocked RPC
+// method
 type QueryTotalLockedResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11683,7 +11689,8 @@ func (x *QueryTotalLockedResponse) GetAmount() *v1beta11.Coin {
 	return nil
 }
 
-// QueryTotalUnlockedRequest is the request type for the Query/TotalUnlocked RPC method
+// QueryTotalUnlockedRequest is the request type for the Query/TotalUnlocked RPC
+// method
 type QueryTotalUnlockedRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11710,7 +11717,8 @@ func (*QueryTotalUnlockedRequest) Descriptor() ([]byte, []int) {
 	return file_mainchain_enterprise_v1_query_proto_rawDescGZIP(), []int{10}
 }
 
-// QueryTotalUnlockedResponse is the response type for the Query/TotalUnlocked RPC method
+// QueryTotalUnlockedResponse is the response type for the Query/TotalUnlocked
+// RPC method
 type QueryTotalUnlockedResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11746,7 +11754,8 @@ func (x *QueryTotalUnlockedResponse) GetAmount() *v1beta11.Coin {
 	return nil
 }
 
-// QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC method
+// QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC
+// method
 type QueryTotalSupplyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11782,7 +11791,8 @@ func (x *QueryTotalSupplyRequest) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
-// QueryTotalSupplyResponse is the response type for the Query/TotalSupply RPC method
+// QueryTotalSupplyResponse is the response type for the Query/TotalSupply RPC
+// method
 type QueryTotalSupplyResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11927,7 +11937,8 @@ func (*QueryWhitelistRequest) Descriptor() ([]byte, []int) {
 	return file_mainchain_enterprise_v1_query_proto_rawDescGZIP(), []int{16}
 }
 
-// QueryWhitelistResponse is the response type for the Query/Whitelist RPC method.
+// QueryWhitelistResponse is the response type for the Query/Whitelist RPC
+// method.
 type QueryWhitelistResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11963,7 +11974,8 @@ func (x *QueryWhitelistResponse) GetAddresses() []string {
 	return nil
 }
 
-// QueryWhitelistedRequest is the request type for the Query/Whitelisted RPC method.
+// QueryWhitelistedRequest is the request type for the Query/Whitelisted RPC
+// method.
 type QueryWhitelistedRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -12000,7 +12012,8 @@ func (x *QueryWhitelistedRequest) GetAddress() string {
 	return ""
 }
 
-// QueryWhitelistedResponse is the response type for the Query/Whitelisted RPC method.
+// QueryWhitelistedResponse is the response type for the Query/Whitelisted RPC
+// method.
 type QueryWhitelistedResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -12044,7 +12057,8 @@ func (x *QueryWhitelistedResponse) GetWhitelisted() bool {
 	return false
 }
 
-// QueryEnterpriseAccountRequest is the request type for the Query/EnterpriseAccount RPC method.
+// QueryEnterpriseAccountRequest is the request type for the
+// Query/EnterpriseAccount RPC method.
 type QueryEnterpriseAccountRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -12081,7 +12095,8 @@ func (x *QueryEnterpriseAccountRequest) GetAddress() string {
 	return ""
 }
 
-// QueryEnterpriseAccountResponse is the response type for the Query/EnterpriseAccount RPC method.
+// QueryEnterpriseAccountResponse is the response type for the
+// Query/EnterpriseAccount RPC method.
 type QueryEnterpriseAccountResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -12117,7 +12132,8 @@ func (x *QueryEnterpriseAccountResponse) GetAccount() *EnterpriseUserAccount {
 	return nil
 }
 
-// QueryTotalSpentEFUNDRequest is the request type for the Query/TotalSpentEFUND RPC method.
+// QueryTotalSpentEFUNDRequest is the request type for the Query/TotalSpentEFUND
+// RPC method.
 type QueryTotalSpentEFUNDRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -12144,7 +12160,8 @@ func (*QueryTotalSpentEFUNDRequest) Descriptor() ([]byte, []int) {
 	return file_mainchain_enterprise_v1_query_proto_rawDescGZIP(), []int{22}
 }
 
-// QueryTotalSpentEFUNDResponse is the response type for the Query/TotalSpentEFUND RPC method.
+// QueryTotalSpentEFUNDResponse is the response type for the
+// Query/TotalSpentEFUND RPC method.
 type QueryTotalSpentEFUNDResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -12180,7 +12197,8 @@ func (x *QueryTotalSpentEFUNDResponse) GetAmount() *v1beta11.Coin {
 	return nil
 }
 
-// QuerySpentEFUNDByAddressRequest is the request type for the Query/SpentEFUNDByAddress RPC method.
+// QuerySpentEFUNDByAddressRequest is the request type for the
+// Query/SpentEFUNDByAddress RPC method.
 type QuerySpentEFUNDByAddressRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -12217,7 +12235,8 @@ func (x *QuerySpentEFUNDByAddressRequest) GetAddress() string {
 	return ""
 }
 
-// QuerySpentEFUNDByAddressResponse is the response type for the Query/SpentEFUNDByAddress RPC method.
+// QuerySpentEFUNDByAddressResponse is the response type for the
+// Query/SpentEFUNDByAddress RPC method.
 type QuerySpentEFUNDByAddressResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

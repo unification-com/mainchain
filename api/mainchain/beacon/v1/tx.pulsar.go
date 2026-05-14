@@ -3976,7 +3976,8 @@ func (x *MsgRegisterBeaconResponse) GetBeaconId() uint64 {
 	return 0
 }
 
-// MsgRecordBeaconTimestamp represents a message to record a timestamp for a registered beacon
+// MsgRecordBeaconTimestamp represents a message to record a timestamp for a
+// registered beacon
 type MsgRecordBeaconTimestamp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4086,7 +4087,8 @@ func (x *MsgRecordBeaconTimestampResponse) GetTimestampId() uint64 {
 	return 0
 }
 
-// MsgPurchaseBeaconStateStorage represents a message to purchase more beacon storage
+// MsgPurchaseBeaconStateStorage represents a message to purchase more beacon
+// storage
 type MsgPurchaseBeaconStateStorage struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4141,7 +4143,8 @@ func (x *MsgPurchaseBeaconStateStorage) GetOwner() string {
 	return ""
 }
 
-// MsgPurchaseBeaconStateStorageResponse defines the Msg/PurchaseBeaconStateStorage response type.
+// MsgPurchaseBeaconStateStorageResponse defines the
+// Msg/PurchaseBeaconStateStorage response type.
 type MsgPurchaseBeaconStateStorageResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4204,7 +4207,8 @@ type MsgUpdateParams struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
+	// authority is the address that controls the module (defaults to x/gov unless
+	// overwritten).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// params defines the x/beacon parameters to update.
 	//

@@ -70,8 +70,10 @@ func TestEnterpriseProcessAliasDecisionToken_LegacyTokens(t *testing.T) {
 	defer func() { legacyFlagWarnSink = prev }()
 
 	cases := []struct{ in, want string }{
-		{"accept", "accepted"},
-		{"reject", "rejected"},
+		{"accept", "status-accepted"},
+		{"accepted", "status-accepted"},
+		{"reject", "status-rejected"},
+		{"rejected", "status-rejected"},
 	}
 	for _, c := range cases {
 		args := []string{"42", c.in}
@@ -84,8 +86,8 @@ func TestEnterpriseProcessAliasDecisionToken_LegacyTokens(t *testing.T) {
 	require.Contains(t, out, "value 'accept'",
 		"decision-token deprecation must be phrased as a value, not a flag spelling")
 	require.Contains(t, out, "value 'reject'")
-	require.Contains(t, out, "'accepted'")
-	require.Contains(t, out, "'rejected'")
+	require.Contains(t, out, "'status-accepted'")
+	require.Contains(t, out, "'status-rejected'")
 	require.Contains(t, out, "tx enterprise process")
 	require.NotContains(t, out, "--accept",
 		"decision tokens are positionals; warning must not look like a flag")
@@ -98,7 +100,7 @@ func TestEnterpriseProcessAliasDecisionToken_ModernTokensUnchanged(t *testing.T)
 	legacyFlagWarnSink = &buf
 	defer func() { legacyFlagWarnSink = prev }()
 
-	for _, tok := range []string{"accepted", "rejected", "anythingelse"} {
+	for _, tok := range []string{"status-accepted", "status-rejected", "anythingelse"} {
 		args := []string{"42", tok}
 		require.NoError(t, enterpriseProcessAliasDecisionToken(nil, args))
 		require.Equal(t, tok, args[1],
@@ -127,7 +129,7 @@ func TestEnterpriseProcessAliasDecisionToken_WarnOnceAcrossInvocations(t *testin
 	for i := 0; i < 5; i++ {
 		args := []string{"1", "accept"}
 		require.NoError(t, enterpriseProcessAliasDecisionToken(nil, args))
-		require.Equal(t, "accepted", args[1])
+		require.Equal(t, "status-accepted", args[1])
 	}
 	require.Equal(t, 1, strings.Count(buf.String(), "deprecated"),
 		"repeated legacy-token use must emit at most one deprecation notice per process")

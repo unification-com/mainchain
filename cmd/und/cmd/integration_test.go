@@ -99,27 +99,34 @@ func TestCompatShims_OnLiveRootCmd(t *testing.T) {
 		require.Equal(t, uint64(42), got)
 	})
 
-	t.Run("enterprise process accept→accepted", func(t *testing.T) {
+	t.Run("enterprise process accept→status-accepted", func(t *testing.T) {
 		process := findCmdByPath(t, rootCmd, "tx enterprise process")
 		require.NotNil(t, process.PreRunE,
 			"compat shim must be attached as PreRunE on tx enterprise process")
 		args := []string{"42", "accept"}
 		require.NoError(t, process.PreRunE(process, args))
-		require.Equal(t, "accepted", args[1])
+		require.Equal(t, "status-accepted", args[1])
 	})
 
-	t.Run("enterprise process reject→rejected", func(t *testing.T) {
+	t.Run("enterprise process reject→status-rejected", func(t *testing.T) {
 		process := findCmdByPath(t, rootCmd, "tx enterprise process")
 		args := []string{"42", "reject"}
 		require.NoError(t, process.PreRunE(process, args))
-		require.Equal(t, "rejected", args[1])
+		require.Equal(t, "status-rejected", args[1])
 	})
 
-	t.Run("enterprise process accepted passes through", func(t *testing.T) {
+	t.Run("enterprise process accepted→status-accepted", func(t *testing.T) {
 		process := findCmdByPath(t, rootCmd, "tx enterprise process")
 		args := []string{"42", "accepted"}
 		require.NoError(t, process.PreRunE(process, args))
-		require.Equal(t, "accepted", args[1])
+		require.Equal(t, "status-accepted", args[1])
+	})
+
+	t.Run("enterprise process status-accepted passes through", func(t *testing.T) {
+		process := findCmdByPath(t, rootCmd, "tx enterprise process")
+		args := []string{"42", "status-accepted"}
+		require.NoError(t, process.PreRunE(process, args))
+		require.Equal(t, "status-accepted", args[1])
 	})
 }
 

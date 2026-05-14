@@ -118,8 +118,8 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "ProcessUndPurchaseOrder",
 					Use:       "process [purchase_order_id] [decision] --from [signer]",
 					Short:     "process an eFUND purchase order (authorised signers only)",
-					Long:      "process an eFUND purchase order. decision is one of: accepted, rejected.\nThe legacy 'accept' / 'reject' tokens are still accepted as aliases and print a deprecation notice.",
-					Example:   fmt.Sprintf("$ %s tx enterprise process 24 accepted --from ent\n$ %s tx enterprise process 24 rejected --from ent", version.AppName, version.AppName),
+					Long:      "process an eFUND purchase order. decision is one of: status-accepted, status-rejected.\nShort spellings 'accept' / 'accepted' / 'reject' / 'rejected' are still accepted as aliases and print a deprecation notice.",
+					Example:   fmt.Sprintf("$ %s tx enterprise process 24 status-accepted --from ent\n$ %s tx enterprise process 24 status-rejected --from ent", version.AppName, version.AppName),
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "purchase_order_id"},
 						{ProtoField: "decision"},

@@ -17,13 +17,23 @@ import (
 // Tests override this to assert deterministic output.
 var nowUnixSec = func() uint64 { return uint64(time.Now().Unix()) }
 
-// legacyDecisionAliases maps the legacy `enterprise process` decision
-// tokens to the autocli-stripped proto-enum forms. Both spellings remain
-// accepted; the legacy form prints a one-shot deprecation notice via the
-// existing warner.
+// legacyDecisionAliases maps short/legacy `enterprise process` decision
+// tokens to the autocli-canonical form. autocli kebab-cases the full
+// proto-enum name and only strips the common prefix when it matches the
+// enum's type name (`WhitelistAction` strips `WHITELIST_ACTION_`).
+// `PurchaseOrderStatus` does not share its name with the value prefix
+// `STATUS_`, so autocli keeps it: the canonical token is `status-accepted`,
+// not `accepted`.
+//
+// Four legacy/near-canonical spellings still parse, all emit a one-shot
+// deprecation notice:
+//   - accept / accepted   → status-accepted
+//   - reject / rejected   → status-rejected
 var legacyDecisionAliases = map[string]string{
-	"accept": "accepted",
-	"reject": "rejected",
+	"accept":   "status-accepted",
+	"accepted": "status-accepted",
+	"reject":   "status-rejected",
+	"rejected": "status-rejected",
 }
 
 // installAutocliCompatShims wires the behaviour shims listed below onto

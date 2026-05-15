@@ -17,7 +17,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgTopUpDeposit{}, "stream/MsgTopUpDeposit")
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateFlowRate{}, "stream/MsgUpdateFlowRate")
 	legacy.RegisterAminoMsg(cdc, &MsgCancelStream{}, "stream/MsgCancelStream")
-	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/stream/MsgUpdateParams")
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "stream/MsgUpdateParams")
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

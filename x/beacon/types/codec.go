@@ -17,7 +17,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&Params{}, "beacon/v1/Params", nil)
 	cdc.RegisterConcrete(&BeaconStorageLimit{}, "beacon/v1/BeaconStorageLimit", nil)
 
-	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/beacon/MsgUpdateParams")
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "beacon/MsgUpdateParams")
 	legacy.RegisterAminoMsg(cdc, &MsgRegisterBeacon{}, "beacon/MsgRegisterBeacon")
 	legacy.RegisterAminoMsg(cdc, &MsgRecordBeaconTimestamp{}, "beacon/MsgRecordBeaconTimestamp")
 	legacy.RegisterAminoMsg(cdc, &MsgPurchaseBeaconStateStorage{}, "beacon/MsgPurchaseBeaconStateStorage")

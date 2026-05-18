@@ -12,6 +12,12 @@ cp ./proto/buf.gen.swagger.yaml "$SWAGGER_DIR/proto/buf.gen.swagger.yaml"
 # copy existing proto files
 cp -r ./proto/mainchain "$SWAGGER_DIR/proto"
 
+# pull stream module protos from x-stream at the version pinned in go.mod.
+# `go list -m` resolves through any replace directive, so dev with a local
+# x-stream checkout and CI against the tagged module both work transparently.
+X_STREAM_DIR=$(go list -m -f '{{.Dir}}' github.com/unification-com/x-stream)
+cp -r "$X_STREAM_DIR/proto/mainchain/stream" "$SWAGGER_DIR/proto/mainchain/"
+
 # create temporary folder to store intermediate results from `buf generate`
 mkdir -p ./tmp-swagger-gen
 

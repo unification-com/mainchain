@@ -32,6 +32,12 @@ func NewKeeper(storeKey storetypes.StoreKey, bankKeeper types.BankKeeper,
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
 
+	// Validate authority at construction so a misconfigured app fails at boot
+	// rather than at first MsgUpdateParams submission.
+	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+		panic(fmt.Sprintf("invalid authority address %q: %s", authority, err))
+	}
+
 	return Keeper{
 		storeKey:   storeKey,
 		bankKeeper: bankKeeper,

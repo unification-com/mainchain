@@ -22,7 +22,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&WhitelistAddresses{}, "enterprise/v1/WhitelistAddresses", nil)
 	cdc.RegisterConcrete(&Params{}, "enterprise/v1/Params", nil)
 
-	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/enterprise/MsgUpdateParams")
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "enterprise/MsgUpdateParams")
 	legacy.RegisterAminoMsg(cdc, &MsgUndPurchaseOrder{}, "enterprise/MsgUndPurchaseOrder")
 	legacy.RegisterAminoMsg(cdc, &MsgProcessUndPurchaseOrder{}, "enterprise/MsgProcessUndPurchaseOrder")
 	legacy.RegisterAminoMsg(cdc, &MsgWhitelistAddress{}, "enterprise/MsgWhitelistAddress")

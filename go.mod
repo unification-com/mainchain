@@ -9,7 +9,6 @@ require (
 	cosmossdk.io/depinject v1.2.1 // indirect
 	cosmossdk.io/log/v2 v2.1.0
 	cosmossdk.io/math v1.5.3
-	cosmossdk.io/store v1.1.2
 	github.com/cometbft/cometbft v0.39.3
 	github.com/cosmos/cosmos-db v1.1.3
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
@@ -23,6 +22,7 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
+	github.com/unification-com/x-stream v0.1.2
 	google.golang.org/genproto/googleapis/api v0.0.0-20260414002931-afd174a4e478
 	google.golang.org/grpc v1.80.0
 )
@@ -31,6 +31,7 @@ require (
 	cosmossdk.io/client/v2 v2.11.0
 	cosmossdk.io/errors v1.1.0
 	cosmossdk.io/tools/confix v0.1.2
+	github.com/cosmos/cosmos-sdk/store/v2 v2.0.0
 	github.com/cosmos/ibc-go/v11 v11.0.0
 	github.com/gorilla/mux v1.8.1
 	google.golang.org/protobuf v1.36.11
@@ -46,7 +47,6 @@ require (
 	cloud.google.com/go/iam v1.9.0 // indirect
 	cloud.google.com/go/monitoring v1.27.0 // indirect
 	cloud.google.com/go/storage v1.62.1 // indirect
-	cosmossdk.io/log v1.5.1 // indirect
 	cosmossdk.io/schema v1.1.0 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
@@ -101,7 +101,6 @@ require (
 	github.com/cometbft/cometbft-db v1.0.4 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/btree v1.0.0 // indirect
-	github.com/cosmos/cosmos-sdk/store/v2 v2.0.0 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
 	github.com/cosmos/iavl v1.2.8 // indirect

@@ -50,6 +50,16 @@ func (k msgServer) UndPurchaseOrder(goCtx context.Context, msg *types.MsgUndPurc
 		return nil, errorsmod.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", msg.Purchaser))
 	}
 
+	// Per-purchaser open-PO cap. A whitelisted address that has already raised
+	// MaxOpenPOsPerPurchaser POs must wait for them to be processed before
+	// raising more — bounds the per-purchaser contribution to the raised
+	// queue's BeginBlocker iteration cost.
+	if openCount := k.CountOpenPurchaseOrdersForPurchaser(ctx, accAddr); openCount >= types.MaxOpenPOsPerPurchaser {
+		return nil, errorsmod.Wrapf(types.ErrInvalidData,
+			"purchaser %s already has %d open purchase orders (max %d)",
+			msg.Purchaser, openCount, types.MaxOpenPOsPerPurchaser)
+	}
+
 	po := types.EnterpriseUndPurchaseOrder{
 		Purchaser: msg.Purchaser,
 		Amount:    msg.Amount,

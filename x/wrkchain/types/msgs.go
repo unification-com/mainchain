@@ -40,8 +40,9 @@ func (msg MsgRegisterWrkChain) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRegisterWrkChain) Type() string { return RegisterAction }
 
-// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic runs stateless checks on the message. Called by the SDK ante
+// chain before msg-server execution; performs input sanity that does not need
+// access to chain state. Msg-server adds stateful checks on top.
 func (msg MsgRegisterWrkChain) ValidateBasic() error {
 	ownerAddr, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
@@ -101,8 +102,9 @@ func (msg MsgRecordWrkChainBlock) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgRecordWrkChainBlock) Type() string { return RecordAction }
 
-// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic runs stateless checks on the message. Called by the SDK ante
+// chain before msg-server execution; performs input sanity that does not need
+// access to chain state. Msg-server adds stateful checks on top.
 func (msg MsgRecordWrkChainBlock) ValidateBasic() error {
 	ownerAddr, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
@@ -161,8 +163,9 @@ func (msg MsgPurchaseWrkChainStateStorage) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgPurchaseWrkChainStateStorage) Type() string { return PurchaseStorageAction }
 
-// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic runs stateless checks on the message. Called by the SDK ante
+// chain before msg-server execution; performs input sanity that does not need
+// access to chain state. Msg-server adds stateful checks on top.
 func (msg MsgPurchaseWrkChainStateStorage) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {

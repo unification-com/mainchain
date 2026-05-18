@@ -19,7 +19,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgRegisterWrkChain{}, "wrkchain/MsgRegisterWrkChain")
 	legacy.RegisterAminoMsg(cdc, &MsgRecordWrkChainBlock{}, "wrkchain/MsgRecordWrkChainBlock")
 	legacy.RegisterAminoMsg(cdc, &MsgPurchaseWrkChainStateStorage{}, "wrkchain/MsgPurchaseWrkChainStorage")
-	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "mainchain/x/wrkchain/MsgUpdateParams")
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "wrkchain/MsgUpdateParams")
 
 }
 

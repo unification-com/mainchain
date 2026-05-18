@@ -5,10 +5,10 @@ import (
 	mathmod "cosmossdk.io/math"
 	"fmt"
 	enterpriseapi "github.com/unification-com/mainchain/api/mainchain/enterprise/v1"
-	streamapi "github.com/unification-com/mainchain/api/mainchain/stream/v1"
+	streamapi "github.com/unification-com/x-stream/api/mainchain/stream/v1"
 	wrkchainapi "github.com/unification-com/mainchain/api/mainchain/wrkchain/v1"
 	enterprisetypes "github.com/unification-com/mainchain/x/enterprise/types"
-	streamtypes "github.com/unification-com/mainchain/x/stream/types"
+	streamtypes "github.com/unification-com/x-stream/x/stream/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"reflect"
@@ -43,7 +43,7 @@ import (
 	"github.com/unification-com/mainchain/x/beacon"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	"github.com/unification-com/mainchain/x/enterprise"
-	"github.com/unification-com/mainchain/x/stream"
+	"github.com/unification-com/x-stream/x/stream"
 	"github.com/unification-com/mainchain/x/wrkchain"
 )
 

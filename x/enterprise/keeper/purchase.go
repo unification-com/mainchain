@@ -149,7 +149,11 @@ func (k Keeper) GetPurchaseOrder(ctx sdk.Context, purchaseOrderID uint64) (types
 
 	bz := store.Get(types.PurchaseOrderKey(purchaseOrderID))
 	var enterpriseUndPurchaseOrder types.EnterpriseUndPurchaseOrder
-	k.cdc.MustUnmarshal(bz, &enterpriseUndPurchaseOrder)
+	if err := k.cdc.Unmarshal(bz, &enterpriseUndPurchaseOrder); err != nil {
+		k.Logger(ctx).Error("corrupt purchase order entry — treating as absent",
+			"purchase_order_id", purchaseOrderID, "err", err)
+		return types.EnterpriseUndPurchaseOrder{}, false
+	}
 	return enterpriseUndPurchaseOrder, true
 }
 
@@ -194,7 +198,11 @@ func (k Keeper) IteratePurchaseOrders(ctx sdk.Context, cb func(purchaseOrder typ
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var po types.EnterpriseUndPurchaseOrder
-		k.cdc.MustUnmarshal(iterator.Value(), &po)
+		if err := k.cdc.Unmarshal(iterator.Value(), &po); err != nil {
+			k.Logger(ctx).Error("skipping corrupt purchase order entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(po) {
 			break
@@ -286,6 +294,25 @@ func (k Keeper) RaiseNewPurchaseOrder(ctx sdk.Context, purchaseOrder types.Enter
 	}
 
 	return purchaseOrderId, nil
+}
+
+// CountOpenPurchaseOrdersForPurchaser counts how many raised (not yet
+// processed) purchase orders the given purchaser currently has in the queue.
+// Used by MsgUndPurchaseOrder to enforce types.MaxOpenPOsPerPurchaser.
+func (k Keeper) CountOpenPurchaseOrdersForPurchaser(ctx sdk.Context, purchaser sdk.AccAddress) int {
+	count := 0
+	purchaserStr := purchaser.String()
+	k.IterateRaisedQueue(ctx, func(poId uint64) bool {
+		po, found := k.GetPurchaseOrder(ctx, poId)
+		if !found {
+			return false
+		}
+		if po.Purchaser == purchaserStr {
+			count++
+		}
+		return false
+	})
+	return count
 }
 
 func (k Keeper) IsAuthorisedToDecide(ctx sdk.Context, signer sdk.AccAddress) bool {

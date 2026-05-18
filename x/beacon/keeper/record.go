@@ -42,7 +42,11 @@ func (k Keeper) GetBeaconTimestampByID(ctx sdk.Context, beaconID uint64, timesta
 
 	bz := store.Get(timestampKey)
 	var beaconTimestamp types.BeaconTimestamp
-	k.cdc.MustUnmarshal(bz, &beaconTimestamp)
+	if err := k.cdc.Unmarshal(bz, &beaconTimestamp); err != nil {
+		k.Logger(ctx).Error("corrupt beacon timestamp entry — treating as absent",
+			"beacon_id", beaconID, "timestamp_id", timestampID, "err", err)
+		return types.BeaconTimestamp{}, false
+	}
 	return beaconTimestamp, true
 }
 
@@ -54,7 +58,11 @@ func (k Keeper) IterateBeaconTimestamps(ctx sdk.Context, beaconID uint64, cb fun
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshal(iterator.Value(), &bts)
+		if err := k.cdc.Unmarshal(iterator.Value(), &bts); err != nil {
+			k.Logger(ctx).Error("skipping corrupt beacon timestamp entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(bts) {
 			break
@@ -70,7 +78,11 @@ func (k Keeper) IterateBeaconTimestampsReverse(ctx sdk.Context, beaconID uint64,
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshal(iterator.Value(), &bts)
+		if err := k.cdc.Unmarshal(iterator.Value(), &bts); err != nil {
+			k.Logger(ctx).Error("skipping corrupt beacon timestamp entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(bts) {
 			break

@@ -54,7 +54,9 @@ func TestValidateGenesis(t *testing.T) {
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())
 
+	// Registered beacon ID must be < StartingBeaconId (next-to-assign).
 	state3.RegisteredBeacons[0].Beacon.BeaconId = 1
+	state3.StartingBeaconId = 2
 	expectedErr = fmt.Errorf("invalid Beacon: Owner: %s. Error: Missing Owner", sdk.AccAddress{})
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())

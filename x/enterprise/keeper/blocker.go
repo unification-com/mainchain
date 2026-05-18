@@ -21,6 +21,13 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) error {
 
 	logger := k.Logger(ctx)
 
+	// Bound per-block work — process at most MaxPOsPerBlock entries. Leftovers
+	// carry over to subsequent blocks. Keeps BeginBlock cost O(MaxPOsPerBlock)
+	// regardless of queue depth.
+	if len(raisedPurchaseOrderIds) > types.MaxPOsPerBlock {
+		raisedPurchaseOrderIds = raisedPurchaseOrderIds[:types.MaxPOsPerBlock]
+	}
+
 	for _, poId := range raisedPurchaseOrderIds {
 		po, found := k.GetPurchaseOrder(ctx, poId)
 		if !found {
@@ -133,6 +140,12 @@ func (k Keeper) TallyPurchaseOrderDecisions(ctx sdk.Context) error {
 func (k Keeper) ProcessAcceptedPurchaseOrders(ctx sdk.Context) error {
 	acceptedPurchaseOrderIds := k.GetAllAcceptedPurchaseOrders(ctx)
 	logger := k.Logger(ctx)
+
+	// Same per-block cap as TallyPurchaseOrderDecisions — keeps BeginBlock
+	// cost O(MaxPOsPerBlock) when the accepted queue is backlogged.
+	if len(acceptedPurchaseOrderIds) > types.MaxPOsPerBlock {
+		acceptedPurchaseOrderIds = acceptedPurchaseOrderIds[:types.MaxPOsPerBlock]
+	}
 
 	for _, poId := range acceptedPurchaseOrderIds {
 		po, found := k.GetPurchaseOrder(ctx, poId)

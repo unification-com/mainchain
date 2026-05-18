@@ -133,7 +133,7 @@ message MsgPurchaseWrkChainStateStorageResponse {
 // Since: cosmos-sdk 0.47
 message MsgUpdateParams {
   option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name) = "mainchain/x/wrkchain/MsgUpdateParams";
+  option (amino.name) = "wrkchain/MsgUpdateParams";
 
   // authority is the address that controls the module (defaults to x/gov unless
   // overwritten).

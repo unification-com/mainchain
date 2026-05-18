@@ -7,7 +7,7 @@ import (
 
 	undapp "github.com/unification-com/mainchain/app"
 	apphelpers "github.com/unification-com/mainchain/app/helpers"
-	streamtypes "github.com/unification-com/mainchain/x/stream/types"
+	streamtypes "github.com/unification-com/x-stream/x/stream/types"
 )
 
 // TestUpgradeNameIs8Vaxildan asserts that the registered upgrade name matches the

@@ -35,7 +35,7 @@ import (
 	appparams "github.com/unification-com/mainchain/app/params"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	enttypes "github.com/unification-com/mainchain/x/enterprise/types"
-	streamtypes "github.com/unification-com/mainchain/x/stream/types"
+	streamtypes "github.com/unification-com/x-stream/x/stream/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
 )
 

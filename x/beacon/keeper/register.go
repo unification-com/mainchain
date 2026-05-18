@@ -3,7 +3,6 @@ package keeper
 import (
 	errorsmod "cosmossdk.io/errors"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/unification-com/mainchain/x/beacon/types"
@@ -50,7 +49,11 @@ func (k Keeper) GetBeacon(ctx sdk.Context, beaconID uint64) (types.Beacon, bool)
 	}
 	bz := store.Get(types.BeaconKey(beaconID))
 	var beacon types.Beacon
-	k.cdc.MustUnmarshal(bz, &beacon)
+	if err := k.cdc.Unmarshal(bz, &beacon); err != nil {
+		k.Logger(ctx).Error("corrupt beacon entry — treating as absent",
+			"beacon_id", beaconID, "err", err)
+		return types.Beacon{}, false
+	}
 	return beacon, true
 }
 
@@ -75,12 +78,6 @@ func (k Keeper) IsBeaconRegistered(ctx sdk.Context, beaconID uint64) bool {
 	return store.Has(types.BeaconKey(beaconID))
 }
 
-// GetBeaconsIterator Get an iterator over all BEACONs in which the keys are the BEACON Ids and the values are the BEACONs
-func (k Keeper) GetBeaconsIterator(ctx sdk.Context) storetypes.Iterator {
-	store := ctx.KVStore(k.storeKey)
-	return storetypes.KVStorePrefixIterator(store, types.RegisteredBeaconPrefix)
-}
-
 // IterateBeacons iterates over the all the BEACON metadata and performs a callback function
 func (k Keeper) IterateBeacons(ctx sdk.Context, cb func(beacon types.Beacon) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
@@ -89,7 +86,11 @@ func (k Keeper) IterateBeacons(ctx sdk.Context, cb func(beacon types.Beacon) (st
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var b types.Beacon
-		k.cdc.MustUnmarshal(iterator.Value(), &b)
+		if err := k.cdc.Unmarshal(iterator.Value(), &b); err != nil {
+			k.Logger(ctx).Error("skipping corrupt beacon entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(b) {
 			break
@@ -106,41 +107,25 @@ func (k Keeper) GetAllBeacons(ctx sdk.Context) (beacons []types.Beacon) {
 	return
 }
 
-// GetBeaconsFiltered retrieves BEACONs filtered by a given set of params which
-// include pagination parameters along a moniker and owner address.
-//
-// NOTE: If no filters are provided, all proposals will be returned in paginated
-// form.
-func (k Keeper) GetBeaconsFiltered(ctx sdk.Context, params types.QueryBeaconsFilteredRequest) []types.Beacon {
-	beacons := k.GetAllBeacons(ctx)
-	filteredBeacons := make([]types.Beacon, 0, len(beacons))
-
-	for _, b := range beacons {
-		matchMoniker, matchOwner := true, true
-
-		if len(params.Moniker) > 0 {
-			matchMoniker = b.Moniker == params.Moniker
+// CountBeaconsForOwner counts the number of beacons registered to the given
+// owner. Enforced against types.MaxBeaconsPerOwner at registration time.
+// O(total beacons) — acceptable while overall beacon count stays modest;
+// if growth becomes a concern, add a per-owner secondary index.
+func (k Keeper) CountBeaconsForOwner(ctx sdk.Context, owner sdk.AccAddress) int {
+	count := 0
+	ownerStr := owner.String()
+	k.IterateBeacons(ctx, func(b types.Beacon) bool {
+		if b.Owner == ownerStr {
+			count++
 		}
-
-		if len(params.Owner) > 0 {
-			matchOwner = b.Owner == params.Owner
-		}
-
-		if matchMoniker && matchOwner {
-			filteredBeacons = append(filteredBeacons, b)
-		}
-	}
-
-	// Todo - need to migrate this to proper pagination
-	start, end := client.Paginate(len(filteredBeacons), 1, 100, 100)
-	if start < 0 || end < 0 {
-		filteredBeacons = []types.Beacon{}
-	} else {
-		filteredBeacons = filteredBeacons[start:end]
-	}
-
-	return filteredBeacons
+		return false
+	})
+	return count
 }
+
+// Filtered beacon queries are served directly by the gRPC handler in
+// grpc_query.go using query.FilteredPaginate against the store; no separate
+// keeper helper is needed.
 
 func (k Keeper) GetBeaconStorageLimit(ctx sdk.Context, beaconID uint64) (types.BeaconStorageLimit, bool) {
 	store := ctx.KVStore(k.storeKey)
@@ -154,7 +139,14 @@ func (k Keeper) GetBeaconStorageLimit(ctx sdk.Context, beaconID uint64) (types.B
 	storageKey := types.BeaconStorageLimitKey(beaconID)
 	bz := store.Get(storageKey)
 	var storage types.BeaconStorageLimit
-	k.cdc.MustUnmarshal(bz, &storage)
+	if err := k.cdc.Unmarshal(bz, &storage); err != nil {
+		k.Logger(ctx).Error("corrupt beacon storage limit entry — treating as absent",
+			"beacon_id", beaconID, "err", err)
+		return types.BeaconStorageLimit{
+			BeaconId:     beaconID,
+			InStateLimit: types.DefaultStorageLimit,
+		}, false
+	}
 	return storage, true
 }
 

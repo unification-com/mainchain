@@ -34,8 +34,9 @@ func (msg MsgUndPurchaseOrder) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgUndPurchaseOrder) Type() string { return PurchaseAction }
 
-// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic runs stateless checks on the message. Called by the SDK ante
+// chain before msg-server execution; performs input sanity that does not need
+// access to chain state. Msg-server adds stateful checks on top.
 func (msg MsgUndPurchaseOrder) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Purchaser)
 	if err != nil {
@@ -73,8 +74,9 @@ func (msg MsgProcessUndPurchaseOrder) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgProcessUndPurchaseOrder) Type() string { return ProcessAction }
 
-// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic runs stateless checks on the message. Called by the SDK ante
+// chain before msg-server execution; performs input sanity that does not need
+// access to chain state. Msg-server adds stateful checks on top.
 func (msg MsgProcessUndPurchaseOrder) ValidateBasic() error {
 
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -111,8 +113,9 @@ func (msg MsgWhitelistAddress) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgWhitelistAddress) Type() string { return WhitelistAddressAction }
 
-// ValidateBasic ToDo - deprecated and now handled by msg_server. Remove and remove from unit tests
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic runs stateless checks on the message. Called by the SDK ante
+// chain before msg-server execution; performs input sanity that does not need
+// access to chain state. Msg-server adds stateful checks on top.
 func (msg MsgWhitelistAddress) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {

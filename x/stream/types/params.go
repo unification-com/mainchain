@@ -4,13 +4,17 @@ import (
 	"fmt"
 
 	mathmod "cosmossdk.io/math"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var _ paramtypes.ParamSet = (*Params)(nil)
-
-// DefaultValidatorFee is set to 0%
+// DefaultValidatorFee is the default 1% fee skimmed from each claim and sent
+// to the fee collector. Gov can tune via MsgUpdateParams subject to the
+// MaxValidatorFee cap.
 var DefaultValidatorFee = mathmod.LegacyNewDecWithPrec(1, 2)
+
+// MaxValidatorFee is the hard upper bound on the gov-tunable ValidatorFee.
+// Set to 10% — anything higher would let gov effectively expropriate stream
+// senders, and is out of scope for the module's intended fee policy.
+var MaxValidatorFee = mathmod.LegacyNewDecWithPrec(10, 2)
 
 // NewParams creates a new Params instance
 func NewParams(validatorFee mathmod.LegacyDec) Params {
@@ -26,31 +30,18 @@ func DefaultParams() Params {
 
 // Validate validates the set of params
 func (p Params) Validate() error {
-
-	if err := validateBaseValidatorFee(p.ValidatorFee); err != nil {
-		return err
-	}
-
-	return nil
+	return validateValidatorFee(p.ValidatorFee)
 }
 
-func validateBaseValidatorFee(i interface{}) error {
-	v, ok := i.(mathmod.LegacyDec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
+func validateValidatorFee(v mathmod.LegacyDec) error {
 	if v.IsNil() {
 		return fmt.Errorf("validator fee cannot be nil")
 	}
-
 	if v.IsNegative() {
 		return fmt.Errorf("validator fee cannot be negative: %s", v)
 	}
-
-	if v.GT(mathmod.LegacyOneDec()) {
-		return fmt.Errorf("validator fee cannot be greater than 100%% (1.00). Sent %s", v)
+	if v.GT(MaxValidatorFee) {
+		return fmt.Errorf("validator fee cannot exceed %s. Sent %s", MaxValidatorFee, v)
 	}
-
 	return nil
 }

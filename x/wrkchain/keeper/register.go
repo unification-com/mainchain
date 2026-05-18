@@ -3,7 +3,6 @@ package keeper
 import (
 	errorsmod "cosmossdk.io/errors"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/unification-com/mainchain/x/wrkchain/types"
@@ -50,7 +49,11 @@ func (k Keeper) GetWrkChain(ctx sdk.Context, wrkchainId uint64) (types.WrkChain,
 	}
 	bz := store.Get(types.WrkChainKey(wrkchainId))
 	var wrkchain types.WrkChain
-	k.cdc.MustUnmarshal(bz, &wrkchain)
+	if err := k.cdc.Unmarshal(bz, &wrkchain); err != nil {
+		k.Logger(ctx).Error("corrupt wrkchain entry — treating as absent",
+			"wrkchain_id", wrkchainId, "err", err)
+		return types.WrkChain{}, false
+	}
 	return wrkchain, true
 }
 
@@ -73,12 +76,6 @@ func (k Keeper) IsWrkChainRegistered(ctx sdk.Context, wrkchainId uint64) bool {
 	return store.Has(types.WrkChainKey(wrkchainId))
 }
 
-// GetWrkChainsIterator Get an iterator over all WrkChains in which the keys are the WrkChain Ids and the values are the WrkChains
-func (k Keeper) GetWrkChainsIterator(ctx sdk.Context) storetypes.Iterator {
-	store := ctx.KVStore(k.storeKey)
-	return storetypes.KVStorePrefixIterator(store, types.RegisteredWrkChainPrefix)
-}
-
 // IterateWrkChains iterates over the all the wrkchain metadata and performs a callback function
 func (k Keeper) IterateWrkChains(ctx sdk.Context, cb func(wrkChain types.WrkChain) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
@@ -87,7 +84,11 @@ func (k Keeper) IterateWrkChains(ctx sdk.Context, cb func(wrkChain types.WrkChai
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wc types.WrkChain
-		k.cdc.MustUnmarshal(iterator.Value(), &wc)
+		if err := k.cdc.Unmarshal(iterator.Value(), &wc); err != nil {
+			k.Logger(ctx).Error("skipping corrupt wrkchain entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(wc) {
 			break
@@ -104,41 +105,24 @@ func (k Keeper) GetAllWrkChains(ctx sdk.Context) (wrkChains []types.WrkChain) {
 	return
 }
 
-// GetWrkChainsFiltered retrieves wrkchains filtered by a given set of params which
-// include pagination parameters along a moniker and owner address.
-//
-// NOTE: If no filters are provided, all proposals will be returned in paginated
-// form.
-func (k Keeper) GetWrkChainsFiltered(ctx sdk.Context, params types.QueryWrkChainsFilteredRequest) []types.WrkChain {
-	wrkChains := k.GetAllWrkChains(ctx)
-	filteredWrkChains := make([]types.WrkChain, 0, len(wrkChains))
-
-	for _, wc := range wrkChains {
-		matchMoniker, matchOwner := true, true
-
-		if len(params.Moniker) > 0 {
-			matchMoniker = wc.Moniker == params.Moniker
+// CountWrkChainsForOwner counts the number of wrkchains registered to the
+// given owner. Enforced against types.MaxWrkChainsPerOwner at registration
+// time. O(total wrkchains) — acceptable while overall count stays modest.
+func (k Keeper) CountWrkChainsForOwner(ctx sdk.Context, owner sdk.AccAddress) int {
+	count := 0
+	ownerStr := owner.String()
+	k.IterateWrkChains(ctx, func(wc types.WrkChain) bool {
+		if wc.Owner == ownerStr {
+			count++
 		}
-
-		if len(params.Owner) > 0 {
-			matchOwner = wc.Owner == params.Owner
-		}
-
-		if matchMoniker && matchOwner {
-			filteredWrkChains = append(filteredWrkChains, wc)
-		}
-	}
-
-	// todo - proper pagination
-	start, end := client.Paginate(len(filteredWrkChains), 1, 100, 100)
-	if start < 0 || end < 0 {
-		filteredWrkChains = []types.WrkChain{}
-	} else {
-		filteredWrkChains = filteredWrkChains[start:end]
-	}
-
-	return filteredWrkChains
+		return false
+	})
+	return count
 }
+
+// Filtered wrkchain queries are served directly by the gRPC handler in
+// grpc_query.go using query.FilteredPaginate against the store; no separate
+// keeper helper is needed.
 
 func (k Keeper) GetWrkChainStorageLimit(ctx sdk.Context, wrkchainId uint64) (types.WrkChainStorageLimit, bool) {
 	store := ctx.KVStore(k.storeKey)
@@ -152,7 +136,14 @@ func (k Keeper) GetWrkChainStorageLimit(ctx sdk.Context, wrkchainId uint64) (typ
 	storageKey := types.WrkChainStorageLimitKey(wrkchainId)
 	bz := store.Get(storageKey)
 	var storage types.WrkChainStorageLimit
-	k.cdc.MustUnmarshal(bz, &storage)
+	if err := k.cdc.Unmarshal(bz, &storage); err != nil {
+		k.Logger(ctx).Error("corrupt wrkchain storage limit entry — treating as absent",
+			"wrkchain_id", wrkchainId, "err", err)
+		return types.WrkChainStorageLimit{
+			WrkchainId:   wrkchainId,
+			InStateLimit: types.DefaultStorageLimit,
+		}, false
+	}
 	return storage, true
 }
 

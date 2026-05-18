@@ -47,29 +47,43 @@ func ValidateGenesis(data GenesisState) error {
 		return err
 	}
 
-	for _, record := range data.RegisteredWrkchains {
+	seenIDs := make(map[uint64]struct{}, len(data.RegisteredWrkchains))
+	for i, record := range data.RegisteredWrkchains {
 		if record.Wrkchain.WrkchainId == 0 {
-			return fmt.Errorf("invalid WrkChain: ID: %d. Error: Missing ID", record.Wrkchain.WrkchainId)
+			return fmt.Errorf("wrkchain[%d]: invalid WrkchainId 0", i)
 		}
-		if record.Wrkchain.Owner == "" {
-			return fmt.Errorf("invalid WrkChain: Owner: %s. Error: Missing Owner", record.Wrkchain.Owner)
+		if _, dup := seenIDs[record.Wrkchain.WrkchainId]; dup {
+			return fmt.Errorf("wrkchain[%d]: duplicate WrkchainId %d", i, record.Wrkchain.WrkchainId)
+		}
+		seenIDs[record.Wrkchain.WrkchainId] = struct{}{}
+		if record.Wrkchain.WrkchainId >= data.StartingWrkchainId {
+			return fmt.Errorf("wrkchain[%d]: WrkchainId %d must be < StartingWrkchainId %d",
+				i, record.Wrkchain.WrkchainId, data.StartingWrkchainId)
+		}
+		if _, err := sdk.AccAddressFromBech32(record.Wrkchain.Owner); err != nil {
+			return fmt.Errorf("wrkchain[%d]: invalid Owner %q: %w", i, record.Wrkchain.Owner, err)
 		}
 		if record.Wrkchain.Moniker == "" {
-			return fmt.Errorf("invalid WrkChain: Moniker: %s. Error: Missing Moniker", record.Wrkchain.Moniker)
+			return fmt.Errorf("wrkchain[%d]: empty Moniker", i)
 		}
 		if record.Wrkchain.BaseType == "" {
-			return fmt.Errorf("invalid WrkChain: BaseType: %s. Error: Missing BaseType", record.Wrkchain.BaseType)
+			return fmt.Errorf("wrkchain[%d]: empty BaseType", i)
 		}
 		if record.InStateLimit == 0 {
-			return fmt.Errorf("invalid WrkChain: InStateLimit: %d. Error: Missing InStateLimit", record.InStateLimit)
+			return fmt.Errorf("wrkchain[%d]: zero InStateLimit", i)
 		}
-		for _, block := range record.Blocks {
+		seenHeights := make(map[uint64]struct{}, len(record.Blocks))
+		for j, block := range record.Blocks {
 			if block.Bh == "" {
-				return fmt.Errorf("invalid WrkChain block: BlockHash: %s. Error: Missing BlockHash", block.Bh)
+				return fmt.Errorf("wrkchain[%d].block[%d]: empty BlockHash", i, j)
 			}
 			if block.He == 0 {
-				return fmt.Errorf("invalid WrkChain block: Height: %d. Error: Missing Height", block.He)
+				return fmt.Errorf("wrkchain[%d].block[%d]: zero Height", i, j)
 			}
+			if _, dup := seenHeights[block.He]; dup {
+				return fmt.Errorf("wrkchain[%d].block[%d]: duplicate Height %d", i, j, block.He)
+			}
+			seenHeights[block.He] = struct{}{}
 		}
 	}
 	return nil

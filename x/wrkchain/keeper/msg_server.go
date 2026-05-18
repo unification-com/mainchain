@@ -45,6 +45,14 @@ func (k msgServer) RegisterWrkChain(goCtx context.Context, msg *types.MsgRegiste
 		return nil, errorsmod.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker")
 	}
 
+	// Per-owner wrkchain count cap. Deters state-bloat by a single funded
+	// attacker registering many small wrkchains.
+	if count := k.CountWrkChainsForOwner(ctx, ownerAddr); count >= types.MaxWrkChainsPerOwner {
+		return nil, errorsmod.Wrapf(types.ErrContentTooLarge,
+			"owner %s already has %d wrkchains (max %d)",
+			msg.Owner, count, types.MaxWrkChainsPerOwner)
+	}
+
 	wrkchainId, err := k.RegisterNewWrkChain(ctx, msg.Moniker, msg.Name, msg.GenesisHash, msg.BaseType, ownerAddr) // register the WrkChain
 
 	if err != nil {

@@ -257,7 +257,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 				},
 			},
 			true,
-			"validator fee cannot be greater than 100% (1.00). Sent",
+			"validator fee cannot exceed",
 		},
 		{
 			"nil validator fee",

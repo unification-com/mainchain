@@ -62,7 +62,9 @@ func TestValidateGenesis(t *testing.T) {
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())
 
+	// Registered wrkchain ID must be < StartingWrkchainId (next-to-assign).
 	state3.RegisteredWrkchains[0].Wrkchain.WrkchainId = 1
+	state3.StartingWrkchainId = 2
 	expectedErr = fmt.Errorf("invalid WrkChain: Owner: %s. Error: Missing Owner", sdk.AccAddress{})
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())

@@ -42,7 +42,11 @@ func (k Keeper) GetTotalLockedUnd(ctx sdk.Context) sdk.Coin {
 	}
 
 	var totalLocked sdk.Coin
-	k.cdc.MustUnmarshal(bz, &totalLocked)
+	if err := k.cdc.Unmarshal(bz, &totalLocked); err != nil {
+		k.Logger(ctx).Error("corrupt total-locked entry — falling back to zero",
+			"err", err)
+		return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
+	}
 	return totalLocked
 }
 
@@ -66,7 +70,11 @@ func (k Keeper) GetTotalSpentEFUND(ctx sdk.Context) sdk.Coin {
 	}
 
 	var totalUsed sdk.Coin
-	k.cdc.MustUnmarshal(bz, &totalUsed)
+	if err := k.cdc.Unmarshal(bz, &totalUsed); err != nil {
+		k.Logger(ctx).Error("corrupt total-spent entry — falling back to zero",
+			"err", err)
+		return sdk.NewInt64Coin(k.GetParamDenom(ctx), 0)
+	}
 	return totalUsed
 }
 
@@ -98,7 +106,14 @@ func (k Keeper) GetSpentEFUNDForAccount(ctx sdk.Context, address sdk.AccAddress)
 
 	bz := store.Get(types.SpentEFUNDAddressStoreKey(address))
 	var spentEFUND types.SpentEFUND
-	k.cdc.MustUnmarshal(bz, &spentEFUND)
+	if err := k.cdc.Unmarshal(bz, &spentEFUND); err != nil {
+		k.Logger(ctx).Error("corrupt spent-eFUND entry — falling back to zero",
+			"address", address.String(), "err", err)
+		return types.SpentEFUND{
+			Owner:  address.String(),
+			Amount: sdk.NewInt64Coin(k.GetParamDenom(ctx), 0),
+		}
+	}
 	return spentEFUND
 }
 
@@ -125,10 +140,15 @@ func (k Keeper) GetAllSpentEFUNDAccountsIterator(ctx sdk.Context) storetypes.Ite
 
 func (k Keeper) GetAllSpentEFUNDs(ctx sdk.Context) (spentEFUNDs []types.SpentEFUND) {
 	spentIterator := k.GetAllSpentEFUNDAccountsIterator(ctx)
+	defer spentIterator.Close()
 
 	for ; spentIterator.Valid(); spentIterator.Next() {
 		var spent types.SpentEFUND
-		k.cdc.MustUnmarshal(spentIterator.Value(), &spent)
+		if err := k.cdc.Unmarshal(spentIterator.Value(), &spent); err != nil {
+			k.Logger(ctx).Error("skipping corrupt spent-eFUND entry during iteration",
+				"err", err)
+			continue
+		}
 		spentEFUNDs = append(spentEFUNDs, spent)
 	}
 
@@ -290,7 +310,14 @@ func (k Keeper) GetLockedUndForAccount(ctx sdk.Context, address sdk.AccAddress) 
 
 	bz := store.Get(types.LockedUndAddressStoreKey(address))
 	var lockedUnd types.LockedUnd
-	k.cdc.MustUnmarshal(bz, &lockedUnd)
+	if err := k.cdc.Unmarshal(bz, &lockedUnd); err != nil {
+		k.Logger(ctx).Error("corrupt locked-eFUND entry — falling back to zero",
+			"address", address.String(), "err", err)
+		return types.LockedUnd{
+			Owner:  address.String(),
+			Amount: sdk.NewInt64Coin(k.GetParamDenom(ctx), 0),
+		}
+	}
 	return lockedUnd
 }
 
@@ -306,10 +333,15 @@ func (k Keeper) GetAllLockedUndAccountsIterator(ctx sdk.Context) storetypes.Iter
 
 func (k Keeper) GetAllLockedUnds(ctx sdk.Context) (lockedUnds []types.LockedUnd) {
 	lockedIterator := k.GetAllLockedUndAccountsIterator(ctx)
+	defer lockedIterator.Close()
 
 	for ; lockedIterator.Valid(); lockedIterator.Next() {
 		var l types.LockedUnd
-		k.cdc.MustUnmarshal(lockedIterator.Value(), &l)
+		if err := k.cdc.Unmarshal(lockedIterator.Value(), &l); err != nil {
+			k.Logger(ctx).Error("skipping corrupt locked-eFUND entry during iteration",
+				"err", err)
+			continue
+		}
 		lockedUnds = append(lockedUnds, l)
 	}
 

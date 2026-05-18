@@ -9,7 +9,7 @@ import (
 
 func (s *KeeperTestSuite) TestParamsQuery() {
 	defaultFee := simapphelpers.SimTestDefaultStreamValFee
-	newFee := mathmod.LegacyNewDecWithPrec(24, 2)
+	newFee := mathmod.LegacyNewDecWithPrec(5, 2)
 
 	req1 := &types.QueryParamsRequest{}
 	expRes1 := &types.QueryParamsResponse{Params: types.DefaultParams()}

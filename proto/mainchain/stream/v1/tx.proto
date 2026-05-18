@@ -179,7 +179,7 @@ message MsgCancelStreamResponse {}
 // Since: cosmos-sdk 0.47
 message MsgUpdateParams {
   option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name) = "mainchain/x/stream/MsgUpdateParams";
+  option (amino.name) = "stream/MsgUpdateParams";
 
   // authority is the address that controls the module (defaults to x/gov unless
   // overwritten).

@@ -15,7 +15,7 @@ func (s *KeeperTestSuite) TestParams() {
 		{
 			name: "set full valid params",
 			input: types.Params{
-				ValidatorFee: mathmod.LegacyNewDecWithPrec(24, 2),
+				ValidatorFee: mathmod.LegacyNewDecWithPrec(5, 2),
 			},
 			expectErr: false,
 		},

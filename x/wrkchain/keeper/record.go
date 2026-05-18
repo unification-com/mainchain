@@ -65,15 +65,12 @@ func (k Keeper) GetWrkChainBlock(ctx sdk.Context, wrkchainId uint64, height uint
 
 	bz := store.Get(blockKey)
 	var wrkchainBlock types.WrkChainBlock
-	k.cdc.MustUnmarshal(bz, &wrkchainBlock)
+	if err := k.cdc.Unmarshal(bz, &wrkchainBlock); err != nil {
+		k.Logger(ctx).Error("corrupt wrkchain block entry — treating as absent",
+			"wrkchain_id", wrkchainId, "height", height, "err", err)
+		return types.WrkChainBlock{}, false
+	}
 	return wrkchainBlock, true
-}
-
-// GetWrkChainBlockHashesIterator Gets an iterator over all WrkChain hashess in
-// which the keys are the WrkChain Ids and the values are the WrkChainBlocks
-func (k Keeper) GetWrkChainBlockHashesIterator(ctx sdk.Context, wrkchainID uint64) storetypes.Iterator {
-	store := ctx.KVStore(k.storeKey)
-	return storetypes.KVStorePrefixIterator(store, types.WrkChainAllBlocksKey(wrkchainID))
 }
 
 // IterateWrkChainBlockHashes iterates over the all the hashes for a wrkchain and performs a callback function
@@ -84,7 +81,11 @@ func (k Keeper) IterateWrkChainBlockHashes(ctx sdk.Context, wrkchainID uint64, c
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wcb types.WrkChainBlock
-		k.cdc.MustUnmarshal(iterator.Value(), &wcb)
+		if err := k.cdc.Unmarshal(iterator.Value(), &wcb); err != nil {
+			k.Logger(ctx).Error("skipping corrupt wrkchain block entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(wcb) {
 			break
@@ -98,7 +99,11 @@ func (k Keeper) IterateWrkChainBlockHashesPaginated(ctx sdk.Context, wrkchainID 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wcb types.WrkChainBlock
-		k.cdc.MustUnmarshal(iterator.Value(), &wcb)
+		if err := k.cdc.Unmarshal(iterator.Value(), &wcb); err != nil {
+			k.Logger(ctx).Error("skipping corrupt wrkchain block entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(wcb) {
 			break
@@ -115,7 +120,11 @@ func (k Keeper) IterateWrkChainBlockHashesReverse(ctx sdk.Context, wrkchainID ui
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var wcb types.WrkChainBlock
-		k.cdc.MustUnmarshal(iterator.Value(), &wcb)
+		if err := k.cdc.Unmarshal(iterator.Value(), &wcb); err != nil {
+			k.Logger(ctx).Error("skipping corrupt wrkchain block entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(wcb) {
 			break

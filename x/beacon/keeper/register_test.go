@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
@@ -187,17 +188,20 @@ func TestGetBeaconFilter(t *testing.T) {
 		lastMoniker = moniker
 	}
 
-	params := types.QueryBeaconsFilteredRequest{
-		Owner: TestAddrs[1].String(),
-	}
+	// Filtering by owner should return all registered beacons (single owner).
+	// Use the gRPC handler which is the canonical paginated entry point.
+	// Request a page large enough to hold the full set.
+	resp, err := app.BeaconKeeper.BeaconsFiltered(ctx, &types.QueryBeaconsFilteredRequest{
+		Owner:      TestAddrs[1].String(),
+		Pagination: &query.PageRequest{Limit: uint64(numToReg)},
+	})
+	require.NoError(t, err)
+	require.Equal(t, numToReg, len(resp.Beacons))
 
-	results := app.BeaconKeeper.GetBeaconsFiltered(ctx, params)
-	require.Equal(t, len(results), numToReg)
-
-	params = types.QueryBeaconsFilteredRequest{
+	// Filtering by a specific moniker should return exactly one.
+	resp, err = app.BeaconKeeper.BeaconsFiltered(ctx, &types.QueryBeaconsFilteredRequest{
 		Moniker: lastMoniker,
-	}
-
-	results = app.BeaconKeeper.GetBeaconsFiltered(ctx, params)
-	require.Equal(t, len(results), 1)
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, len(resp.Beacons))
 }

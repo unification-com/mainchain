@@ -46,6 +46,14 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 		return nil, errorsmod.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
 	}
 
+	// Per-owner beacon count cap. Deters state-bloat by a single funded
+	// attacker registering many small beacons.
+	if count := k.CountBeaconsForOwner(ctx, ownerAddr); count >= types.MaxBeaconsPerOwner {
+		return nil, errorsmod.Wrapf(types.ErrContentTooLarge,
+			"owner %s already has %d beacons (max %d)",
+			msg.Owner, count, types.MaxBeaconsPerOwner)
+	}
+
 	beacon := types.Beacon{
 		Moniker: msg.Moniker,
 		Name:    msg.Name,

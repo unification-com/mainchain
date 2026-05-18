@@ -21,7 +21,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 			request: &types.MsgUpdateParams{
 				Authority: s.app.StreamKeeper.GetAuthority(),
 				Params: types.Params{
-					ValidatorFee: mathmod.LegacyNewDecWithPrec(24, 2),
+					ValidatorFee: mathmod.LegacyNewDecWithPrec(5, 2),
 				},
 			},
 			expectErr: false,
@@ -44,7 +44,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateParams() {
 				},
 			},
 			expectErr: true,
-			expErrMsg: "validator fee cannot be greater than 100",
+			expErrMsg: "validator fee cannot exceed",
 		},
 		{
 			name: "set invalid params negative value",

@@ -7,6 +7,9 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+	"github.com/cosmos/cosmos-sdk/types/query"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
@@ -35,7 +38,8 @@ func TestSetGetHighestWrkChainIDNotSet(t *testing.T) {
 	tKey := storetypes.NewTransientStoreKey("transient_test")
 	ctx := testutil.DefaultContext(storeKey, tKey)
 
-	k := keeper.NewKeeper(storeKey, encCfg.Codec, "authority")
+	// Use a real bech32 authority — NewKeeper now validates this.
+	k := keeper.NewKeeper(storeKey, encCfg.Codec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	_, err := k.GetHighestWrkChainID(ctx)
 	require.Error(t, err)
@@ -191,17 +195,16 @@ func TestGetWrkChainFilter(t *testing.T) {
 		lastMoniker = moniker
 	}
 
-	params := types.QueryWrkChainsFilteredRequest{
-		Owner: testAddrs[1].String(),
-	}
+	resp, err := app.WrkchainKeeper.WrkChainsFiltered(ctx, &types.QueryWrkChainsFilteredRequest{
+		Owner:      testAddrs[1].String(),
+		Pagination: &query.PageRequest{Limit: uint64(numToReg)},
+	})
+	require.NoError(t, err)
+	require.Equal(t, numToReg, len(resp.Wrkchains))
 
-	results := app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
-	require.Equal(t, len(results), numToReg)
-
-	params = types.QueryWrkChainsFilteredRequest{
+	resp, err = app.WrkchainKeeper.WrkChainsFiltered(ctx, &types.QueryWrkChainsFilteredRequest{
 		Moniker: lastMoniker,
-	}
-
-	results = app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
-	require.Equal(t, len(results), 1)
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, len(resp.Wrkchains))
 }

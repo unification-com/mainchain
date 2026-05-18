@@ -22,6 +22,11 @@ type Keeper struct {
 
 // NewKeeper creates new instances of the wrkchain Keeper
 func NewKeeper(storeKey storetypes.StoreKey, cdc codec.BinaryCodec, authority string) Keeper {
+	// Validate authority at construction so a misconfigured app fails at boot
+	// rather than at first MsgUpdateParams submission.
+	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+		panic(fmt.Sprintf("invalid authority address %q: %s", authority, err))
+	}
 	return Keeper{
 		storeKey:  storeKey,
 		cdc:       cdc,

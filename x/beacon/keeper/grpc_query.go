@@ -80,6 +80,53 @@ func (q Keeper) BeaconTimestamp(c context.Context, req *types.QueryBeaconTimesta
 	}, nil
 }
 
+// BeaconTimestampsByHash returns every timestamp of a beacon that recorded a given hash (#129). The hash
+// index is FORWARD-ONLY — timestamps recorded before the upgrade are not indexed and won't appear here.
+func (q Keeper) BeaconTimestampsByHash(c context.Context, req *types.QueryBeaconTimestampsByHashRequest) (*types.QueryBeaconTimestampsByHashResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	if req.BeaconId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "beacon id can not be 0")
+	}
+
+	if len(req.Hash) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "hash can not be empty")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	if _, found := q.GetBeacon(ctx, req.BeaconId); !found {
+		return nil, status.Errorf(codes.NotFound, "beacon %d doesn't exist in state", req.BeaconId)
+	}
+
+	var timestamps []types.BeaconTimestamp
+	store := ctx.KVStore(q.storeKey)
+
+	// Keys within this prefix store are the timestampId(8); the value is empty (the index is key-only).
+	hashStore := prefix.NewStore(store, types.BeaconHashIndexHashKey(req.BeaconId, req.Hash))
+
+	pageRes, err := query.Paginate(hashStore, req.Pagination, func(key []byte, _ []byte) error {
+		timestampID := types.GetTimestampIDFromBytes(key)
+		ts, found := q.GetBeaconTimestampByID(ctx, req.BeaconId, timestampID)
+		if found {
+			timestamps = append(timestamps, ts)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryBeaconTimestampsByHashResponse{
+		BeaconId:   req.BeaconId,
+		Timestamps: timestamps,
+		Pagination: pageRes,
+	}, nil
+}
+
 func (q Keeper) BeaconsFiltered(c context.Context, req *types.QueryBeaconsFilteredRequest) (*types.QueryBeaconsFilteredResponse, error) {
 	var beacons []types.Beacon
 

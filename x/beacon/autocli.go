@@ -44,6 +44,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
+					RpcMethod: "BeaconTimestampsByHash",
+					Use:       "beacon-timestamps-by-hash [beacon_id] [hash]",
+					Short:     "Query a BEACON's timestamps that recorded a given hash",
+					Long:      "Query every timestamp a BEACON recorded for a given hash (one-to-many). Forward-only index: hashes recorded before the index upgrade are not returned.",
+					Example:   fmt.Sprintf("$ %s query beacon beacon-timestamps-by-hash 1 d04b98f48e8", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "beacon_id"},
+						{ProtoField: "hash"},
+					},
+				},
+				{
 					RpcMethod: "BeaconStorage",
 					Use:       "storage [beacon_id]",
 					Short:     "Query a BEACON's storage capacity for given ID",

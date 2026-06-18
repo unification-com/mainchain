@@ -28,6 +28,14 @@ service Query {
         "/mainchain/beacon/v1/beacon/{beacon_id}/timestamp/{timestamp_id}";
   }
 
+  // BeaconTimestampsByHash queries the timestamps of a beacon that recorded a
+  // given hash (one-to-many: the same hash can be recorded many times)
+  rpc BeaconTimestampsByHash(QueryBeaconTimestampsByHashRequest)
+      returns (QueryBeaconTimestampsByHashResponse) {
+    option (google.api.http).get =
+        "/mainchain/beacon/v1/beacon/{beacon_id}/timestamps/hash/{hash}";
+  }
+
   // BeaconsFiltered queries all beacon metadata for given search parameters
   rpc BeaconsFiltered(QueryBeaconsFilteredRequest)
       returns (QueryBeaconsFilteredResponse) {
@@ -74,6 +82,26 @@ message QueryBeaconTimestampResponse {
   BeaconTimestamp timestamp = 1;
   uint64 beacon_id = 2;
   string owner = 3;
+}
+
+// QueryBeaconTimestampsByHashRequest is the request type for the
+// Query/BeaconTimestampsByHash RPC method
+message QueryBeaconTimestampsByHashRequest {
+  // beacon_id is the id of the beacon to query for
+  uint64 beacon_id = 1;
+  // hash is the recorded hash to look up
+  string hash = 2;
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+// QueryBeaconTimestampsByHashResponse is the response type for the
+// Query/BeaconTimestampsByHash RPC method
+message QueryBeaconTimestampsByHashResponse {
+  uint64 beacon_id = 1;
+  repeated BeaconTimestamp timestamps = 2 [ (gogoproto.nullable) = false ];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
 
 // QueryBeaconsFilteredRequest is the request type for the Query/BeaconsFiltered

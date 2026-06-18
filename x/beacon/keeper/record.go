@@ -13,6 +13,11 @@ func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconId uint64, beaconTimes
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.BeaconTimestampKey(beaconId, beaconTimestamp.TimestampId), k.cdc.MustMarshal(&beaconTimestamp))
 
+	// Forward-only (beacon, hash) -> timestampId index (#129) backing BeaconTimestampsByHash. Written here
+	// so it is built going forward AND rebuilt at genesis (InitGenesis reuses SetBeaconTimestamp); the
+	// in-place upgrade does NOT backfill existing timestamps, so slim validators are untouched.
+	store.Set(types.BeaconHashIndexKey(beaconId, beaconTimestamp.Hash, beaconTimestamp.TimestampId), []byte{})
+
 	return nil
 }
 
@@ -130,11 +135,15 @@ func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64
 // deleteBeaconTimestamp deletes a timestamp from the store
 func (k Keeper) deleteBeaconTimestamp(ctx sdk.Context, beaconId, beaconTimestampId uint64) error {
 
-	if !k.IsBeaconTimestampRecordedByID(ctx, beaconId, beaconTimestampId) {
+	// Fetch the timestamp first so we have its hash — the hash-index entry must be dropped too, or it would
+	// point at pruned (non-existent) state.
+	ts, found := k.GetBeaconTimestampByID(ctx, beaconId, beaconTimestampId)
+	if !found {
 		return nil
 	}
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.BeaconTimestampKey(beaconId, beaconTimestampId))
+	store.Delete(types.BeaconHashIndexKey(beaconId, ts.Hash, beaconTimestampId))
 
 	return nil
 }

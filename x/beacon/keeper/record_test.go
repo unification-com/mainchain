@@ -218,6 +218,44 @@ func TestRecordBeaconTimestampMetadata(t *testing.T) {
 	require.Equal(t, "", ts2.Metadata)
 }
 
+func TestBeaconTimestampsByHash(t *testing.T) {
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
+
+	b := types.Beacon{Owner: testAddrs[0].String(), Moniker: simapphelpers.GenerateRandomString(64), Name: simapphelpers.GenerateRandomString(128)}
+	bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
+	require.NoError(t, err)
+
+	subTime := uint64(time.Now().Unix())
+	rootHash := "4883d371d78d7c04"
+
+	// the SAME hash recorded twice (one-to-many — the heartbeat re-stamps a root), plus a different hash
+	_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, rootHash, subTime, "type=root")
+	require.NoError(t, err)
+	_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, rootHash, subTime, "type=root")
+	require.NoError(t, err)
+	_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, "otherhash", subTime, "")
+	require.NoError(t, err)
+
+	// the repeated hash returns BOTH timestamps
+	res, err := app.BeaconKeeper.BeaconTimestampsByHash(ctx, &types.QueryBeaconTimestampsByHashRequest{BeaconId: bID, Hash: rootHash})
+	require.NoError(t, err)
+	require.Len(t, res.Timestamps, 2)
+	for _, ts := range res.Timestamps {
+		require.Equal(t, rootHash, ts.Hash)
+	}
+
+	// the other hash returns just its one; an unrecorded hash returns none
+	res2, err := app.BeaconKeeper.BeaconTimestampsByHash(ctx, &types.QueryBeaconTimestampsByHashRequest{BeaconId: bID, Hash: "otherhash"})
+	require.NoError(t, err)
+	require.Len(t, res2.Timestamps, 1)
+
+	res3, err := app.BeaconKeeper.BeaconTimestampsByHash(ctx, &types.QueryBeaconTimestampsByHashRequest{BeaconId: bID, Hash: "nope"})
+	require.NoError(t, err)
+	require.Len(t, res3.Timestamps, 0)
+}
+
 func TestIncreaseInStateStorage(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)

@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Query_Params_FullMethodName          = "/mainchain.beacon.v1.Query/Params"
-	Query_Beacon_FullMethodName          = "/mainchain.beacon.v1.Query/Beacon"
-	Query_BeaconTimestamp_FullMethodName = "/mainchain.beacon.v1.Query/BeaconTimestamp"
-	Query_BeaconsFiltered_FullMethodName = "/mainchain.beacon.v1.Query/BeaconsFiltered"
-	Query_BeaconStorage_FullMethodName   = "/mainchain.beacon.v1.Query/BeaconStorage"
+	Query_Params_FullMethodName                 = "/mainchain.beacon.v1.Query/Params"
+	Query_Beacon_FullMethodName                 = "/mainchain.beacon.v1.Query/Beacon"
+	Query_BeaconTimestamp_FullMethodName        = "/mainchain.beacon.v1.Query/BeaconTimestamp"
+	Query_BeaconTimestampsByHash_FullMethodName = "/mainchain.beacon.v1.Query/BeaconTimestampsByHash"
+	Query_BeaconsFiltered_FullMethodName        = "/mainchain.beacon.v1.Query/BeaconsFiltered"
+	Query_BeaconStorage_FullMethodName          = "/mainchain.beacon.v1.Query/BeaconStorage"
 )
 
 // QueryClient is the client API for Query service.
@@ -38,6 +39,9 @@ type QueryClient interface {
 	Beacon(ctx context.Context, in *QueryBeaconRequest, opts ...grpc.CallOption) (*QueryBeaconResponse, error)
 	// BeaconTimestamp queries a timestamp of a beacon
 	BeaconTimestamp(ctx context.Context, in *QueryBeaconTimestampRequest, opts ...grpc.CallOption) (*QueryBeaconTimestampResponse, error)
+	// BeaconTimestampsByHash queries the timestamps of a beacon that recorded a
+	// given hash (one-to-many: the same hash can be recorded many times)
+	BeaconTimestampsByHash(ctx context.Context, in *QueryBeaconTimestampsByHashRequest, opts ...grpc.CallOption) (*QueryBeaconTimestampsByHashResponse, error)
 	// BeaconsFiltered queries all beacon metadata for given search parameters
 	BeaconsFiltered(ctx context.Context, in *QueryBeaconsFilteredRequest, opts ...grpc.CallOption) (*QueryBeaconsFilteredResponse, error)
 	// BeaconStorage queries beacon storage for for given beacon ID
@@ -82,6 +86,16 @@ func (c *queryClient) BeaconTimestamp(ctx context.Context, in *QueryBeaconTimest
 	return out, nil
 }
 
+func (c *queryClient) BeaconTimestampsByHash(ctx context.Context, in *QueryBeaconTimestampsByHashRequest, opts ...grpc.CallOption) (*QueryBeaconTimestampsByHashResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryBeaconTimestampsByHashResponse)
+	err := c.cc.Invoke(ctx, Query_BeaconTimestampsByHash_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) BeaconsFiltered(ctx context.Context, in *QueryBeaconsFilteredRequest, opts ...grpc.CallOption) (*QueryBeaconsFilteredResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryBeaconsFilteredResponse)
@@ -114,6 +128,9 @@ type QueryServer interface {
 	Beacon(context.Context, *QueryBeaconRequest) (*QueryBeaconResponse, error)
 	// BeaconTimestamp queries a timestamp of a beacon
 	BeaconTimestamp(context.Context, *QueryBeaconTimestampRequest) (*QueryBeaconTimestampResponse, error)
+	// BeaconTimestampsByHash queries the timestamps of a beacon that recorded a
+	// given hash (one-to-many: the same hash can be recorded many times)
+	BeaconTimestampsByHash(context.Context, *QueryBeaconTimestampsByHashRequest) (*QueryBeaconTimestampsByHashResponse, error)
 	// BeaconsFiltered queries all beacon metadata for given search parameters
 	BeaconsFiltered(context.Context, *QueryBeaconsFilteredRequest) (*QueryBeaconsFilteredResponse, error)
 	// BeaconStorage queries beacon storage for for given beacon ID
@@ -136,6 +153,9 @@ func (UnimplementedQueryServer) Beacon(context.Context, *QueryBeaconRequest) (*Q
 }
 func (UnimplementedQueryServer) BeaconTimestamp(context.Context, *QueryBeaconTimestampRequest) (*QueryBeaconTimestampResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method BeaconTimestamp not implemented")
+}
+func (UnimplementedQueryServer) BeaconTimestampsByHash(context.Context, *QueryBeaconTimestampsByHashRequest) (*QueryBeaconTimestampsByHashResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BeaconTimestampsByHash not implemented")
 }
 func (UnimplementedQueryServer) BeaconsFiltered(context.Context, *QueryBeaconsFilteredRequest) (*QueryBeaconsFilteredResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method BeaconsFiltered not implemented")
@@ -218,6 +238,24 @@ func _Query_BeaconTimestamp_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_BeaconTimestampsByHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBeaconTimestampsByHashRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BeaconTimestampsByHash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_BeaconTimestampsByHash_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BeaconTimestampsByHash(ctx, req.(*QueryBeaconTimestampsByHashRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_BeaconsFiltered_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryBeaconsFilteredRequest)
 	if err := dec(in); err != nil {
@@ -272,6 +310,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BeaconTimestamp",
 			Handler:    _Query_BeaconTimestamp_Handler,
+		},
+		{
+			MethodName: "BeaconTimestampsByHash",
+			Handler:    _Query_BeaconTimestampsByHash_Handler,
 		},
 		{
 			MethodName: "BeaconsFiltered",

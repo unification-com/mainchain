@@ -71,6 +71,9 @@ message MsgRecordBeaconTimestamp {
   uint64 submit_time = 3;
   // owner is the address of the owner of the beacon
   string owner = 4 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // metadata is an optional, bounded descriptor stored alongside the hash (see
+  // BeaconTimestamp.metadata). Capped at MaxMetadataLength bytes in ValidateBasic.
+  string metadata = 5;
 }
 
 // MsgRecordBeaconTimestampResponse defines the Msg/RecordBeacon response type.

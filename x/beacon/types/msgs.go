@@ -64,6 +64,9 @@ func (msg MsgRegisterBeacon) ValidateBasic() error {
 
 // --- Record a BEACON timestamp hash Msg ---
 
+// MaxMetadataLength bounds the optional BeaconTimestamp.metadata descriptor to stop state-bloat abuse.
+const MaxMetadataLength = 256
+
 // NewMsgRecordBeaconTimestamp is a constructor function for MsgRecordBeaconTimestamp
 func NewMsgRecordBeaconTimestamp(
 	beaconId uint64,
@@ -104,6 +107,9 @@ func (msg MsgRecordBeaconTimestamp) ValidateBasic() error {
 	}
 	if len(msg.Hash) > 66 {
 		return errorsmod.Wrap(ErrContentTooLarge, "hash too big. 66 character limit")
+	}
+	if len(msg.Metadata) > MaxMetadataLength {
+		return errorsmod.Wrap(ErrContentTooLarge, "metadata too big. 256 character limit")
 	}
 
 	return nil

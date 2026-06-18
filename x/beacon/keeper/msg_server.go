@@ -104,6 +104,10 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit")
 	}
 
+	if len(msg.Metadata) > types.MaxMetadataLength {
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "metadata too big. 256 character limit")
+	}
+
 	if !k.IsBeaconRegistered(ctx, msg.BeaconId) { // Checks if the BEACON is registered
 		return nil, errorsmod.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
 	}
@@ -118,7 +122,7 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		subtime = uint64(time.Now().Unix())
 	}
 
-	tsID, deleteTimestampId, err := k.RecordNewBeaconTimestamp(ctx, msg.BeaconId, msg.Hash, subtime)
+	tsID, deleteTimestampId, err := k.RecordNewBeaconTimestamp(ctx, msg.BeaconId, msg.Hash, subtime, msg.Metadata)
 
 	if err != nil {
 		return nil, err
@@ -133,6 +137,7 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 			sdk.NewAttribute(types.AttributeKeyTimestampID, strconv.FormatUint(tsID, 10)),
 			sdk.NewAttribute(types.AttributeKeyTimestampIdPruned, strconv.FormatUint(deleteTimestampId, 10)),
 			sdk.NewAttribute(types.AttributeKeyTimestampHash, msg.Hash),
+			sdk.NewAttribute(types.AttributeKeyTimestampMetadata, msg.Metadata),
 			sdk.NewAttribute(types.AttributeKeyTimestampSubmitTime, strconv.FormatUint(msg.SubmitTime, 10)),
 			sdk.NewAttribute(types.AttributeKeyOwner, ownerAddr.String()),
 		),

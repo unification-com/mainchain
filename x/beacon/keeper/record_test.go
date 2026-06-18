@@ -150,7 +150,7 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 		expectedTs.Hash = hash
 		expectedTs.SubmitTime = subTime
 
-		retTsID, deletedTsId, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
+		retTsID, deletedTsId, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, "")
 		require.NoError(t, err)
 		require.Equal(t, retTsID, expectedTs.TimestampId)
 
@@ -187,6 +187,35 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 		_, found = app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsId)
 		require.False(t, found)
 	}
+}
+
+func TestRecordBeaconTimestampMetadata(t *testing.T) {
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
+
+	b := types.Beacon{Owner: testAddrs[0].String(), Moniker: simapphelpers.GenerateRandomString(64), Name: simapphelpers.GenerateRandomString(128)}
+	bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
+	require.NoError(t, err)
+
+	hash := simapphelpers.GenerateRandomString(32)
+	metadata := "type=leaf;tree=pairs;root=4883d371d78d7c04"
+	subTime := uint64(time.Now().Unix())
+
+	// metadata round-trips through state
+	tsID, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, metadata)
+	require.NoError(t, err)
+	ts, found := app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsID)
+	require.True(t, found)
+	require.Equal(t, metadata, ts.Metadata)
+	require.Equal(t, hash, ts.Hash)
+
+	// an empty metadata is fine (older / undescribed timestamps)
+	tsID2, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, simapphelpers.GenerateRandomString(32), subTime, "")
+	require.NoError(t, err)
+	ts2, found := app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsID2)
+	require.True(t, found)
+	require.Equal(t, "", ts2.Metadata)
 }
 
 func TestIncreaseInStateStorage(t *testing.T) {
@@ -247,7 +276,7 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 	for i := uint64(1); i <= numToRecord; i++ {
 		hash := simapphelpers.GenerateRandomString(32)
 		subTime := uint64(time.Now().Unix())
-		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
+		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, "")
 		require.NoError(t, err)
 	}
 
@@ -268,7 +297,7 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 	for i := uint64(1); i <= numToRecord; i++ {
 		hash := simapphelpers.GenerateRandomString(32)
 		subTime := uint64(time.Now().Unix())
-		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
+		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, "")
 		require.NoError(t, err)
 	}
 

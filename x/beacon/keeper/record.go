@@ -144,7 +144,8 @@ func (k Keeper) RecordNewBeaconTimestamp(
 	ctx sdk.Context,
 	beaconId uint64,
 	hash string,
-	submitTime uint64) (uint64, uint64, error) {
+	submitTime uint64,
+	metadata string) (uint64, uint64, error) {
 
 	beacon, _ := k.GetBeacon(ctx, beaconId)
 
@@ -157,6 +158,7 @@ func (k Keeper) RecordNewBeaconTimestamp(
 		TimestampId: timestampId,
 		SubmitTime:  submitTime,
 		Hash:        hash,
+		Metadata:    metadata,
 	}
 
 	err := k.SetBeaconTimestamp(ctx, beacon.BeaconId, beaconTimestamp)

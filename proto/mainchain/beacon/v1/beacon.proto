@@ -50,6 +50,10 @@ message BeaconTimestamp {
   uint64 submit_time = 2;
   // hash is the actual data stored for the timestamp
   string hash = 3;
+  // metadata is an optional, bounded descriptor stored alongside the hash, so
+  // the timestamp stream is self-describing without fetching the hash preimage
+  // (e.g. "type=leaf;tree=pairs;root=<root16>"). Empty for older timestamps.
+  string metadata = 4;
 }
 
 // Params defines the parameters for the beacon module.

@@ -23,7 +23,7 @@ func (s *KeeperTestSuite) TestGRPCQueryParams() {
 		MaxStorageLimit:     300,
 	}
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	s.Require().NoError(app.WrkchainKeeper.SetParams(ctx, testParams))
 	paramsResp, err := queryClient.Params(gocontext.Background(), &types.QueryParamsRequest{})
 
 	s.NoError(err)

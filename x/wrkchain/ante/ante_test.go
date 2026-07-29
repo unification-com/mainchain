@@ -43,7 +43,7 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualFeeAmt := wrkParams.FeeRegister
@@ -78,7 +78,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -163,7 +163,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -247,7 +247,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister

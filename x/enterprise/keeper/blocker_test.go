@@ -303,13 +303,13 @@ func TestProcessAcceptedPurchaseOrders_Mints(t *testing.T) {
 	// Purchaser's locked eFUND grew by exactly the PO amount
 	purchaserLockedAfter := app.EnterpriseKeeper.GetLockedUndAmountForAccount(ctx, purchaser)
 	expDelta := sdk.NewInt64Coin(sdk.DefaultBondDenom, amount)
-	require.True(t, purchaserLockedAfter.IsEqual(purchaserLockedBefore.Add(expDelta)),
+	require.True(t, purchaserLockedAfter.Equal(purchaserLockedBefore.Add(expDelta)),
 		"purchaser locked: before %s + %s = %s, got %s",
 		purchaserLockedBefore, expDelta, purchaserLockedBefore.Add(expDelta), purchaserLockedAfter)
 
 	// Total locked grew by the same amount
 	totalLockedAfter := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
-	require.True(t, totalLockedAfter.IsEqual(totalLockedBefore.Add(expDelta)),
+	require.True(t, totalLockedAfter.Equal(totalLockedBefore.Add(expDelta)),
 		"total locked: before %s + %s = %s, got %s",
 		totalLockedBefore, expDelta, totalLockedBefore.Add(expDelta), totalLockedAfter)
 }
@@ -353,5 +353,5 @@ func TestProcessAcceptedPurchaseOrders_MultipleOrders(t *testing.T) {
 	// Total locked grew by the sum of amounts
 	totalLockedAfter := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
 	expDelta := sdk.NewInt64Coin(sdk.DefaultBondDenom, expectedTotalDelta)
-	require.True(t, totalLockedAfter.IsEqual(totalLockedBefore.Add(expDelta)))
+	require.True(t, totalLockedAfter.Equal(totalLockedBefore.Add(expDelta)))
 }

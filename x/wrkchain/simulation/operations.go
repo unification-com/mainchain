@@ -143,6 +143,9 @@ func SimulateMsgRecordWrkChainBlock(txGen client.TxConfig, k keeper.Keeper, bk t
 		}
 
 		wrkChainOwnerAddr, err := sdk.AccAddressFromBech32(wrkChain.Owner)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.RecordAction, "invalid wrkchain owner address"), nil, nil // skip
+		}
 
 		simAccount, found := simtypes.FindAccount(accs, wrkChainOwnerAddr)
 		if !found {
@@ -219,6 +222,9 @@ func SimulateMsgPurchaseWrkChainStateStorage(txGen client.TxConfig, k keeper.Kee
 		}
 
 		wrkchainOwnerAddr, err := sdk.AccAddressFromBech32(wrkchain.Owner)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.PurchaseStorageAction, "invalid wrkchain owner address"), nil, nil // skip
+		}
 
 		simAccount, found := simtypes.FindAccount(accs, wrkchainOwnerAddr)
 		if !found {

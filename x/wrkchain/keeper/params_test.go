@@ -16,7 +16,7 @@ func TestSetGetParams(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	paramsDb := app.WrkchainKeeper.GetParams(ctx)
 
@@ -32,7 +32,7 @@ func TestGetParamDenom(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetParamDenom(ctx)
 
@@ -43,7 +43,7 @@ func TestGetParamRegistrationFee(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetParamRegistrationFee(ctx)
 
@@ -54,7 +54,7 @@ func TestGetParamRecordFee(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetParamRecordFee(ctx)
 
@@ -65,7 +65,7 @@ func TestGetParamPurchaseStorageFee(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetParamPurchaseStorageFee(ctx)
 
@@ -76,7 +76,7 @@ func TestGetParamDefaultStorageLimit(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetParamDefaultStorageLimit(ctx)
 
@@ -87,7 +87,7 @@ func TestGetParamMaxStorageLimit(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetParamMaxStorageLimit(ctx)
 
@@ -98,59 +98,59 @@ func TestGetZeroFeeAsCoin(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetZeroFeeAsCoin(ctx)
 
 	paramCoin := sdk.NewInt64Coin(testParams.Denom, 0)
 
-	require.True(t, ret.IsEqual(paramCoin))
+	require.True(t, ret.Equal(paramCoin))
 }
 
 func TestGetRegistrationFeeAsCoin(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetRegistrationFeeAsCoin(ctx)
 
 	paramCoin := sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeeRegister))
 
-	require.True(t, ret.IsEqual(paramCoin))
+	require.True(t, ret.Equal(paramCoin))
 }
 
 func TestGetRecordFeeAsCoin(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetRecordFeeAsCoin(ctx)
 
 	paramCoin := sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeeRecord))
 
-	require.True(t, ret.IsEqual(paramCoin))
+	require.True(t, ret.Equal(paramCoin))
 }
 
 func TestGetPurchaseStorageFeeAsCoin(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetPurchaseStorageFeeAsCoin(ctx)
 
 	paramCoin := sdk.NewInt64Coin(testParams.Denom, int64(testParams.FeePurchaseStorage))
 
-	require.True(t, ret.IsEqual(paramCoin))
+	require.True(t, ret.Equal(paramCoin))
 }
 
 func TestGetZeroFeeAsCoins(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetZeroFeeAsCoins(ctx)
 
@@ -163,7 +163,7 @@ func TestGetRegistrationFeeAsCoins(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetRegistrationFeeAsCoins(ctx)
 
@@ -176,7 +176,7 @@ func TestGetRecordFeeAsCoins(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetRecordFeeAsCoins(ctx)
 
@@ -189,7 +189,7 @@ func TestGetPurchaseStorageFeeAsCoins(t *testing.T) {
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false)
 
-	app.WrkchainKeeper.SetParams(ctx, testParams)
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, testParams))
 
 	ret := app.WrkchainKeeper.GetPurchaseStorageFeeAsCoins(ctx)
 

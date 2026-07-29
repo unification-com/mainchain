@@ -48,7 +48,7 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualFeeAmt := bParams.FeeRegister
 	actualFeeDenom := bParams.Denom
@@ -89,7 +89,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300))
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
 
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualRegFeeAmt := bParams.FeeRegister
@@ -186,7 +186,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300))
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
 
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualRegFeeAmt := bParams.FeeRegister
@@ -272,7 +272,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300))
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
 
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualRegFeeAmt := bParams.FeeRegister

@@ -141,6 +141,9 @@ func SimulateMsgRecordBeaconTimestamp(txGen client.TxConfig, k keeper.Keeper, bk
 		}
 
 		beaconOwnerAddr, err := sdk.AccAddressFromBech32(beacon.Owner)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.RecordAction, "invalid beacon owner address"), nil, nil // skip
+		}
 
 		simAccount, found := simtypes.FindAccount(accs, beaconOwnerAddr)
 		if !found {
@@ -204,6 +207,9 @@ func SimulateMsgPurchaseBeaconStateStorage(txGen client.TxConfig, k keeper.Keepe
 		}
 
 		beaconOwnerAddr, err := sdk.AccAddressFromBech32(beacon.Owner)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.PurchaseStorageAction, "invalid beacon owner address"), nil, nil // skip
+		}
 
 		simAccount, found := simtypes.FindAccount(accs, beaconOwnerAddr)
 		if !found {

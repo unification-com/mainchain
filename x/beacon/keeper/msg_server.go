@@ -66,7 +66,7 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.RegisterAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.RegisterAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -128,7 +128,7 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.RecordAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.RecordAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -195,7 +195,7 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 	// get remianing can purchase
 	numCanPurchase := k.GetMaxPurchasableSlots(ctx, msg.BeaconId)
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

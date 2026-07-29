@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"cosmossdk.io/log/v2"
-	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/unification-com/mainchain/x/enterprise/types"
 )
@@ -58,7 +57,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // GetEnterpriseAccount returns the enterprise ModuleAccount
-func (k Keeper) GetEnterpriseAccount(ctx sdk.Context) authtypes.ModuleAccountI {
+func (k Keeper) GetEnterpriseAccount(ctx sdk.Context) sdk.ModuleAccountI {
 	return k.accKeeper.GetModuleAccount(ctx, types.ModuleName)
 }
 

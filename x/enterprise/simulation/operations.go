@@ -147,13 +147,10 @@ func SimulateMsgUndPurchaseOrder(txGen client.TxConfig, k keeper.Keeper, bk type
 		// allow some POs to go stale
 		blocksInFuture := int64(1)
 		switch r.Intn(4) {
-		case 0:
-		case 1:
-		case 2:
-		default:
-			break
 		case 3:
 			blocksInFuture = int64(5)
+		default:
+			// 0, 1, 2 — leave the PO due next block
 		}
 
 		// generate future operations for decisions

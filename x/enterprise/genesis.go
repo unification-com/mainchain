@@ -17,7 +17,9 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, bankKeeper types.BankKee
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
 
-	keeper.SetParams(ctx, data.Params)
+	if err := keeper.SetParams(ctx, data.Params); err != nil {
+		panic(err)
+	}
 	keeper.SetHighestPurchaseOrderID(ctx, data.StartingPurchaseOrderId)
 
 	if data.Whitelist != nil {

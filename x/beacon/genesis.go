@@ -9,7 +9,9 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState) []abci.ValidatorUpdate {
-	keeper.SetParams(ctx, data.Params)
+	if err := keeper.SetParams(ctx, data.Params); err != nil {
+		panic(err)
+	}
 	keeper.SetHighestBeaconID(ctx, data.StartingBeaconId)
 
 	for _, record := range data.RegisteredBeacons {

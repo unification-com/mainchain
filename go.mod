@@ -22,7 +22,7 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
-	github.com/unification-com/x-stream v0.1.2
+	github.com/unification-com/x-stream v0.1.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20260511170946-3700d4141b60
 	google.golang.org/grpc v1.82.1
 )

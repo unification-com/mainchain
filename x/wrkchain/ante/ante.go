@@ -97,9 +97,8 @@ func checkWrkChainMaxSlots(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) er
 
 	// go through Msgs wrapped in the Tx, and check for WrkChain messages
 	for _, msg := range msgs {
-		switch msg.(type) {
+		switch m := msg.(type) {
 		case *types.MsgPurchaseWrkChainStateStorage:
-			m := msg.(*types.MsgPurchaseWrkChainStateStorage)
 			numSlots := m.Number
 			wrkchainId := m.WrkchainId
 			if purchaseData[wrkchainId].want == 0 {
@@ -143,7 +142,7 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 
 	// go through Msgs wrapped in the Tx, and check for WRKChain messages
 	for _, msg := range msgs {
-		switch msg.(type) {
+		switch m := msg.(type) {
 		case *types.MsgRegisterWrkChain:
 			expectedFees = expectedFees.Add(wck.GetRegistrationFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
@@ -151,7 +150,6 @@ func checkWrkchainFees(ctx sdk.Context, tx sdk.FeeTx, wck WrkchainKeeper) error 
 			expectedFees = expectedFees.Add(wck.GetRecordFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
 		case *types.MsgPurchaseWrkChainStateStorage:
-			m := msg.(*types.MsgPurchaseWrkChainStateStorage)
 			numSlots := m.Number
 			feePerSlot := wck.GetPurchaseStorageFeeAsCoin(ctx)
 			totalForSlotsAmt := feePerSlot.Amount.Mul(mathmod.NewInt(int64(numSlots)))

@@ -97,7 +97,7 @@ func ValidateGenesis(data GenesisState) error {
 		}
 		lockedSum = lockedSum.Add(locked.Amount)
 	}
-	if !lockedSum.IsEqual(data.TotalLocked) {
+	if !lockedSum.Equal(data.TotalLocked) {
 		return fmt.Errorf("sum of LockedUnd amounts (%s) does not equal TotalLocked (%s)",
 			lockedSum, data.TotalLocked)
 	}
@@ -125,7 +125,7 @@ func ValidateGenesis(data GenesisState) error {
 		}
 		spentSum = spentSum.Add(spent.Amount)
 	}
-	if !spentSum.IsEqual(data.TotalSpent) {
+	if !spentSum.Equal(data.TotalSpent) {
 		return fmt.Errorf("sum of SpentEfund amounts (%s) does not equal TotalSpent (%s)",
 			spentSum, data.TotalSpent)
 	}

@@ -112,7 +112,7 @@ func TestRaiseNewPurchaseOrder(t *testing.T) {
 		require.Equal(t, poDb.Purchaser, from.String())
 		require.Equal(t, poDb.Amount.Denom, sdk.DefaultBondDenom)
 		require.Equal(t, poDb.Amount.Amount.Int64(), amt)
-		require.True(t, poDb.Amount.IsEqual(expectedPo.Amount))
+		require.True(t, poDb.Amount.Equal(expectedPo.Amount))
 
 		i = i + 1
 	}

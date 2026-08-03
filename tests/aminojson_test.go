@@ -5,11 +5,11 @@ import (
 	mathmod "cosmossdk.io/math"
 	"fmt"
 	enterpriseapi "github.com/unification-com/mainchain/api/mainchain/enterprise/v1"
-	streamapi "github.com/unification-com/x-stream/api/mainchain/stream/v1"
 	wrkchainapi "github.com/unification-com/mainchain/api/mainchain/wrkchain/v1"
 	enterprisetypes "github.com/unification-com/mainchain/x/enterprise/types"
-	streamtypes "github.com/unification-com/x-stream/x/stream/types"
 	wrkchaintypes "github.com/unification-com/mainchain/x/wrkchain/types"
+	streamapi "github.com/unification-com/x-stream/api/mainchain/stream/v1"
+	streamtypes "github.com/unification-com/x-stream/x/stream/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"reflect"
 	"testing"
@@ -26,8 +26,6 @@ import (
 	v1beta1 "cosmossdk.io/api/cosmos/base/v1beta1"
 	msgv1 "cosmossdk.io/api/cosmos/msg/v1"
 	txv1beta1 "cosmossdk.io/api/cosmos/tx/v1beta1"
-	"github.com/cosmos/cosmos-sdk/x/tx/signing/aminojson"
-	signing_testutil "github.com/cosmos/cosmos-sdk/x/tx/signing/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
@@ -36,6 +34,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	"github.com/cosmos/cosmos-sdk/x/tx/signing/aminojson"
+	signing_testutil "github.com/cosmos/cosmos-sdk/x/tx/signing/testutil"
 
 	beaconapi "github.com/unification-com/mainchain/api/mainchain/beacon/v1"
 	fundhelpers "github.com/unification-com/mainchain/app/helpers"
@@ -43,8 +43,8 @@ import (
 	"github.com/unification-com/mainchain/x/beacon"
 	beacontypes "github.com/unification-com/mainchain/x/beacon/types"
 	"github.com/unification-com/mainchain/x/enterprise"
-	"github.com/unification-com/x-stream/x/stream"
 	"github.com/unification-com/mainchain/x/wrkchain"
+	"github.com/unification-com/x-stream/x/stream"
 )
 
 // TestAminoJSON_Equivalence tests that x/tx/Encoder encoding is equivalent to the legacy Encoder encoding.
@@ -128,7 +128,7 @@ func TestAminoJSON_Equivalence(t *testing.T) {
 				signBz, err := handler.GetSignBytes(context.Background(), signerData, txData)
 				require.NoError(t, err)
 
-				legacyHandler := tx.NewSignModeLegacyAminoJSONHandler()
+				legacyHandler := tx.NewSignModeLegacyAminoJSONHandler() //nolint:staticcheck // deliberately exercising the legacy amino-JSON path
 				txBuilder := encCfg.TxConfig.NewTxBuilder()
 				require.NoError(t, txBuilder.SetMsgs([]sdk.Msg{tt.Gogo}...))
 				txBuilder.SetMemo(handlerOptions.Memo)
@@ -150,6 +150,10 @@ func TestAminoJSON_Equivalence(t *testing.T) {
 	}
 }
 
+// newAny builds a pulsar Any for the test table. Currently referenced only by the commented-out
+// Any/pubkey cases above; kept so those can be re-enabled without rewriting the helper.
+//
+//nolint:unused // supports the parked test cases in TestAminoJSON
 func newAny(t *testing.T, msg proto.Message) *anypb.Any {
 	bz, err := proto.Marshal(msg)
 	require.NoError(t, err)
@@ -531,7 +535,7 @@ func TestAminoJSON_LegacyParity(t *testing.T) {
 			require.Equal(t, string(gogoBytes), string(newGogoBytes))
 
 			// test amino json signer handler equivalence
-			msg, ok := tc.gogo.(legacytx.LegacyMsg)
+			msg, ok := tc.gogo.(legacytx.LegacyMsg) //nolint:staticcheck // deliberately exercising the legacy amino-JSON path
 			if !ok {
 				// not signable
 				return
@@ -556,7 +560,7 @@ func TestAminoJSON_LegacyParity(t *testing.T) {
 			signBz, err := handler.GetSignBytes(context.Background(), signerData, txData)
 			require.NoError(t, err)
 
-			legacyHandler := tx.NewSignModeLegacyAminoJSONHandler()
+			legacyHandler := tx.NewSignModeLegacyAminoJSONHandler() //nolint:staticcheck // deliberately exercising the legacy amino-JSON path
 			txBuilder := encCfg.TxConfig.NewTxBuilder()
 			require.NoError(t, txBuilder.SetMsgs([]sdk.Msg{msg}...))
 			txBuilder.SetMemo(handlerOptions.Memo)

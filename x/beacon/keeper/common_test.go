@@ -1,13 +1,9 @@
 package keeper_test
 
 import (
-	"encoding/hex"
 	"math/rand"
 
-	"github.com/cometbft/cometbft/crypto"
-	"github.com/cometbft/cometbft/crypto/ed25519"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	simapphelpers "github.com/unification-com/mainchain/app/helpers"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
 
@@ -16,29 +12,9 @@ const (
 )
 
 var (
-	TestAddrs  = createRandomAccounts(10)
+	TestAddrs  = simapphelpers.GenerateRandomTestAccounts(10)
 	seededRand = rand.New(rand.NewSource(1))
 )
-
-func createRandomAccounts(accNum int) []sdk.AccAddress {
-	testAddrs := make([]sdk.AccAddress, accNum)
-	for i := 0; i < accNum; i++ {
-		pk := ed25519.GenPrivKey().PubKey()
-		testAddrs[i] = sdk.AccAddress(pk.Address())
-	}
-
-	return testAddrs
-}
-
-func newPubKey(pk string) (res crypto.PubKey) {
-	pkBytes, err := hex.DecodeString(pk)
-	if err != nil {
-		panic(err)
-	}
-	var pkEd ed25519.PubKey
-	copy(pkEd[:], pkBytes[:])
-	return pkEd
-}
 
 // BeaconEqual checks if two Beacons are equal
 func BeaconEqual(wcA types.Beacon, wcB types.Beacon) bool {

@@ -26,7 +26,7 @@ func TestSetGetTotalLockedUnd(t *testing.T) {
 
 	lockedDb := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
 
-	require.True(t, lockedDb.IsEqual(locked))
+	require.True(t, lockedDb.Equal(locked))
 	require.Equal(t, lockedDb.Denom, denom)
 	require.Equal(t, lockedDb.Amount.Int64(), amount)
 }
@@ -52,10 +52,10 @@ func TestSetGetLockedUndForAccount(t *testing.T) {
 		lockedDb := app.EnterpriseKeeper.GetLockedUndForAccount(ctx, addr)
 
 		require.Equal(t, locked.Owner, lockedDb.Owner)
-		require.True(t, lockedDb.Amount.IsEqual(locked.Amount))
+		require.True(t, lockedDb.Amount.Equal(locked.Amount))
 
 		lockedDbAmount := app.EnterpriseKeeper.GetLockedUndAmountForAccount(ctx, addr)
-		require.True(t, lockedDbAmount.IsEqual(locked.Amount))
+		require.True(t, lockedDbAmount.Equal(locked.Amount))
 	}
 }
 
@@ -180,7 +180,7 @@ func TestUnlockAndMintCoinsForFees(t *testing.T) {
 		expectedLocked := toMint.Sub(toUnlock)
 
 		lockedDb := app.EnterpriseKeeper.GetLockedUndForAccount(ctx, addr)
-		require.True(t, lockedDb.Amount.IsEqual(expectedLocked))
+		require.True(t, lockedDb.Amount.Equal(expectedLocked))
 
 		balanceAfter := app.BankKeeper.GetBalance(ctx, addr, sdk.DefaultBondDenom)
 		require.Equal(t, expBalanceAfter, balanceAfter)
@@ -193,7 +193,7 @@ func TestUnlockAndMintCoinsForFees(t *testing.T) {
 	totalLocked := sdk.NewInt64Coin(sdk.DefaultBondDenom, totalAmount)
 
 	totalLockedDb := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
-	require.True(t, totalLockedDb.IsEqual(totalLocked))
+	require.True(t, totalLockedDb.Equal(totalLocked))
 
 }
 
@@ -220,14 +220,14 @@ func TestUnlockCoinsForFeesAndUsedCounter(t *testing.T) {
 		require.NoError(t, err)
 
 		usedDb := app.EnterpriseKeeper.GetSpentEFUNDForAccount(ctx, addr)
-		require.True(t, usedDb.Amount.IsEqual(toUnlock))
+		require.True(t, usedDb.Amount.Equal(toUnlock))
 		require.Equal(t, usedDb.Owner, addr.String())
 	}
 
 	expectedTotalUsedCoin := sdk.NewInt64Coin(sdk.DefaultBondDenom, totalUsed)
 
 	totalUsedDb := app.EnterpriseKeeper.GetTotalSpentEFUND(ctx)
-	require.True(t, totalUsedDb.IsEqual(expectedTotalUsedCoin))
+	require.True(t, totalUsedDb.Equal(expectedTotalUsedCoin))
 }
 
 func TestUnlockAndMintCoinsForFeesInsufficientFunds(t *testing.T) {
@@ -270,15 +270,15 @@ func TestUnlockAndMintCoinsForFeesInsufficientFunds(t *testing.T) {
 
 		// Per-account state must be unchanged.
 		lockedAfter := app.EnterpriseKeeper.GetLockedUndForAccount(ctx, addr)
-		require.True(t, lockedAfter.Amount.IsEqual(lockedBefore.Amount),
+		require.True(t, lockedAfter.Amount.Equal(lockedBefore.Amount),
 			"locked unchanged: before %s, after %s", lockedBefore.Amount, lockedAfter.Amount)
 
 		spentAfter := app.EnterpriseKeeper.GetSpentEFUNDForAccount(ctx, addr)
-		require.True(t, spentAfter.Amount.IsEqual(spentBefore.Amount),
+		require.True(t, spentAfter.Amount.Equal(spentBefore.Amount),
 			"spent unchanged: before %s, after %s", spentBefore.Amount, spentAfter.Amount)
 
 		balanceAfter := app.BankKeeper.GetBalance(ctx, addr, denom)
-		require.True(t, balanceAfter.IsEqual(balanceBefore),
+		require.True(t, balanceAfter.Equal(balanceBefore),
 			"bank balance unchanged: before %s, after %s", balanceBefore, balanceAfter)
 	}
 
@@ -287,16 +287,16 @@ func TestUnlockAndMintCoinsForFeesInsufficientFunds(t *testing.T) {
 	// should be unchanged.
 	expectedTotalLocked := totalLockedBefore.Add(sdk.NewInt64Coin(denom, lockedAmount*int64(len(testAddresses))))
 	totalLockedAfter := app.EnterpriseKeeper.GetTotalLockedUnd(ctx)
-	require.True(t, totalLockedAfter.IsEqual(expectedTotalLocked),
+	require.True(t, totalLockedAfter.Equal(expectedTotalLocked),
 		"total locked: expected %s, got %s", expectedTotalLocked, totalLockedAfter)
 
 	totalSpentAfter := app.EnterpriseKeeper.GetTotalSpentEFUND(ctx)
-	require.True(t, totalSpentAfter.IsEqual(totalSpentBefore),
+	require.True(t, totalSpentAfter.Equal(totalSpentBefore),
 		"total spent must NOT change in Branch C: before %s, after %s", totalSpentBefore, totalSpentAfter)
 
 	// Critically: no minting must have happened.
 	totalSupplyAfter := app.BankKeeper.GetSupply(ctx, denom)
-	require.True(t, totalSupplyAfter.IsEqual(totalSupplyBefore),
+	require.True(t, totalSupplyAfter.Equal(totalSupplyBefore),
 		"total supply must NOT change in Branch C (no minting): before %s, after %s", totalSupplyBefore, totalSupplyAfter)
 }
 
@@ -326,12 +326,12 @@ func TestUnlockCoinsForFeesAndUsedCounterWithHalfFunds(t *testing.T) {
 
 		usedDb := app.EnterpriseKeeper.GetSpentEFUNDForAccount(ctx, addr)
 		// fee is 2x what was minted. Only minted should count
-		require.True(t, usedDb.Amount.IsEqual(toMint))
+		require.True(t, usedDb.Amount.Equal(toMint))
 		require.Equal(t, usedDb.Owner, addr.String())
 	}
 
 	expectedTotalUsedCoin := sdk.NewInt64Coin(sdk.DefaultBondDenom, totalUsed)
 
 	totalUsedDb := app.EnterpriseKeeper.GetTotalSpentEFUND(ctx)
-	require.True(t, totalUsedDb.IsEqual(expectedTotalUsedCoin))
+	require.True(t, totalUsedDb.Equal(expectedTotalUsedCoin))
 }

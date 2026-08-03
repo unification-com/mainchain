@@ -97,9 +97,8 @@ func checkBeaconMaxSlots(ctx sdk.Context, tx sdk.FeeTx, bk BeaconKeeper) error {
 
 	// go through Msgs wrapped in the Tx, and check for BEACON messages
 	for _, msg := range msgs {
-		switch msg.(type) {
+		switch m := msg.(type) {
 		case *types.MsgPurchaseBeaconStateStorage:
-			m := msg.(*types.MsgPurchaseBeaconStateStorage)
 			numSlots := m.Number
 			beaconId := m.BeaconId
 			if purchaseData[beaconId].want == 0 {
@@ -143,7 +142,7 @@ func checkBeaconFees(ctx sdk.Context, tx sdk.FeeTx, bk BeaconKeeper) error {
 
 	// go through Msgs wrapped in the Tx, and check for BEACON messages
 	for _, msg := range msgs {
-		switch msg.(type) {
+		switch m := msg.(type) {
 		case *types.MsgRegisterBeacon:
 			expectedFees = expectedFees.Add(bk.GetRegistrationFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
@@ -151,7 +150,6 @@ func checkBeaconFees(ctx sdk.Context, tx sdk.FeeTx, bk BeaconKeeper) error {
 			expectedFees = expectedFees.Add(bk.GetRecordFeeAsCoin(ctx))
 			numMsgs = numMsgs + 1
 		case *types.MsgPurchaseBeaconStateStorage:
-			m := msg.(*types.MsgPurchaseBeaconStateStorage)
 			numSlots := m.Number
 			feePerSlot := bk.GetPurchaseStorageFeeAsCoin(ctx)
 			totalForSlotsAmt := feePerSlot.Amount.Mul(mathmod.NewInt(int64(numSlots)))

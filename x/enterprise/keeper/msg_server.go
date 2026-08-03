@@ -71,7 +71,7 @@ func (k msgServer) UndPurchaseOrder(goCtx context.Context, msg *types.MsgUndPurc
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -138,7 +138,7 @@ func (k msgServer) ProcessUndPurchaseOrder(goCtx context.Context, msg *types.Msg
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.ProcessAction, msg.Decision.String())
+	defer telemetry.IncrCounter(1, types.ModuleName, types.ProcessAction, msg.Decision.String()) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -179,7 +179,7 @@ func (k msgServer) WhitelistAddress(goCtx context.Context, msg *types.MsgWhiteli
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.WhitelistAddressAction, msg.Action.String())
+	defer telemetry.IncrCounter(1, types.ModuleName, types.WhitelistAddressAction, msg.Action.String()) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

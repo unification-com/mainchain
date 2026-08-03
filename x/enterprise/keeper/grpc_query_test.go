@@ -54,14 +54,14 @@ func (s *KeeperTestSuite) TestGRPCQueryEnterpriseAccount() {
 		s.Require().NotNil(resp)
 
 		s.Require().Equal(freshAddr.String(), resp.Account.Owner)
-		s.Require().True(resp.Account.GeneralSupply.IsEqual(bankBalance),
+		s.Require().True(resp.Account.GeneralSupply.Equal(bankBalance),
 			"GeneralSupply: expected %s, got %s", bankBalance, resp.Account.GeneralSupply)
-		s.Require().True(resp.Account.LockedEfund.IsEqual(sdk.NewInt64Coin(denom, 0)),
+		s.Require().True(resp.Account.LockedEfund.Equal(sdk.NewInt64Coin(denom, 0)),
 			"LockedEfund must be zero for fresh address")
-		s.Require().True(resp.Account.SpentEfund.IsEqual(sdk.NewInt64Coin(denom, 0)),
+		s.Require().True(resp.Account.SpentEfund.Equal(sdk.NewInt64Coin(denom, 0)),
 			"SpentEfund must be zero for fresh address")
 		// Spendable = bank + locked = bank + 0 = bank
-		s.Require().True(resp.Account.Spendable.IsEqual(bankBalance),
+		s.Require().True(resp.Account.Spendable.Equal(bankBalance),
 			"Spendable: expected %s, got %s", bankBalance, resp.Account.Spendable)
 	})
 
@@ -94,13 +94,13 @@ func (s *KeeperTestSuite) TestGRPCQueryEnterpriseAccount() {
 		expSpendable := bankBalance.Add(expLocked)
 
 		s.Require().Equal(userAddr.String(), resp.Account.Owner)
-		s.Require().True(resp.Account.GeneralSupply.IsEqual(bankBalance),
+		s.Require().True(resp.Account.GeneralSupply.Equal(bankBalance),
 			"GeneralSupply: expected %s, got %s", bankBalance, resp.Account.GeneralSupply)
-		s.Require().True(resp.Account.LockedEfund.IsEqual(expLocked),
+		s.Require().True(resp.Account.LockedEfund.Equal(expLocked),
 			"LockedEfund: expected %s, got %s", expLocked, resp.Account.LockedEfund)
-		s.Require().True(resp.Account.SpentEfund.IsEqual(expSpent),
+		s.Require().True(resp.Account.SpentEfund.Equal(expSpent),
 			"SpentEfund: expected %s, got %s", expSpent, resp.Account.SpentEfund)
-		s.Require().True(resp.Account.Spendable.IsEqual(expSpendable),
+		s.Require().True(resp.Account.Spendable.Equal(expSpendable),
 			"Spendable (bank+locked): expected %s, got %s", expSpendable, resp.Account.Spendable)
 	})
 }
@@ -115,7 +115,7 @@ func (s *KeeperTestSuite) TestGRPCQueryParams() {
 		DecisionTimeLimit: 600,
 	}
 
-	app.EnterpriseKeeper.SetParams(ctx, testParams)
+	s.Require().NoError(app.EnterpriseKeeper.SetParams(ctx, testParams))
 	paramsResp, err := queryClient.Params(gocontext.Background(), &types.QueryParamsRequest{})
 
 	s.NoError(err)

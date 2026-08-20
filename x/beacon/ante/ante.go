@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	"github.com/unification-com/mainchain/ante/feecheck"
 	"github.com/unification-com/mainchain/x/beacon/exported"
 	"github.com/unification-com/mainchain/x/beacon/types"
 )
@@ -55,11 +56,16 @@ func (wfd CorrectBeaconFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simu
 		return next(ctx, tx, simulate)
 	}
 
-	// Check fees amount sent in Tx. Check during CheckTx. Since BEACONs have set fees that are not
-	// based on gas/gas prices, we need to check the Tx has the correct fees according to the BEACON
-	// module parameters. E.g. 10,000 to register, 1 to submit a hash etc.
-	// Reject the Tx if the fees are incorrect
-	if ctx.IsCheckTx() && !simulate {
+	// Check the fee amount sent in the Tx. Since BEACONs have set fees that are not based
+	// on gas/gas prices, we need to check the Tx carries exactly the fees the BEACON
+	// module parameters call for. E.g. 10,000 to register, 1 to submit a hash etc.
+	// Reject the Tx if the fees are incorrect.
+	//
+	// Enforced during delivery as well as CheckTx: the mempool check only constrains
+	// what a node accepts from a peer, and nothing else in the chain would stop a
+	// BEACON Msg that reached a block from executing without paying. Skipped when
+	// simulating, so clients can still estimate gas before they know the fee.
+	if !simulate {
 		err := checkBeaconFees(ctx, feeTx, wfd.beaconKeeper)
 		if err != nil {
 			return ctx, err
@@ -67,7 +73,8 @@ func (wfd CorrectBeaconFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simu
 	}
 
 	// check sender has sufficient funds - no point continuing if not
-	err := checkFeePayerHasFunds(ctx, wfd.bankKeeper, wfd.accKeeper, wfd.entKeeper, wfd.beaconKeeper, feeTx)
+	err := feecheck.CheckFeePayerHasFunds(ctx, wfd.bankKeeper, wfd.accKeeper, wfd.entKeeper,
+		wfd.beaconKeeper.GetParamDenom(ctx), feeTx)
 	if err != nil {
 		return ctx, err
 	}
@@ -168,60 +175,6 @@ func checkBeaconFees(ctx sdk.Context, tx sdk.FeeTx, bk BeaconKeeper) error {
 	if tx.GetFee().IsAllGT(totalFees) {
 		errMsg := fmt.Sprintf("too much fee sent to pay for beacon tx. numMsgs in tx: %v, expected fees: %v, sent fees: %v", numMsgs, totalFees.String(), tx.GetFee())
 		return errorsmod.Wrap(exported.ErrTooMuchBeaconFee, errMsg)
-	}
-
-	return nil
-}
-
-func checkFeePayerHasFunds(ctx sdk.Context, bankKeeper BankKeeper, accKeeper AccountKeeper, ek EnterpriseKeeper, bk BeaconKeeper, tx sdk.FeeTx) error {
-	feePayer := tx.FeePayer()
-	feePayerAcc := accKeeper.GetAccount(ctx, feePayer)
-	//blockTime := ctx.BlockHeader().Time
-	expectedFeeDenom := bk.GetParamDenom(ctx)
-	fees := tx.GetFee()
-
-	if feePayerAcc == nil {
-		return errorsmod.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", feePayer)
-	}
-
-	if !fees.IsValid() {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidCoins, "invalid fee: %s", fees)
-	}
-
-	coins := bankKeeper.GetAllBalances(ctx, feePayerAcc.GetAddress()) //feePayerAcc.GetCoins()
-
-	potentialCoins := coins
-
-	//get any locked enterprise FUND
-	lockedUnd := ek.GetLockedUndAmountForAccount(ctx, feePayer)
-
-	lockedUndCoins := sdk.NewCoins(lockedUnd)
-	// include any locked FUND in potential coins. We need to do this because if these checks pass,
-	// the locked FUND will be unlocked in the next decorator
-	potentialCoins = potentialCoins.Add(lockedUndCoins...)
-
-	_, fee := fees.Find(expectedFeeDenom)
-	// verify the account has enough funds to pay for fees, including any locked enterprise FUND
-	_, hasNeg := potentialCoins.SafeSub(fee)
-	if hasNeg {
-		err := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
-			"insufficient und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", coins, potentialCoins, fees)
-		return err
-	}
-
-	// Validate the account has enough "spendable" coins as this will cover cases
-	// such as vesting accounts.
-	spendableCoins := bankKeeper.SpendableCoins(ctx, feePayerAcc.GetAddress()) //feePayerAcc.SpendableCoins(blockTime)
-	potentialSpendableCoins := spendableCoins
-
-	// include any locked FUND in potential coins. We need to do this because if these checks pass,
-	// the locked FUND will be unlocked in the next decorator
-	potentialSpendableCoins = potentialSpendableCoins.Add(lockedUndCoins...)
-
-	if _, hasNeg := potentialSpendableCoins.SafeSub(fee); hasNeg {
-		err := errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds,
-			"insufficient spendable und to pay for fees. unlocked und: %s, including locked und: %s, fee: %s", spendableCoins, potentialSpendableCoins, fees)
-		return err
 	}
 
 	return nil

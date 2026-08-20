@@ -182,12 +182,12 @@ func (k Keeper) UnlockAndMintCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddre
 	lockedUnd := k.GetLockedUndForAccount(ctx, feePayer).Amount
 	lockedUndCoins := sdk.NewCoins(lockedUnd)
 	feeNund := feesToPay.AmountOf(k.GetParamDenom(ctx))
+	// AmountOf, not Coins.Find: Find returns a zero-value Coin for an absent
+	// denomination, whose nil math.Int panics inside SafeSub.
 	feeNundCoin := sdk.NewCoin(k.GetParamDenom(ctx), feeNund)
-	_, feeToPay := feesToPay.Find(k.GetParamDenom(ctx))
-	//blockTime := uint64(ctx.BlockHeader().Time.Unix())
 
 	// calculate how much Locked FUND would be left over after deducting Tx fees
-	_, hasNeg := lockedUndCoins.SafeSub(feeToPay)
+	_, hasNeg := lockedUndCoins.SafeSub(feeNundCoin)
 
 	if !hasNeg {
 		// locked FUND >= total fees
@@ -236,7 +236,7 @@ func (k Keeper) UnlockAndMintCoinsForFees(ctx sdk.Context, feePayer sdk.AccAddre
 		potentiallyAvailable := spendableCoins.Add(lockedUndCoins...)
 
 		// is this enough to pay for the fees?
-		_, hasNeg2 := potentiallyAvailable.SafeSub(feeToPay)
+		_, hasNeg2 := potentiallyAvailable.SafeSub(feeNundCoin)
 
 		// only undelegate & unlock if the resulting unlock will be enough to pay for the fees.
 		if !hasNeg2 {

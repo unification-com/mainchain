@@ -836,25 +836,27 @@ func GenTx(
 	return baseTxBuilder.GetTx(), nil
 }
 
-// TestCorrectBeaconFeeDecoratorNoFeeInTx pins two related guarantees.
+// TestCorrectBeaconFeeDecoratorNoFeeInTx is the regression test for the nil pointer dereference
+// that surfaced to operators as `recovered: runtime error: invalid memory address` whenever
+// `--gas=auto` simulated a BEACON Tx with no --fees set. Coins.Find returns a zero-value Coin for
+// an absent denomination and its nil math.Int panicked inside SafeSub; AmountOf returns a real
+// zero instead.
 //
-// First, a Tx carrying no fee at all must be rejected rather than panic. Coins.Find
-// returns a zero-value Coin for an absent denomination, and its nil math.Int used to
-// blow up inside SafeSub — surfacing to operators as a recovered nil dereference
-// whenever `--gas=auto` simulated a BEACON Tx that had not set --fees.
-//
-// Second, the rejection has to hold during delivery and not only in CheckTx. Nothing
-// later in the chain re-checks the flat fee, so if a fee-less Msg reached a block it
-// would otherwise record a timestamp for free.
+// It also pins WHERE the flat-fee check runs, which matters far more than it looks. In CheckTx a
+// fee-less Tx must be rejected. During delivery the decorator must NOT run that check — see the
+// comment on the gate in ante.go: the check reads module params, those reads are gas metered,
+// and the gas lands in LastResultsHash. Running it in delivery is a consensus break. If someone
+// widens the gate again, the delivery case below starts failing.
 func TestCorrectBeaconFeeDecoratorNoFeeInTx(t *testing.T) {
 	r := rand.New(rand.NewSource(1))
 
 	for _, tc := range []struct {
 		name      string
 		isCheckTx bool
+		expReject bool
 	}{
-		{"CheckTx", true},
-		{"delivery", false},
+		{name: "CheckTx rejects a fee-less Tx", isCheckTx: true, expReject: true},
+		{name: "delivery leaves the flat-fee check to CheckTx", isCheckTx: false, expReject: false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			app := simapphelpers.Setup(t)
@@ -868,24 +870,32 @@ func TestCorrectBeaconFeeDecoratorNoFeeInTx(t *testing.T) {
 
 			privK := ed25519.GenPrivKey()
 			addr := sdk.AccAddress(privK.PubKey().Address())
+			require.NoError(t, fundAccount(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin("testnund", 1000))))
 
 			msg := types.NewMsgRecordBeaconTimestamp(1, "somehash", 1, addr)
 			tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 			var err error
-			require.NotPanics(t, func() { _, err = antehandler(ctx, tx, false) })
+			require.NotPanics(t, func() { _, err = antehandler(ctx, tx, false) },
+				"a Tx with no fee must not panic on the nil math.Int Coins.Find returns")
+
+			if !tc.expReject {
+				require.NoError(t, err,
+					"the flat-fee check must stay CheckTx-only: running it during delivery changes GasUsed, "+
+						"and GasUsed is hashed into LastResultsHash")
+				return
+			}
 
 			expectedErr := errorsmod.Wrap(types.ErrIncorrectFeeDenomination,
 				fmt.Sprintf("incorrect fee denomination. expected %s", app.BeaconKeeper.GetParams(ctx).Denom))
-			require.NotNil(t, err, "a Tx with no fee must not be accepted")
+			require.NotNil(t, err, "CheckTx must reject a Tx with no fee")
 			require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 		})
 	}
 }
 
-// TestCorrectBeaconFeeDecoratorSimulateNoFee complements the above: gas estimation
-// runs before a client necessarily knows the fee, so simulation skips the flat-fee
-// check and must neither panic nor reject.
+// TestCorrectBeaconFeeDecoratorSimulateNoFee covers the case the CLI hits: gas estimation runs
+// before a client necessarily knows the fee, so simulation must neither panic nor reject.
 func TestCorrectBeaconFeeDecoratorSimulateNoFee(t *testing.T) {
 	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)

@@ -750,21 +750,24 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 }
 
-// TestCorrectWrkChainFeeDecoratorNoFeeInTx is the WRKChain counterpart of the
-// BEACON test of the same name: a Tx carrying no fee must be rejected rather than
-// panic on the nil math.Int that Coins.Find hands back for an absent denomination,
-// and the rejection must hold during delivery as well as CheckTx — nothing later in
-// the chain re-checks the flat fee, so a fee-less Msg that reached a block would
-// otherwise record a block hash for free.
+// TestCorrectWrkChainFeeDecoratorNoFeeInTx is the WRKChain counterpart of the BEACON test of the
+// same name: a fee-less Tx must not panic on the nil math.Int that Coins.Find returns for an
+// absent denomination, CheckTx must reject it, and — the part that matters most — the flat-fee
+// check must NOT run during delivery.
+//
+// See the gate comment in ante.go. The check reads module params, those reads are gas metered, and
+// the gas lands in LastResultsHash, so running it in delivery is a consensus break. Widening the
+// gate again makes the delivery case below fail.
 func TestCorrectWrkChainFeeDecoratorNoFeeInTx(t *testing.T) {
 	r := rand.New(rand.NewSource(1))
 
 	for _, tc := range []struct {
 		name      string
 		isCheckTx bool
+		expReject bool
 	}{
-		{"CheckTx", true},
-		{"delivery", false},
+		{name: "CheckTx rejects a fee-less Tx", isCheckTx: true, expReject: true},
+		{name: "delivery leaves the flat-fee check to CheckTx", isCheckTx: false, expReject: false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			app := simapphelpers.Setup(t)
@@ -778,23 +781,32 @@ func TestCorrectWrkChainFeeDecoratorNoFeeInTx(t *testing.T) {
 
 			privK := ed25519.GenPrivKey()
 			addr := sdk.AccAddress(privK.PubKey().Address())
+			require.NoError(t, fundAccount(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin("testnund", 1000))))
 
 			msg := types.NewMsgRecordWrkChainBlock(1, 1, "blockhash", "", "", "", "", addr)
 			tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
 
 			var err error
-			require.NotPanics(t, func() { _, err = antehandler(ctx, tx, false) })
+			require.NotPanics(t, func() { _, err = antehandler(ctx, tx, false) },
+				"a Tx with no fee must not panic on the nil math.Int Coins.Find returns")
+
+			if !tc.expReject {
+				require.NoError(t, err,
+					"the flat-fee check must stay CheckTx-only: running it during delivery changes GasUsed, "+
+						"and GasUsed is hashed into LastResultsHash")
+				return
+			}
 
 			expectedErr := errorsmod.Wrap(types.ErrIncorrectFeeDenomination,
 				fmt.Sprintf("incorrect fee denomination. expected %s", app.WrkchainKeeper.GetParams(ctx).Denom))
-			require.NotNil(t, err, "a Tx with no fee must not be accepted")
+			require.NotNil(t, err, "CheckTx must reject a Tx with no fee")
 			require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 		})
 	}
 }
 
-// TestCorrectWrkChainFeeDecoratorSimulateNoFee complements the above: simulation
-// skips the flat-fee check so clients can estimate gas before they know the fee.
+// TestCorrectWrkChainFeeDecoratorSimulateNoFee covers the case the CLI hits: gas estimation runs
+// before a client necessarily knows the fee, so simulation must neither panic nor reject.
 func TestCorrectWrkChainFeeDecoratorSimulateNoFee(t *testing.T) {
 	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)

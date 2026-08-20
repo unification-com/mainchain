@@ -46,10 +46,12 @@ import (
 //
 // The numbers were verified equal against the v1.13.0 tree, decorator for decorator.
 const (
-	gasBeaconRecordLiquid   = 8581  // BEACON record, fee paid from liquid FUND
-	gasBeaconRecordLocked   = 59239 // BEACON record, fee unlocked+minted from locked eFUND
-	gasWrkChainRecordLiquid = 8581  // WRKChain record, fee paid from liquid FUND
-	gasWrkChainRecordLocked = 59239 // WRKChain record, fee unlocked+minted from locked eFUND
+	gasBeaconRecordLiquid     = 8581  // BEACON record, fee paid from liquid FUND
+	gasBeaconRecordLocked     = 59239 // BEACON record, fee unlocked+minted from locked eFUND
+	gasWrkChainRecordLiquid   = 8581  // WRKChain record, fee paid from liquid FUND
+	gasWrkChainRecordLocked   = 59239 // WRKChain record, fee unlocked+minted from locked eFUND
+	gasBeaconRegisterLiquid   = 8581  // BEACON register
+	gasWrkChainRegisterLiquid = 8581  // WRKChain register
 )
 
 const gasParityChainID = "und-gas-parity-test"
@@ -73,7 +75,7 @@ func gasParityFund(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, a
 
 // measureDeliveryGas runs one Tx through the custom ante segment in DELIVERY mode (IsCheckTx
 // false, simulate false) and returns the gas consumed.
-func measureDeliveryGas(t *testing.T, msgFor func(sdk.AccAddress) sdk.Msg, locked bool) uint64 {
+func measureDeliveryGas(t *testing.T, msgFor func(sdk.AccAddress) sdk.Msg, locked bool, feeAmt int64) uint64 {
 	t.Helper()
 
 	r := rand.New(rand.NewSource(1))
@@ -110,7 +112,7 @@ func measureDeliveryGas(t *testing.T, msgFor func(sdk.AccAddress) sdk.Msg, locke
 		require.NoError(t, gasParityFund(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin(denom, 1000000))))
 	}
 
-	fee := sdk.NewCoins(sdk.NewInt64Coin(denom, recordFee))
+	fee := sdk.NewCoins(sdk.NewInt64Coin(denom, feeAmt))
 	tx, err := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msgFor(addr)}, fee, uint64(0), gasParityChainID, []uint64{0}, []uint64{0}, privK)
 	require.NoError(t, err)
 
@@ -129,19 +131,29 @@ func TestDeliveryGasParity(t *testing.T) {
 		return wrkchaintypes.NewMsgRecordWrkChainBlock(1, 1, "blockhash", "", "", "", "", addr)
 	}
 
+	beaconRegisterMsg := func(addr sdk.AccAddress) sdk.Msg {
+		return beacontypes.NewMsgRegisterBeacon("gasparity", "Gas Parity", addr)
+	}
+	wrkchainRegisterMsg := func(addr sdk.AccAddress) sdk.Msg {
+		return wrkchaintypes.NewMsgRegisterWrkChain("gasparity", "genhash", "Gas Parity", "geth", addr)
+	}
+
 	for _, tc := range []struct {
 		name   string
 		msgFor func(sdk.AccAddress) sdk.Msg
 		locked bool
+		fee    int64
 		want   uint64
 	}{
-		{"beacon record, liquid FUND", beaconMsg, false, gasBeaconRecordLiquid},
-		{"beacon record, locked eFUND", beaconMsg, true, gasBeaconRecordLocked},
-		{"wrkchain record, liquid FUND", wrkchainMsg, false, gasWrkChainRecordLiquid},
-		{"wrkchain record, locked eFUND", wrkchainMsg, true, gasWrkChainRecordLocked},
+		{"beacon record, liquid FUND", beaconMsg, false, 2, gasBeaconRecordLiquid},
+		{"beacon record, locked eFUND", beaconMsg, true, 2, gasBeaconRecordLocked},
+		{"wrkchain record, liquid FUND", wrkchainMsg, false, 2, gasWrkChainRecordLiquid},
+		{"wrkchain record, locked eFUND", wrkchainMsg, true, 2, gasWrkChainRecordLocked},
+		{"beacon register, liquid FUND", beaconRegisterMsg, false, 24, gasBeaconRegisterLiquid},
+		{"wrkchain register, liquid FUND", wrkchainRegisterMsg, false, 24, gasWrkChainRegisterLiquid},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			got := measureDeliveryGas(t, tc.msgFor, tc.locked)
+			got := measureDeliveryGas(t, tc.msgFor, tc.locked, tc.fee)
 			require.Equal(t, tc.want, got, deliveryGasFailureMessage(tc.name, tc.want, got))
 		})
 	}

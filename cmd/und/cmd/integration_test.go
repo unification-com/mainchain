@@ -165,6 +165,17 @@ func TestAutoFeeShims_OnLiveRootCmd(t *testing.T) {
 			require.NoError(t, err)
 			require.Equal(t, "1nund", got,
 				"%s: explicitly supplied --fees must not be overwritten", path)
+
+			// --gas-prices must short-circuit too: the SDK rejects a Tx carrying both, so
+			// injecting a fee on top would fail the Tx client-side.
+			gp := findCmdByPath(t, cmd.NewRootCmd(), path)
+			require.NoError(t, gp.ParseFlags([]string{"--gas-prices", "25.0nund"}))
+			require.NoError(t, gp.PreRunE(gp, []string{"1", "1"}),
+				"%s: an explicit --gas-prices must short-circuit the shim", path)
+			gpFees, err := gp.Flags().GetString("fees")
+			require.NoError(t, err)
+			require.Empty(t, gpFees,
+				"%s: --fees must stay empty when --gas-prices was supplied", path)
 		})
 	}
 }

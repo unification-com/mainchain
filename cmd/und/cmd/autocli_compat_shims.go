@@ -47,6 +47,7 @@ func installAutocliCompatShims(rootCmd *cobra.Command) {
 	if cmd := findCommand(rootCmd, "tx enterprise process"); cmd != nil {
 		chainPreRunE(cmd, enterpriseProcessAliasDecisionToken)
 	}
+	installAutoFeeShims(rootCmd)
 }
 
 // chainPreRunE prepends shim onto cmd.PreRunE, preserving any existing
@@ -97,4 +98,3 @@ func enterpriseProcessAliasDecisionToken(_ *cobra.Command, args []string) error 
 	args[1] = canonical
 	return nil
 }
-

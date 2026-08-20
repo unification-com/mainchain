@@ -749,3 +749,71 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 }
+
+// TestCorrectWrkChainFeeDecoratorNoFeeInTx is the WRKChain counterpart of the
+// BEACON test of the same name: a Tx carrying no fee must be rejected rather than
+// panic on the nil math.Int that Coins.Find hands back for an absent denomination,
+// and the rejection must hold during delivery as well as CheckTx — nothing later in
+// the chain re-checks the flat fee, so a fee-less Msg that reached a block would
+// otherwise record a block hash for free.
+func TestCorrectWrkChainFeeDecoratorNoFeeInTx(t *testing.T) {
+	r := rand.New(rand.NewSource(1))
+
+	for _, tc := range []struct {
+		name      string
+		isCheckTx bool
+	}{
+		{"CheckTx", true},
+		{"delivery", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			app := simapphelpers.Setup(t)
+			ctx := app.BaseApp.NewContext(tc.isCheckTx)
+			txGen := app.GetTxConfig()
+
+			feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
+			antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+			require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
+
+			privK := ed25519.GenPrivKey()
+			addr := sdk.AccAddress(privK.PubKey().Address())
+
+			msg := types.NewMsgRecordWrkChainBlock(1, 1, "blockhash", "", "", "", "", addr)
+			tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+
+			var err error
+			require.NotPanics(t, func() { _, err = antehandler(ctx, tx, false) })
+
+			expectedErr := errorsmod.Wrap(types.ErrIncorrectFeeDenomination,
+				fmt.Sprintf("incorrect fee denomination. expected %s", app.WrkchainKeeper.GetParams(ctx).Denom))
+			require.NotNil(t, err, "a Tx with no fee must not be accepted")
+			require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
+		})
+	}
+}
+
+// TestCorrectWrkChainFeeDecoratorSimulateNoFee complements the above: simulation
+// skips the flat-fee check so clients can estimate gas before they know the fee.
+func TestCorrectWrkChainFeeDecoratorSimulateNoFee(t *testing.T) {
+	r := rand.New(rand.NewSource(1))
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
+
+	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
+	antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
+
+	privK := ed25519.GenPrivKey()
+	addr := sdk.AccAddress(privK.PubKey().Address())
+	require.NoError(t, fundAccount(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin("testnund", 1000))))
+
+	msg := types.NewMsgRecordWrkChainBlock(1, 1, "blockhash", "", "", "", "", addr)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+
+	var err error
+	require.NotPanics(t, func() { _, err = antehandler(ctx, tx, true) })
+	require.NoError(t, err, "simulation must estimate gas without a fee being set")
+}

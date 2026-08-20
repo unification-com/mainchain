@@ -835,3 +835,76 @@ func GenTx(
 
 	return baseTxBuilder.GetTx(), nil
 }
+
+// TestCorrectBeaconFeeDecoratorNoFeeInTx pins two related guarantees.
+//
+// First, a Tx carrying no fee at all must be rejected rather than panic. Coins.Find
+// returns a zero-value Coin for an absent denomination, and its nil math.Int used to
+// blow up inside SafeSub — surfacing to operators as a recovered nil dereference
+// whenever `--gas=auto` simulated a BEACON Tx that had not set --fees.
+//
+// Second, the rejection has to hold during delivery and not only in CheckTx. Nothing
+// later in the chain re-checks the flat fee, so if a fee-less Msg reached a block it
+// would otherwise record a timestamp for free.
+func TestCorrectBeaconFeeDecoratorNoFeeInTx(t *testing.T) {
+	r := rand.New(rand.NewSource(1))
+
+	for _, tc := range []struct {
+		name      string
+		isCheckTx bool
+	}{
+		{"CheckTx", true},
+		{"delivery", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			app := simapphelpers.Setup(t)
+			ctx := app.BaseApp.NewContext(tc.isCheckTx)
+			txGen := app.GetTxConfig()
+
+			feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
+			antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+			require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
+
+			privK := ed25519.GenPrivKey()
+			addr := sdk.AccAddress(privK.PubKey().Address())
+
+			msg := types.NewMsgRecordBeaconTimestamp(1, "somehash", 1, addr)
+			tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+
+			var err error
+			require.NotPanics(t, func() { _, err = antehandler(ctx, tx, false) })
+
+			expectedErr := errorsmod.Wrap(types.ErrIncorrectFeeDenomination,
+				fmt.Sprintf("incorrect fee denomination. expected %s", app.BeaconKeeper.GetParams(ctx).Denom))
+			require.NotNil(t, err, "a Tx with no fee must not be accepted")
+			require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
+		})
+	}
+}
+
+// TestCorrectBeaconFeeDecoratorSimulateNoFee complements the above: gas estimation
+// runs before a client necessarily knows the fee, so simulation skips the flat-fee
+// check and must neither panic nor reject.
+func TestCorrectBeaconFeeDecoratorSimulateNoFee(t *testing.T) {
+	r := rand.New(rand.NewSource(1))
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
+
+	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
+	antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
+
+	privK := ed25519.GenPrivKey()
+	addr := sdk.AccAddress(privK.PubKey().Address())
+	require.NoError(t, fundAccount(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin("testnund", 1000))))
+
+	msg := types.NewMsgRecordBeaconTimestamp(1, "somehash", 1, addr)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+
+	var err error
+	require.NotPanics(t, func() { _, err = antehandler(ctx, tx, true) })
+	require.NoError(t, err, "simulation must estimate gas without a fee being set")
+}

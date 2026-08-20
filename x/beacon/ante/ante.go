@@ -61,11 +61,12 @@ func (wfd CorrectBeaconFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simu
 	// module parameters call for. E.g. 10,000 to register, 1 to submit a hash etc.
 	// Reject the Tx if the fees are incorrect.
 	//
-	// Enforced during delivery as well as CheckTx: the mempool check only constrains
-	// what a node accepts from a peer, and nothing else in the chain would stop a
-	// BEACON Msg that reached a block from executing without paying. Skipped when
-	// simulating, so clients can still estimate gas before they know the fee.
-	if !simulate {
+	// CheckTx only, deliberately. This reads the module params, store reads in the ante chain
+	// are gas metered, and that gas lands in the Tx's GasUsed — which is hashed into the block's
+	// LastResultsHash. Running it during delivery would therefore change the results hash for
+	// every BEACON Tx. Widening this condition is a state-machine change: it belongs in a
+	// coordinated upgrade with an upgrade handler and a height, not a patch release.
+	if ctx.IsCheckTx() && !simulate {
 		err := checkBeaconFees(ctx, feeTx, wfd.beaconKeeper)
 		if err != nil {
 			return ctx, err

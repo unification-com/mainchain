@@ -107,7 +107,11 @@ func flatFee(params moduleFeeParams, kind feeKind, args []string) (sdk.Coin, err
 // chain and pins --fees to the exact amount the ante chain will demand.
 func moduleFeeShim(fetch func(client.Context) (moduleFeeParams, error), kind feeKind) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		if cmd.Flags().Changed(flags.FlagFees) {
+		// Leave an explicitly supplied fee alone, whichever form it takes. --gas-prices matters as
+		// much as --fees here: the SDK refuses a Tx carrying both ("cannot provide both fees and
+		// gas prices"), so injecting a fee on top of an operator's --gas-prices would fail the Tx
+		// client-side instead of letting the chain judge it.
+		if cmd.Flags().Changed(flags.FlagFees) || cmd.Flags().Changed(flags.FlagGasPrices) {
 			return nil
 		}
 

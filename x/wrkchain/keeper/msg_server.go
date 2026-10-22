@@ -45,13 +45,21 @@ func (k msgServer) RegisterWrkChain(goCtx context.Context, msg *types.MsgRegiste
 		return nil, errorsmod.Wrap(types.ErrMissingData, "unable to register wrkchain - must have a moniker")
 	}
 
+	// Per-owner wrkchain count cap. Deters state-bloat by a single funded
+	// attacker registering many small wrkchains.
+	if count := k.CountWrkChainsForOwner(ctx, ownerAddr); count >= types.MaxWrkChainsPerOwner {
+		return nil, errorsmod.Wrapf(types.ErrContentTooLarge,
+			"owner %s already has %d wrkchains (max %d)",
+			msg.Owner, count, types.MaxWrkChainsPerOwner)
+	}
+
 	wrkchainId, err := k.RegisterNewWrkChain(ctx, msg.Moniker, msg.Name, msg.GenesisHash, msg.BaseType, ownerAddr) // register the WrkChain
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.RegisterAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.RegisterAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -117,7 +125,7 @@ func (k msgServer) RecordWrkChainBlock(goCtx context.Context, msg *types.MsgReco
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.RecordAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.RecordAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -186,7 +194,7 @@ func (k msgServer) PurchaseWrkChainStateStorage(goCtx context.Context, msg *type
 	// get remianing can purchase
 	numCanPurchase := k.GetMaxPurchasableSlots(ctx, msg.WrkchainId)
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

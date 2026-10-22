@@ -1,13 +1,13 @@
 version: v1
 name: buf.build/unification-com/mainchain
 deps:
-  - buf.build/cosmos/cosmos-sdk:v0.47.0
+  - buf.build/cosmos/cosmos-sdk:main
   - buf.build/cosmos/cosmos-proto
   - buf.build/cosmos/gogo-proto
   - buf.build/googleapis/googleapis
 lint:
   use:
-    - DEFAULT
+    - STANDARD
     - COMMENTS
     - FILE_LOWER_SNAKE_CASE
   except:
@@ -16,6 +16,13 @@ lint:
     - SERVICE_SUFFIX
     - PACKAGE_VERSION_SUFFIX
     - RPC_REQUEST_STANDARD_NAME
+    # Enum value naming exceptions: our STATUS_*/WHITELIST_ACTION_* enums in
+    # x/enterprise are client-visible (JSON output, gRPC reflection). Renaming
+    # to satisfy ENUM_VALUE_PREFIX / ENUM_ZERO_VALUE_SUFFIX would break external
+    # consumers — values are serialised by integer, but their names appear in
+    # tx/query responses and explorer dashboards.
+    - ENUM_VALUE_PREFIX
+    - ENUM_ZERO_VALUE_SUFFIX
 breaking:
   use:
     - FILE

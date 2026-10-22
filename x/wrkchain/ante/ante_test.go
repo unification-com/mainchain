@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
-	"time"
 
 	errorsmod "cosmossdk.io/errors"
 	mathmod "cosmossdk.io/math"
@@ -36,7 +35,7 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -44,7 +43,7 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualFeeAmt := wrkParams.FeeRegister
@@ -71,7 +70,7 @@ func TestCorrectWrkChainFeeDecoratorAddressNotExist(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -79,7 +78,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -156,7 +155,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -164,7 +163,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -240,7 +239,7 @@ func TestCorrectWrkChainFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -248,7 +247,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 
 	wrkParams := app.WrkchainKeeper.GetParams(ctx)
 	actualRegFeeAmt := wrkParams.FeeRegister
@@ -319,7 +318,7 @@ func TestCorrectWrkChainFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -414,7 +413,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -516,7 +515,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *tes
 }
 
 func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -602,7 +601,7 @@ func TestCorrectWrkChainFeeDecoratorAcceptValidTx(t *testing.T) {
 }
 
 func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -692,7 +691,7 @@ func TestCorrectWrkChainFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 }
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -749,4 +748,84 @@ func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
 
 	require.NotNil(t, err, "Did not error on invalid tx")
 	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
+}
+
+// TestCorrectWrkChainFeeDecoratorNoFeeInTx is the WRKChain counterpart of the BEACON test of the
+// same name: a fee-less Tx must not panic on the nil math.Int that Coins.Find returns for an
+// absent denomination, CheckTx must reject it, and — the part that matters most — the flat-fee
+// check must NOT run during delivery.
+//
+// See the gate comment in ante.go. The check reads module params, those reads are gas metered, and
+// the gas lands in LastResultsHash, so running it in delivery is a consensus break. Widening the
+// gate again makes the delivery case below fail.
+func TestCorrectWrkChainFeeDecoratorNoFeeInTx(t *testing.T) {
+	r := rand.New(rand.NewSource(1))
+
+	for _, tc := range []struct {
+		name      string
+		isCheckTx bool
+		expReject bool
+	}{
+		{name: "CheckTx rejects a fee-less Tx", isCheckTx: true, expReject: true},
+		{name: "delivery leaves the flat-fee check to CheckTx", isCheckTx: false, expReject: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			app := simapphelpers.Setup(t)
+			ctx := app.BaseApp.NewContext(tc.isCheckTx)
+			txGen := app.GetTxConfig()
+
+			feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
+			antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+			require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
+
+			privK := ed25519.GenPrivKey()
+			addr := sdk.AccAddress(privK.PubKey().Address())
+			require.NoError(t, fundAccount(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin("testnund", 1000))))
+
+			msg := types.NewMsgRecordWrkChainBlock(1, 1, "blockhash", "", "", "", "", addr)
+			tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+
+			var err error
+			require.NotPanics(t, func() { _, err = antehandler(ctx, tx, false) },
+				"a Tx with no fee must not panic on the nil math.Int Coins.Find returns")
+
+			if !tc.expReject {
+				require.NoError(t, err,
+					"the flat-fee check must stay CheckTx-only: running it during delivery changes GasUsed, "+
+						"and GasUsed is hashed into LastResultsHash")
+				return
+			}
+
+			expectedErr := errorsmod.Wrap(types.ErrIncorrectFeeDenomination,
+				fmt.Sprintf("incorrect fee denomination. expected %s", app.WrkchainKeeper.GetParams(ctx).Denom))
+			require.NotNil(t, err, "CheckTx must reject a Tx with no fee")
+			require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
+		})
+	}
+}
+
+// TestCorrectWrkChainFeeDecoratorSimulateNoFee covers the case the CLI hits: gas estimation runs
+// before a client necessarily knows the fee, so simulation must neither panic nor reject.
+func TestCorrectWrkChainFeeDecoratorSimulateNoFee(t *testing.T) {
+	r := rand.New(rand.NewSource(1))
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
+
+	feeDecorator := ante.NewCorrectWrkChainFeeDecorator(app.BankKeeper, app.AccountKeeper, app.WrkchainKeeper, app.EnterpriseKeeper)
+	antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+	require.NoError(t, app.WrkchainKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
+
+	privK := ed25519.GenPrivKey()
+	addr := sdk.AccAddress(privK.PubKey().Address())
+	require.NoError(t, fundAccount(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin("testnund", 1000))))
+
+	msg := types.NewMsgRecordWrkChainBlock(1, 1, "blockhash", "", "", "", "", addr)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+
+	var err error
+	require.NotPanics(t, func() { _, err = antehandler(ctx, tx, true) })
+	require.NoError(t, err, "simulation must estimate gas without a fee being set")
 }

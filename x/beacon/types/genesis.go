@@ -47,28 +47,42 @@ func ValidateGenesis(data GenesisState) error {
 		return err
 	}
 
-	for _, record := range data.RegisteredBeacons {
+	seenBeaconIDs := make(map[uint64]struct{}, len(data.RegisteredBeacons))
+	for i, record := range data.RegisteredBeacons {
 		if record.Beacon.BeaconId == 0 {
-			return fmt.Errorf("invalid Beacon: ID: %d. Error: Missing ID", record.Beacon.BeaconId)
+			return fmt.Errorf("beacon[%d]: invalid BeaconId 0", i)
 		}
-		if record.Beacon.Owner == "" {
-			return fmt.Errorf("invalid Beacon: Owner: %s. Error: Missing Owner", record.Beacon.Owner)
+		if _, dup := seenBeaconIDs[record.Beacon.BeaconId]; dup {
+			return fmt.Errorf("beacon[%d]: duplicate BeaconId %d", i, record.Beacon.BeaconId)
+		}
+		seenBeaconIDs[record.Beacon.BeaconId] = struct{}{}
+		if record.Beacon.BeaconId >= data.StartingBeaconId {
+			return fmt.Errorf("beacon[%d]: BeaconId %d must be < StartingBeaconId %d",
+				i, record.Beacon.BeaconId, data.StartingBeaconId)
+		}
+		if _, err := sdk.AccAddressFromBech32(record.Beacon.Owner); err != nil {
+			return fmt.Errorf("beacon[%d]: invalid Owner %q: %w", i, record.Beacon.Owner, err)
 		}
 		if record.Beacon.Moniker == "" {
-			return fmt.Errorf("invalid Beacon: Moniker: %s. Error: Missing Moniker", record.Beacon.Moniker)
+			return fmt.Errorf("beacon[%d]: empty Moniker", i)
 		}
 		if record.InStateLimit == 0 {
-			return fmt.Errorf("invalid Beacon: InStateLimit: %d. Error: Missing InStateLimit", record.InStateLimit)
+			return fmt.Errorf("beacon[%d]: zero InStateLimit", i)
 		}
-		for _, timestamp := range record.Timestamps {
+		seenTSIDs := make(map[uint64]struct{}, len(record.Timestamps))
+		for j, timestamp := range record.Timestamps {
 			if timestamp.Id == 0 {
-				return fmt.Errorf("invalid Beacon timestamp: TimestampID: %d. Error: Missing TimestampID", timestamp.Id)
+				return fmt.Errorf("beacon[%d].timestamp[%d]: invalid TimestampID 0", i, j)
 			}
+			if _, dup := seenTSIDs[timestamp.Id]; dup {
+				return fmt.Errorf("beacon[%d].timestamp[%d]: duplicate TimestampID %d", i, j, timestamp.Id)
+			}
+			seenTSIDs[timestamp.Id] = struct{}{}
 			if timestamp.H == "" {
-				return fmt.Errorf("invalid Beacon timestamp: Hash: %s. Error: Missing Hash", timestamp.H)
+				return fmt.Errorf("beacon[%d].timestamp[%d]: empty Hash", i, j)
 			}
 			if timestamp.T == 0 {
-				return fmt.Errorf("invalid Beacon timestamp: SubmitTime: %d. Error: Missing SubmitTime", timestamp.T)
+				return fmt.Errorf("beacon[%d].timestamp[%d]: zero SubmitTime", i, j)
 			}
 		}
 	}

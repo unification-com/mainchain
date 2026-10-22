@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
-	"time"
 
 	errorsmod "cosmossdk.io/errors"
 	mathmod "cosmossdk.io/math"
@@ -41,7 +40,7 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -49,7 +48,7 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300))
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, sdk.DefaultBondDenom, 200, 300)))
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualFeeAmt := bParams.FeeRegister
 	actualFeeDenom := bParams.Denom
@@ -78,13 +77,11 @@ func TestCorrectBeaconFeeDecoratorAddressNotExist(t *testing.T) {
 	_, err := antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -92,7 +89,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300))
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
 
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualRegFeeAmt := bParams.FeeRegister
@@ -180,7 +177,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooLittleFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -189,7 +186,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300))
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
 
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualRegFeeAmt := bParams.FeeRegister
@@ -266,7 +263,7 @@ func TestCorrectBeaconFeeDecoratorRejectTooMuchFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -275,7 +272,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
-	app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300))
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
 
 	bParams := app.BeaconKeeper.GetParams(ctx)
 	actualRegFeeAmt := bParams.FeeRegister
@@ -349,7 +346,7 @@ func TestCorrectBeaconFeeDecoratorRejectIncorrectDenomFeeInTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -391,9 +388,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt1 := int64(actualRecFeeAmt)
@@ -408,9 +403,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx1, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// PurchaseStorageAction
 	numToPurchase := uint64(10)
@@ -426,9 +419,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 	_, err = antehandler(ctx, tx2, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
@@ -445,7 +436,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFunds(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -494,9 +485,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Record
 	feeInt1 := int64(actualRecFeeAmt)
@@ -511,9 +500,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx1, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// PurchaseStorageAction
 	numToPurchase := uint64(10)
@@ -529,9 +516,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 	_, err = antehandler(ctx, tx2, false)
 	require.NotNil(t, err, "Did not error on invalid tx")
 
-	if err != nil {
-		require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
 
 	// Multi Msg
 	multiFees := feeInt + feeInt1 + feeInt2
@@ -548,7 +533,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeInsufficientFundsWithLocked(t *testi
 }
 
 func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -632,7 +617,7 @@ func TestCorrectBeaconFeeDecoratorAcceptValidTx(t *testing.T) {
 }
 
 func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -720,7 +705,7 @@ func TestCorrectBeaconFeeDecoratorCorrectFeeSufficientLocked(t *testing.T) {
 }
 
 func TestExceedsMaxStorageDecoratorInvalidTx(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -791,7 +776,7 @@ func GenTx(
 	sigs := make([]signing.SignatureV2, len(signers))
 
 	// create a random length memo
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	memo := simulation.RandStringOfLength(r, simulation.RandIntBetween(r, 0, 100))
 	signMode, err := authsigning.APISignModeToInternal(gen.SignModeHandler().DefaultMode())
 	if err != nil {
@@ -849,4 +834,87 @@ func GenTx(
 	}
 
 	return baseTxBuilder.GetTx(), nil
+}
+
+// TestCorrectBeaconFeeDecoratorNoFeeInTx is the regression test for the nil pointer dereference
+// that surfaced to operators as `recovered: runtime error: invalid memory address` whenever
+// `--gas=auto` simulated a BEACON Tx with no --fees set. Coins.Find returns a zero-value Coin for
+// an absent denomination and its nil math.Int panicked inside SafeSub; AmountOf returns a real
+// zero instead.
+//
+// It also pins WHERE the flat-fee check runs, which matters far more than it looks. In CheckTx a
+// fee-less Tx must be rejected. During delivery the decorator must NOT run that check — see the
+// comment on the gate in ante.go: the check reads module params, those reads are gas metered,
+// and the gas lands in LastResultsHash. Running it in delivery is a consensus break. If someone
+// widens the gate again, the delivery case below starts failing.
+func TestCorrectBeaconFeeDecoratorNoFeeInTx(t *testing.T) {
+	r := rand.New(rand.NewSource(1))
+
+	for _, tc := range []struct {
+		name      string
+		isCheckTx bool
+		expReject bool
+	}{
+		{name: "CheckTx rejects a fee-less Tx", isCheckTx: true, expReject: true},
+		{name: "delivery leaves the flat-fee check to CheckTx", isCheckTx: false, expReject: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			app := simapphelpers.Setup(t)
+			ctx := app.BaseApp.NewContext(tc.isCheckTx)
+			txGen := app.GetTxConfig()
+
+			feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
+			antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+			require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
+
+			privK := ed25519.GenPrivKey()
+			addr := sdk.AccAddress(privK.PubKey().Address())
+			require.NoError(t, fundAccount(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin("testnund", 1000))))
+
+			msg := types.NewMsgRecordBeaconTimestamp(1, "somehash", 1, addr)
+			tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+
+			var err error
+			require.NotPanics(t, func() { _, err = antehandler(ctx, tx, false) },
+				"a Tx with no fee must not panic on the nil math.Int Coins.Find returns")
+
+			if !tc.expReject {
+				require.NoError(t, err,
+					"the flat-fee check must stay CheckTx-only: running it during delivery changes GasUsed, "+
+						"and GasUsed is hashed into LastResultsHash")
+				return
+			}
+
+			expectedErr := errorsmod.Wrap(types.ErrIncorrectFeeDenomination,
+				fmt.Sprintf("incorrect fee denomination. expected %s", app.BeaconKeeper.GetParams(ctx).Denom))
+			require.NotNil(t, err, "CheckTx must reject a Tx with no fee")
+			require.Equal(t, expectedErr.Error(), err.Error(), "unexpected type of error: %s", err)
+		})
+	}
+}
+
+// TestCorrectBeaconFeeDecoratorSimulateNoFee covers the case the CLI hits: gas estimation runs
+// before a client necessarily knows the fee, so simulation must neither panic nor reject.
+func TestCorrectBeaconFeeDecoratorSimulateNoFee(t *testing.T) {
+	r := rand.New(rand.NewSource(1))
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(true)
+	txGen := app.GetTxConfig()
+
+	feeDecorator := ante.NewCorrectBeaconFeeDecorator(app.BankKeeper, app.AccountKeeper, app.BeaconKeeper, app.EnterpriseKeeper)
+	antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+	require.NoError(t, app.BeaconKeeper.SetParams(ctx, types.NewParams(24, 2, 2, "testnund", 200, 300)))
+
+	privK := ed25519.GenPrivKey()
+	addr := sdk.AccAddress(privK.PubKey().Address())
+	require.NoError(t, fundAccount(ctx, app.BankKeeper, addr, sdk.NewCoins(sdk.NewInt64Coin("testnund", 1000))))
+
+	msg := types.NewMsgRecordBeaconTimestamp(1, "somehash", 1, addr)
+	tx, _ := simtestutil.GenSignedMockTx(r, txGen, []sdk.Msg{msg}, sdk.Coins{}, uint64(0), TestChainID, []uint64{0}, []uint64{0}, privK)
+
+	var err error
+	require.NotPanics(t, func() { _, err = antehandler(ctx, tx, true) })
+	require.NoError(t, err, "simulation must estimate gas without a fee being set")
 }

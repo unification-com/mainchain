@@ -50,6 +50,16 @@ func (k msgServer) UndPurchaseOrder(goCtx context.Context, msg *types.MsgUndPurc
 		return nil, errorsmod.Wrap(types.ErrNotAuthorisedToRaisePO, fmt.Sprintf("%s is not whitelisted to raise purchase orders", msg.Purchaser))
 	}
 
+	// Per-purchaser open-PO cap. A whitelisted address that has already raised
+	// MaxOpenPOsPerPurchaser POs must wait for them to be processed before
+	// raising more — bounds the per-purchaser contribution to the raised
+	// queue's BeginBlocker iteration cost.
+	if openCount := k.CountOpenPurchaseOrdersForPurchaser(ctx, accAddr); openCount >= types.MaxOpenPOsPerPurchaser {
+		return nil, errorsmod.Wrapf(types.ErrInvalidData,
+			"purchaser %s already has %d open purchase orders (max %d)",
+			msg.Purchaser, openCount, types.MaxOpenPOsPerPurchaser)
+	}
+
 	po := types.EnterpriseUndPurchaseOrder{
 		Purchaser: msg.Purchaser,
 		Amount:    msg.Amount,
@@ -61,7 +71,7 @@ func (k msgServer) UndPurchaseOrder(goCtx context.Context, msg *types.MsgUndPurc
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -128,7 +138,7 @@ func (k msgServer) ProcessUndPurchaseOrder(goCtx context.Context, msg *types.Msg
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.ProcessAction, msg.Decision.String())
+	defer telemetry.IncrCounter(1, types.ModuleName, types.ProcessAction, msg.Decision.String()) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -169,7 +179,7 @@ func (k msgServer) WhitelistAddress(goCtx context.Context, msg *types.MsgWhiteli
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.WhitelistAddressAction, msg.Action.String())
+	defer telemetry.IncrCounter(1, types.ModuleName, types.WhitelistAddressAction, msg.Action.String()) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

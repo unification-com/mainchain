@@ -5,10 +5,10 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
@@ -22,19 +22,12 @@ const (
 	OpWeightMsgPurchaseBeaconStateStorage = "op_weight_msg_beacon_purchase_storage"
 
 	DefaultMsgRegisterBeacon             = 10
-	DefaultMsgRecordBeaconTimestamp      = 30
-	DefaultMsgPurchaseBeaconStateStorage = 5
+	DefaultMsgRecordBeaconTimestamp      = 50
+	DefaultMsgPurchaseBeaconStateStorage = 15
 )
 
-//func WeightedOperations(
-//	appParams simtypes.AppParams, cdc codec.JSONCodec,
-//	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
-//) simulation.WeightedOperations {
-//	return nil
-//}
-
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONCodec,
+	appParams simtypes.AppParams, cdc codec.JSONCodec, txGen client.TxConfig,
 	k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper,
 ) simulation.WeightedOperations {
 
@@ -65,15 +58,15 @@ func WeightedOperations(
 	wEntOps := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgRegisterBeacon,
-			SimulateMsgRegisterBeacon(k, bk, ak),
+			SimulateMsgRegisterBeacon(txGen, k, bk, ak),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgRecordBeaconTimestamp,
-			SimulateMsgRecordBeaconTimestamp(k, bk, ak),
+			SimulateMsgRecordBeaconTimestamp(txGen, k, bk, ak),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgPurchaseBeaconStateStorage,
-			SimulateMsgPurchaseBeaconStateStorage(k, bk, ak),
+			SimulateMsgPurchaseBeaconStateStorage(txGen, k, bk, ak),
 		),
 	}
 
@@ -81,7 +74,7 @@ func WeightedOperations(
 
 }
 
-func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+func SimulateMsgRegisterBeacon(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
@@ -106,8 +99,6 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 
 		msg := types.NewMsgRegisterBeacon(moniker, name, account.GetAddress())
 
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
-
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -137,7 +128,7 @@ func SimulateMsgRegisterBeacon(k keeper.Keeper, bk types.BankKeeper, ak types.Ac
 	}
 }
 
-func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+func SimulateMsgRecordBeaconTimestamp(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
@@ -150,6 +141,9 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 		}
 
 		beaconOwnerAddr, err := sdk.AccAddressFromBech32(beacon.Owner)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.RecordAction, "invalid beacon owner address"), nil, nil // skip
+		}
 
 		simAccount, found := simtypes.FindAccount(accs, beaconOwnerAddr)
 		if !found {
@@ -172,8 +166,6 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 
 		msg := types.NewMsgRecordBeaconTimestamp(beacon.BeaconId, hash, uint64(ctx.BlockTime().Unix()), account.GetAddress())
 
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
-
 		tx, err := simtestutil.GenSignedMockTx(
 			r,
 			txGen,
@@ -203,7 +195,7 @@ func SimulateMsgRecordBeaconTimestamp(k keeper.Keeper, bk types.BankKeeper, ak t
 	}
 }
 
-func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
+func SimulateMsgPurchaseBeaconStateStorage(txGen client.TxConfig, k keeper.Keeper, bk types.BankKeeper, ak types.AccountKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simtypes.Account, chainID string,
@@ -215,6 +207,9 @@ func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper,
 		}
 
 		beaconOwnerAddr, err := sdk.AccAddressFromBech32(beacon.Owner)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.PurchaseStorageAction, "invalid beacon owner address"), nil, nil // skip
+		}
 
 		simAccount, found := simtypes.FindAccount(accs, beaconOwnerAddr)
 		if !found {
@@ -249,8 +244,6 @@ func SimulateMsgPurchaseBeaconStateStorage(k keeper.Keeper, bk types.BankKeeper,
 		}
 
 		msg := types.NewMsgPurchaseBeaconStateStorage(beacon.BeaconId, uint64(randNumToPurchase), account.GetAddress())
-
-		txGen := moduletestutil.MakeTestEncodingConfig().TxConfig
 
 		tx, err := simtestutil.GenSignedMockTx(
 			r,

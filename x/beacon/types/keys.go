@@ -1,6 +1,9 @@
 package types
 
-import "encoding/binary"
+import (
+	"crypto/sha256"
+	"encoding/binary"
+)
 
 const (
 	// module name
@@ -30,6 +33,11 @@ var (
 	BeaconStorageLimitPrefix = []byte{0x03}
 
 	ParamsKey = []byte{0x04}
+
+	// RecordedBeaconHashIndexPrefix is the prefix for the (beacon, hash) -> timestampIds index (#129).
+	// It is one-to-many: the same hash can be recorded many times (the dpv heartbeat re-stamps the same
+	// root), so a (beacon, hash) maps to all the timestamp ids that recorded it.
+	RecordedBeaconHashIndexPrefix = []byte{0x05}
 )
 
 // GetBeaconIDBytes returns the byte representation of the BeaconID
@@ -71,6 +79,20 @@ func GetTimestampIDBytes(timestampID uint64) (timestampIDBz []byte) {
 
 func GetTimestampIDFromBytes(bz []byte) (timestampID uint64) {
 	return binary.BigEndian.Uint64(bz)
+}
+
+// BeaconHashIndexHashKey is the prefix for every timestamp of a beacon that recorded a given hash:
+// 0x05 | beaconID(8) | sha256(hash)(32). The (arbitrary-length, arbitrary-content) hash is sha256'd to a
+// fixed 32 bytes so the key stays fixed-width + range-iterable and sidesteps delimiter issues.
+func BeaconHashIndexHashKey(beaconID uint64, hash string) []byte {
+	h := sha256.Sum256([]byte(hash))
+	key := append(RecordedBeaconHashIndexPrefix, GetBeaconIDBytes(beaconID)...)
+	return append(key, h[:]...)
+}
+
+// BeaconHashIndexKey is the full one-to-many index entry key: BeaconHashIndexHashKey | timestampID(8).
+func BeaconHashIndexKey(beaconID uint64, hash string, timestampID uint64) []byte {
+	return append(BeaconHashIndexHashKey(beaconID, hash), GetTimestampIDBytes(timestampID)...)
 }
 
 // BeaconStorageLimitKey gets the key for a single BEACON's specific storage limit

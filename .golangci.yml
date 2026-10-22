@@ -1,0 +1,40 @@
+version: "2"
+
+# Lint configuration for mainchain. Without this file golangci-lint runs its bare defaults, which
+# pull in staticcheck's stylistic "quickfix" (QF*) checks — those alone accounted for ~45% of the
+# findings and were almost entirely cosmetic, drowning out the real ones.
+
+linters:
+  # The standard set: errcheck, govet, ineffassign, staticcheck, unused.
+  default: standard
+
+  settings:
+    staticcheck:
+      # golangci-lint's default set, plus one exclusion. The ST* entries below ARE the default —
+      # they must be repeated, because supplying `checks` replaces the default list rather than
+      # extending it (dropping them silently enables ~250 naming/comment-style findings).
+      checks:
+        - all
+        - -ST1000 # package comment conventions
+        - -ST1003 # naming conventions (Id/Url vs ID/URL) — pervasive in generated proto types
+        - -ST1016 # consistent receiver names
+        - -ST1020 # comment on exported function
+        - -ST1021 # comment on exported type
+        - -ST1022 # comment on exported variable
+        # QF1008: "could remove embedded field from selector" — flags the perfectly readable
+        # app.BaseApp.X form used throughout the app and its tests. Purely cosmetic.
+        - -QF1008
+
+    errcheck:
+      exclude-functions:
+        # `defer iterator.Close()` is the idiomatic Cosmos store-iteration pattern (the SDK itself
+        # writes it this way). The deferred close has no meaningful failure path for a read-only
+        # iterator, so excluding it here beats scattering suppressions across every keeper.
+        - (github.com/cosmos/cosmos-db.Iterator).Close
+
+  exclusions:
+    # Keep golangci-lint's own sensible defaults (e.g. it does not demand comments on exported
+    # symbols in tests) on top of the rules below.
+    presets:
+      - common-false-positives
+      - std-error-handling

@@ -13,6 +13,7 @@ var (
 	AttributeKeyBeaconName                  = "beacon_name"
 	AttributeKeyTimestampID                 = "beacon_timestamp_id"
 	AttributeKeyTimestampHash               = "beacon_timestamp_hash"
+	AttributeKeyTimestampMetadata           = "beacon_timestamp_metadata"
 	AttributeKeyTimestampIdPruned           = "beacon_timestamp_id_pruned"
 	AttributeKeyTimestampSubmitTime         = "beacon_timestamp_submit_time"
 	AttributeKeyBeaconStorageNumPurchased   = "beacon_storage_num_purchased"

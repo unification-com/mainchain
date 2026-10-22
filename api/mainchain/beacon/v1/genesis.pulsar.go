@@ -1890,7 +1890,8 @@ func (x *BeaconTimestampGenesisExport) GetH() string {
 	return ""
 }
 
-// BeaconExport holds genesis export data for a beacon, including submitted timestamps
+// BeaconExport holds genesis export data for a beacon, including submitted
+// timestamps
 type BeaconExport struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

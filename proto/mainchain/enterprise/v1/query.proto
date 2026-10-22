@@ -17,18 +17,23 @@ service Query {
     option (google.api.http).get = "/mainchain/enterprise/v1/params";
   }
 
-  // EnterpriseUndPurchaseOrder queries purchase order details based on PurchaseOrderId.
-  rpc EnterpriseUndPurchaseOrder(QueryEnterpriseUndPurchaseOrderRequest) returns (QueryEnterpriseUndPurchaseOrderResponse) {
-    option (google.api.http).get = "/mainchain/enterprise/v1/pos/{purchase_order_id}";
+  // EnterpriseUndPurchaseOrder queries purchase order details based on
+  // PurchaseOrderId.
+  rpc EnterpriseUndPurchaseOrder(QueryEnterpriseUndPurchaseOrderRequest)
+      returns (QueryEnterpriseUndPurchaseOrderResponse) {
+    option (google.api.http).get =
+        "/mainchain/enterprise/v1/pos/{purchase_order_id}";
   }
 
   // EnterpriseUndPurchaseOrders queries all current purchase orders.
-  rpc EnterpriseUndPurchaseOrders(QueryEnterpriseUndPurchaseOrdersRequest) returns (QueryEnterpriseUndPurchaseOrdersResponse) {
+  rpc EnterpriseUndPurchaseOrders(QueryEnterpriseUndPurchaseOrdersRequest)
+      returns (QueryEnterpriseUndPurchaseOrdersResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/pos";
   }
 
   // LockedUndByAddress queries an account address for their locked FUND
-  rpc LockedUndByAddress(QueryLockedUndByAddressRequest) returns (QueryLockedUndByAddressResponse) {
+  rpc LockedUndByAddress(QueryLockedUndByAddressRequest)
+      returns (QueryLockedUndByAddressResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/locked/{owner}";
   }
 
@@ -37,28 +42,37 @@ service Query {
     option (google.api.http).get = "/mainchain/enterprise/v1/locked";
   }
 
-  // Whitelist queries whitelisted addresses authorised to raise new purchase orders
-  rpc Whitelist(QueryWhitelistRequest) returns(QueryWhitelistResponse) {
+  // Whitelist queries whitelisted addresses authorised to raise new purchase
+  // orders
+  rpc Whitelist(QueryWhitelistRequest) returns (QueryWhitelistResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/whitelist";
   }
 
-  // Whitelisted queries whether or not the given address is authorised to raise new purchase orders
-  rpc Whitelisted(QueryWhitelistedRequest) returns(QueryWhitelistedResponse) {
-    option (google.api.http).get = "/mainchain/enterprise/v1/whitelist/{address}";
+  // Whitelisted queries whether or not the given address is authorised to raise
+  // new purchase orders
+  rpc Whitelisted(QueryWhitelistedRequest) returns (QueryWhitelistedResponse) {
+    option (google.api.http).get =
+        "/mainchain/enterprise/v1/whitelist/{address}";
   }
 
-  // EnterpriseAccount queries an account address for their locked FUND and other data
-  rpc EnterpriseAccount(QueryEnterpriseAccountRequest) returns (QueryEnterpriseAccountResponse) {
+  // EnterpriseAccount queries an account address for their locked FUND and
+  // other data
+  rpc EnterpriseAccount(QueryEnterpriseAccountRequest)
+      returns (QueryEnterpriseAccountResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/account/{address}";
   }
 
-  // TotalSpentEFUND queries the total eFUND usage to date - i.e. the amount used to pay fees
-  rpc TotalSpentEFUND(QueryTotalSpentEFUNDRequest) returns (QueryTotalSpentEFUNDResponse) {
+  // TotalSpentEFUND queries the total eFUND usage to date - i.e. the amount
+  // used to pay fees
+  rpc TotalSpentEFUND(QueryTotalSpentEFUNDRequest)
+      returns (QueryTotalSpentEFUNDResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/total_spent";
   }
 
-  // SpentEFUNDByAddress queries the total eFUND usage to date for a given address, i.e. the amount used to pay fees
-  rpc SpentEFUNDByAddress(QuerySpentEFUNDByAddressRequest) returns (QuerySpentEFUNDByAddressResponse) {
+  // SpentEFUNDByAddress queries the total eFUND usage to date for a given
+  // address, i.e. the amount used to pay fees
+  rpc SpentEFUNDByAddress(QuerySpentEFUNDByAddressRequest)
+      returns (QuerySpentEFUNDByAddressResponse) {
     option (google.api.http).get = "/mainchain/enterprise/v1/spent/{address}";
   }
 }
@@ -68,73 +82,87 @@ message QueryParamsRequest {}
 
 // QueryParamsResponse is the response type for the Query/Params RPC method
 message QueryParamsResponse {
-  Params params = 1 [(gogoproto.nullable) = false];
+  Params params = 1 [ (gogoproto.nullable) = false ];
 }
 
-// QueryEnterpriseUndPurchaseOrderRequest is the request type for the Query/EnterpriseUndPurchaseOrder RPC method.
+// QueryEnterpriseUndPurchaseOrderRequest is the request type for the
+// Query/EnterpriseUndPurchaseOrder RPC method.
 message QueryEnterpriseUndPurchaseOrderRequest {
   // purchase_order_id defines the PO to query for.
   uint64 purchase_order_id = 1;
 }
 
-// QueryEnterpriseUndPurchaseOrderResponse is the response type for the Query/EnterpriseUndPurchaseOrder RPC method.
+// QueryEnterpriseUndPurchaseOrderResponse is the response type for the
+// Query/EnterpriseUndPurchaseOrder RPC method.
 message QueryEnterpriseUndPurchaseOrderResponse {
-  EnterpriseUndPurchaseOrder purchase_order = 1 [(gogoproto.nullable) = false];
+  EnterpriseUndPurchaseOrder purchase_order = 1
+      [ (gogoproto.nullable) = false ];
 }
 
-// QueryEnterpriseUndPurchaseOrdersRequest is the request type for the Query/EnterpriseUndPurchaseOrders RPC
-// method
+// QueryEnterpriseUndPurchaseOrdersRequest is the request type for the
+// Query/EnterpriseUndPurchaseOrders RPC method
 message QueryEnterpriseUndPurchaseOrdersRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
-  string purchaser = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string purchaser = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   PurchaseOrderStatus status = 3;
 }
 
-// QueryEnterpriseUndPurchaseOrdersResponse is the response type for the Query/EnterpriseUndPurchaseOrders RPC
-// method
+// QueryEnterpriseUndPurchaseOrdersResponse is the response type for the
+// Query/EnterpriseUndPurchaseOrders RPC method
 message QueryEnterpriseUndPurchaseOrdersResponse {
   // purchase_orders is the list of all purchase orders
-  repeated EnterpriseUndPurchaseOrder purchase_orders = 1 [(gogoproto.nullable) = false];
+  repeated EnterpriseUndPurchaseOrder purchase_orders = 1
+      [ (gogoproto.nullable) = false ];
   // pagination defines the pagination in the response.
-  cosmos.base.query.v1beta1.PageResponse                pagination = 2;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryLockedUndByAddressRequest is the request type for the Query/LockedUndByAddress RPC method
+// QueryLockedUndByAddressRequest is the request type for the
+// Query/LockedUndByAddress RPC method
 message QueryLockedUndByAddressRequest {
   // owner is the address to query
-  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string owner = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
-// QueryLockedUndByAddressResponse is the response type for the Query/LockedUndByAddress RPC method
+// QueryLockedUndByAddressResponse is the response type for the
+// Query/LockedUndByAddress RPC method
 message QueryLockedUndByAddressResponse {
-  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 }
 
-// QueryTotalLockedRequest is the request type for the Query/TotalLocked RPC method
-message QueryTotalLockedRequest { }
+// QueryTotalLockedRequest is the request type for the Query/TotalLocked RPC
+// method
+message QueryTotalLockedRequest {}
 
-// QueryTotalLockedResponse is the response type for the Query/TotalLocked RPC method
+// QueryTotalLockedResponse is the response type for the Query/TotalLocked RPC
+// method
 message QueryTotalLockedResponse {
   cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 }
 
-// QueryTotalUnlockedRequest is the request type for the Query/TotalUnlocked RPC method
+// QueryTotalUnlockedRequest is the request type for the Query/TotalUnlocked RPC
+// method
 message QueryTotalUnlockedRequest {}
 
-// QueryTotalUnlockedResponse is the response type for the Query/TotalUnlocked RPC method
+// QueryTotalUnlockedResponse is the response type for the Query/TotalUnlocked
+// RPC method
 message QueryTotalUnlockedResponse {
   cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 }
 
-// QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC method
+// QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC
+// method
 message QueryTotalSupplyRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryTotalSupplyResponse is the response type for the Query/TotalSupply RPC method
+// QueryTotalSupplyResponse is the response type for the Query/TotalSupply RPC
+// method
 message QueryTotalSupplyResponse {
-  repeated cosmos.base.v1beta1.Coin supply = 1
-  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.base.v1beta1.Coin supply = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -148,55 +176,62 @@ message QuerySupplyOfRequest {
 // QuerySupplyOfResponse is the response type for the Query/SupplyOf RPC method.
 message QuerySupplyOfResponse {
   // amount is the supply of the coin.
-  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 }
 
 // QueryWhitelistRequest is the request type for the Query/Whitelist RPC method.
 message QueryWhitelistRequest {}
 
-// QueryWhitelistResponse is the response type for the Query/Whitelist RPC method.
-message QueryWhitelistResponse {
-    repeated string addresses = 1;
-}
+// QueryWhitelistResponse is the response type for the Query/Whitelist RPC
+// method.
+message QueryWhitelistResponse { repeated string addresses = 1; }
 
-// QueryWhitelistedRequest is the request type for the Query/Whitelisted RPC method.
+// QueryWhitelistedRequest is the request type for the Query/Whitelisted RPC
+// method.
 message QueryWhitelistedRequest {
   // address is the address to query
-  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
-// QueryWhitelistedResponse is the response type for the Query/Whitelisted RPC method.
+// QueryWhitelistedResponse is the response type for the Query/Whitelisted RPC
+// method.
 message QueryWhitelistedResponse {
   string address = 1;
   bool whitelisted = 2;
 }
 
-// QueryEnterpriseAccountRequest is the request type for the Query/EnterpriseAccount RPC method.
+// QueryEnterpriseAccountRequest is the request type for the
+// Query/EnterpriseAccount RPC method.
 message QueryEnterpriseAccountRequest {
   // address is the address to query
-  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
-// QueryEnterpriseAccountResponse is the response type for the Query/EnterpriseAccount RPC method.
+// QueryEnterpriseAccountResponse is the response type for the
+// Query/EnterpriseAccount RPC method.
 message QueryEnterpriseAccountResponse {
-  EnterpriseUserAccount account = 1 [(gogoproto.nullable) = false];
+  EnterpriseUserAccount account = 1 [ (gogoproto.nullable) = false ];
 }
 
-// QueryTotalSpentEFUNDRequest is the request type for the Query/TotalSpentEFUND RPC method.
+// QueryTotalSpentEFUNDRequest is the request type for the Query/TotalSpentEFUND
+// RPC method.
 message QueryTotalSpentEFUNDRequest {}
 
-// QueryTotalSpentEFUNDResponse is the response type for the Query/TotalSpentEFUND RPC method.
+// QueryTotalSpentEFUNDResponse is the response type for the
+// Query/TotalSpentEFUND RPC method.
 message QueryTotalSpentEFUNDResponse {
-  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 }
 
-// QuerySpentEFUNDByAddressRequest is the request type for the Query/SpentEFUNDByAddress RPC method.
+// QuerySpentEFUNDByAddressRequest is the request type for the
+// Query/SpentEFUNDByAddress RPC method.
 message QuerySpentEFUNDByAddressRequest {
   // address is the address to query
-  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string address = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
-// QuerySpentEFUNDByAddressResponse is the response type for the Query/SpentEFUNDByAddress RPC method.
+// QuerySpentEFUNDByAddressResponse is the response type for the
+// Query/SpentEFUNDByAddress RPC method.
 message QuerySpentEFUNDByAddressResponse {
-  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
 }

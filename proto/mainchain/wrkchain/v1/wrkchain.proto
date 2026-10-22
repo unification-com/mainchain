@@ -21,22 +21,26 @@ message WrkChain {
   string base_type = 5;
   // lastblock is the current highest recorded height for the wrkchain
   uint64 lastblock = 6;
-  // num_blocks is the current number of block hashes stored in state for the wrkchain
+  // num_blocks is the current number of block hashes stored in state for the
+  // wrkchain
   uint64 num_blocks = 7;
-  // lowest_height is the lowest recorded height currently held in state for the wrkchain
+  // lowest_height is the lowest recorded height currently held in state for the
+  // wrkchain
   uint64 lowest_height = 8;
   // reg_time is the unix epoch of the wrkchain's registration time
   uint64 reg_time = 9;
   // owner is the owner address of the wrkchain
-  string owner = 10 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string owner = 10 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 }
 
-// WrkChainStorageLimit holds tata about the wrkchain's current in-state storage limit
+// WrkChainStorageLimit holds tata about the wrkchain's current in-state storage
+// limit
 message WrkChainStorageLimit {
   option (amino.name) = "wrkchain/v1/WrkChainStorageLimit";
   // wrkchain_id is the id of the wrkchain
   uint64 wrkchain_id = 1;
-  // in_state_limit is the current maximum number of blocks that will be held in state for the wrkchain
+  // in_state_limit is the current maximum number of blocks that will be held in
+  // state for the wrkchain
   uint64 in_state_limit = 2;
 }
 
@@ -47,7 +51,8 @@ message WrkChainBlock {
   uint64 height = 1;
   // blockhash is the block hash of the stored wrkchain block
   string blockhash = 2;
-  // parenthash is the optional hash of the parent block of the stored wrkchain block hash
+  // parenthash is the optional hash of the parent block of the stored wrkchain
+  // block hash
   string parenthash = 3;
   // hash1 is an optional hash of any type of the stored wrkchain block hash
   string hash1 = 4;
@@ -66,12 +71,15 @@ message Params {
   uint64 fee_register = 1;
   // fee_record is the cost to record a single wkrchain hash
   uint64 fee_record = 2;
-  // fee_purchase_storage is the cost to purchase a single additional unit of in-state storage
+  // fee_purchase_storage is the cost to purchase a single additional unit of
+  // in-state storage
   uint64 fee_purchase_storage = 3;
   // denom is the expected denomination to pay for fees, e.g. nund
   string denom = 4;
-  // default_storage_limit is the default in-state storage limit for all new wkrchains
+  // default_storage_limit is the default in-state storage limit for all new
+  // wkrchains
   uint64 default_storage_limit = 5;
-  // max_storage_limit is the maximum in-state storage slots any one wkrchain can have
+  // max_storage_limit is the maximum in-state storage slots any one wkrchain
+  // can have
   uint64 max_storage_limit = 6;
 }

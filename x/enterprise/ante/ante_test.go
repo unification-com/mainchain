@@ -3,7 +3,6 @@ package ante_test
 import (
 	"math/rand"
 	"testing"
-	"time"
 
 	mathmod "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -75,7 +74,14 @@ func (s *AnteTestSuite) SetupTest() {
 
 func (s *AnteTestSuite) TestAnteHandler() {
 
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
+	denom := sdk.DefaultBondDenom
+
+	// Capture the supply at the top of the test so subsequent expected-supply
+	// values are derived from runtime state rather than embedded as magic
+	// numbers. The invariant under test: total supply = baseline + cumulative
+	// eFUND minted to pay fees (== cumulative expSpent).
+	baselineSupply := s.app.BankKeeper.GetSupply(s.ctx, denom)
 
 	testCases := []struct {
 		name           string
@@ -84,7 +90,6 @@ func (s *AnteTestSuite) TestAnteHandler() {
 		toLock         sdk.Coin
 		expectErr      bool
 		expErrMsg      string
-		expTotalSupply sdk.Coin
 		expAccLocked   sdk.Coin
 		expTotalLocked sdk.Coin
 		expSpent       sdk.Coin
@@ -100,14 +105,13 @@ func (s *AnteTestSuite) TestAnteHandler() {
 					Owner:       s.addr.String(),
 				},
 			},
-			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)),
-			toLock:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 100),
+			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(denom, 100)),
+			toLock:         sdk.NewInt64Coin(denom, 100),
 			expectErr:      false,
 			expErrMsg:      "",
-			expTotalSupply: sdk.NewInt64Coin(sdk.DefaultBondDenom, 100000001000200),
-			expAccLocked:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			expTotalLocked: sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			expSpent:       sdk.NewInt64Coin(sdk.DefaultBondDenom, 100),
+			expAccLocked:   sdk.NewInt64Coin(denom, 0),
+			expTotalLocked: sdk.NewInt64Coin(denom, 0),
+			expSpent:       sdk.NewInt64Coin(denom, 100),
 		},
 		{
 			name: "full fee correctly minted for MsgRegisterBeacon no locked left",
@@ -118,14 +122,13 @@ func (s *AnteTestSuite) TestAnteHandler() {
 					Owner:   s.addr.String(),
 				},
 			},
-			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)),
-			toLock:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 100),
+			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(denom, 100)),
+			toLock:         sdk.NewInt64Coin(denom, 100),
 			expectErr:      false,
 			expErrMsg:      "",
-			expTotalSupply: sdk.NewInt64Coin(sdk.DefaultBondDenom, 100000001000300),
-			expAccLocked:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			expTotalLocked: sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			expSpent:       sdk.NewInt64Coin(sdk.DefaultBondDenom, 200),
+			expAccLocked:   sdk.NewInt64Coin(denom, 0),
+			expTotalLocked: sdk.NewInt64Coin(denom, 0),
+			expSpent:       sdk.NewInt64Coin(denom, 200),
 		},
 		{
 			name: "full fee correctly minted for MsgRegisterBeacon 50 locked left",
@@ -136,14 +139,13 @@ func (s *AnteTestSuite) TestAnteHandler() {
 					Owner:   s.addr.String(),
 				},
 			},
-			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)),
-			toLock:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 150),
+			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(denom, 100)),
+			toLock:         sdk.NewInt64Coin(denom, 150),
 			expectErr:      false,
 			expErrMsg:      "",
-			expTotalSupply: sdk.NewInt64Coin(sdk.DefaultBondDenom, 100000001000400),
-			expAccLocked:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 50),
-			expTotalLocked: sdk.NewInt64Coin(sdk.DefaultBondDenom, 50),
-			expSpent:       sdk.NewInt64Coin(sdk.DefaultBondDenom, 300),
+			expAccLocked:   sdk.NewInt64Coin(denom, 50),
+			expTotalLocked: sdk.NewInt64Coin(denom, 50),
+			expSpent:       sdk.NewInt64Coin(denom, 300),
 		},
 		{
 			name: "remaining locked correctly minted for MsgRegisterBeacon no locked left",
@@ -154,14 +156,13 @@ func (s *AnteTestSuite) TestAnteHandler() {
 					Owner:   s.addr.String(),
 				},
 			},
-			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)),
-			toLock:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 0), // still has 50 from previous test
+			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(denom, 100)),
+			toLock:         sdk.NewInt64Coin(denom, 0), // still has 50 from previous test
 			expectErr:      false,
 			expErrMsg:      "",
-			expTotalSupply: sdk.NewInt64Coin(sdk.DefaultBondDenom, 100000001000450),
-			expAccLocked:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			expTotalLocked: sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			expSpent:       sdk.NewInt64Coin(sdk.DefaultBondDenom, 350),
+			expAccLocked:   sdk.NewInt64Coin(denom, 0),
+			expTotalLocked: sdk.NewInt64Coin(denom, 0),
+			expSpent:       sdk.NewInt64Coin(denom, 350),
 		},
 		{
 			name: "nothing locked, nothing minted",
@@ -172,14 +173,13 @@ func (s *AnteTestSuite) TestAnteHandler() {
 					Owner:   s.addr.String(),
 				},
 			},
-			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100)),
-			toLock:         sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
+			feeToSend:      sdk.NewCoins(sdk.NewInt64Coin(denom, 100)),
+			toLock:         sdk.NewInt64Coin(denom, 0),
 			expectErr:      false,
 			expErrMsg:      "",
-			expTotalSupply: sdk.NewInt64Coin(sdk.DefaultBondDenom, 100000001000450), // no change to total supply
-			expAccLocked:   sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			expTotalLocked: sdk.NewInt64Coin(sdk.DefaultBondDenom, 0),
-			expSpent:       sdk.NewInt64Coin(sdk.DefaultBondDenom, 350),
+			expAccLocked:   sdk.NewInt64Coin(denom, 0),
+			expTotalLocked: sdk.NewInt64Coin(denom, 0),
+			expSpent:       sdk.NewInt64Coin(denom, 350), // no change to spent (and no change to supply)
 		},
 	}
 
@@ -198,8 +198,12 @@ func (s *AnteTestSuite) TestAnteHandler() {
 				s.Require().NoError(err)
 			}
 
-			totalSupplyAfter := s.app.BankKeeper.GetSupply(s.ctx, sdk.DefaultBondDenom)
-			s.Require().Equal(tc.expTotalSupply, totalSupplyAfter)
+			// Expected total supply = baseline + cumulative minted to date.
+			// Whatever has been spent in eFUND was minted into the supply.
+			expTotalSupply := baselineSupply.Add(tc.expSpent)
+
+			totalSupplyAfter := s.app.BankKeeper.GetSupply(s.ctx, denom)
+			s.Require().Equal(expTotalSupply, totalSupplyAfter)
 
 			accLockedAfter := s.app.EnterpriseKeeper.GetLockedUndForAccount(s.ctx, s.addr)
 			s.Require().Equal(tc.expAccLocked, accLockedAfter.Amount)
@@ -230,7 +234,7 @@ func fundAccount(ctx sdk.Context, bk bankkeeper.Keeper, addr sdk.AccAddress, amt
 }
 
 func TestCheckLockedUndDecoratorModuleAndSupplyMinting(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -279,7 +283,7 @@ func TestCheckLockedUndDecoratorModuleAndSupplyMinting(t *testing.T) {
 }
 
 func TestOnlyMintsAmountLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -329,7 +333,7 @@ func TestOnlyMintsAmountLocked(t *testing.T) {
 }
 
 func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -365,7 +369,7 @@ func TestCheckLockedUndDecoratorSuccessfulUnlock(t *testing.T) {
 }
 
 func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()
@@ -400,7 +404,7 @@ func TestCheckLockedUndDecoratorSkipIfNothingLocked(t *testing.T) {
 }
 
 func TestNoMintingIfInsufficientBalanceAndLocked(t *testing.T) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(1))
 	app := simapphelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(true)
 	txGen := app.GetTxConfig()

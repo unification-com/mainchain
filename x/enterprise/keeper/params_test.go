@@ -17,10 +17,10 @@ func TestSetGetParams(t *testing.T) {
 	denom := "testc"
 	params := types.NewParams(denom, 1, 3600, entSigners)
 
-	app.EnterpriseKeeper.SetParams(ctx, params)
+	require.NoError(t, app.EnterpriseKeeper.SetParams(ctx, params))
 
 	paramsDb := app.EnterpriseKeeper.GetParams(ctx)
 
-	require.True(t, params == paramsDb)
-	require.True(t, paramsDb.Denom == denom)
+	require.Equal(t, params, paramsDb)
+	require.Equal(t, denom, paramsDb.Denom)
 }

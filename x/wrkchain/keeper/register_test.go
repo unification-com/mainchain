@@ -4,9 +4,17 @@ import (
 	"testing"
 	"time"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
+	"github.com/cosmos/cosmos-sdk/testutil"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+	"github.com/cosmos/cosmos-sdk/types/query"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
+	"github.com/unification-com/mainchain/x/wrkchain"
+	"github.com/unification-com/mainchain/x/wrkchain/keeper"
 	"github.com/unification-com/mainchain/x/wrkchain/types"
 )
 
@@ -20,17 +28,22 @@ func TestSetGetHighestWRKChainID(t *testing.T) {
 		app.WrkchainKeeper.SetHighestWrkChainID(ctx, i)
 		wcID, err := app.WrkchainKeeper.GetHighestWrkChainID(ctx)
 		require.NoError(t, err)
-		require.True(t, wcID == i)
+		require.Equal(t, wcID, i)
 	}
 }
 
-//func TestSetGetHighestBeaconIDNotSet(t *testing.T) {
-//	app := simapp.Setup(t, true)
-//	ctx := app.BaseApp.NewContext(true)
-//
-//	_, err := app.WrkchainKeeper.GetHighestWrkChainID(ctx)
-//	require.Error(t, err)
-//}
+func TestSetGetHighestWrkChainIDNotSet(t *testing.T) {
+	encCfg := moduletestutil.MakeTestEncodingConfig(wrkchain.AppModuleBasic{})
+	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
+	tKey := storetypes.NewTransientStoreKey("transient_test")
+	ctx := testutil.DefaultContext(storeKey, tKey)
+
+	// Use a real bech32 authority — NewKeeper now validates this.
+	k := keeper.NewKeeper(storeKey, encCfg.Codec, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+
+	_, err := k.GetHighestWrkChainID(ctx)
+	require.Error(t, err)
+}
 
 // Tests for Get/Set WRKChains
 
@@ -67,11 +80,11 @@ func TestSetGetWrkChain(t *testing.T) {
 		require.True(t, WRKChainEqual(wcDb, wc))
 
 		wcDbOwner := app.WrkchainKeeper.GetWrkChainOwner(ctx, wcID)
-		require.True(t, wcDbOwner.String() == addr.String())
+		require.Equal(t, wcDbOwner.String(), addr.String())
 
 		wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
 		require.True(t, found)
-		require.True(t, wcSt.InStateLimit == types.DefaultStorageLimit)
+		require.Equal(t, wcSt.InStateLimit, types.DefaultStorageLimit)
 
 		wcID = wcID + 1
 	}
@@ -103,7 +116,7 @@ func TestRegisterWrkChain(t *testing.T) {
 
 		wcID, err := app.WrkchainKeeper.RegisterNewWrkChain(ctx, moniker, name, genesisHash, "geth", addr)
 		require.NoError(t, err)
-		require.True(t, wcID == expectedWc.WrkchainId)
+		require.Equal(t, wcID, expectedWc.WrkchainId)
 
 		isRegistered := app.WrkchainKeeper.IsWrkChainRegistered(ctx, wcID)
 		require.True(t, isRegistered)
@@ -116,11 +129,11 @@ func TestRegisterWrkChain(t *testing.T) {
 		require.True(t, WRKChainEqual(wcDb, expectedWc))
 
 		wcDbOwner := app.WrkchainKeeper.GetWrkChainOwner(ctx, wcID)
-		require.True(t, wcDbOwner.String() == addr.String())
+		require.Equal(t, wcDbOwner.String(), addr.String())
 
 		wcSt, found := app.WrkchainKeeper.GetWrkChainStorageLimit(ctx, wcID)
 		require.True(t, found)
-		require.True(t, wcSt.InStateLimit == simapphelpers.SimTestDefaultStorageLimit)
+		require.Equal(t, wcSt.InStateLimit, simapphelpers.SimTestDefaultStorageLimit)
 
 		i = i + 1
 	}
@@ -142,7 +155,7 @@ func TestHighestWrkChainIdAfterRegister(t *testing.T) {
 
 		nextID, _ := app.WrkchainKeeper.GetHighestWrkChainID(ctx)
 		expectedNextID := wcID + 1
-		require.True(t, nextID == expectedNextID)
+		require.Equal(t, nextID, expectedNextID)
 	}
 }
 
@@ -182,17 +195,16 @@ func TestGetWrkChainFilter(t *testing.T) {
 		lastMoniker = moniker
 	}
 
-	params := types.QueryWrkChainsFilteredRequest{
-		Owner: testAddrs[1].String(),
-	}
+	resp, err := app.WrkchainKeeper.WrkChainsFiltered(ctx, &types.QueryWrkChainsFilteredRequest{
+		Owner:      testAddrs[1].String(),
+		Pagination: &query.PageRequest{Limit: uint64(numToReg)},
+	})
+	require.NoError(t, err)
+	require.Equal(t, numToReg, len(resp.Wrkchains))
 
-	results := app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
-	require.True(t, len(results) == numToReg)
-
-	params = types.QueryWrkChainsFilteredRequest{
+	resp, err = app.WrkchainKeeper.WrkChainsFiltered(ctx, &types.QueryWrkChainsFilteredRequest{
 		Moniker: lastMoniker,
-	}
-
-	results = app.WrkchainKeeper.GetWrkChainsFiltered(ctx, params)
-	require.True(t, len(results) == 1)
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, len(resp.Wrkchains))
 }

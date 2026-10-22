@@ -20,7 +20,7 @@ func TestEqualStartingBeaconID(t *testing.T) {
 
 	state2.StartingBeaconId = 1
 	require.Equal(t, state1, state2)
-	require.True(t, state1.StartingBeaconId == state2.StartingBeaconId)
+	require.Equal(t, state1.StartingBeaconId, state2.StartingBeaconId)
 }
 
 func TestDefaultGenesisState(t *testing.T) {
@@ -54,7 +54,9 @@ func TestValidateGenesis(t *testing.T) {
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())
 
+	// Registered beacon ID must be < StartingBeaconId (next-to-assign).
 	state3.RegisteredBeacons[0].Beacon.BeaconId = 1
+	state3.StartingBeaconId = 2
 	expectedErr = fmt.Errorf("invalid Beacon: Owner: %s. Error: Missing Owner", sdk.AccAddress{})
 	err = ValidateGenesis(*state3)
 	require.Error(t, expectedErr, err.Error())

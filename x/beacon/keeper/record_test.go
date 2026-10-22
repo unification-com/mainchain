@@ -82,7 +82,8 @@ func TestGetBeaconTimestamp(t *testing.T) {
 		}
 
 		allTimestamps := app.BeaconKeeper.GetAllBeaconTimestamps(ctx, bID)
-		require.True(t, len(allTimestamps) == int(numToRecord) && len(allTimestamps) == len(testTimestamps))
+		require.Equal(t, int(numToRecord), len(allTimestamps))
+		require.Equal(t, len(testTimestamps), len(allTimestamps))
 
 		for i := 0; i < int(numToRecord); i++ {
 			require.True(t, BeaconTimestampEqual(allTimestamps[i], testTimestamps[i]))
@@ -149,9 +150,9 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 		expectedTs.Hash = hash
 		expectedTs.SubmitTime = subTime
 
-		retTsID, deletedTsId, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
+		retTsID, deletedTsId, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, "")
 		require.NoError(t, err)
-		require.True(t, retTsID == expectedTs.TimestampId)
+		require.Equal(t, retTsID, expectedTs.TimestampId)
 
 		timestampDb, found := app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsID)
 		require.True(t, found)
@@ -169,8 +170,8 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 
 	beacon, found := app.BeaconKeeper.GetBeacon(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.NumInState == recordLimit)
-	require.True(t, beacon.FirstIdInState == numToRecord-recordLimit+1)
+	require.Equal(t, beacon.NumInState, recordLimit)
+	require.Equal(t, beacon.FirstIdInState, numToRecord-recordLimit+1)
 
 	// should still be in state
 	tsCount := uint64(0)
@@ -179,13 +180,80 @@ func TestRecordBeaconTimestamps(t *testing.T) {
 		require.True(t, found)
 		tsCount++
 	}
-	require.True(t, tsCount == recordLimit)
+	require.Equal(t, tsCount, recordLimit)
 
 	// should no longer be in state
 	for tsId := uint64(1); tsId <= recordLimit; tsId++ {
 		_, found = app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsId)
 		require.False(t, found)
 	}
+}
+
+func TestRecordBeaconTimestampMetadata(t *testing.T) {
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
+
+	b := types.Beacon{Owner: testAddrs[0].String(), Moniker: simapphelpers.GenerateRandomString(64), Name: simapphelpers.GenerateRandomString(128)}
+	bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
+	require.NoError(t, err)
+
+	hash := simapphelpers.GenerateRandomString(32)
+	metadata := "type=leaf;tree=pairs;root=4883d371d78d7c04"
+	subTime := uint64(time.Now().Unix())
+
+	// metadata round-trips through state
+	tsID, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, metadata)
+	require.NoError(t, err)
+	ts, found := app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsID)
+	require.True(t, found)
+	require.Equal(t, metadata, ts.Metadata)
+	require.Equal(t, hash, ts.Hash)
+
+	// an empty metadata is fine (older / undescribed timestamps)
+	tsID2, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, simapphelpers.GenerateRandomString(32), subTime, "")
+	require.NoError(t, err)
+	ts2, found := app.BeaconKeeper.GetBeaconTimestampByID(ctx, bID, tsID2)
+	require.True(t, found)
+	require.Equal(t, "", ts2.Metadata)
+}
+
+func TestBeaconTimestampsByHash(t *testing.T) {
+	app := simapphelpers.Setup(t)
+	ctx := app.BaseApp.NewContext(false)
+	testAddrs := simapphelpers.GenerateRandomTestAccounts(1)
+
+	b := types.Beacon{Owner: testAddrs[0].String(), Moniker: simapphelpers.GenerateRandomString(64), Name: simapphelpers.GenerateRandomString(128)}
+	bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, b)
+	require.NoError(t, err)
+
+	subTime := uint64(time.Now().Unix())
+	rootHash := "4883d371d78d7c04"
+
+	// the SAME hash recorded twice (one-to-many — the heartbeat re-stamps a root), plus a different hash
+	_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, rootHash, subTime, "type=root")
+	require.NoError(t, err)
+	_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, rootHash, subTime, "type=root")
+	require.NoError(t, err)
+	_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, "otherhash", subTime, "")
+	require.NoError(t, err)
+
+	// the repeated hash returns BOTH timestamps
+	res, err := app.BeaconKeeper.BeaconTimestampsByHash(ctx, &types.QueryBeaconTimestampsByHashRequest{BeaconId: bID, Hash: rootHash})
+	require.NoError(t, err)
+	require.Len(t, res.Timestamps, 2)
+	for _, ts := range res.Timestamps {
+		require.Equal(t, rootHash, ts.Hash)
+	}
+
+	// the other hash returns just its one; an unrecorded hash returns none
+	res2, err := app.BeaconKeeper.BeaconTimestampsByHash(ctx, &types.QueryBeaconTimestampsByHashRequest{BeaconId: bID, Hash: "otherhash"})
+	require.NoError(t, err)
+	require.Len(t, res2.Timestamps, 1)
+
+	res3, err := app.BeaconKeeper.BeaconTimestampsByHash(ctx, &types.QueryBeaconTimestampsByHashRequest{BeaconId: bID, Hash: "nope"})
+	require.NoError(t, err)
+	require.Len(t, res3.Timestamps, 0)
 }
 
 func TestIncreaseInStateStorage(t *testing.T) {
@@ -208,14 +276,14 @@ func TestIncreaseInStateStorage(t *testing.T) {
 
 	beacon, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.InStateLimit == simapphelpers.SimTestDefaultStorageLimit)
+	require.Equal(t, beacon.InStateLimit, simapphelpers.SimTestDefaultStorageLimit)
 
 	err = app.BeaconKeeper.IncreaseInStateStorage(ctx, bID, recordLimitIncrease)
 	require.NoError(t, err)
 
 	beacon, found = app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.InStateLimit == simapphelpers.SimTestDefaultStorageLimit+recordLimitIncrease)
+	require.Equal(t, beacon.InStateLimit, simapphelpers.SimTestDefaultStorageLimit+recordLimitIncrease)
 }
 
 func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
@@ -246,34 +314,34 @@ func TestIncreaseInStateStorageWithTimestampRecording(t *testing.T) {
 	for i := uint64(1); i <= numToRecord; i++ {
 		hash := simapphelpers.GenerateRandomString(32)
 		subTime := uint64(time.Now().Unix())
-		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
+		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, "")
 		require.NoError(t, err)
 	}
 
 	// sanity check
 	beacon, found := app.BeaconKeeper.GetBeacon(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.NumInState == recordLimit)
-	require.True(t, beacon.FirstIdInState == numToRecord-recordLimit+1)
+	require.Equal(t, beacon.NumInState, recordLimit)
+	require.Equal(t, beacon.FirstIdInState, numToRecord-recordLimit+1)
 
 	// increase storage capacity
 	err = app.BeaconKeeper.IncreaseInStateStorage(ctx, bID, increaseAmount)
 	require.NoError(t, err)
 	beaconStorage, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 	require.True(t, found)
-	require.True(t, beaconStorage.InStateLimit == recordLimit+increaseAmount)
+	require.Equal(t, beaconStorage.InStateLimit, recordLimit+increaseAmount)
 
 	// record new timestamps
 	for i := uint64(1); i <= numToRecord; i++ {
 		hash := simapphelpers.GenerateRandomString(32)
 		subTime := uint64(time.Now().Unix())
-		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime)
+		_, _, err := app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, hash, subTime, "")
 		require.NoError(t, err)
 	}
 
 	// check final result
 	beacon, found = app.BeaconKeeper.GetBeacon(ctx, bID)
 	require.True(t, found)
-	require.True(t, beacon.NumInState == recordLimit+increaseAmount)
-	require.True(t, beacon.FirstIdInState == (numToRecord*2)-recordLimit-increaseAmount+1)
+	require.Equal(t, beacon.NumInState, recordLimit+increaseAmount)
+	require.Equal(t, beacon.FirstIdInState, (numToRecord*2)-recordLimit-increaseAmount+1)
 }

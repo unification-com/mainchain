@@ -1,31 +1,20 @@
 package ante
 
 import (
-	"context"
-	"cosmossdk.io/core/address"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
+
+	"github.com/unification-com/mainchain/ante/feecheck"
 )
 
-// AccountKeeper defines the contract needed for AccountKeeper related APIs.
-// Interface provides support to use non-sdk AccountKeeper for AnteHandler's decorators.
-type AccountKeeper interface {
-	GetParams(ctx context.Context) (params types.Params)
-	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI
-	SetAccount(ctx context.Context, acc sdk.AccountI)
-	GetModuleAddress(moduleName string) sdk.AccAddress
-	AddressCodec() address.Codec
-}
-
-type BankKeeper interface {
-	GetAllBalances(ctx context.Context, address sdk.AccAddress) sdk.Coins
-	SpendableCoins(ctx context.Context, address sdk.AccAddress) sdk.Coins
-}
-
-type EnterpriseKeeper interface {
-	GetLockedUndAmountForAccount(ctx sdk.Context, address sdk.AccAddress) sdk.Coin
-}
+// The account, bank and enterprise keeper contracts are identical for the BEACON
+// and WRKChain fee decorators, so they live in ante/feecheck alongside the shared
+// solvency check. Aliased rather than re-declared so existing references — app
+// wiring, the app-level ante HandlerOptions, tests — keep compiling unchanged.
+type (
+	AccountKeeper    = feecheck.AccountKeeper
+	BankKeeper       = feecheck.BankKeeper
+	EnterpriseKeeper = feecheck.EnterpriseKeeper
+)
 
 type WrkchainKeeper interface {
 	GetZeroFeeAsCoin(ctx sdk.Context) sdk.Coin

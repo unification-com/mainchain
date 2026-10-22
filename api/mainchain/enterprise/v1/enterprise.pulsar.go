@@ -4832,7 +4832,8 @@ func (x *PurchaseOrderDecision) GetDecisionTime() uint64 {
 	return 0
 }
 
-// EnterpriseUndPurchaseOrder defines a purchase order raised by a whitelisted address
+// EnterpriseUndPurchaseOrder defines a purchase order raised by a whitelisted
+// address
 type EnterpriseUndPurchaseOrder struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4967,7 +4968,8 @@ type LockedUnd struct {
 
 	// owner is the address of the locked FUND owner
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	// amount is the amount currently locked and available to pay for beacon/wrkchain fees
+	// amount is the amount currently locked and available to pay for
+	// beacon/wrkchain fees
 	Amount *v1beta1.Coin `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
@@ -5013,7 +5015,8 @@ type SpentEFUND struct {
 
 	// owner is the address of the eFUND owner
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	// amount is the amount currently locked and available to pay for beacon/wrkchain fees
+	// amount is the amount currently locked and available to pay for
+	// beacon/wrkchain fees
 	Amount *v1beta1.Coin `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
@@ -5059,16 +5062,18 @@ type EnterpriseUserAccount struct {
 
 	// owner is the address of the account
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	// locked_efund is the amount of eFUND the account currently has locked and only available to pay for
-	// beacon/wrkchain fees
+	// locked_efund is the amount of eFUND the account currently has locked and
+	// only available to pay for beacon/wrkchain fees
 	LockedEfund *v1beta1.Coin `protobuf:"bytes,2,opt,name=locked_efund,json=lockedEfund,proto3" json:"locked_efund,omitempty"`
-	// general_supply is the amount currently held in the bank module's supply - i.e. standard FUND in general supply
-	// usable for anything (transfers, staking, standard tx fees etc.)
+	// general_supply is the amount currently held in the bank module's supply -
+	// i.e. standard FUND in general supply usable for anything (transfers,
+	// staking, standard tx fees etc.)
 	GeneralSupply *v1beta1.Coin `protobuf:"bytes,3,opt,name=general_supply,json=generalSupply,proto3" json:"general_supply,omitempty"`
-	// spent_efund is a running tally of how much eFUND the account has used so far to pay for beacon/wrkchain fees
+	// spent_efund is a running tally of how much eFUND the account has used so
+	// far to pay for beacon/wrkchain fees
 	SpentEfund *v1beta1.Coin `protobuf:"bytes,4,opt,name=spent_efund,json=spentEfund,proto3" json:"spent_efund,omitempty"`
-	// spendable is the sum of locked eFUND and general bank module FUND - i.e. how much can be used to pay
-	// BEACON/Wrkchain fees all together
+	// spendable is the sum of locked eFUND and general bank module FUND - i.e.
+	// how much can be used to pay BEACON/Wrkchain fees all together
 	Spendable *v1beta1.Coin `protobuf:"bytes,5,opt,name=spendable,proto3" json:"spendable,omitempty"`
 }
 
@@ -5127,7 +5132,8 @@ func (x *EnterpriseUserAccount) GetSpendable() *v1beta1.Coin {
 	return nil
 }
 
-// WhitelistAddresses defines a list of whitelisted addresses authorised to raise enterprise purchase orders
+// WhitelistAddresses defines a list of whitelisted addresses authorised to
+// raise enterprise purchase orders
 type WhitelistAddresses struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5169,13 +5175,16 @@ type Params struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// ent_signers is a list of addresses authorised to make decisions on raised purchase orders
+	// ent_signers is a list of addresses authorised to make decisions on raised
+	// purchase orders
 	EntSigners string `protobuf:"bytes,1,opt,name=ent_signers,json=entSigners,proto3" json:"ent_signers,omitempty"`
 	// denom is the denomination of eFUND, e.g. nund
 	Denom string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
-	// min_accepts is the minumum number of ent_signers required to accept a PO before it is processed and efUND minted
+	// min_accepts is the minumum number of ent_signers required to accept a PO
+	// before it is processed and efUND minted
 	MinAccepts uint64 `protobuf:"varint,3,opt,name=min_accepts,json=minAccepts,proto3" json:"min_accepts,omitempty"`
-	// decision_time_limit is the time limit within which all decisions must be made for a raised purchase order.
+	// decision_time_limit is the time limit within which all decisions must be
+	// made for a raised purchase order.
 	DecisionTimeLimit uint64 `protobuf:"varint,4,opt,name=decision_time_limit,json=decisionTimeLimit,proto3" json:"decision_time_limit,omitempty"`
 }
 

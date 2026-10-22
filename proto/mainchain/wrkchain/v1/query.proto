@@ -18,22 +18,28 @@ service Query {
 
   // WrkChain queries the metadata of a wrkchain.
   rpc WrkChain(QueryWrkChainRequest) returns (QueryWrkChainResponse) {
-    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}";
+    option (google.api.http).get =
+        "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}";
   }
 
   // WrkChainBlock queries a submitted hash of a wrkchain
-  rpc WrkChainBlock(QueryWrkChainBlockRequest) returns (QueryWrkChainBlockResponse) {
-    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{wc_height}";
+  rpc WrkChainBlock(QueryWrkChainBlockRequest)
+      returns (QueryWrkChainBlockResponse) {
+    option (google.api.http).get =
+        "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/block/{wc_height}";
   }
 
   // WrkChainsFiltered queries all wrkchain metadata for given search parameters
-  rpc WrkChainsFiltered(QueryWrkChainsFilteredRequest) returns (QueryWrkChainsFilteredResponse) {
+  rpc WrkChainsFiltered(QueryWrkChainsFilteredRequest)
+      returns (QueryWrkChainsFilteredResponse) {
     option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchains";
   }
 
   // WrkChainStorage queries wrkchain storage for for given wrkchain ID
-  rpc WrkChainStorage(QueryWrkChainStorageRequest) returns (QueryWrkChainStorageResponse) {
-    option (google.api.http).get = "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/storage";
+  rpc WrkChainStorage(QueryWrkChainStorageRequest)
+      returns (QueryWrkChainStorageResponse) {
+    option (google.api.http).get =
+        "/mainchain/wrkchain/v1/wrkchain/{wrkchain_id}/storage";
   }
 }
 
@@ -42,7 +48,7 @@ message QueryParamsRequest {}
 
 // QueryParamsResponse is the response type for the Query/Params RPC method
 message QueryParamsResponse {
-  Params params = 1 [(gogoproto.nullable) = false];
+  Params params = 1 [ (gogoproto.nullable) = false ];
 }
 
 // QueryWrkChainRequest is the request type for the Query/WrkChain RPC method
@@ -52,11 +58,10 @@ message QueryWrkChainRequest {
 }
 
 // QueryWrkChainResponse is the response type for the Query/WrkChain RPC method
-message QueryWrkChainResponse {
-  WrkChain wrkchain = 1;
-}
+message QueryWrkChainResponse { WrkChain wrkchain = 1; }
 
-// QueryWrkChainBlockRequest is the request type for the Query/WrkChainBlock RPC method
+// QueryWrkChainBlockRequest is the request type for the Query/WrkChainBlock RPC
+// method
 message QueryWrkChainBlockRequest {
   // wrkchain_id is the id of the wrkchain to query for
   uint64 wrkchain_id = 1;
@@ -64,40 +69,45 @@ message QueryWrkChainBlockRequest {
   uint64 wc_height = 2;
 }
 
-// QueryWrkChainBlockResponse is the response type for the Query/WrkChainBlock RPC method
+// QueryWrkChainBlockResponse is the response type for the Query/WrkChainBlock
+// RPC method
 message QueryWrkChainBlockResponse {
   WrkChainBlock block = 1;
   uint64 wrkchain_id = 2;
   string owner = 3;
 }
 
-// QueryWrkChainsFilteredRequest is the request type for the Query/WrkChainsFiltered RPC method
+// QueryWrkChainsFilteredRequest is the request type for the
+// Query/WrkChainsFiltered RPC method
 message QueryWrkChainsFilteredRequest {
-  option (gogoproto.equal)           = false;
+  option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
   // moniker is the moniker of the wrkchain to search for
   string moniker = 1;
   // owner is an address to search for
-  string owner = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string owner = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-// QueryWrkChainsFilteredResponse is the response type for the Query/WrkChainsFiltered RPC method
+// QueryWrkChainsFilteredResponse is the response type for the
+// Query/WrkChainsFiltered RPC method
 message QueryWrkChainsFilteredResponse {
-  repeated WrkChain wrkchains = 1 [(gogoproto.nullable) = false];
+  repeated WrkChain wrkchains = 1 [ (gogoproto.nullable) = false ];
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryWrkChainStorageRequest is the request type for the Query/WrkChainStorage RPC method
+// QueryWrkChainStorageRequest is the request type for the Query/WrkChainStorage
+// RPC method
 message QueryWrkChainStorageRequest {
   // wrkchain_id is the id of the wrkchain to query for
   uint64 wrkchain_id = 1;
 }
 
-// QueryWrkChainStorageResponse is the response type for the Query/WrkChainStorage RPC method
+// QueryWrkChainStorageResponse is the response type for the
+// Query/WrkChainStorage RPC method
 message QueryWrkChainStorageResponse {
   uint64 wrkchain_id = 1;
   string owner = 2;
@@ -108,9 +118,11 @@ message QueryWrkChainStorageResponse {
   // current_used is the number of in-state slots currently used
   uint64 current_used = 4;
 
-  // max is the maximum possible slots a wrkchain can have, as defined by the wrkchain module params
+  // max is the maximum possible slots a wrkchain can have, as defined by the
+  // wrkchain module params
   uint64 max = 5;
 
-  // max_purchasable is the maximum number a wrkchain can purchase without exceeding max
+  // max_purchasable is the maximum number a wrkchain can purchase without
+  // exceeding max
   uint64 max_purchasable = 6;
 }

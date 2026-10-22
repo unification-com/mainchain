@@ -23,7 +23,7 @@ func (s *KeeperTestSuite) TestGRPCQueryParams() {
 		MaxStorageLimit:     300,
 	}
 
-	app.BeaconKeeper.SetParams(ctx, testParams)
+	s.Require().NoError(app.BeaconKeeper.SetParams(ctx, testParams))
 	paramsResp, err := queryClient.Params(gocontext.Background(), &types.QueryParamsRequest{})
 
 	s.NoError(err)
@@ -358,7 +358,7 @@ func (s *KeeperTestSuite) TestGRPCQueryBeaconStorage() {
 				s.Require().NoError(err)
 				s.Require().Equal(uint64(1), bID)
 
-				_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, "somehash", uint64(time.Now().Unix()))
+				_, _, err = app.BeaconKeeper.RecordNewBeaconTimestamp(ctx, bID, "somehash", uint64(time.Now().Unix()), "")
 				s.Require().NoError(err)
 
 				expRes = types.QueryBeaconStorageResponse{

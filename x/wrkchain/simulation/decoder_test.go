@@ -3,7 +3,6 @@ package simulation_test
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,10 +24,10 @@ func TestDecodeStore(t *testing.T) {
 	cdc := testApp.AppCodec()
 	dec := simulation.NewDecodeStore(cdc)
 
-	wc, err := types.NewWrkchain(1, "wrkchain1", "Test WrkChain 1", "gen", "test", 0, 0, uint64(time.Now().Unix()), bAddr1.String())
+	wc, err := types.NewWrkchain(1, "wrkchain1", "Test WrkChain 1", "gen", "test", 0, 0, uint64(1700000000), bAddr1.String())
 	require.NoError(t, err)
 
-	block, err := types.NewWrkchainBlock(1, "bhash", "phash", "h1", "h2", "h3", uint64(time.Now().Unix()))
+	block, err := types.NewWrkchainBlock(1, "bhash", "phash", "h1", "h2", "h3", uint64(1700000000))
 	require.NoError(t, err)
 
 	wcBz, err := cdc.Marshal(&wc)

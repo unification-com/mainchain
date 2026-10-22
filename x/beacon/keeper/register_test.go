@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 
 	simapphelpers "github.com/unification-com/mainchain/app/helpers"
@@ -19,7 +20,7 @@ func TestSetGetHighestBeaconID(t *testing.T) {
 		app.BeaconKeeper.SetHighestBeaconID(ctx, i)
 		bID, err := app.BeaconKeeper.GetHighestBeaconID(ctx)
 		require.NoError(t, err)
-		require.True(t, bID == i)
+		require.Equal(t, bID, i)
 	}
 }
 
@@ -56,15 +57,15 @@ func TestSetGetBeacon(t *testing.T) {
 		bDb, found := app.BeaconKeeper.GetBeacon(ctx, bID)
 		require.True(t, found)
 
-		require.True(t, bDb.Owner == addr.String())
-		require.True(t, bDb.BeaconId == bID)
-		require.True(t, bDb.LastTimestampId == 1)
-		require.True(t, bDb.Moniker == moniker)
-		require.True(t, bDb.Name == name)
+		require.Equal(t, bDb.Owner, addr.String())
+		require.Equal(t, bDb.BeaconId, bID)
+		require.Equal(t, uint64(1), bDb.LastTimestampId)
+		require.Equal(t, bDb.Moniker, moniker)
+		require.Equal(t, bDb.Name, name)
 
 		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 		require.True(t, found)
-		require.True(t, bSt.InStateLimit == types.DefaultStorageLimit)
+		require.Equal(t, bSt.InStateLimit, types.DefaultStorageLimit)
 
 		bID = bID + 1
 	}
@@ -93,7 +94,7 @@ func TestRegisterBeacon(t *testing.T) {
 
 		bID, err := app.BeaconKeeper.RegisterNewBeacon(ctx, expectedB)
 		require.NoError(t, err)
-		require.True(t, bID == expectedB.BeaconId)
+		require.Equal(t, bID, expectedB.BeaconId)
 
 		isRegistered := app.BeaconKeeper.IsBeaconRegistered(ctx, bID)
 		require.True(t, isRegistered)
@@ -104,11 +105,11 @@ func TestRegisterBeacon(t *testing.T) {
 		require.True(t, BeaconEqual(bDb, expectedB))
 
 		bDbOwner := app.BeaconKeeper.GetBeaconOwner(ctx, bID)
-		require.True(t, bDbOwner.String() == addr.String())
+		require.Equal(t, bDbOwner.String(), addr.String())
 
 		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 		require.True(t, found)
-		require.True(t, bSt.InStateLimit == simapphelpers.SimTestDefaultStorageLimit)
+		require.Equal(t, bSt.InStateLimit, simapphelpers.SimTestDefaultStorageLimit)
 
 		i = i + 1
 	}
@@ -135,7 +136,7 @@ func TestHighestBeaconIdAfterRegister(t *testing.T) {
 
 		nextID, _ := app.BeaconKeeper.GetHighestBeaconID(ctx)
 		expectedNextID := bID + 1
-		require.True(t, nextID == expectedNextID)
+		require.Equal(t, nextID, expectedNextID)
 	}
 }
 
@@ -164,7 +165,7 @@ func TestBeaconIsRegisteredAfterRegister(t *testing.T) {
 
 		bSt, found := app.BeaconKeeper.GetBeaconStorageLimit(ctx, bID)
 		require.True(t, found)
-		require.True(t, bSt.InStateLimit == simapphelpers.SimTestDefaultStorageLimit)
+		require.Equal(t, bSt.InStateLimit, simapphelpers.SimTestDefaultStorageLimit)
 	}
 }
 
@@ -187,17 +188,20 @@ func TestGetBeaconFilter(t *testing.T) {
 		lastMoniker = moniker
 	}
 
-	params := types.QueryBeaconsFilteredRequest{
-		Owner: TestAddrs[1].String(),
-	}
+	// Filtering by owner should return all registered beacons (single owner).
+	// Use the gRPC handler which is the canonical paginated entry point.
+	// Request a page large enough to hold the full set.
+	resp, err := app.BeaconKeeper.BeaconsFiltered(ctx, &types.QueryBeaconsFilteredRequest{
+		Owner:      TestAddrs[1].String(),
+		Pagination: &query.PageRequest{Limit: uint64(numToReg)},
+	})
+	require.NoError(t, err)
+	require.Equal(t, numToReg, len(resp.Beacons))
 
-	results := app.BeaconKeeper.GetBeaconsFiltered(ctx, params)
-	require.True(t, len(results) == numToReg)
-
-	params = types.QueryBeaconsFilteredRequest{
+	// Filtering by a specific moniker should return exactly one.
+	resp, err = app.BeaconKeeper.BeaconsFiltered(ctx, &types.QueryBeaconsFilteredRequest{
 		Moniker: lastMoniker,
-	}
-
-	results = app.BeaconKeeper.GetBeaconsFiltered(ctx, params)
-	require.True(t, len(results) == 1)
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, len(resp.Beacons))
 }

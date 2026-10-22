@@ -46,6 +46,14 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 		return nil, errorsmod.Wrap(types.ErrMissingData, "unable to register beacon - must have a moniker")
 	}
 
+	// Per-owner beacon count cap. Deters state-bloat by a single funded
+	// attacker registering many small beacons.
+	if count := k.CountBeaconsForOwner(ctx, ownerAddr); count >= types.MaxBeaconsPerOwner {
+		return nil, errorsmod.Wrapf(types.ErrContentTooLarge,
+			"owner %s already has %d beacons (max %d)",
+			msg.Owner, count, types.MaxBeaconsPerOwner)
+	}
+
 	beacon := types.Beacon{
 		Moniker: msg.Moniker,
 		Name:    msg.Name,
@@ -58,7 +66,7 @@ func (k msgServer) RegisterBeacon(goCtx context.Context, msg *types.MsgRegisterB
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.RegisterAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.RegisterAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -96,6 +104,10 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "hash too big. 66 character limit")
 	}
 
+	if len(msg.Metadata) > types.MaxMetadataLength {
+		return nil, errorsmod.Wrap(types.ErrContentTooLarge, "metadata too big. 256 character limit")
+	}
+
 	if !k.IsBeaconRegistered(ctx, msg.BeaconId) { // Checks if the BEACON is registered
 		return nil, errorsmod.Wrap(types.ErrBeaconDoesNotExist, "beacon has not been registered yet") // If not, throw an error
 	}
@@ -110,13 +122,13 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 		subtime = uint64(time.Now().Unix())
 	}
 
-	tsID, deleteTimestampId, err := k.RecordNewBeaconTimestamp(ctx, msg.BeaconId, msg.Hash, subtime)
+	tsID, deleteTimestampId, err := k.RecordNewBeaconTimestamp(ctx, msg.BeaconId, msg.Hash, subtime, msg.Metadata)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.RecordAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.RecordAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -125,6 +137,7 @@ func (k msgServer) RecordBeaconTimestamp(goCtx context.Context, msg *types.MsgRe
 			sdk.NewAttribute(types.AttributeKeyTimestampID, strconv.FormatUint(tsID, 10)),
 			sdk.NewAttribute(types.AttributeKeyTimestampIdPruned, strconv.FormatUint(deleteTimestampId, 10)),
 			sdk.NewAttribute(types.AttributeKeyTimestampHash, msg.Hash),
+			sdk.NewAttribute(types.AttributeKeyTimestampMetadata, msg.Metadata),
 			sdk.NewAttribute(types.AttributeKeyTimestampSubmitTime, strconv.FormatUint(msg.SubmitTime, 10)),
 			sdk.NewAttribute(types.AttributeKeyOwner, ownerAddr.String()),
 		),
@@ -182,7 +195,7 @@ func (k msgServer) PurchaseBeaconStateStorage(goCtx context.Context, msg *types.
 	// get remianing can purchase
 	numCanPurchase := k.GetMaxPurchasableSlots(ctx, msg.BeaconId)
 
-	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction)
+	defer telemetry.IncrCounter(1, types.ModuleName, types.PurchaseStorageAction) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

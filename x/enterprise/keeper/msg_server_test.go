@@ -70,7 +70,7 @@ func (s *KeeperTestSuite) TestUndPurchaseOrder() {
 		EntSigners:        entSigner.String(),
 		Denom:             sdk.DefaultBondDenom,
 		MinAccepts:        1,
-		DecisionTimeLimit: 999999999,
+		DecisionTimeLimit: 86400,
 	})
 
 	_ = s.app.EnterpriseKeeper.AddAddressToWhitelist(s.ctx, whitelisted)
@@ -148,7 +148,7 @@ func (s *KeeperTestSuite) TestProcessUndPurchaseOrder() {
 		EntSigners:        entSigner.String(),
 		Denom:             sdk.DefaultBondDenom,
 		MinAccepts:        1,
-		DecisionTimeLimit: 999999999,
+		DecisionTimeLimit: 86400,
 	})
 
 	_ = s.app.EnterpriseKeeper.SetPurchaseOrder(s.ctx, types.EnterpriseUndPurchaseOrder{
@@ -274,7 +274,7 @@ func (s *KeeperTestSuite) TestWhitelistAddress() {
 		EntSigners:        entSigner.String(),
 		Denom:             sdk.DefaultBondDenom,
 		MinAccepts:        1,
-		DecisionTimeLimit: 999999999,
+		DecisionTimeLimit: 86400,
 	})
 
 	testCases := []struct {

@@ -44,6 +44,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
+					RpcMethod: "BeaconTimestampsByHash",
+					Use:       "beacon-timestamps-by-hash [beacon_id] [hash]",
+					Short:     "Query a BEACON's timestamps that recorded a given hash",
+					Long:      "Query every timestamp a BEACON recorded for a given hash (one-to-many). Forward-only index: hashes recorded before the index upgrade are not returned.",
+					Example:   fmt.Sprintf("$ %s query beacon beacon-timestamps-by-hash 1 d04b98f48e8", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "beacon_id"},
+						{ProtoField: "hash"},
+					},
+				},
+				{
 					RpcMethod: "BeaconStorage",
 					Use:       "storage [beacon_id]",
 					Short:     "Query a BEACON's storage capacity for given ID",
@@ -61,19 +72,36 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				},
 			},
 		},
-		// Note - we're still using func (AppModuleBasic) GetTxCmd() *cobra.Command in module.go for Tx commands
-		// this is here just for an example for future use
 		Tx: &autocliv1.ServiceCommandDescriptor{
 			Service: beaconv1.Msg_ServiceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
+					RpcMethod: "RegisterBeacon",
+					Use:       "register --from [owner]",
+					Short:     "register a new BEACON",
+					Long:      "register a new BEACON, to enable timestamp hash submissions",
+					Example:   fmt.Sprintf(`$ %s tx beacon register --moniker MyBeacon --name "My Beacon" --from mykey`, version.AppName),
+				},
+				{
 					RpcMethod: "RecordBeaconTimestamp",
 					Use:       "record [beacon_id] --from [owner]",
 					Short:     "record a BEACON's timestamp hash",
-					Long:      "record a BEACON's timestamp hash along with a time submitted",
-					Example:   fmt.Sprintf("$ %s tx beacon record 1 --hash d04b98f48e8 --subtime 1234356 --from mykey", version.AppName),
+					Long:      "record a BEACON's timestamp hash along with a time submitted.\n--submit-time defaults to the current unix epoch when omitted; pass an explicit value to override.\nThe legacy --subtime spelling is still accepted as an alias and prints a deprecation notice.",
+					Example:   fmt.Sprintf("$ %s tx beacon record 1 --hash d04b98f48e8 --from mykey", version.AppName),
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "beacon_id"},
+					},
+				},
+				{
+					RpcMethod: "PurchaseBeaconStateStorage",
+					Use:       "purchase-storage [beacon_id] [number] --from [owner]",
+					Alias:     []string{"purchase_storage"},
+					Short:     "purchase more in-state storage for a BEACON",
+					Long:      "purchase more in-state storage for a BEACON, allowing more timestamps to be kept in-state",
+					Example:   fmt.Sprintf("$ %s tx beacon purchase-storage 1 100 --from mykey", version.AppName),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "beacon_id"},
+						{ProtoField: "number"},
 					},
 				},
 				{
@@ -81,7 +109,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Skip:      true, // skipped because authority gated
 				},
 			},
-			EnhanceCustomCommand: false, // use custom commands only until v0.51
 		},
 	}
 }

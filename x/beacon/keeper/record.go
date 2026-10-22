@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	storetypes "cosmossdk.io/store/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/unification-com/mainchain/x/beacon/types"
@@ -12,6 +12,11 @@ func (k Keeper) SetBeaconTimestamp(ctx sdk.Context, beaconId uint64, beaconTimes
 
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.BeaconTimestampKey(beaconId, beaconTimestamp.TimestampId), k.cdc.MustMarshal(&beaconTimestamp))
+
+	// Forward-only (beacon, hash) -> timestampId index (#129) backing BeaconTimestampsByHash. Written here
+	// so it is built going forward AND rebuilt at genesis (InitGenesis reuses SetBeaconTimestamp); the
+	// in-place upgrade does NOT backfill existing timestamps, so slim validators are untouched.
+	store.Set(types.BeaconHashIndexKey(beaconId, beaconTimestamp.Hash, beaconTimestamp.TimestampId), []byte{})
 
 	return nil
 }
@@ -42,7 +47,11 @@ func (k Keeper) GetBeaconTimestampByID(ctx sdk.Context, beaconID uint64, timesta
 
 	bz := store.Get(timestampKey)
 	var beaconTimestamp types.BeaconTimestamp
-	k.cdc.MustUnmarshal(bz, &beaconTimestamp)
+	if err := k.cdc.Unmarshal(bz, &beaconTimestamp); err != nil {
+		k.Logger(ctx).Error("corrupt beacon timestamp entry — treating as absent",
+			"beacon_id", beaconID, "timestamp_id", timestampID, "err", err)
+		return types.BeaconTimestamp{}, false
+	}
 	return beaconTimestamp, true
 }
 
@@ -54,7 +63,11 @@ func (k Keeper) IterateBeaconTimestamps(ctx sdk.Context, beaconID uint64, cb fun
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshal(iterator.Value(), &bts)
+		if err := k.cdc.Unmarshal(iterator.Value(), &bts); err != nil {
+			k.Logger(ctx).Error("skipping corrupt beacon timestamp entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(bts) {
 			break
@@ -70,7 +83,11 @@ func (k Keeper) IterateBeaconTimestampsReverse(ctx sdk.Context, beaconID uint64,
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var bts types.BeaconTimestamp
-		k.cdc.MustUnmarshal(iterator.Value(), &bts)
+		if err := k.cdc.Unmarshal(iterator.Value(), &bts); err != nil {
+			k.Logger(ctx).Error("skipping corrupt beacon timestamp entry during iteration",
+				"err", err)
+			continue
+		}
 
 		if cb(bts) {
 			break
@@ -118,11 +135,15 @@ func (k Keeper) GetAllBeaconTimestampsForExport(ctx sdk.Context, beaconID uint64
 // deleteBeaconTimestamp deletes a timestamp from the store
 func (k Keeper) deleteBeaconTimestamp(ctx sdk.Context, beaconId, beaconTimestampId uint64) error {
 
-	if !k.IsBeaconTimestampRecordedByID(ctx, beaconId, beaconTimestampId) {
+	// Fetch the timestamp first so we have its hash — the hash-index entry must be dropped too, or it would
+	// point at pruned (non-existent) state.
+	ts, found := k.GetBeaconTimestampByID(ctx, beaconId, beaconTimestampId)
+	if !found {
 		return nil
 	}
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.BeaconTimestampKey(beaconId, beaconTimestampId))
+	store.Delete(types.BeaconHashIndexKey(beaconId, ts.Hash, beaconTimestampId))
 
 	return nil
 }
@@ -132,7 +153,8 @@ func (k Keeper) RecordNewBeaconTimestamp(
 	ctx sdk.Context,
 	beaconId uint64,
 	hash string,
-	submitTime uint64) (uint64, uint64, error) {
+	submitTime uint64,
+	metadata string) (uint64, uint64, error) {
 
 	beacon, _ := k.GetBeacon(ctx, beaconId)
 
@@ -145,6 +167,7 @@ func (k Keeper) RecordNewBeaconTimestamp(
 		TimestampId: timestampId,
 		SubmitTime:  submitTime,
 		Hash:        hash,
+		Metadata:    metadata,
 	}
 
 	err := k.SetBeaconTimestamp(ctx, beacon.BeaconId, beaconTimestamp)
